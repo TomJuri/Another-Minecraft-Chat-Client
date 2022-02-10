@@ -3,6 +3,7 @@ package net.defekt.mc.chatclient.ui.swing;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -21,6 +22,7 @@ import net.defekt.mc.chatclient.protocol.data.ChatMessages;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
 import net.defekt.mc.chatclient.protocol.data.PlayerSkinCache;
 import net.defekt.mc.chatclient.ui.Main;
+import net.defekt.mc.chatclient.ui.UserPreferences;
 
 /**
  * Custom cell rendered used in {@link JMinecraftPlayerList}.<br>
@@ -206,7 +208,15 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 
 		JTextPane nameField = new JTextPane();
 		nameField.setEditable(false);
-		nameField.setFont(Main.mcFont.deriveFont(13.5f));
+		boolean unicodeFont = !SwingConstants.checkMCSupported(dname)
+				|| Main.up.getUnicodeCharactersMode().equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE);
+		Font font;
+		if (unicodeFont) {
+			font = Font.decode(null).deriveFont(Font.BOLD).deriveFont((float) 15.5);
+		} else {
+			font = Main.mcFont.deriveFont((float) 13.5f);
+		}
+		nameField.setFont(font);
 		nameField.setOpaque(false);
 		nameField.setForeground(Color.white);
 

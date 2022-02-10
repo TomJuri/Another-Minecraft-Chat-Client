@@ -113,6 +113,7 @@ If you done everything correctly, your translation will probably be added in nex
 ### Current translations
   * English - Defective4
   * Polish - Defective4
+  * Chinese - [qiuzilu](https://github.com/qiuzilu)
 
 ## ⬇️ Downloads
 You can download latest executable version [Here](https://github.com/Defective4/Minecraft-Chat-Client/releases)

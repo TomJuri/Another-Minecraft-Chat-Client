@@ -30,13 +30,17 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
 import net.defekt.mc.chatclient.protocol.data.ChatColor;
+import net.defekt.mc.chatclient.ui.Main;
 import net.defekt.mc.chatclient.ui.Messages;
+import net.defekt.mc.chatclient.ui.UserPreferences;
+import net.defekt.mc.chatclient.ui.UserPreferences.Constants;
 
 /**
  * Various UI utilities used internally
@@ -104,6 +108,8 @@ public class SwingUtils {
 		Style style = ctx.addStyle("style", null);
 
 		String[] split = text.split("\u00A7");
+		boolean lineSupported = true;
+		int ctxIndex = doc.getLength();
 		for (String part : split)
 			try {
 				if (text.startsWith(part))
@@ -126,11 +132,25 @@ public class SwingUtils {
 					StyleConstants.setForeground(style, c);
 
 					String rest = part.substring(isHex ? 7 : 1);
+
+					if (!net.defekt.mc.chatclient.ui.swing.SwingConstants.checkMCSupported(rest))
+						lineSupported = false;
+
 					doc.insertString(doc.getLength(), rest, style);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
+		if ((!lineSupported
+				&& !Main.up.getUnicodeCharactersMode().equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_CUSTOM))
+				|| Main.up.getUnicodeCharactersMode().equals(Constants.UNICODECHARS_KEY_FORCE_UNICODE)) {
+			SimpleAttributeSet set = new SimpleAttributeSet();
+			StyleConstants.setFontFamily(set, "arial");
+			StyleConstants.setFontSize(set, 16);
+			StyleConstants.setBold(set, true);
+			doc.setCharacterAttributes(ctxIndex, doc.getLength() - ctxIndex, set, false);
+		}
 	}
 
 	/**

@@ -12,6 +12,13 @@ plugins {
     id 'eclipse'
 }
 
+compileJava {
+options.encoding = "UTF-8"
+}
+ 
+apply plugin: "java"
+apply plugin: "eclipse"
+
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.

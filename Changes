@@ -1,5 +1,15 @@
 AMCC Change Log
-v1.5.3
+v1.5.4
 
-[+] Fixed:
-- Resource packs are now supported for Minecraft 1.18/1.18.1
+Thanks to qiuzilu for providing a Chinese translation 
+and making me aware of an issue with Unicode characters!
+
+Caution! This release is yet to be tested! Please report any Issues on!
+
+[+] Added:
+- Partial Chinese translation.
+- Chinese (and other Unicode) characters support for chat
+- New option in preferences under "General" tab for changing display mode of Unicode characters:
+  - Autmatic (Default) - Font will be adjusted on the fly to display Unicode characters
+  - Force Custom Font - Old behavior, Unicode font will almost never be used (Except for GUI elements in Chinese language)
+  - Force Unicode Font - Completely unload Minecraftia font, and use only Unicode font

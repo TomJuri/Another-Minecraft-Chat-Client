@@ -1,6 +1,7 @@
 package net.defekt.mc.chatclient.ui.swing;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -13,6 +14,7 @@ import java.awt.font.GlyphVector;
 import javax.swing.JButton;
 
 import net.defekt.mc.chatclient.ui.Main;
+import net.defekt.mc.chatclient.ui.UserPreferences;
 import net.defekt.mc.chatclient.ui.UserPreferences.ColorPreferences;
 
 /**
@@ -26,6 +28,7 @@ import net.defekt.mc.chatclient.ui.UserPreferences.ColorPreferences;
 public class JMinecraftButton extends JButton {
 	private static final long serialVersionUID = 1L;
 	private boolean hover = false;
+	private boolean unicodeFont = false;
 	private ColorPreferences cp = Main.up.getColorPreferences();
 
 	/**
@@ -35,7 +38,15 @@ public class JMinecraftButton extends JButton {
 	 */
 	public JMinecraftButton(String text) {
 		super(text);
-		setFont(Main.mcFont.deriveFont((float) 14));
+		unicodeFont = !SwingConstants.checkMCSupported(text)
+				|| Main.up.getUnicodeCharactersMode().equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE);
+		Font font;
+		if (unicodeFont) {
+			font = Font.decode(null).deriveFont(Font.BOLD).deriveFont((float) 16);
+		} else {
+			font = Main.mcFont.deriveFont((float) 14);
+		}
+		setFont(font);
 		int u, b, l, r;
 		Insets is = getMargin();
 		u = is.top + 3;
@@ -98,7 +109,7 @@ public class JMinecraftButton extends JButton {
 
 		GlyphVector glyph = getFont().createGlyphVector(g2.getFontRenderContext(), getText());
 		Shape bText = glyph.getOutline();
-		float y = (float) ((getHeight() + (bText.getBounds2D().getHeight() * 2)) / 2);
+		float y = (float) ((getHeight() + (bText.getBounds2D().getHeight() * (unicodeFont ? 1 : 2))) / 2);
 		float x = (float) ((getWidth() - (bText.getBounds2D().getWidth())) / 2);
 
 		Color tx = new Color(Integer.parseInt(cp.getColorText(), 16));

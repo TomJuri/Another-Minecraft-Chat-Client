@@ -27,6 +27,20 @@ public class UserPreferences implements Serializable {
 	private UserPreferences() {
 	}
 
+	private void initDefaults() {
+		if (brand == null)
+			brand = "vanilla";
+
+		if (resourcePackMessage == null)
+			resourcePackMessage = "";
+
+		if (trayMessageMode == null)
+			trayMessageMode = Constants.TRAY_MESSAGES_KEY_MENTION;
+
+		if (unicodeCharactersMode == null)
+			unicodeCharactersMode = Constants.UNICODECHARS_KEY_AUTO;
+	}
+
 	/**
 	 * Skin rules are used to adjust skin cache behavior
 	 * 
@@ -55,7 +69,7 @@ public class UserPreferences implements Serializable {
 	 *
 	 */
 	public static enum Language {
-		English("EN"), Polish("PL");
+		English("EN"), Polish("PL"), 简体中文("CN");
 
 		private final String code;
 
@@ -73,6 +87,10 @@ public class UserPreferences implements Serializable {
 		public static final String TRAY_MESSAGES_KEY_MENTION = "On mention";
 		public static final String TRAY_MESSAGES_KEY_KEYWORD = "On keyword";
 		public static final String TRAY_MESSAGES_KEY_NEVER = "Never";
+
+		public static final String UNICODECHARS_KEY_AUTO = "Automatic";
+		public static final String UNICODECHARS_KEY_FORCE_UNICODE = "Force Unicode";
+		public static final String UNICODECHARS_KEY_FORCE_CUSTOM = "Force Custom Font";
 
 		public static final int WINDOW_CLOSE_ALWAYS_ASK = 0;
 		public static final int WINDOW_CLOSE_TO_TRAY = 1;
@@ -157,6 +175,7 @@ public class UserPreferences implements Serializable {
 	private String brand = "vanilla";
 
 	private String trayMessageMode = Constants.TRAY_MESSAGES_KEY_MENTION;
+	private String unicodeCharactersMode = Constants.UNICODECHARS_KEY_AUTO;
 	private boolean trayShowDisconnectMessages = true;
 	private int closeMode = Constants.WINDOW_CLOSE_ALWAYS_ASK;
 	private String[] trayKeyWords = new String[0];
@@ -173,7 +192,7 @@ public class UserPreferences implements Serializable {
 			if (Main.serverFile.exists())
 				try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(Main.serverFile))) {
 					UserPreferences prefs = (UserPreferences) is.readObject();
-
+					prefs.initDefaults();
 					return prefs;
 				}
 			else
@@ -181,6 +200,16 @@ public class UserPreferences implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new UserPreferences();
+		}
+	}
+
+	public boolean isLangUnicodeSupported() {
+		switch (appLanguage) {
+			case 简体中文: {
+				return false;
+			}
+			default:
+				return true;
 		}
 	}
 
@@ -395,5 +424,13 @@ public class UserPreferences implements Serializable {
 
 	public void setIgnoreDisconnect(boolean ignoreDisconnect) {
 		this.ignoreDisconnect = ignoreDisconnect;
+	}
+
+	public String getUnicodeCharactersMode() {
+		return unicodeCharactersMode;
+	}
+
+	public void setUnicodeCharactersMode(String unicodeCharactersMode) {
+		this.unicodeCharactersMode = unicodeCharactersMode;
 	}
 }

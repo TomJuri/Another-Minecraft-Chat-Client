@@ -1,8 +1,10 @@
 package net.defekt.mc.chatclient.ui.swing;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import net.defekt.mc.chatclient.ui.Main;
+import net.defekt.mc.chatclient.ui.UserPreferences;
 
 /**
  * A Minecraft styled text field.<br>
@@ -22,10 +24,18 @@ public class JMinecraftField extends JPlaceholderField {
 	 */
 	public JMinecraftField(String placeholder) {
 		super(placeholder);
+		boolean unicodeFont = !Main.up.isLangUnicodeSupported()
+				|| Main.up.getUnicodeCharactersMode().equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE);
+		Font font;
+		if (unicodeFont) {
+			font = Font.decode(null).deriveFont(Font.BOLD).deriveFont((float) 16);
+		} else {
+			font = Main.mcFont.deriveFont((float) 14);
+		}
 		setBackground(Color.black);
 		setForeground(Color.white);
 		setCaretColor(Color.white);
-		setFont(Main.mcFont);
+		setFont(font);
 		setText("");
 	}
 

@@ -132,7 +132,7 @@ public class Main {
 
 	private static BufferedImage logoImage = null;
 
-	public static final String version = "1.5.3";
+	public static final String version = "1.5.4";
 	private static final String changelogURL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
 
 	public static Font mcFont = Font.decode(null);
@@ -243,10 +243,11 @@ public class Main {
 
 		checkForUpdates();
 		try {
-			mcFont = Font
-					.createFont(Font.TRUETYPE_FONT,
-							Main.class.getResourceAsStream("/resources/Minecraftia-Regular.ttf"))
-					.deriveFont((float) 14);
+			if (!up.getUnicodeCharactersMode()
+					.equalsIgnoreCase(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE))
+				mcFont = Font.createFont(Font.TRUETYPE_FONT,
+						Main.class.getResourceAsStream("/resources/Minecraftia-Regular.ttf"));
+			mcFont = mcFont.deriveFont((float) 14);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1476,8 +1477,18 @@ public class Main {
 		JComboBox<Language> languages = new JComboBox<>(Language.values());
 		languages.setSelectedItem(up.getAppLanguage());
 
+		JComboBox<String> unicodeDisplay = new JComboBox<>(
+				new String[] { UserPreferences.Constants.UNICODECHARS_KEY_AUTO,
+						UserPreferences.Constants.UNICODECHARS_KEY_FORCE_CUSTOM,
+						UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE });
+		unicodeDisplay.setSelectedItem(up.getUnicodeCharactersMode());
+
 		gnBox.add(new JLabel(Messages.getString("Main.settingsLangChangeLabel")));
 		gnBox.add(languages);
+		gnBox.add(new JLabel(" "));
+		gnBox.add(new JSeparator(JSeparator.HORIZONTAL));
+		gnBox.add(new JLabel(Messages.getString("Main.unicodeDisplayMode")));
+		gnBox.add(unicodeDisplay);
 		gnBox.add(new JTextPane() {
 			{
 				setEditable(false);
@@ -1595,8 +1606,10 @@ public class Main {
 				up.setShowWindowsInTray(showWhenInTray.isSelected());
 				up.setSendWindowClosePackets(sendClosePackets.isSelected());
 
-				boolean langChanged = up.getAppLanguage() != languages.getSelectedItem();
+				boolean langChanged = up.getAppLanguage() != languages.getSelectedItem()
+						|| up.getUnicodeCharactersMode() != unicodeDisplay.getSelectedItem();
 				up.setAppLanguage((Language) languages.getSelectedItem());
+				up.setUnicodeCharactersMode((String) unicodeDisplay.getSelectedItem());
 
 				ColorPreferences cp2 = up.getColorPreferences();
 				cp2.setColorDisabledButton(SwingUtils.getHexRGB(apButtonDisabled.getColor()));
