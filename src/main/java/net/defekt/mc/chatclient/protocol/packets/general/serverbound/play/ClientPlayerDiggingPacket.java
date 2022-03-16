@@ -49,7 +49,7 @@ public class ClientPlayerDiggingPacket extends Packet {
 
 		private final int status;
 
-		private Status(int status) {
+		private Status(final int status) {
 			this.status = status;
 		}
 
@@ -73,7 +73,8 @@ public class ClientPlayerDiggingPacket extends Packet {
 	 * @param z      action Z
 	 * @param face   action face
 	 */
-	public ClientPlayerDiggingPacket(PacketRegistry reg, Status status, Integer x, Integer y, Integer z, Byte face) {
+	public ClientPlayerDiggingPacket(final PacketRegistry reg, final Status status, final Integer x, final Integer y,
+			final Integer z, final Byte face) {
 		super(reg);
 		putVarInt(status.getStatus());
 		putLong(((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF));

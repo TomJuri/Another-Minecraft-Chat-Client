@@ -28,17 +28,21 @@ public class UserPreferences implements Serializable {
 	}
 
 	private void initDefaults() {
-		if (brand == null)
+		if (brand == null) {
 			brand = "vanilla";
+		}
 
-		if (resourcePackMessage == null)
+		if (resourcePackMessage == null) {
 			resourcePackMessage = "";
+		}
 
-		if (trayMessageMode == null)
+		if (trayMessageMode == null) {
 			trayMessageMode = Constants.TRAY_MESSAGES_KEY_MENTION;
+		}
 
-		if (unicodeCharactersMode == null)
+		if (unicodeCharactersMode == null) {
 			unicodeCharactersMode = Constants.UNICODECHARS_KEY_AUTO;
+		}
 	}
 
 	/**
@@ -73,7 +77,7 @@ public class UserPreferences implements Serializable {
 
 		private final String code;
 
-		private Language(String code) {
+		private Language(final String code) {
 			this.code = code;
 		}
 
@@ -125,15 +129,15 @@ public class UserPreferences implements Serializable {
 			return colorDisabledButton;
 		}
 
-		public void setColorEnabledButton(String colorEnabledButton) {
+		public void setColorEnabledButton(final String colorEnabledButton) {
 			this.colorEnabledButton = colorEnabledButton;
 		}
 
-		public void setColorEnabledHoverButton(String colorEnabledHoverButton) {
+		public void setColorEnabledHoverButton(final String colorEnabledHoverButton) {
 			this.colorEnabledHoverButton = colorEnabledHoverButton;
 		}
 
-		public void setColorDisabledButton(String colorDisabledButton) {
+		public void setColorDisabledButton(final String colorDisabledButton) {
 			this.colorDisabledButton = colorDisabledButton;
 		}
 
@@ -145,11 +149,11 @@ public class UserPreferences implements Serializable {
 			return disabledColorText;
 		}
 
-		public void setColorText(String colorText) {
+		public void setColorText(final String colorText) {
 			this.colorText = colorText;
 		}
 
-		public void setDisabledColorText(String disabledColorText) {
+		public void setDisabledColorText(final String disabledColorText) {
 			this.disabledColorText = disabledColorText;
 		}
 	}
@@ -170,6 +174,7 @@ public class UserPreferences implements Serializable {
 
 	private boolean ignoreKeepAlive = false;
 	private boolean ignoreDisconnect = false;
+	private boolean forceLegacySLP = false;
 	private int additionalPing = 0;
 	private boolean sendMCBrand = true;
 	private String brand = "vanilla";
@@ -189,15 +194,15 @@ public class UserPreferences implements Serializable {
 
 	protected static UserPreferences load() {
 		try {
-			if (Main.serverFile.exists())
+			if (Main.serverFile.exists()) {
 				try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(Main.serverFile))) {
-					UserPreferences prefs = (UserPreferences) is.readObject();
+					final UserPreferences prefs = (UserPreferences) is.readObject();
 					prefs.initDefaults();
 					return prefs;
 				}
-			else
+			} else
 				return new UserPreferences();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			return new UserPreferences();
 		}
@@ -217,7 +222,7 @@ public class UserPreferences implements Serializable {
 		return trayKeyWords;
 	}
 
-	public void setTrayKeyWords(String[] trayKeyWords) {
+	public void setTrayKeyWords(final String[] trayKeyWords) {
 		this.trayKeyWords = trayKeyWords;
 	}
 
@@ -229,7 +234,7 @@ public class UserPreferences implements Serializable {
 		return resourcePackBehavior;
 	}
 
-	public void setResourcePackBehavior(Status resourcePackBehavior) {
+	public void setResourcePackBehavior(final Status resourcePackBehavior) {
 		this.resourcePackBehavior = resourcePackBehavior;
 	}
 
@@ -241,11 +246,11 @@ public class UserPreferences implements Serializable {
 		return resourcePackMessage;
 	}
 
-	public void setShowResourcePackMessages(boolean showResourcePackMessages) {
+	public void setShowResourcePackMessages(final boolean showResourcePackMessages) {
 		this.showResourcePackMessages = showResourcePackMessages;
 	}
 
-	public void setResourcePackMessage(String resourcePackMessage) {
+	public void setResourcePackMessage(final String resourcePackMessage) {
 		this.resourcePackMessage = resourcePackMessage;
 	}
 
@@ -253,7 +258,7 @@ public class UserPreferences implements Serializable {
 		return resourcePackMessagePosition;
 	}
 
-	public void setResourcePackMessagePosition(Position resourcePackMessagePosition) {
+	public void setResourcePackMessagePosition(final Position resourcePackMessagePosition) {
 		this.resourcePackMessagePosition = resourcePackMessagePosition;
 	}
 
@@ -261,7 +266,7 @@ public class UserPreferences implements Serializable {
 		return skinFetchRule;
 	}
 
-	public void setSkinFetchRule(SkinRule skinFetchRule) {
+	public void setSkinFetchRule(final SkinRule skinFetchRule) {
 		this.skinFetchRule = skinFetchRule;
 	}
 
@@ -277,15 +282,15 @@ public class UserPreferences implements Serializable {
 		return brand;
 	}
 
-	public void setIgnoreKeepAlive(boolean ignoreKeepAlive) {
+	public void setIgnoreKeepAlive(final boolean ignoreKeepAlive) {
 		this.ignoreKeepAlive = ignoreKeepAlive;
 	}
 
-	public void setSendMCBrand(boolean sendMCBrand) {
+	public void setSendMCBrand(final boolean sendMCBrand) {
 		this.sendMCBrand = sendMCBrand;
 	}
 
-	public void setBrand(String brand) {
+	public void setBrand(final String brand) {
 		this.brand = brand;
 	}
 
@@ -297,11 +302,11 @@ public class UserPreferences implements Serializable {
 		return closeMode;
 	}
 
-	public void setTrayMessageMode(String trayMessageMode) {
+	public void setTrayMessageMode(final String trayMessageMode) {
 		this.trayMessageMode = trayMessageMode;
 	}
 
-	public void setCloseMode(int closeMode) {
+	public void setCloseMode(final int closeMode) {
 		this.closeMode = closeMode;
 	}
 
@@ -309,13 +314,14 @@ public class UserPreferences implements Serializable {
 		return trayShowDisconnectMessages;
 	}
 
-	public void setTrayShowDisconnectMessages(boolean trayShowDisconnectMessages) {
+	public void setTrayShowDisconnectMessages(final boolean trayShowDisconnectMessages) {
 		this.trayShowDisconnectMessages = trayShowDisconnectMessages;
 	}
 
 	public ColorPreferences getColorPreferences() {
-		if (colorPreferences == null)
+		if (colorPreferences == null) {
 			colorPreferences = new ColorPreferences();
+		}
 		return colorPreferences;
 	}
 
@@ -323,24 +329,27 @@ public class UserPreferences implements Serializable {
 		return additionalPing;
 	}
 
-	public void setAdditionalPing(int additionalPing) {
+	public void setAdditionalPing(final int additionalPing) {
 		this.additionalPing = additionalPing;
 	}
 
-	public void putUserName(String username) {
-		if (lastUsernames.contains(username))
+	public void putUserName(final String username) {
+		if (lastUsernames.contains(username)) {
 			lastUsernames.remove(username);
+		}
 		if (!lastUsernames.contains(username)) {
 			lastUsernames.add(" ");
-			for (int x = lastUsernames.size() - 1; x > 0; x--)
+			for (int x = lastUsernames.size() - 1; x > 0; x--) {
 				lastUsernames.set(x, lastUsernames.get(x - 1));
+			}
 			lastUsernames.set(0, username);
 		}
 	}
 
 	public List<String> getLastUserNames() {
-		if (lastUsernames == null)
+		if (lastUsernames == null) {
 			lastUsernames = new ArrayList<String>();
+		}
 		return new ArrayList<String>(lastUsernames);
 	}
 
@@ -353,7 +362,7 @@ public class UserPreferences implements Serializable {
 		return usernameAlertSeen;
 	}
 
-	public void setUsernameAlertSeen(boolean usernameAlertSeen) {
+	public void setUsernameAlertSeen(final boolean usernameAlertSeen) {
 		this.usernameAlertSeen = usernameAlertSeen;
 	}
 
@@ -369,15 +378,15 @@ public class UserPreferences implements Serializable {
 		return showWindowsInTray;
 	}
 
-	public void setEnableInventoryHandling(boolean enableInventoryHandling) {
+	public void setEnableInventoryHandling(final boolean enableInventoryHandling) {
 		this.enableInventoryHandling = enableInventoryHandling;
 	}
 
-	public void setLoadInventoryTextures(boolean loadInventoryTextures) {
+	public void setLoadInventoryTextures(final boolean loadInventoryTextures) {
 		this.loadInventoryTextures = loadInventoryTextures;
 	}
 
-	public void setShowWindowsInTray(boolean showWindowsInTray) {
+	public void setShowWindowsInTray(final boolean showWindowsInTray) {
 		this.showWindowsInTray = showWindowsInTray;
 	}
 
@@ -385,7 +394,7 @@ public class UserPreferences implements Serializable {
 		return sendWindowClosePackets;
 	}
 
-	public void setSendWindowClosePackets(boolean sendWindowClosePackets) {
+	public void setSendWindowClosePackets(final boolean sendWindowClosePackets) {
 		this.sendWindowClosePackets = sendWindowClosePackets;
 	}
 
@@ -397,11 +406,11 @@ public class UserPreferences implements Serializable {
 		return hiddenWindowsResponse;
 	}
 
-	public void setHideIncomingWindows(boolean hideIncomingWindows) {
+	public void setHideIncomingWindows(final boolean hideIncomingWindows) {
 		this.hideIncomingWindows = hideIncomingWindows;
 	}
 
-	public void setHiddenWindowsResponse(boolean hiddenWindowsResponse) {
+	public void setHiddenWindowsResponse(final boolean hiddenWindowsResponse) {
 		this.hiddenWindowsResponse = hiddenWindowsResponse;
 	}
 
@@ -409,7 +418,7 @@ public class UserPreferences implements Serializable {
 		return appLanguage;
 	}
 
-	public void setAppLanguage(Language appLanguage) {
+	public void setAppLanguage(final Language appLanguage) {
 		this.appLanguage = appLanguage;
 		wasLangSet = true;
 	}
@@ -422,7 +431,7 @@ public class UserPreferences implements Serializable {
 		return ignoreDisconnect;
 	}
 
-	public void setIgnoreDisconnect(boolean ignoreDisconnect) {
+	public void setIgnoreDisconnect(final boolean ignoreDisconnect) {
 		this.ignoreDisconnect = ignoreDisconnect;
 	}
 
@@ -430,7 +439,15 @@ public class UserPreferences implements Serializable {
 		return unicodeCharactersMode;
 	}
 
-	public void setUnicodeCharactersMode(String unicodeCharactersMode) {
+	public void setUnicodeCharactersMode(final String unicodeCharactersMode) {
 		this.unicodeCharactersMode = unicodeCharactersMode;
+	}
+
+	public boolean isForceLegacySLP() {
+		return forceLegacySLP;
+	}
+
+	public void setForceLegacySLP(final boolean forceLegacySLP) {
+		this.forceLegacySLP = forceLegacySLP;
 	}
 }

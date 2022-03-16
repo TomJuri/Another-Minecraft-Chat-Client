@@ -30,7 +30,8 @@ public class PlayerInfo implements Serializable {
 	 * @param ping        player ping
 	 * @param uuid        player's UUID
 	 */
-	public PlayerInfo(String name, String texture, String displayName, int ping, UUID uuid) {
+	public PlayerInfo(final String name, final String texture, final String displayName, final int ping,
+			final UUID uuid) {
 		this.displayName = displayName;
 		this.name = name;
 		this.texture = texture;
@@ -88,7 +89,7 @@ public class PlayerInfo implements Serializable {
 	 * 
 	 * @param texture player's texture
 	 */
-	public void setTexture(String texture) {
+	public void setTexture(final String texture) {
 		this.texture = texture;
 	}
 }

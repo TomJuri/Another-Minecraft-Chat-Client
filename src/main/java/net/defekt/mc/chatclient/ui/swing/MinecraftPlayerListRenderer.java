@@ -41,11 +41,11 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 	public final static BufferedImage bar0 = new BufferedImage(40, 28, BufferedImage.TYPE_INT_ARGB) {
 		{
 			try {
-				Graphics2D g2 = createGraphics();
-				BufferedImage img = ImageIO
+				final Graphics2D g2 = createGraphics();
+				final BufferedImage img = ImageIO
 						.read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/0.png"));
 				g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -58,11 +58,11 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 	public final static BufferedImage bar5 = new BufferedImage(40, 28, BufferedImage.TYPE_INT_ARGB) {
 		{
 			try {
-				Graphics2D g2 = createGraphics();
-				BufferedImage img = ImageIO
+				final Graphics2D g2 = createGraphics();
+				final BufferedImage img = ImageIO
 						.read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/5.png"));
 				g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -75,11 +75,11 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 	public final static BufferedImage bar1 = new BufferedImage(40, 28, BufferedImage.TYPE_INT_ARGB) {
 		{
 			try {
-				Graphics2D g2 = createGraphics();
-				BufferedImage img = ImageIO
+				final Graphics2D g2 = createGraphics();
+				final BufferedImage img = ImageIO
 						.read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/1.png"));
 				g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -92,11 +92,11 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 	public final static BufferedImage bar2 = new BufferedImage(40, 28, BufferedImage.TYPE_INT_ARGB) {
 		{
 			try {
-				Graphics2D g2 = createGraphics();
-				BufferedImage img = ImageIO
+				final Graphics2D g2 = createGraphics();
+				final BufferedImage img = ImageIO
 						.read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/2.png"));
 				g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -109,11 +109,11 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 	public final static BufferedImage bar3 = new BufferedImage(40, 28, BufferedImage.TYPE_INT_ARGB) {
 		{
 			try {
-				Graphics2D g2 = createGraphics();
-				BufferedImage img = ImageIO
+				final Graphics2D g2 = createGraphics();
+				final BufferedImage img = ImageIO
 						.read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/3.png"));
 				g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -126,11 +126,11 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 	public final static BufferedImage bar4 = new BufferedImage(40, 28, BufferedImage.TYPE_INT_ARGB) {
 		{
 			try {
-				Graphics2D g2 = createGraphics();
-				BufferedImage img = ImageIO
+				final Graphics2D g2 = createGraphics();
+				final BufferedImage img = ImageIO
 						.read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/4.png"));
 				g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -144,7 +144,7 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 	 * @param filter     text field used to filter player names
 	 * @param playerList a player list component associated with this renderer
 	 */
-	protected MinecraftPlayerListRenderer(JTextField filter, final JMemList<PlayerInfo> playerList) {
+	protected MinecraftPlayerListRenderer(final JTextField filter, final JMemList<PlayerInfo> playerList) {
 		this.filter = filter;
 		new Thread(new Runnable() {
 
@@ -158,7 +158,7 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 
 								@Override
 								public void run() {
-									int ind = playerList.getSelectedIndex();
+									final int ind = playerList.getSelectedIndex();
 									playerList.setListData(playerList.getListData());
 									playerList.setSelectedIndex(ind);
 									playerList.repaint();
@@ -166,7 +166,7 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 							});
 						}
 					}
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -174,18 +174,18 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 	}
 
 	@Override
-	public Component getListCellRendererComponent(JList<? extends Object> list, Object value, int index,
-			boolean isSelected, boolean cellHasFocus) {
-		PlayerInfo info = (PlayerInfo) value;
-		String dname = info.getDisplayName() != null ? ChatMessages.parse(info.getDisplayName()) : info.getName();
+	public Component getListCellRendererComponent(final JList<? extends Object> list, final Object value,
+			final int index, final boolean isSelected, final boolean cellHasFocus) {
+		final PlayerInfo info = (PlayerInfo) value;
+		final String dname = info.getDisplayName() != null ? ChatMessages.parse(info.getDisplayName()) : info.getName();
 
 		if (!filter.getText().isEmpty()
 				&& !ChatMessages.removeColors(dname).toLowerCase().contains(filter.getText().toLowerCase()))
 			return new JLabel();
 
-		Box playerLine = Box.createHorizontalBox();
+		final Box playerLine = Box.createHorizontalBox();
 
-		if (info.getTexture() != null)
+		if (info.getTexture() != null) {
 			try {
 				PlayerSkinCache.putSkin(info.getUUID(), info.getTexture(), info.getName());
 				playerLine.add(new JPanel() {
@@ -197,24 +197,25 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 					}
 
 					@Override
-					public void paintComponent(Graphics g) {
+					public void paintComponent(final Graphics g) {
 						super.paintComponent(g);
 						g.drawImage(img, 0, 0, 32, 32, null);
 					}
 				});
-			} catch (Exception e) {
+			} catch (final Exception e) {
 
 			}
+		}
 
-		JTextPane nameField = new JTextPane();
+		final JTextPane nameField = new JTextPane();
 		nameField.setEditable(false);
-		boolean unicodeFont = !SwingConstants.checkMCSupported(dname)
+		final boolean unicodeFont = !SwingConstants.checkMCSupported(dname)
 				|| Main.up.getUnicodeCharactersMode().equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE);
 		Font font;
 		if (unicodeFont) {
 			font = Font.decode(null).deriveFont(Font.BOLD).deriveFont((float) 15.5);
 		} else {
-			font = Main.mcFont.deriveFont((float) 13.5f);
+			font = Main.mcFont.deriveFont(13.5f);
 		}
 		nameField.setFont(font);
 		nameField.setOpaque(false);
@@ -232,22 +233,23 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 			}
 
 			@Override
-			public void paintComponent(Graphics g) {
+			public void paintComponent(final Graphics g) {
 				super.paintComponent(g);
 				BufferedImage bb = bar5;
 
-				int ping = info.getPing();
+				final int ping = info.getPing();
 
-				if (ping >= 1000)
+				if (ping >= 1000) {
 					bb = bar1;
-				else if (ping >= 600)
+				} else if (ping >= 600) {
 					bb = bar2;
-				else if (ping >= 300)
+				} else if (ping >= 300) {
 					bb = bar3;
-				else if (ping >= 150)
+				} else if (ping >= 150) {
 					bb = bar4;
-				else if (ping > 0)
+				} else if (ping > 0) {
 					bb = bar5;
+				}
 				g.drawImage(bb, 0, 0, null);
 			}
 		});

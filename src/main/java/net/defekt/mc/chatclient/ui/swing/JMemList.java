@@ -15,7 +15,7 @@ public class JMemList<E> extends JList<E> {
 	private E[] listData = null;
 
 	@Override
-	public void setListData(E[] entries) {
+	public void setListData(final E[] entries) {
 		if (entries == null)
 			return;
 		super.setListData(entries);

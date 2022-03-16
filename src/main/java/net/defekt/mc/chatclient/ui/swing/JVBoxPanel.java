@@ -13,7 +13,7 @@ import javax.swing.JTextPane;
  * @author Defective4
  *
  */
-@SuppressWarnings("serial")
+
 public class JVBoxPanel extends JPanel {
 	/**
 	 * Default constructor
@@ -26,9 +26,9 @@ public class JVBoxPanel extends JPanel {
 	 * Aligns all contained components to the left
 	 */
 	public void alignAll() {
-		for (Component ct : getComponents())
+		for (final Component ct : getComponents())
 			if (ct instanceof JComponent) {
-				JComponent jct = (JComponent) ct;
+				final JComponent jct = (JComponent) ct;
 				jct.setAlignmentX(Component.LEFT_ALIGNMENT);
 				jct.setOpaque(!(ct instanceof JTextPane));
 			}

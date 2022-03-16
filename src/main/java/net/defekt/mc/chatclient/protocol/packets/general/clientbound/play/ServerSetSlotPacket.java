@@ -27,9 +27,9 @@ public class ServerSetSlotPacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerSetSlotPacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerSetSlotPacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
-		VarInputStream is = getInputStream();
+		final VarInputStream is = getInputStream();
 		windowID = is.readByte();
 		slot = is.readShort();
 		item = is.readSlotData(PacketFactory.getProtocolFor(reg));

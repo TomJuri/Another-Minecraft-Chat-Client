@@ -68,12 +68,12 @@ public class ChatColor {
 	 * @param code color code
 	 * @return RGB color
 	 */
-	public static Color translateColorCode(String code) {
+	public static Color translateColorCode(final String code) {
 		if (colors.containsKey(code)) {
-			String[] rgb = colors.get(code).split(":");
-			int r = Integer.parseInt(rgb[0]);
-			int g = Integer.parseInt(rgb[1]);
-			int b = Integer.parseInt(rgb[2]);
+			final String[] rgb = colors.get(code).split(":");
+			final int r = Integer.parseInt(rgb[0]);
+			final int g = Integer.parseInt(rgb[1]);
+			final int b = Integer.parseInt(rgb[2]);
 			return new Color(r, g, b);
 		} else
 			return Color.white;

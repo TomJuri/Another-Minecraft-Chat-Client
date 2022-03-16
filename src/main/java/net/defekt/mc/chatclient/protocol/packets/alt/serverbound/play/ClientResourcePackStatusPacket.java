@@ -20,7 +20,7 @@ public class ClientResourcePackStatusPacket extends Packet {
 	 * @param hash   resource pack's hash
 	 * @param status resource pack's hash
 	 */
-	public ClientResourcePackStatusPacket(PacketRegistry reg, String hash, Status status) {
+	public ClientResourcePackStatusPacket(final PacketRegistry reg, final String hash, final Status status) {
 		super(reg);
 		putString(hash);
 		putVarInt(status.num);

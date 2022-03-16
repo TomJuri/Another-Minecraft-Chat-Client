@@ -23,7 +23,7 @@ public class ServerDisconnectPacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerDisconnectPacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerDisconnectPacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
 		reason = getInputStream().readString();
 	}

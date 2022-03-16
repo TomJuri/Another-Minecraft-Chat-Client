@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Random;
@@ -39,8 +41,8 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
 	 * @param popupMenu if pop-up menu with options should be accessible for this
 	 *                  list
 	 */
-	public JMinecraftServerList(final Main main, boolean popupMenu) {
-		Random rand = new Random();
+	public JMinecraftServerList(final Main main, final boolean popupMenu) {
+		final Random rand = new Random();
 		for (int x = 0; x < bytemap.length; x++) {
 			for (int y = 0; y < bytemap[x].length; y++) {
 				bytemap[x][y] = (byte) rand.nextInt(3);
@@ -52,40 +54,46 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
 		setCellRenderer(new MinecraftServerListRenderer());
 		getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		if (popupMenu)
+		if (popupMenu) {
 			addMouseListener(new MouseAdapter() {
-				@SuppressWarnings("serial")
+
 				@Override
-				public void mouseClicked(MouseEvent e) {
+				public void mouseClicked(final MouseEvent e) {
 					if (e.getButton() == MouseEvent.BUTTON3) {
 						setSelectedIndex(locationToIndex(e.getPoint()));
-						ServerEntry et = getSelectedValue();
+						final ServerEntry et = getSelectedValue();
 						final int selIndex = getSelectedIndex();
 
 						if (et != null) {
-							JPopupMenu pm = new JPopupMenu();
+							final JPopupMenu pm = new JPopupMenu();
 
-							JMenuItem conItem = new JMenuItem(Messages.getString("Main.connectServerOption")) {
+							final JMenuItem conItem = new JMenuItem(Messages.getString("Main.connectServerOption")) {
 								{
 									addActionListener(main.getConnectionACL());
 									setFont(getFont().deriveFont(Font.BOLD));
 								}
 							};
 
-							JMenuItem mupItem = new JMenuItem(
+							final JMenuItem mupItem = new JMenuItem(
 									Messages.getString("JMinecraftServerList.serverUpLabel")) {
 								{
-									addActionListener(e -> {
-										main.moveServer(selIndex, 0);
+									addActionListener(new ActionListener() {
+										@Override
+										public void actionPerformed(ActionEvent e) {
+											main.moveServer(selIndex, 0);
+										}
 									});
 								}
 							};
 
-							JMenuItem mdownItem = new JMenuItem(
+							final JMenuItem mdownItem = new JMenuItem(
 									Messages.getString("JMinecraftServerList.serverDownLabel")) {
 								{
-									addActionListener(e -> {
-										main.moveServer(selIndex, 1);
+									addActionListener(new ActionListener() {
+										@Override
+										public void actionPerformed(ActionEvent e) {
+											main.moveServer(selIndex, 1);
+										}
 									});
 								}
 							};
@@ -101,6 +109,7 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
 					}
 				}
 			});
+		}
 	}
 
 	private static final Dimension sSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -108,15 +117,15 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
 	private final byte[][] bytemap = new byte[(int) (sSize.getWidth() / 16)][(int) (sSize.getHeight() / 16)];
 
 	@Override
-	public void paintComponent(Graphics g) {
+	public void paintComponent(final Graphics g) {
 //		for (int x = 0; x <= getWidth() / 64; x++)
 //			for (int y = 0; y <= getHeight() / 64; y++)
 //				g.drawImage(Main.bgImage, x * 64, y * 64, 64, 64, null);
 		g.setColor(new Color(60, 47, 74));
 		g.fillRect(0, 0, getWidth(), getHeight());
-		for (int x = 0; x < getWidth()/16; x++) {
-			for (int y = 0; y < getHeight()/16; y++) {
-				int mod = bytemap[x % bytemap.length][y % bytemap[x].length] * 10;
+		for (int x = 0; x < getWidth() / 16; x++) {
+			for (int y = 0; y < getHeight() / 16; y++) {
+				final int mod = bytemap[x % bytemap.length][y % bytemap[x].length] * 10;
 				g.setColor(new Color(60 - mod, 47 - mod, 74 - mod));
 				g.fillRect(x * 16, y * 16, 16, 16);
 			}

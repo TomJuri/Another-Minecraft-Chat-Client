@@ -38,7 +38,7 @@ public class PlayerSkinCache {
 			try {
 				setDefaultValue(new PlayerSkinInfo(
 						ImageIO.read(PlayerSkinCache.class.getResourceAsStream("/resources/steve.png")), ""));
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -62,23 +62,24 @@ public class PlayerSkinCache {
 				public void run() {
 					try {
 						String textures = texturesO;
-						SkinRule sr = Main.up.getSkinFetchRule();
+						final SkinRule sr = Main.up.getSkinFetchRule();
 						if (sr == SkinRule.MOJANG_API) {
 
 							textures = MojangAPI.getSkin(MojangAPI.getUUID(username));
 							if (textures == null)
 								return;
-						} else if (sr == SkinRule.NONE)
+						} else if (sr == SkinRule.NONE) {
 							textures = "default";
+						}
 
 						if (textures.equals("default"))
 							return;
-						String skData = new String(Base64.getDecoder().decode(textures.getBytes()));
-						String skUrl = new JsonParser().parse(skData).getAsJsonObject().get("textures")
+						final String skData = new String(Base64.getDecoder().decode(textures.getBytes()));
+						final String skUrl = new JsonParser().parse(skData).getAsJsonObject().get("textures")
 								.getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString();
-						BufferedImage skin = ImageIO.read(new URL(skUrl));
+						final BufferedImage skin = ImageIO.read(new URL(skUrl));
 						skinCache.put(uid, new PlayerSkinInfo(skin, skUrl));
-					} catch (Exception e) {
+					} catch (final Exception e) {
 //						e.printStackTrace();
 					} finally {
 						pending.remove(uid);
@@ -94,7 +95,7 @@ public class PlayerSkinCache {
 	 * @param id player's UUID
 	 * @return image of player's head
 	 */
-	public static BufferedImage getHead(UUID id) {
+	public static BufferedImage getHead(final UUID id) {
 		return IOUtils.trimSkinHead(skinCache.get(id).getImg(), true);
 	}
 

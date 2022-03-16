@@ -23,7 +23,8 @@ public class HandshakePacket extends Packet {
 	 *                 1 - status<br>
 	 *                 2 - login
 	 */
-	public HandshakePacket(PacketRegistry reg, int protocol, String host, int port, int state) {
+	public HandshakePacket(final PacketRegistry reg, final int protocol, final String host, final int port,
+			final int state) {
 		super(reg);
 		this.id = 0x00;
 		putVarInt(protocol);

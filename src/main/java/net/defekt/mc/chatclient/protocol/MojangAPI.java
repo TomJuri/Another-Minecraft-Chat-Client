@@ -23,8 +23,8 @@ public class MojangAPI {
 	 * @return UUID of player
 	 * @throws IOException thrown whene there was error communicating with API
 	 */
-	public static String getUUID(String username) throws IOException {
-		String js = new String(
+	public static String getUUID(final String username) throws IOException {
+		final String js = new String(
 				IOUtils.readFully(new URL("https://api.mojang.com/users/profiles/minecraft/" + username).openStream()));
 		if (js.isEmpty())
 			return null;
@@ -39,16 +39,16 @@ public class MojangAPI {
 	 * @return player's skin URL
 	 * @throws IOException thrown when there was error communicating with API
 	 */
-	public static String getSkin(String uuid) throws IOException {
-		JsonObject el = new JsonParser()
+	public static String getSkin(final String uuid) throws IOException {
+		final JsonObject el = new JsonParser()
 				.parse(new String(IOUtils.readFully(
 						new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid).openStream())))
 				.getAsJsonObject();
 		if (el.has("error"))
 			return null;
 
-		for (JsonElement rel : el.get("properties").getAsJsonArray()) {
-			JsonObject obj = rel.getAsJsonObject();
+		for (final JsonElement rel : el.get("properties").getAsJsonArray()) {
+			final JsonObject obj = rel.getAsJsonObject();
 			if (obj.get("name").getAsString().equals("textures"))
 				return obj.get("value").getAsString();
 		}

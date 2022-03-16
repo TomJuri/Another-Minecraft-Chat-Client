@@ -22,8 +22,8 @@ public class ClientPlayerPositionAndLookPacket extends Packet {
 	 * @param pitch    new pitch
 	 * @param onGround if player is on ground
 	 */
-	public ClientPlayerPositionAndLookPacket(PacketRegistry reg, Double x, Double y, Double z, Float yaw, Float pitch,
-			Boolean onGround) {
+	public ClientPlayerPositionAndLookPacket(final PacketRegistry reg, final Double x, final Double y, final Double z,
+			final Float yaw, final Float pitch, final Boolean onGround) {
 		super(reg);
 		putDouble(x);
 		putDouble(y);

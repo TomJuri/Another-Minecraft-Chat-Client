@@ -25,9 +25,9 @@ public class ServerConfirmTransactionPacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerConfirmTransactionPacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerConfirmTransactionPacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
-		VarInputStream is = getInputStream();
+		final VarInputStream is = getInputStream();
 		windowID = is.readByte();
 		actionID = is.readShort();
 		accepted = is.readBoolean();

@@ -44,7 +44,7 @@ public class ClientEntityActionPacket extends Packet {
 		 */
 		protected final int id;
 
-		private EntityAction(int id) {
+		private EntityAction(final int id) {
 			this.id = id;
 		}
 	}
@@ -56,7 +56,7 @@ public class ClientEntityActionPacket extends Packet {
 	 * @param entityID client's entity Id
 	 * @param action   action to perform
 	 */
-	public ClientEntityActionPacket(PacketRegistry reg, Integer entityID, EntityAction action) {
+	public ClientEntityActionPacket(final PacketRegistry reg, final Integer entityID, final EntityAction action) {
 		super(reg);
 		putVarInt(entityID);
 		putVarInt(action.id);

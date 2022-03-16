@@ -25,9 +25,9 @@ public class ServerUpdateHealthPacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerUpdateHealthPacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerUpdateHealthPacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
-		VarInputStream is = getInputStream();
+		final VarInputStream is = getInputStream();
 		health = is.readFloat();
 		food = is.readVarInt();
 		saturation = is.readFloat();

@@ -23,7 +23,7 @@ public class ItemStack {
 	 * @param damage item damage
 	 * @param nbt    item's NBT data
 	 */
-	public ItemStack(int id, int count, short damage, Tag<?> nbt) {
+	public ItemStack(final int id, final int count, final short damage, final Tag<?> nbt) {
 		this.id = id;
 		this.count = count;
 		this.damage = damage;

@@ -21,8 +21,8 @@ public class StatusInfo implements Serializable {
 	private final String versionName;
 	private final String description;
 	private String icon;
-	private String modType;
-	private List<ModInfo> modList;
+	private final String modType;
+	private final List<ModInfo> modList;
 
 	/**
 	 * Constructs status info object
@@ -38,8 +38,8 @@ public class StatusInfo implements Serializable {
 	 * @param modList     server's mods list if present, else it should be null, or
 	 *                    empty.
 	 */
-	public StatusInfo(String description, int online, int max, String version, int protocol, String icon,
-			String modType, List<ModInfo> modList) {
+	public StatusInfo(final String description, final int online, final int max, final String version,
+			final int protocol, final String icon, final String modType, final List<ModInfo> modList) {
 		this.description = description;
 		this.onlinePlayers = online;
 		this.maxPlayers = max;
@@ -111,7 +111,7 @@ public class StatusInfo implements Serializable {
 	 * 
 	 * @param icon server icon encoded as Base64 string
 	 */
-	public void setIcon(String icon) {
+	public void setIcon(final String icon) {
 		this.icon = icon;
 	}
 

@@ -21,7 +21,8 @@ public class ClientPluginMessagePacket extends Packet {
 	 * @param data    plugin message data
 	 * @throws IOException never thrown
 	 */
-	public ClientPluginMessagePacket(PacketRegistry reg, String channel, byte[] data) throws IOException {
+	public ClientPluginMessagePacket(final PacketRegistry reg, final String channel, final byte[] data)
+			throws IOException {
 		super(reg);
 		putString(channel);
 		putBytes(data);

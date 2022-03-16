@@ -34,7 +34,7 @@ public class Packet {
 	 * 
 	 * @param reg packet registry used to determine this packet's id
 	 */
-	protected Packet(PacketRegistry reg) {
+	protected Packet(final PacketRegistry reg) {
 		id = reg.getPacketID(this.getClass());
 		this.reg = reg;
 	}
@@ -47,7 +47,7 @@ public class Packet {
 	 * @param data data contained in this packet
 	 * @throws IOException never thrown
 	 */
-	protected Packet(PacketRegistry reg, byte[] data) throws IOException {
+	protected Packet(final PacketRegistry reg, final byte[] data) throws IOException {
 		id = reg.getPacketID(this.getClass());
 		varBuffer.write(data);
 		this.reg = reg;
@@ -77,7 +77,7 @@ public class Packet {
 	 * @param name string to compare
 	 * @return true if this packet's name is the same as provided String
 	 */
-	protected boolean equalsName(String name) {
+	protected boolean equalsName(final String name) {
 		return this.getClass().getSimpleName().equals(name);
 	}
 
@@ -86,10 +86,10 @@ public class Packet {
 	 * 
 	 * @param v VarInt value
 	 */
-	protected void putVarInt(int v) {
+	protected void putVarInt(final int v) {
 		try {
 			varBuffer.writeVarInt(v);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -99,10 +99,10 @@ public class Packet {
 	 * 
 	 * @param v Integer value
 	 */
-	protected void putInt(int v) {
+	protected void putInt(final int v) {
 		try {
 			varBuffer.writeInt(v);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -112,10 +112,10 @@ public class Packet {
 	 * 
 	 * @param v VarInt value
 	 */
-	protected void putSlotData(ItemStack v) {
+	protected void putSlotData(final ItemStack v) {
 		try {
 			varBuffer.writeSlotData(v, PacketFactory.getProtocolFor(reg));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -125,10 +125,10 @@ public class Packet {
 	 * 
 	 * @param v VarInt value
 	 */
-	protected void putByte(int v) {
+	protected void putByte(final int v) {
 		try {
 			varBuffer.writeByte(v);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -138,10 +138,10 @@ public class Packet {
 	 * 
 	 * @param v value
 	 */
-	protected void putLong(long v) {
+	protected void putLong(final long v) {
 		try {
 			varBuffer.writeLong(v);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -151,10 +151,10 @@ public class Packet {
 	 * 
 	 * @param v value
 	 */
-	protected void putFloat(float v) {
+	protected void putFloat(final float v) {
 		try {
 			varBuffer.writeFloat(v);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -164,10 +164,10 @@ public class Packet {
 	 * 
 	 * @param v value
 	 */
-	protected void putBoolean(boolean v) {
+	protected void putBoolean(final boolean v) {
 		try {
 			varBuffer.writeBoolean(v);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -177,10 +177,10 @@ public class Packet {
 	 * 
 	 * @param v value
 	 */
-	protected void putDouble(double v) {
+	protected void putDouble(final double v) {
 		try {
 			varBuffer.writeDouble(v);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -190,10 +190,10 @@ public class Packet {
 	 * 
 	 * @param v byte array
 	 */
-	protected void putBytes(byte[] v) {
+	protected void putBytes(final byte[] v) {
 		try {
 			varBuffer.write(v);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -203,10 +203,10 @@ public class Packet {
 	 * 
 	 * @param v value
 	 */
-	protected void putShort(int v) {
+	protected void putShort(final int v) {
 		try {
 			varBuffer.writeShort(v);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -216,10 +216,10 @@ public class Packet {
 	 * 
 	 * @param v value
 	 */
-	protected void putString(String v) {
+	protected void putString(final String v) {
 		try {
 			varBuffer.writeString(v);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -230,22 +230,23 @@ public class Packet {
 	 * @param compression whether to use post-compression format
 	 * @return byte array with packet's data
 	 */
-	public byte[] getData(boolean compression) {
+	public byte[] getData(final boolean compression) {
 		try {
-			byte[] data = rawBuffer.toByteArray();
-			int tlong = compression ? 2 : 1;
+			final byte[] data = rawBuffer.toByteArray();
+			final int tlong = compression ? 2 : 1;
 
-			ByteArrayOutputStream tmpBuf = new ByteArrayOutputStream();
-			VarOutputStream varBuf = new VarOutputStream(tmpBuf);
+			final ByteArrayOutputStream tmpBuf = new ByteArrayOutputStream();
+			final VarOutputStream varBuf = new VarOutputStream(tmpBuf);
 			varBuf.writeVarInt(data.length + tlong);
-			if (compression)
+			if (compression) {
 				varBuf.writeByte(0);
+			}
 			varBuf.writeVarInt(id);
 			varBuf.write(data);
 
 			return tmpBuf.toByteArray();
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
@@ -256,8 +257,8 @@ public class Packet {
 	 * @param name method name
 	 * @return method's return value
 	 */
-	public Object accessPacketMethod(String name) {
-		Class<? extends Packet> cl = getClass();
+	public Object accessPacketMethod(final String name) {
+		final Class<? extends Packet> cl = getClass();
 		try {
 			return cl.getDeclaredMethod(name).invoke(this);
 		} catch (SecurityException | IllegalArgumentException | NoSuchMethodException | IllegalAccessException

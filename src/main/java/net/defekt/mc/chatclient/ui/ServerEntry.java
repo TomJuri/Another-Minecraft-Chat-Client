@@ -17,7 +17,7 @@ public class ServerEntry implements Serializable {
 
 	private final String host;
 	private final int port;
-	private String name;
+	private final String name;
 
 	private String version = "Auto";
 
@@ -49,7 +49,7 @@ public class ServerEntry implements Serializable {
 	 * @param name    server name
 	 * @param version human-readable server version
 	 */
-	protected ServerEntry(String host, int port, String name, String version) {
+	protected ServerEntry(final String host, final int port, final String name, final String version) {
 		this.host = host;
 		this.port = port;
 		this.name = name;
@@ -67,7 +67,7 @@ public class ServerEntry implements Serializable {
 	 * Performs server list ping on this server and updates it on server list
 	 */
 	protected void ping() {
-		if (!refreshing)
+		if (!refreshing) {
 			new Thread(new Runnable() {
 
 				@Override
@@ -76,25 +76,35 @@ public class ServerEntry implements Serializable {
 					error = false;
 					info = null;
 					try {
-						info = MinecraftStat.serverListPing(host, port);
-					} catch (UnknownHostException e) {
+						if (Main.up.isForceLegacySLP()) {
+							info = MinecraftStat.legacyServerListPing(host, port);
+						} else {
+							try {
+								info = MinecraftStat.serverListPing(host, port);
+							} catch (final Exception e) {
+								info = MinecraftStat.legacyServerListPing(host, port);
+							}
+						}
+					} catch (final UnknownHostException e) {
 						info = new StatusInfo("\u00a74" + Messages.getString("ServerEntry.serverEntryUnknownHost"), -1,
 								-1, "", -1, null, null, null);
 						error = true;
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						info = new StatusInfo("\u00a74" + Messages.getString("ServerEntry.serverEntryCantConnect"), -1,
 								-1, "", -1,
 
 								null, null, null);
 						error = true;
 					}
-					if (info != null && info.getProtocol() != -1)
+					if (info != null && info.getProtocol() != -1) {
 						icon = info.getIcon();
+					}
 
 					refreshing = false;
 
 				}
 			}).start();
+		}
 	}
 
 	/**
@@ -157,10 +167,10 @@ public class ServerEntry implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object et) {
+	public boolean equals(final Object et) {
 		if (!(et instanceof ServerEntry))
 			return false;
-		ServerEntry ent = (ServerEntry) et;
+		final ServerEntry ent = (ServerEntry) et;
 		return (ent.getHost().equals(host) && ent.getPort() == port && ent.getName().equals(name));
 	}
 }

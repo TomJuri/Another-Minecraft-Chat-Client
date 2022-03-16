@@ -29,9 +29,9 @@ public class ServerResourcePackSendPacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerResourcePackSendPacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerResourcePackSendPacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
-		VarInputStream is = getInputStream();
+		final VarInputStream is = getInputStream();
 		url = is.readString();
 		hash = is.readString();
 		forced = is.readBoolean();

@@ -22,7 +22,7 @@ public class ServerJoinGamePacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerJoinGamePacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerJoinGamePacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
 		this.entityID = getInputStream().readInt();
 	}

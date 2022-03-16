@@ -21,18 +21,18 @@ import net.defekt.mc.chatclient.ui.Messages;
  * @author Defective4
  *
  */
-@SuppressWarnings("serial")
+
 public class JColorChooserButton extends JButton {
 
 	private Color currentColor = Color.black;
-	private List<ColorChangeListener> colorChangeListeners = new ArrayList<JColorChooserButton.ColorChangeListener>();
+	private final List<ColorChangeListener> colorChangeListeners = new ArrayList<JColorChooserButton.ColorChangeListener>();
 
 	/**
 	 * Adds a color change listener, fired when user is done choosing a color.
 	 * 
 	 * @param listener color change listener
 	 */
-	public void addColorChangeListener(ColorChangeListener listener) {
+	public void addColorChangeListener(final ColorChangeListener listener) {
 		colorChangeListeners.add(listener);
 	}
 
@@ -41,7 +41,7 @@ public class JColorChooserButton extends JButton {
 	 * 
 	 * @param listener color change listener
 	 */
-	public void removeColorChangeListener(ColorChangeListener listener) {
+	public void removeColorChangeListener(final ColorChangeListener listener) {
 		colorChangeListeners.remove(listener);
 	}
 
@@ -57,7 +57,7 @@ public class JColorChooserButton extends JButton {
 	 * 
 	 * @param parent dialog opened with this button will belong to this parent.
 	 */
-	public JColorChooserButton(Window parent) {
+	public JColorChooserButton(final Window parent) {
 		this(Color.black, parent);
 	}
 
@@ -66,7 +66,7 @@ public class JColorChooserButton extends JButton {
 	 * 
 	 * @param initialColor initial color
 	 */
-	public JColorChooserButton(Color initialColor) {
+	public JColorChooserButton(final Color initialColor) {
 		this(initialColor, null);
 	}
 
@@ -75,7 +75,7 @@ public class JColorChooserButton extends JButton {
 	 * 
 	 * @param initialColor initial color as HEX.
 	 */
-	public JColorChooserButton(String initialColor) {
+	public JColorChooserButton(final String initialColor) {
 		this(new Color(Integer.parseInt(initialColor, 16)), null);
 	}
 
@@ -86,7 +86,7 @@ public class JColorChooserButton extends JButton {
 	 * @param parent       dialog opened with this button will belong to this
 	 *                     parent.
 	 */
-	public JColorChooserButton(String initialColor, Window parent) {
+	public JColorChooserButton(final String initialColor, final Window parent) {
 		this(new Color(Integer.parseInt(initialColor, 16)), parent);
 	}
 
@@ -97,22 +97,23 @@ public class JColorChooserButton extends JButton {
 	 * @param parent       dialog opened with this button will belong to this
 	 *                     parent.
 	 */
-	public JColorChooserButton(Color initialColor, Window parent) {
+	public JColorChooserButton(final Color initialColor, final Window parent) {
 		setText(" ");
 		currentColor = initialColor;
 		addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				{
-					Color tc = JColorChooser.showDialog(parent,
+					final Color tc = JColorChooser.showDialog(parent,
 							Messages.getString("JColorChooserButton.colorChooserDialogTitle"),
 							JColorChooserButton.this.currentColor);
 					if (tc == null)
 						return;
 					currentColor = tc;
-					for (ColorChangeListener ccl : colorChangeListeners)
+					for (final ColorChangeListener ccl : colorChangeListeners) {
 						ccl.colorChanged(currentColor);
+					}
 				}
 			}
 		});
@@ -132,17 +133,17 @@ public class JColorChooserButton extends JButton {
 	 * 
 	 * @param c color
 	 */
-	public void setColor(Color c) {
+	public void setColor(final Color c) {
 		currentColor = c;
 		repaint();
 	}
 
 	@Override
-	public void paintComponent(Graphics g) {
+	public void paintComponent(final Graphics g) {
 		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D) g;
-		int w = getWidth() - 10;
-		int h = getHeight() - 10;
+		final Graphics2D g2 = (Graphics2D) g;
+		final int w = getWidth() - 10;
+		final int h = getHeight() - 10;
 		g2.setColor(currentColor);
 		g2.fillRect(5, 5, w, h);
 	}

@@ -28,13 +28,13 @@ public class MinecraftToolTip {
 	 * 
 	 * @param text tool tip colored text
 	 */
-	public MinecraftToolTip(String text) {
-		@SuppressWarnings("serial")
-		JTextPane jtp = new JTextPane() {
+	public MinecraftToolTip(final String text) {
+
+		final JTextPane jtp = new JTextPane() {
 			@Override
-			public void paintComponent(Graphics g) {
+			public void paintComponent(final Graphics g) {
 				super.paintComponent(g);
-				Graphics2D g2 = (Graphics2D) g;
+				final Graphics2D g2 = (Graphics2D) g;
 				g2.setColor(new Color(100, 0, 100));
 				g2.fillRect(0, 0, getWidth(), 2);
 				g2.fillRect(getWidth() - 2, 0, 2, getHeight());
@@ -48,7 +48,7 @@ public class MinecraftToolTip {
 		win.setContentPane(jtp);
 		win.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mousePressed(MouseEvent e) {
+			public void mousePressed(final MouseEvent e) {
 				hide();
 			}
 		});
@@ -60,12 +60,12 @@ public class MinecraftToolTip {
 	 * @param x X position
 	 * @param y Y position
 	 */
-	public void show(int x, int y) {
+	public void show(final int x, final int y) {
 		win.pack();
 		win.setAlwaysOnTop(true);
 		win.setLocation(x, y);
 		win.setVisible(true);
-		Timer timer = new Timer("tooltipHideDaemon", true);
+		final Timer timer = new Timer("tooltipHideDaemon", true);
 		timer.schedule(new TimerTask() {
 
 			@Override

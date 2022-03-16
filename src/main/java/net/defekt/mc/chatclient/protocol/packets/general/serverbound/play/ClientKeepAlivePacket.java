@@ -18,7 +18,7 @@ public class ClientKeepAlivePacket extends Packet {
 	 * @param reg packet registry used to construct this packet
 	 * @param id  keep-alive ID
 	 */
-	public ClientKeepAlivePacket(PacketRegistry reg, Long id) {
+	public ClientKeepAlivePacket(final PacketRegistry reg, final Long id) {
 		super(reg);
 		putLong(id);
 	}

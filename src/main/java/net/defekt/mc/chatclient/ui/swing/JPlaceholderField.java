@@ -22,13 +22,13 @@ public class JPlaceholderField extends JTextField {
 	 * 
 	 * @param placeholder placeholder text
 	 */
-	public JPlaceholderField(String placeholder) {
+	public JPlaceholderField(final String placeholder) {
 		this.placeholder = placeholder;
 
 		addFocusListener(new FocusListener() {
 
 			@Override
-			public void focusLost(FocusEvent e) {
+			public void focusLost(final FocusEvent e) {
 				if (getText().isEmpty()) {
 					JPlaceholderField.super.setForeground(Color.gray);
 					JPlaceholderField.super.setText(JPlaceholderField.this.placeholder);
@@ -36,7 +36,7 @@ public class JPlaceholderField extends JTextField {
 			}
 
 			@Override
-			public void focusGained(FocusEvent e) {
+			public void focusGained(final FocusEvent e) {
 				if (getForeground().equals(Color.gray)) {
 					JPlaceholderField.super.setForeground(fg);
 					JPlaceholderField.super.setText("");
@@ -44,8 +44,9 @@ public class JPlaceholderField extends JTextField {
 			}
 		});
 
-		for (FocusListener listener : getFocusListeners())
+		for (final FocusListener listener : getFocusListeners()) {
 			listener.focusLost(new FocusEvent(this, 1));
+		}
 	}
 
 	@Override
@@ -56,23 +57,25 @@ public class JPlaceholderField extends JTextField {
 	private Color fg = getForeground();
 
 	@Override
-	public void setForeground(Color color) {
+	public void setForeground(final Color color) {
 		super.setForeground(color);
 		this.fg = color;
 	}
 
 	@Override
-	public void setText(String text) {
+	public void setText(final String text) {
 		super.setText(text);
 		super.setForeground(fg);
-		for (FocusListener listener : getFocusListeners())
+		for (final FocusListener listener : getFocusListeners()) {
 			listener.focusLost(new FocusEvent(this, 1));
+		}
 	}
 
 	@Override
-	public void setEnabled(boolean enabled) {
-		if (enabled)
+	public void setEnabled(final boolean enabled) {
+		if (enabled) {
 			setText("");
+		}
 		super.setEnabled(enabled);
 	}
 
@@ -90,7 +93,7 @@ public class JPlaceholderField extends JTextField {
 	 * 
 	 * @param placeholder placeholder text
 	 */
-	public void setPlaceholder(String placeholder) {
+	public void setPlaceholder(final String placeholder) {
 		this.placeholder = placeholder;
 	}
 }

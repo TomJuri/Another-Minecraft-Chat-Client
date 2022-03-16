@@ -20,7 +20,7 @@ public class FallbackHashMap<K, V> extends HashMap<K, V> {
 	 * Returns the value to which the specified key is mapped, or preset default
 	 * value if this map contains no mapping for the key.
 	 */
-	public V get(Object key) {
+	public V get(final Object key) {
 		return containsKey(key) ? super.get(key) : defaultValue;
 	}
 
@@ -38,7 +38,7 @@ public class FallbackHashMap<K, V> extends HashMap<K, V> {
 	 * 
 	 * @param defaultValue default value
 	 */
-	public void setDefaultValue(V defaultValue) {
+	public void setDefaultValue(final V defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 }

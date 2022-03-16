@@ -124,7 +124,7 @@ import net.defekt.mc.chatclient.ui.swing.JStringMemList;
 import net.defekt.mc.chatclient.ui.swing.JVBoxPanel;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
 
-@SuppressWarnings({ "serial", "javadoc" })
+@SuppressWarnings({ "javadoc" })
 public class Main {
 
 	private Main() {
@@ -132,43 +132,47 @@ public class Main {
 
 	private static BufferedImage logoImage = null;
 
-	public static final String version = "1.5.4";
+	public static final String version = "1.5.5";
 	private static final String changelogURL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
 
 	public static Font mcFont = Font.decode(null);
 
 	private static void checkForUpdates() {
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(new URL(changelogURL).openStream()))) {
-			List<String> cgLines = new ArrayList<String>();
+			final List<String> cgLines = new ArrayList<String>();
 			String line;
-			while ((line = br.readLine()) != null)
+			while ((line = br.readLine()) != null) {
 				cgLines.add(line);
+			}
 
 			if (cgLines.size() > 1 && cgLines.get(0).equals("AMCC Change Log")) {
-				String newVersionString = IOUtils.padString(cgLines.get(1).substring(1).replace(".", ""), 3, "0", 0);
-				String thisVersionString = IOUtils.padString(version.replace(".", ""), 3, "0", 0);
+				final String newVersionString = IOUtils.padString(cgLines.get(1).substring(1).replace(".", ""), 3, "0",
+						0);
+				final String thisVersionString = IOUtils.padString(version.replace(".", ""), 3, "0", 0);
 
-				int newVersion = Integer.parseInt(newVersionString);
-				int thisVersion = Integer.parseInt(thisVersionString);
+				final int newVersion = Integer.parseInt(newVersionString);
+				final int thisVersion = Integer.parseInt(thisVersionString);
 
 				if (newVersion > thisVersion) {
 					String newVersionSm = cgLines.get(1).substring(1);
 					String oldVersionSm = version;
 
-					if (newVersionSm.length() - newVersionSm.replace(".", "").length() < 2)
+					if (newVersionSm.length() - newVersionSm.replace(".", "").length() < 2) {
 						newVersionSm += ".0";
-					if (oldVersionSm.length() - oldVersionSm.replace(".", "").length() < 2)
+					}
+					if (oldVersionSm.length() - oldVersionSm.replace(".", "").length() < 2) {
 						oldVersionSm += ".0";
+					}
 
-					int nMajor = Integer.parseInt(newVersionSm.substring(0, newVersionSm.indexOf(".")));
-					int nMinor = Integer.parseInt(
+					final int nMajor = Integer.parseInt(newVersionSm.substring(0, newVersionSm.indexOf(".")));
+					final int nMinor = Integer.parseInt(
 							newVersionSm.substring(newVersionSm.indexOf(".") + 1, newVersionSm.lastIndexOf(".")));
-					int nFix = Integer.parseInt(newVersionSm.substring(newVersionSm.lastIndexOf(".") + 1));
+					final int nFix = Integer.parseInt(newVersionSm.substring(newVersionSm.lastIndexOf(".") + 1));
 
-					int oMajor = Integer.parseInt(oldVersionSm.substring(0, oldVersionSm.indexOf(".")));
-					int oMinor = Integer.parseInt(
+					final int oMajor = Integer.parseInt(oldVersionSm.substring(0, oldVersionSm.indexOf(".")));
+					final int oMinor = Integer.parseInt(
 							oldVersionSm.substring(oldVersionSm.indexOf(".") + 1, oldVersionSm.lastIndexOf(".")));
-					int oFix = Integer.parseInt(oldVersionSm.substring(oldVersionSm.lastIndexOf(".") + 1));
+					final int oFix = Integer.parseInt(oldVersionSm.substring(oldVersionSm.lastIndexOf(".") + 1));
 
 					int diff = 0;
 					String vtype = "";
@@ -193,34 +197,34 @@ public class Main {
 				}
 			}
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main() {
 		SwingUtils.setNativeLook();
 
 		if (!up.isWasLangSet()) {
 
-			JComboBox<Language> languages = new JComboBox<>(Language.values());
+			final JComboBox<Language> languages = new JComboBox<>(Language.values());
 			languages.setSelectedItem(up.getAppLanguage() == null ? Language.English : up.getAppLanguage());
 
 			final JFrame win = new JFrame("Choose your language");
 			win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-			JButton ct = new JButton("Ok");
+			final JButton ct = new JButton("Ok");
 			ct.addActionListener(new ActionListener() {
 
 				@Override
-				public void actionPerformed(ActionEvent e) {
+				public void actionPerformed(final ActionEvent e) {
 					synchronized (win) {
 						win.notify();
 					}
 				}
 			});
 
-			JOptionPane cp = new JOptionPane(new Object[] { "Choose your language", languages },
+			final JOptionPane cp = new JOptionPane(new Object[] { "Choose your language", languages },
 					JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_OPTION, null, new Object[] { ct });
 
 			win.setContentPane(cp);
@@ -232,7 +236,7 @@ public class Main {
 			synchronized (win) {
 				try {
 					win.wait();
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
@@ -244,21 +248,23 @@ public class Main {
 		checkForUpdates();
 		try {
 			if (!up.getUnicodeCharactersMode()
-					.equalsIgnoreCase(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE))
+					.equalsIgnoreCase(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE)) {
 				mcFont = Font.createFont(Font.TRUETYPE_FONT,
 						Main.class.getResourceAsStream("/resources/Minecraftia-Regular.ttf"));
+			}
 			mcFont = mcFont.deriveFont((float) 14);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
 		try {
 			logoImage = ImageIO.read(Main.class.getResourceAsStream("/resources/logo.png"));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-		if (up.isEnableInventoryHandling() && up.isLoadInventoryTextures())
+		if (up.isEnableInventoryHandling() && up.isLoadInventoryTextures()) {
 			ItemsWindow.initTextures(new Main(), true);
+		}
 		new Main().init();
 	}
 
@@ -279,38 +285,42 @@ public class Main {
 
 	private ActionListener alis;
 
-	public void moveServer(int index, int direction) {
+	public void moveServer(final int index, final int direction) {
 		int targetIndex = -1;
-		if (index > 0 && direction == 0)
+		if (index > 0 && direction == 0) {
 			targetIndex = index - 1;
-		else if (index < servers.size() - 1 && direction == 1)
+		} else if (index < servers.size() - 1 && direction == 1) {
 			targetIndex = index + 1;
+		}
 
 		if (targetIndex == -1)
 			return;
 
-		ServerEntry s1 = servers.get(index);
-		ServerEntry s2 = servers.get(targetIndex);
+		final ServerEntry s1 = servers.get(index);
+		final ServerEntry s2 = servers.get(targetIndex);
 
 		synchronized (servers) {
 			servers.set(targetIndex, s1);
 			servers.set(index, s2);
 		}
 
-		ServerEntry[] entries = (ServerEntry[]) servers.toArray(new ServerEntry[servers.size()]);
+		final ServerEntry[] entries = servers.toArray(new ServerEntry[servers.size()]);
 
 		serverListComponent.setListData(entries);
 
 		final int tgIndex = targetIndex;
 
-		SwingUtilities.invokeLater(() -> {
-			serverListComponent.setSelectedIndex(tgIndex);
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				serverListComponent.setSelectedIndex(tgIndex);
+			}
 		});
 	}
 
-	private void addToList(String host, int port, String name, String version) {
-		ServerEntry entry = new ServerEntry(host, port, name, version);
-		for (ServerEntry se : servers)
+	private void addToList(final String host, final int port, final String name, final String version) {
+		final ServerEntry entry = new ServerEntry(host, port, name, version);
+		for (final ServerEntry se : servers)
 			if (se.equals(entry))
 				return;
 		synchronized (servers) {
@@ -318,28 +328,28 @@ public class Main {
 		}
 		entry.ping();
 
-		ServerEntry[] entries = (ServerEntry[]) servers.toArray(new ServerEntry[servers.size()]);
+		final ServerEntry[] entries = servers.toArray(new ServerEntry[servers.size()]);
 
 		serverListComponent.setListData(entries);
 
 	}
 
-	private void removeFromList(ServerEntry entry) {
+	private void removeFromList(final ServerEntry entry) {
 		synchronized (servers) {
 			servers.remove(entry);
 		}
-		ServerEntry[] entries = (ServerEntry[]) servers.toArray(new ServerEntry[servers.size()]);
+		final ServerEntry[] entries = servers.toArray(new ServerEntry[servers.size()]);
 		serverListComponent.setListData(entries);
 	}
 
-	private Runnable upSaveRunnable = new Runnable() {
+	private final Runnable upSaveRunnable = new Runnable() {
 
 		@Override
 		public void run() {
 			try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(serverFile))) {
 				os.writeObject(up);
 				os.close();
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -347,27 +357,28 @@ public class Main {
 
 	private static boolean qmdShowing = false;
 
-	private static void showQuickMessageDialog(MinecraftClient cl) {
+	private static void showQuickMessageDialog(final MinecraftClient cl) {
 		if (qmdShowing)
 			return;
-		JTextField mField = new JPlaceholderField(Messages.getString("Main.quickMessageDialog"));
+		final JTextField mField = new JPlaceholderField(Messages.getString("Main.quickMessageDialog"));
 
-		String label = cl.getHost() + ":" + cl.getPort();
+		final String label = cl.getHost() + ":" + cl.getPort();
 		qmdShowing = true;
-		int resp = JOptionPane.showOptionDialog(null,
+		final int resp = JOptionPane.showOptionDialog(null,
 				new Object[] { Messages.getString("Main.quickMessageRecipient") + label, mField },
 				Messages.getString("Main.quickMesage"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
 				null, new Object[] { Messages.getString("Main.ok"), Messages.getString("Main.cancel") }, 0);
 		qmdShowing = false;
 		if (resp == 0) {
-			String msg = mField.getText();
+			final String msg = mField.getText();
 			if (msg.replace(" ", "").isEmpty())
 				return;
 			try {
 				cl.sendChatMessage(msg);
-			} catch (IOException e) {
-				for (ClientListener ls : cl.getClientListeners())
+			} catch (final IOException e) {
+				for (final ClientListener ls : cl.getClientListeners()) {
 					ls.disconnected(e.toString());
+				}
 			}
 		}
 	}
@@ -375,28 +386,29 @@ public class Main {
 	private void init() {
 
 		synchronized (up.getServers()) {
-			for (ServerEntry ent : up.getServers()) {
+			for (final ServerEntry ent : up.getServers()) {
 				addToList(ent.getHost(), ent.getPort(), ent.getName(), ent.getVersion());
 				ent.ping();
 			}
 		}
 		servers = up.getServers();
-		ServerEntry[] entries = (ServerEntry[]) servers.toArray(new ServerEntry[servers.size()]);
+		final ServerEntry[] entries = servers.toArray(new ServerEntry[servers.size()]);
 
 		MinecraftStat.listenOnLAN(new LANListener() {
 
 			@Override
-			public void serverDiscovered(InetAddress sender, String motd, int port) {
-				ServerEntry[] ets = lanListComponent.getListData() == null ? new ServerEntry[0]
+			public void serverDiscovered(final InetAddress sender, final String motd, final int port) {
+				final ServerEntry[] ets = lanListComponent.getListData() == null ? new ServerEntry[0]
 						: lanListComponent.getListData();
-				ServerEntry ent = new ServerEntry(sender.getHostAddress(), port,
+				final ServerEntry ent = new ServerEntry(sender.getHostAddress(), port,
 						sender.getHostAddress() + ":" + Integer.toString(port), Messages.getString("Main.Auto"));
-				for (ServerEntry et : ets)
+				for (final ServerEntry et : ets)
 					if (et.equals(ent))
 						return;
-				ServerEntry[] ets2 = new ServerEntry[ets.length + 1];
-				for (int x = 0; x < ets.length; x++)
+				final ServerEntry[] ets2 = new ServerEntry[ets.length + 1];
+				for (int x = 0; x < ets.length; x++) {
 					ets2[x] = ets[x];
+				}
 				ets2[ets2.length - 1] = ent;
 				lanListComponent.setListData(ets2);
 
@@ -411,43 +423,51 @@ public class Main {
 
 		win.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing(WindowEvent e) {
+			public void windowClosing(final WindowEvent e) {
 				if (clients.size() > 0) {
-					JDialog diag = new JDialog(win);
+					final JDialog diag = new JDialog(win);
 					diag.setModal(true);
 					diag.setTitle(Messages.getString("Main.exitDialogTitle"));
 
-					JButton ok = new JButton(Messages.getString("Main.ok"));
-					JButton toTray = new JButton(Messages.getString("Main.exitMinimizeOption"));
-					JButton cancel = new JButton(Messages.getString("Main.exitCancelOption"));
+					final JButton ok = new JButton(Messages.getString("Main.ok"));
+					final JButton toTray = new JButton(Messages.getString("Main.exitMinimizeOption"));
+					final JButton cancel = new JButton(Messages.getString("Main.exitCancelOption"));
 					toTray.setEnabled(SystemTray.isSupported());
-					JCheckBox rememberOp = new JCheckBox(Messages.getString("Main.exitRememberChoice"));
+					final JCheckBox rememberOp = new JCheckBox(Messages.getString("Main.exitRememberChoice"));
 
-					ok.addActionListener(ev -> {
-						if (rememberOp.isSelected())
-							up.setCloseMode(Constants.WINDOW_CLOSE_EXIT);
-						System.exit(0);
+					ok.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent ev) {
+							if (rememberOp.isSelected()) {
+								up.setCloseMode(Constants.WINDOW_CLOSE_EXIT);
+							}
+							System.exit(0);
+						}
 					});
 
-					cancel.addActionListener(ev -> {
-						diag.dispose();
+					cancel.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent ev) {
+							diag.dispose();
+						}
 					});
 
 					toTray.addActionListener(new ActionListener() {
 						@Override
-						public void actionPerformed(ActionEvent ev) {
-							if (rememberOp.isSelected())
+						public void actionPerformed(final ActionEvent ev) {
+							if (rememberOp.isSelected()) {
 								up.setCloseMode(Constants.WINDOW_CLOSE_TO_TRAY);
+							}
 							if (trayIcon != null)
 								return;
 							diag.dispose();
-							SystemTray tray = SystemTray.getSystemTray();
+							final SystemTray tray = SystemTray.getSystemTray();
 							trayIcon = new TrayIcon(IOUtils.scaleImage(logoImage, 0.5),
 									"Another Minecraft Chat Client");
 							try {
-								MouseListener ml = new MouseAdapter() {
+								final MouseListener ml = new MouseAdapter() {
 									@Override
-									public void mouseClicked(MouseEvent e) {
+									public void mouseClicked(final MouseEvent e) {
 										if (e.getButton() != MouseEvent.BUTTON1)
 											return;
 										tray.remove(trayIcon);
@@ -460,7 +480,7 @@ public class Main {
 								trayIcon.addActionListener(new ActionListener() {
 
 									@Override
-									public void actionPerformed(ActionEvent e) {
+									public void actionPerformed(final ActionEvent e) {
 										switch (trayLastMessageType) {
 											case 0: {
 												showQuickMessageDialog(trayLastMessageSender);
@@ -478,73 +498,91 @@ public class Main {
 									}
 								});
 
-								PopupMenu menu = new PopupMenu();
+								final PopupMenu menu = new PopupMenu();
 
-								MenuItem quit = new MenuItem(Messages.getString("Main.trayQuitItem"));
-								quit.addActionListener(ev2 -> {
-									System.exit(0);
+								final MenuItem quit = new MenuItem(Messages.getString("Main.trayQuitItem"));
+								quit.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(ActionEvent ev2) {
+										System.exit(0);
+									}
 								});
 
-								MenuItem open = new MenuItem(Messages.getString("Main.trayOpenGUIItem"));
-								open.addActionListener(ev2 -> {
-									ml.mouseClicked(new MouseEvent(win, 0, System.currentTimeMillis(), 0, 0, 0, 0, 0, 1,
-											false, MouseEvent.BUTTON1));
+								final MenuItem open = new MenuItem(Messages.getString("Main.trayOpenGUIItem"));
+								open.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(ActionEvent ev2) {
+										ml.mouseClicked(new MouseEvent(win, 0, System.currentTimeMillis(), 0, 0, 0, 0, 0, 1,
+												false, MouseEvent.BUTTON1));
+									}
 								});
 								open.setFont(win.getFont().deriveFont(Font.BOLD));
 
-								Map<String, List<MinecraftClient>> labels = new HashMap<>();
+								final Map<String, List<MinecraftClient>> labels = new HashMap<>();
 
-								for (MinecraftClient cl : clients.values()) {
-									String srvLabel = cl.getHost() + ":" + cl.getPort();
-									if (!labels.containsKey(srvLabel))
+								for (final MinecraftClient cl : clients.values()) {
+									final String srvLabel = cl.getHost() + ":" + cl.getPort();
+									if (!labels.containsKey(srvLabel)) {
 										labels.put(srvLabel, new ArrayList<>());
+									}
 									labels.get(srvLabel).add(cl);
 								}
 
-								MenuItem options = new MenuItem(Messages.getString("Main.optionsMenu") + "...");
-								options.addActionListener(ev2 -> {
-									showOptionsDialog();
+								final MenuItem options = new MenuItem(Messages.getString("Main.optionsMenu") + "...");
+								options.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(ActionEvent ev2) {
+										showOptionsDialog();
+									}
 								});
 
 								menu.add(open);
 								menu.addSeparator();
-								for (String label : labels.keySet()) {
-									Menu srvMenu = new Menu(label);
+								for (final String label : labels.keySet()) {
+									final Menu srvMenu = new Menu(label);
 									for (final MinecraftClient cl : labels.get(label)) {
-										Menu pMenu = new Menu(cl.getUsername()) {
+										final Menu pMenu = new Menu(cl.getUsername()) {
 											{
 												final MinecraftClient client = cl;
-												MenuItem dcItem = new MenuItem(
+												final MenuItem dcItem = new MenuItem(
 														Messages.getString("Main.trayDisconnectItem"));
-												MenuItem qmItem = new MenuItem(
+												final MenuItem qmItem = new MenuItem(
 														Messages.getString("Main.trayQuickMessageItem"));
-												MenuItem invItem = new MenuItem(
+												final MenuItem invItem = new MenuItem(
 														Messages.getString("Main.showInventoryButton"));
 												final Menu ins = this;
 
 												dcItem.addActionListener(new ActionListener() {
 
 													@Override
-													public void actionPerformed(ActionEvent e) {
+													public void actionPerformed(final ActionEvent e) {
 														client.close();
 														srvMenu.remove(ins);
-														if (srvMenu.getItemCount() == 0)
+														if (srvMenu.getItemCount() == 0) {
 															menu.remove(srvMenu);
-														for (ClientListener ls : client.getClientListeners())
+														}
+														for (final ClientListener ls : client.getClientListeners()) {
 															ls.disconnected(
 																	Messages.getString("Main.trayClosedReason"));
+														}
 													}
 												});
 
-												qmItem.addActionListener(ev -> {
-													showQuickMessageDialog(client);
+												qmItem.addActionListener(new ActionListener() {
+													@Override
+													public void actionPerformed(ActionEvent ev) {
+														showQuickMessageDialog(client);
+													}
 												});
 
-												invItem.addActionListener(ev -> {
-													if (!up.isEnableInventoryHandling())
-														return;
-													client.getInventory().openWindow(win,
-															up.isSendWindowClosePackets());
+												invItem.addActionListener(new ActionListener() {
+													@Override
+													public void actionPerformed(ActionEvent ev) {
+														if (!up.isEnableInventoryHandling())
+															return;
+														client.getInventory().openWindow(win,
+																up.isSendWindowClosePackets());
+													}
 												});
 
 												add(qmItem);
@@ -565,7 +603,7 @@ public class Main {
 
 								tray.add(trayIcon);
 								win.setVisible(false);
-							} catch (AWTException e1) {
+							} catch (final AWTException e1) {
 								e1.printStackTrace();
 							}
 						}
@@ -589,7 +627,7 @@ public class Main {
 						}
 					}
 
-					JOptionPane op = new JOptionPane(
+					final JOptionPane op = new JOptionPane(
 							new Object[] {
 									Messages.getString("Main.trayExitQuestion") + Integer.toString(clients.size())
 											+ Messages.getString("Main.trayExitQuestionLine2Append"),
@@ -601,23 +639,25 @@ public class Main {
 					diag.pack();
 					SwingUtils.centerWindow(diag);
 					diag.setVisible(true);
-				} else
+				} else {
 					System.exit(0);
+				}
 			}
 		});
 
 		win.setTitle("Another Minecraft Chat Client v" + version);
-		if (logoImage != null)
+		if (logoImage != null) {
 			win.setIconImage(logoImage);
+		}
 
-		JTabbedPane sTypesPane = new JTabbedPane();
+		final JTabbedPane sTypesPane = new JTabbedPane();
 
 		final JPanel serverListBox = new JPanel();
 		serverListBox.setLayout(new BoxLayout(serverListBox, BoxLayout.Y_AXIS));
 		serverListBox.setPreferredSize(
 				new Dimension((int) (SwingUtils.sSize.width / 1.5), (int) (SwingUtils.sSize.height / 1.5)));
 
-		JScrollPane serverListPane = new JScrollPane(serverListComponent);
+		final JScrollPane serverListPane = new JScrollPane(serverListComponent);
 		serverListPane.setOpaque(false);
 		serverListBox.setBackground(new Color(60, 47, 74));
 
@@ -626,22 +666,23 @@ public class Main {
 		serverListBox.add(serverListPane);
 		serverListComponent.setMinimumSize(serverListBox.getPreferredSize());
 
-		Box controlsBox = Box.createHorizontalBox();
+		final Box controlsBox = Box.createHorizontalBox();
 
-		JButton addServer = new JMinecraftButton(Messages.getString("Main.addServerOption"));
+		final JButton addServer = new JMinecraftButton(Messages.getString("Main.addServerOption"));
 		addServer.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				JTextField nameField = new JPlaceholderField(Messages.getString("Main.serveNameField"));
+			public void actionPerformed(final ActionEvent e) {
+				final JTextField nameField = new JPlaceholderField(Messages.getString("Main.serveNameField"));
 				nameField.setText(Messages.getString("Main.defaultServerName"));
-				JTextField hostField = new JPlaceholderField(Messages.getString("Main.serverAddressField"));
+				final JTextField hostField = new JPlaceholderField(Messages.getString("Main.serverAddressField"));
 
-				JComboBox<String> versionField = new JComboBox<>();
+				final JComboBox<String> versionField = new JComboBox<>();
 				versionField.addItem("Auto");
 				versionField.addItem("Always Ask");
-				for (ProtocolNumber num : ProtocolNumber.values())
+				for (final ProtocolNumber num : ProtocolNumber.values()) {
 					versionField.addItem(num.name);
+				}
 
 				final Box contents = Box.createVerticalBox();
 
@@ -655,19 +696,20 @@ public class Main {
 				contents.add(hostField);
 				contents.add(versionField);
 
-				for (Component c : contents.getComponents())
-					if (c instanceof JComponent)
+				for (final Component c : contents.getComponents())
+					if (c instanceof JComponent) {
 						((JComponent) c).setAlignmentX(Component.LEFT_ALIGNMENT);
+					}
 
-				do
+				do {
 					try {
-						int response = JOptionPane.showOptionDialog(win, contents,
+						final int response = JOptionPane.showOptionDialog(win, contents,
 								Messages.getString("Main.addServerDialogTitle"), JOptionPane.OK_CANCEL_OPTION,
 								JOptionPane.QUESTION_MESSAGE, null, null, null);
 
 						if (response == JOptionPane.OK_OPTION) {
-							String server = hostField.getText();
-							String name = nameField.getText();
+							final String server = hostField.getText();
+							final String name = nameField.getText();
 
 							if (server.isEmpty() || name.isEmpty()) {
 								errorLabel.setText(Messages.getString("Main.addServerDialogEmptyFieldsWarning"));
@@ -677,7 +719,7 @@ public class Main {
 							String host = server;
 							int port = 25565;
 							if (server.contains(":") && server.split(":").length > 1) {
-								String[] ag = server.split(":");
+								final String[] ag = server.split(":");
 								host = ag[0];
 								port = Integer.parseInt(ag[1]);
 							}
@@ -685,14 +727,15 @@ public class Main {
 							addToList(host, port, name, (String) versionField.getSelectedItem());
 
 							break;
-						} else
+						} else {
 							break;
+						}
 
-					} catch (Exception e1) {
+					} catch (final Exception e1) {
 						e1.printStackTrace();
 						errorLabel.setText(e1.toString());
 					}
-				while (true);
+				} while (true);
 			}
 		});
 
@@ -700,25 +743,32 @@ public class Main {
 		refresh.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (serverListComponent.getListData() != null)
+			public void actionPerformed(final ActionEvent e) {
+				if (serverListComponent.getListData() != null) {
 					serverListComponent.setListData(serverListComponent.getListData());
-				if (servers != null)
-					for (ServerEntry entry : servers)
+				}
+				if (servers != null) {
+					for (final ServerEntry entry : servers) {
 						try {
-							if (!entry.refreshing)
+							if (!entry.refreshing) {
 								entry.ping();
-						} catch (Exception e2) {
+							}
+						} catch (final Exception e2) {
 							e2.printStackTrace();
 						}
+					}
+				}
 			}
 		});
 
 		final JButton removeServer = new JMinecraftButton(Messages.getString("Main.removeServerOption"));
-		removeServer.addActionListener(ev -> {
-			if (serverListComponent.getSelectedValue() != null) {
-				removeFromList(serverListComponent.getSelectedValue());
-				refresh.doClick();
+		removeServer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				if (serverListComponent.getSelectedValue() != null) {
+					removeFromList(serverListComponent.getSelectedValue());
+					refresh.doClick();
+				}
 			}
 		});
 		removeServer.setEnabled(false);
@@ -727,17 +777,17 @@ public class Main {
 		alis = new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				ServerEntry et = sTypesPane.getSelectedIndex() == 0 ? serverListComponent.getSelectedValue()
+			public void actionPerformed(final ActionEvent e) {
+				final ServerEntry et = sTypesPane.getSelectedIndex() == 0 ? serverListComponent.getSelectedValue()
 						: lanListComponent.getSelectedValue();
 				if (et == null)
 					return;
 
 				if (et.isRefreshing() || et.isError()) {
-					String haltReason = et.isRefreshing() ? Messages.getString("Main.haltReasonRefreshing")
+					final String haltReason = et.isRefreshing() ? Messages.getString("Main.haltReasonRefreshing")
 							: Messages.getString("Main.haltReasonError");
 
-					int haltResponse = JOptionPane.showOptionDialog(win,
+					final int haltResponse = JOptionPane.showOptionDialog(win,
 							new String[] { haltReason, Messages.getString("Main.haltQuestion") },
 							Messages.getString("Main.haltTitle"), JOptionPane.DEFAULT_OPTION,
 							JOptionPane.WARNING_MESSAGE, null,
@@ -761,34 +811,35 @@ public class Main {
 
 				}
 
-				JVBoxPanel box = new JVBoxPanel();
+				final JVBoxPanel box = new JVBoxPanel();
 				box.add(new JLabel(Messages.getString("Main.enterUsernameLabel")));
 
-				Box uCtl = Box.createHorizontalBox();
+				final Box uCtl = Box.createHorizontalBox();
 
 				BufferedImage x = null;
 				try {
 					x = ImageIO.read(getClass().getResourceAsStream("/resources/x.png"));
 					x = IOUtils.resizeImageProp(x, 12);
-				} catch (Exception e2) {
+				} catch (final Exception e2) {
 					e2.printStackTrace();
 				}
-				JButton unameClear = x == null ? new JButton("C") : new JButton(new ImageIcon(x));
+				final JButton unameClear = x == null ? new JButton("C") : new JButton(new ImageIcon(x));
 				unameClear.setToolTipText(Messages.getString("Main.clearUnames"));
 
-				JComboBox<String> unameField = new JComboBox<>();
+				final JComboBox<String> unameField = new JComboBox<>();
 				unameClear.addActionListener(new ActionListener() {
 
 					@Override
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(final ActionEvent e) {
 						up.clearLastUserNames();
 						unameField.removeAllItems();
 					}
 				});
 				unameField.setEditable(true);
 				unameField.setAlignmentX(Component.LEFT_ALIGNMENT);
-				for (String uname : up.getLastUserNames())
+				for (final String uname : up.getLastUserNames()) {
 					unameField.addItem(uname);
+				}
 
 				uCtl.add(unameField);
 				uCtl.add(unameClear);
@@ -797,16 +848,18 @@ public class Main {
 				box.alignAll();
 
 				do {
-					int response = JOptionPane.showOptionDialog(win, box, Messages.getString("Main.enterUsernameTitle"),
-							JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+					final int response = JOptionPane.showOptionDialog(win, box,
+							Messages.getString("Main.enterUsernameTitle"), JOptionPane.OK_CANCEL_OPTION,
+							JOptionPane.QUESTION_MESSAGE, null, null, null);
 					if (response != JOptionPane.OK_OPTION)
 						return;
 
-					String uname = (String) unameField.getSelectedItem();
-					if (uname == null)
+					final String uname = (String) unameField.getSelectedItem();
+					if (uname == null) {
 						continue;
+					}
 					if (!up.isUsernameAlertSeen() && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)) {
-						int alResp = JOptionPane.showOptionDialog(win,
+						final int alResp = JOptionPane.showOptionDialog(win,
 								Messages.getString("Main.nickIllegalCharsWarning1") + uname
 										+ Messages.getString("Main.nickIllegalCharsWarning2")
 										+ Messages.getString("Main.nickIllegalCharsWarningQuestion"),
@@ -818,11 +871,13 @@ public class Main {
 						if (alResp == 0) {
 							up.setUsernameAlertSeen(true);
 							break;
-						} else
+						} else {
 							continue;
+						}
 					}
-					if (!uname.isEmpty())
+					if (!uname.isEmpty()) {
 						break;
+					}
 				} while (true);
 
 				final String uname = (String) unameField.getSelectedItem();
@@ -831,18 +886,19 @@ public class Main {
 				tabPane.addTab("", b);
 				tabPane.setSelectedComponent(b);
 
-				Box b2 = Box.createHorizontalBox();
+				final Box b2 = Box.createHorizontalBox();
 				b2.setName(et.getHost() + "_" + et.getName() + "_" + uname);
-				int pxh = et.getIcon() == null ? 0 : 16;
+				final int pxh = et.getIcon() == null ? 0 : 16;
 
 				BufferedImage bicon = null;
-				if (et.getIcon() != null)
+				if (et.getIcon() != null) {
 					try {
 						bicon = ImageIO
 								.read(new ByteArrayInputStream(Base64.getDecoder().decode(et.getIcon().getBytes())));
-					} catch (IOException e1) {
+					} catch (final IOException e1) {
 						e1.printStackTrace();
 					}
+				}
 
 				final BufferedImage bicon2 = bicon;
 
@@ -854,24 +910,25 @@ public class Main {
 					final BufferedImage bico = bicon2;
 
 					@Override
-					public void paintComponent(Graphics g) {
+					public void paintComponent(final Graphics g) {
 						g.drawImage(bico, 0, 0, 16, 16, null);
 					}
 				});
 
 				b2.add(new JLabel(" " + et.getName() + " (" + (String) unameField.getSelectedItem() + ")"));
 
-				JButton close = new JButton("x");
+				final JButton close = new JButton("x");
 				close.setMargin(new Insets(0, 5, 0, 5));
 				close.addActionListener(new ActionListener() {
 					private final JSplitPane box = b;
 
 					@Override
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(final ActionEvent e) {
 						for (int x = 0; x < tabPane.getTabCount(); x++)
 							if (tabPane.getComponentAt(x).equals(box)) {
-								if (clients.containsKey(box))
+								if (clients.containsKey(box)) {
 									clients.get(box).close();
+								}
 								tabPane.removeTabAt(x);
 								clients.remove(b);
 								break;
@@ -890,7 +947,7 @@ public class Main {
 		serverListComponent.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
-			public void valueChanged(ListSelectionEvent e) {
+			public void valueChanged(final ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
 					selectedServer = serverListComponent.getSelectedValue();
 					if (selectedServer != null) {
@@ -905,11 +962,12 @@ public class Main {
 			}
 		});
 
-		MouseListener doubleClickListener = new MouseAdapter() {
+		final MouseListener doubleClickListener = new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() >= 2 && connectServer.isEnabled())
+			public void mouseClicked(final MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() >= 2 && connectServer.isEnabled()) {
 					connectServer.doClick();
+				}
 			}
 		};
 
@@ -927,25 +985,28 @@ public class Main {
 		lanListBox.setPreferredSize(
 				new Dimension((int) (SwingUtils.sSize.width / 1.5), (int) (SwingUtils.sSize.height / 1.5)));
 
-		JScrollPane lanListPane = new JScrollPane(lanListComponent);
+		final JScrollPane lanListPane = new JScrollPane(lanListComponent);
 		lanListPane.setOpaque(false);
 
 		lanListPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-		Box lanControlsBox = Box.createHorizontalBox();
+		final Box lanControlsBox = Box.createHorizontalBox();
 
-		JButton lanConnect = new JMinecraftButton(connectServer.getText());
-		JButton lanAdd = new JMinecraftButton(addServer.getText());
-		JButton lanRemove = new JMinecraftButton(removeServer.getText());
-		JButton lanRefresh = new JMinecraftButton(refresh.getText());
+		final JButton lanConnect = new JMinecraftButton(connectServer.getText());
+		final JButton lanAdd = new JMinecraftButton(addServer.getText());
+		final JButton lanRemove = new JMinecraftButton(removeServer.getText());
+		final JButton lanRefresh = new JMinecraftButton(refresh.getText());
 
 		lanConnect.setEnabled(false);
 		lanAdd.setEnabled(false);
 		lanRemove.setEnabled(false);
 
 		lanConnect.addActionListener(alis);
-		lanRefresh.addActionListener(ev -> {
-			lanListComponent.setListData(new ServerEntry[0]);
+		lanRefresh.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				lanListComponent.setListData(new ServerEntry[0]);
+			}
 		});
 
 		lanControlsBox.add(lanConnect);
@@ -956,13 +1017,14 @@ public class Main {
 		lanListComponent.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
-			public void valueChanged(ListSelectionEvent e) {
+			public void valueChanged(final ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
 					selectedServer = lanListComponent.getSelectedValue();
-					if (selectedServer != null)
+					if (selectedServer != null) {
 						lanConnect.setEnabled(true);
-					else
+					} else {
 						lanConnect.setEnabled(false);
+					}
 
 				}
 			}
@@ -977,25 +1039,31 @@ public class Main {
 
 		tabPane.addTab(Messages.getString("Main.serversListTab"), sTypesPane);
 
-		JMenu fileMenu = new JMenu(Messages.getString("Main.fileMenu")) {
+		final JMenu fileMenu = new JMenu(Messages.getString("Main.fileMenu")) {
 			{
 				setMnemonic(getText().charAt(0));
 				add(new JMenuItem(Messages.getString("Main.fileMenuQuit")) {
 					{
-						addActionListener(ev -> {
-							System.exit(0);
+						addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent ev) {
+								System.exit(0);
+							}
 						});
 					}
 				});
 			}
 		};
-		JMenu optionMenu = new JMenu(Messages.getString("Main.optionsMenu")) {
+		final JMenu optionMenu = new JMenu(Messages.getString("Main.optionsMenu")) {
 			{
 				setMnemonic(getText().charAt(0));
 				add(new JMenuItem(Messages.getString("Main.optionsMenuSettings")) {
 					{
-						addActionListener(e -> {
-							showOptionsDialog();
+						addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								showOptionsDialog();
+							}
 						});
 					}
 				});
@@ -1017,25 +1085,25 @@ public class Main {
 	}
 
 	private void showOptionsDialog() {
-		JDialog od = new JDialog(win);
+		final JDialog od = new JDialog(win);
 		od.setModal(true);
 		od.setResizable(false);
 		od.setTitle(Messages.getString("Main.settingsTitle"));
 
-		Box b = Box.createVerticalBox();
+		final Box b = Box.createVerticalBox();
 
-		JTabbedPane jtp = new JTabbedPane();
+		final JTabbedPane jtp = new JTabbedPane();
 
-		JVBoxPanel rsBox = new JVBoxPanel();
+		final JVBoxPanel rsBox = new JVBoxPanel();
 
-		JComboBox<Status> rPackBehaviorBox = new JComboBox<>(Status.values());
+		final JComboBox<Status> rPackBehaviorBox = new JComboBox<>(Status.values());
 		rPackBehaviorBox.setToolTipText(Messages.getString("Main.rsBehaviorToolTip"));
 		rPackBehaviorBox.setSelectedItem(up.getResourcePackBehavior());
 		rPackBehaviorBox.setRenderer(new DefaultListCellRenderer() {
 			@Override
-			public Component getListCellRendererComponent(JList<? extends Object> list, Object value, int index,
-					boolean isSelected, boolean cellHasFocus) {
-				JLabel lbl = new JLabel();
+			public Component getListCellRendererComponent(final JList<? extends Object> list, final Object value,
+					final int index, final boolean isSelected, final boolean cellHasFocus) {
+				final JLabel lbl = new JLabel();
 				String txt;
 				switch ((Status) value) {
 					case ACCEPTED: {
@@ -1065,15 +1133,15 @@ public class Main {
 			}
 		});
 
-		JCheckBox rsPackShowCheck = new JCheckBox(Messages.getString("Main.rsPackShowCheck"),
+		final JCheckBox rsPackShowCheck = new JCheckBox(Messages.getString("Main.rsPackShowCheck"),
 				up.isShowResourcePackMessages());
 		rsPackShowCheck.setToolTipText(Messages.getString("Main.rsPackShowToolTip"));
 
-		JPlaceholderField rsPackMsgText = new JPlaceholderField(Messages.getString("Main.rsPackMessageField"));
+		final JPlaceholderField rsPackMsgText = new JPlaceholderField(Messages.getString("Main.rsPackMessageField"));
 		rsPackMsgText.setToolTipText(Messages.getString("Main.rsPackMessageToolTip"));
 		rsPackMsgText.setText(up.getResourcePackMessage());
 
-		JComboBox<Position> rsPackMessagePosition = new JComboBox<>(Position.values());
+		final JComboBox<Position> rsPackMessagePosition = new JComboBox<>(Position.values());
 		rsPackMessagePosition.setSelectedItem(up.getResourcePackMessagePosition());
 
 		rsBox.add(new JLabel(Messages.getString("Main.rsPackBehaviorLabel")));
@@ -1095,9 +1163,9 @@ public class Main {
 
 		rsBox.alignAll();
 
-		JVBoxPanel skBox = new JVBoxPanel();
+		final JVBoxPanel skBox = new JVBoxPanel();
 		skBox.add(new JLabel(Messages.getString("Main.skinFetchMetchodLabel")));
-		JComboBox<SkinRule> ruleBox = new JComboBox<>(SkinRule.values());
+		final JComboBox<SkinRule> ruleBox = new JComboBox<>(SkinRule.values());
 		ruleBox.setToolTipText(Messages.getString("Main.skinFetchToolTip"));
 		ruleBox.setSelectedItem(up.getSkinFetchRule());
 		skBox.add(ruleBox);
@@ -1110,30 +1178,40 @@ public class Main {
 
 		skBox.alignAll();
 
-		JVBoxPanel pkBox = new JVBoxPanel();
+		final JVBoxPanel pkBox = new JVBoxPanel();
 
-		JCheckBox ignoreKAPackets = new JCheckBox(Messages.getString("Main.ignoreKAPackets"));
-		ignoreKAPackets.setToolTipText(Messages.getString("Main.ignoreKAPacketsToolTop"));
+		final JCheckBox forceLegacySLP = new JCheckBox(Messages.getString("Main.forceLegacySLP"));
+		forceLegacySLP.setToolTipText(Messages.getString("Main.forceLegacySLPToolTip"));
+		forceLegacySLP.setSelected(up.isForceLegacySLP());
+
+		final JCheckBox ignoreKAPackets = new JCheckBox(Messages.getString("Main.ignoreKAPackets"));
+		ignoreKAPackets.setToolTipText(Messages.getString("Main.ignoreKAPacketsToolTip"));
 		ignoreKAPackets.setSelected(up.isIgnoreKeepAlive());
 
-		JCheckBox ignoreDSPackets = new JCheckBox(Messages.getString("Main.ignoreDSPackets"));
-		ignoreDSPackets.setToolTipText(Messages.getString("Main.ignoreDSPacketsToolTop"));
+		final JCheckBox ignoreDSPackets = new JCheckBox(Messages.getString("Main.ignoreDSPackets"));
+		ignoreDSPackets.setToolTipText(Messages.getString("Main.ignoreDSPacketsToolTip"));
 		ignoreDSPackets.setSelected(up.isIgnoreDisconnect());
 
-		JTextField brandField = new JPlaceholderField(Messages.getString("Main.brandField"));
-		brandField.setToolTipText(Messages.getString("Main.brandToolTop"));
+		final JTextField brandField = new JPlaceholderField(Messages.getString("Main.brandField"));
+		brandField.setToolTipText(Messages.getString("Main.brandToolTip"));
 		brandField.setText(up.getBrand());
-		SwingUtilities.invokeLater(() -> {
-			brandField.setOpaque(true);
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				brandField.setOpaque(true);
+			}
 		});
 
-		JSpinner pingField = new JSpinner(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
-		pingField.setToolTipText(Messages.getString("Main.pingToolTop"));
+		final JSpinner pingField = new JSpinner(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
+		pingField.setToolTipText(Messages.getString("Main.pingToolTip"));
 		pingField.setValue(up.getAdditionalPing());
 		SwingUtils.alignSpinner(pingField);
 
 		pkBox.add(ignoreKAPackets);
 		pkBox.add(ignoreDSPackets);
+		pkBox.add(new JSeparator());
+		pkBox.add(forceLegacySLP);
+		pkBox.add(new JSeparator());
 		pkBox.add(new JLabel(" "));
 		pkBox.add(new JLabel(Messages.getString("Main.pingLabel")));
 		pkBox.add(new JLabel(Messages.getString("Main.pingLabel2")));
@@ -1141,8 +1219,11 @@ public class Main {
 		pkBox.add(new JLabel(" "));
 		pkBox.add(new JLabel(Messages.getString("Main.brandLabel")));
 		pkBox.add(brandField);
-		SwingUtilities.invokeLater(() -> {
-			brandField.setMaximumSize(new Dimension(brandField.getWidth(), 20));
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				brandField.setMaximumSize(new Dimension(brandField.getWidth(), 20));
+			}
 		});
 
 		pkBox.add(new JTextPane() {
@@ -1153,93 +1234,107 @@ public class Main {
 		});
 		pkBox.alignAll();
 
-		JVBoxPanel trBox = new JVBoxPanel();
+		final JVBoxPanel trBox = new JVBoxPanel();
 
-		JComboBox<String> trMessagesMode = new JComboBox<>(
+		final JComboBox<String> trMessagesMode = new JComboBox<>(
 				new String[] { Constants.TRAY_MESSAGES_KEY_ALWAYS, Constants.TRAY_MESSAGES_KEY_MENTION,
 						Constants.TRAY_MESSAGES_KEY_KEYWORD, Constants.TRAY_MESSAGES_KEY_NEVER });
-		trMessagesMode.setToolTipText(Messages.getString("Main.trMessagesModeToolTop"));
+		trMessagesMode.setToolTipText(Messages.getString("Main.trMessagesModeToolTip"));
 		trMessagesMode.setSelectedItem(up.getTrayMessageMode());
-		JCheckBox showDMessages = new JCheckBox(Messages.getString("Main.showDMessages"));
-		showDMessages.setToolTipText(Messages.getString("Main.showDMessagesToolTop"));
+		final JCheckBox showDMessages = new JCheckBox(Messages.getString("Main.showDMessages"));
+		showDMessages.setToolTipText(Messages.getString("Main.showDMessagesToolTip"));
 		showDMessages.setSelected(up.isTrayShowDisconnectMessages());
 
-		JMemList<String> trMessagesKeywords = new JMemList<>();
+		final JMemList<String> trMessagesKeywords = new JMemList<>();
 		trMessagesKeywords.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		trMessagesKeywords.setListData(up.getTrayKeyWords() == null ? new String[0] : up.getTrayKeyWords());
 
-		Box trKwControls = Box.createHorizontalBox();
+		final Box trKwControls = Box.createHorizontalBox();
 
-		JButton addKeyword = new JButton(Messages.getString("Main.keywordAdd"));
-		JButton removeKeyword = new JButton(Messages.getString("Main.keywordRemove"));
+		final JButton addKeyword = new JButton(Messages.getString("Main.keywordAdd"));
+		final JButton removeKeyword = new JButton(Messages.getString("Main.keywordRemove"));
 
 		removeKeyword.setEnabled(trMessagesKeywords.getSelectedIndex() != -1);
 
-		trMessagesKeywords.addListSelectionListener(e -> {
-			if (!e.getValueIsAdjusting())
-				removeKeyword.setEnabled(e.getFirstIndex() != -1);
+		trMessagesKeywords.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					removeKeyword.setEnabled(e.getFirstIndex() != -1);
+				}
+			}
 		});
 
-		removeKeyword.addActionListener(e -> {
-			if (trMessagesKeywords.getSelectedIndex() == -1)
-				return;
-
-			String selected = trMessagesKeywords.getSelectedValue();
-			int index = trMessagesKeywords.getSelectedIndex();
-
-			List<String> ld = new ArrayList<>();
-			Collections.addAll(ld, trMessagesKeywords.getListData());
-
-			ld.remove(selected);
-
-			String[] ss = new String[ld.size()];
-			ss = ld.toArray(ss);
-
-			trMessagesKeywords.setListData(ss);
-
-			trMessagesKeywords.setSelectedIndex(index > 0 ? index - 1 : 0);
-
-			removeKeyword.setEnabled(ss.length > 0);
-		});
-
-		addKeyword.addActionListener(e -> {
-
-			JTextField kwField = new JPlaceholderField(Messages.getString("Main.kewyordField"));
-
-			int response = JOptionPane.showOptionDialog(od,
-					new Object[] { Messages.getString("Main.keywordDialogLabel"), kwField },
-					Messages.getString("Main.keywordDialogTitle"), JOptionPane.OK_CANCEL_OPTION,
-					JOptionPane.QUESTION_MESSAGE, null,
-					new String[] { Messages.getString("Main.ok"), Messages.getString("Main.qmCancelOption") }, 0);
-
-			if (response == 0 && !kwField.getText().isEmpty()) {
-				List<String> ld = new ArrayList<>();
-				Collections.addAll(ld, trMessagesKeywords.getListData());
-				if (ld.contains(kwField.getText()))
+		removeKeyword.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (trMessagesKeywords.getSelectedIndex() == -1)
 					return;
-				ld.add(kwField.getText());
+
+				final String selected = trMessagesKeywords.getSelectedValue();
+				final int index = trMessagesKeywords.getSelectedIndex();
+
+				final List<String> ld = new ArrayList<>();
+				Collections.addAll(ld, trMessagesKeywords.getListData());
+
+				ld.remove(selected);
 
 				String[] ss = new String[ld.size()];
 				ss = ld.toArray(ss);
 
 				trMessagesKeywords.setListData(ss);
 
+				trMessagesKeywords.setSelectedIndex(index > 0 ? index - 1 : 0);
+
 				removeKeyword.setEnabled(ss.length > 0);
+			}
+		});
+
+		addKeyword.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				final JTextField kwField = new JPlaceholderField(Messages.getString("Main.kewyordField"));
+
+				final int response = JOptionPane.showOptionDialog(od,
+						new Object[] { Messages.getString("Main.keywordDialogLabel"), kwField },
+						Messages.getString("Main.keywordDialogTitle"), JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.QUESTION_MESSAGE, null,
+						new String[] { Messages.getString("Main.ok"), Messages.getString("Main.qmCancelOption") }, 0);
+
+				if (response == 0 && !kwField.getText().isEmpty()) {
+					final List<String> ld = new ArrayList<>();
+					Collections.addAll(ld, trMessagesKeywords.getListData());
+					if (ld.contains(kwField.getText()))
+						return;
+					ld.add(kwField.getText());
+
+					String[] ss = new String[ld.size()];
+					ss = ld.toArray(ss);
+
+					trMessagesKeywords.setListData(ss);
+
+					removeKeyword.setEnabled(ss.length > 0);
+				}
 			}
 		});
 
 		trKwControls.add(addKeyword);
 		trKwControls.add(removeKeyword);
 
-		JScrollPane trKeywordsScroll = new JScrollPane(trMessagesKeywords);
+		final JScrollPane trKeywordsScroll = new JScrollPane(trMessagesKeywords);
 
-		JButton clearRem = new JButton(Messages.getString("Main.clearRem"));
-		if (up.getCloseMode() == Constants.WINDOW_CLOSE_ALWAYS_ASK)
+		final JButton clearRem = new JButton(Messages.getString("Main.clearRem"));
+		if (up.getCloseMode() == Constants.WINDOW_CLOSE_ALWAYS_ASK) {
 			clearRem.setEnabled(false);
+		}
 
-		clearRem.addActionListener(ev2 -> {
-			up.setCloseMode(0);
-			clearRem.setEnabled(false);
+		clearRem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev2) {
+				up.setCloseMode(0);
+				clearRem.setEnabled(false);
+			}
 		});
 
 		trBox.add(new JLabel(Messages.getString("Main.trMessagesModeLabel")));
@@ -1260,33 +1355,33 @@ public class Main {
 
 		trBox.alignAll();
 
-		JTabbedPane apPane = new JTabbedPane();
+		final JTabbedPane apPane = new JTabbedPane();
 
-		JVBoxPanel apButtonSettings = new JVBoxPanel();
-		JScrollPane apButtonSettingsSP = new JScrollPane(apButtonSettings);
-		JVBoxPanel apButtonSettingsFull = new JVBoxPanel();
+		final JVBoxPanel apButtonSettings = new JVBoxPanel();
+		final JScrollPane apButtonSettingsSP = new JScrollPane(apButtonSettings);
+		final JVBoxPanel apButtonSettingsFull = new JVBoxPanel();
 		apButtonSettingsSP.setPreferredSize(new Dimension(0, 0));
 
-		ColorPreferences cp = Main.up.getColorPreferences();
-		ColorPreferences cprefCopy = new UserPreferences.ColorPreferences();
+		final ColorPreferences cp = Main.up.getColorPreferences();
+		final ColorPreferences cprefCopy = new UserPreferences.ColorPreferences();
 		cprefCopy.setColorDisabledButton(cp.getColorDisabledButton());
 		cprefCopy.setColorEnabledButton(cp.getColorEnabledButton());
 		cprefCopy.setColorEnabledHoverButton(cp.getColorEnabledHoverButton());
 		cprefCopy.setColorText(cp.getColorText());
 		cprefCopy.setDisabledColorText(cp.getDisabledColorText());
 
-		JColorChooserButton apButtonEnabled = new JColorChooserButton(cp.getColorEnabledButton(), od);
-		JColorChooserButton apButtonEnabledHover = new JColorChooserButton(cp.getColorEnabledHoverButton(), od);
-		JColorChooserButton apButtonDisabled = new JColorChooserButton(cp.getColorDisabledButton(), od);
-		JColorChooserButton apButtonText = new JColorChooserButton(cp.getColorText(), od);
-		JColorChooserButton apButtonTextDisabled = new JColorChooserButton(cp.getDisabledColorText(), od);
+		final JColorChooserButton apButtonEnabled = new JColorChooserButton(cp.getColorEnabledButton(), od);
+		final JColorChooserButton apButtonEnabledHover = new JColorChooserButton(cp.getColorEnabledHoverButton(), od);
+		final JColorChooserButton apButtonDisabled = new JColorChooserButton(cp.getColorDisabledButton(), od);
+		final JColorChooserButton apButtonText = new JColorChooserButton(cp.getColorText(), od);
+		final JColorChooserButton apButtonTextDisabled = new JColorChooserButton(cp.getDisabledColorText(), od);
 
-		JCheckBox apButtonLockColors = new JCheckBox(Messages.getString("Main.apButtonLockColors"));
+		final JCheckBox apButtonLockColors = new JCheckBox(Messages.getString("Main.apButtonLockColors"));
 		apButtonLockColors.setSelected(true);
-		JButton apButtonReset = new JButton(Messages.getString("Main.apButtonReset"));
+		final JButton apButtonReset = new JButton(Messages.getString("Main.apButtonReset"));
 
-		JMinecraftButton sampleButton = new JMinecraftButton("Test");
-		JMinecraftButton sampleDisabledButton = new JMinecraftButton("Test");
+		final JMinecraftButton sampleButton = new JMinecraftButton("Test");
+		final JMinecraftButton sampleDisabledButton = new JMinecraftButton("Test");
 		sampleButton.setCp(cprefCopy);
 		sampleDisabledButton.setCp(cprefCopy);
 		sampleDisabledButton.setEnabled(false);
@@ -1309,11 +1404,11 @@ public class Main {
 		apButtonEnabled.addColorChangeListener(new ColorChangeListener() {
 
 			@Override
-			public void colorChanged(Color c) {
+			public void colorChanged(final Color c) {
 				cprefCopy.setColorEnabledButton(SwingUtils.getHexRGB(c));
 				if (apButtonLockColors.isSelected()) {
-					Color hover = SwingUtils.brighten(c, 51);
-					Color disabled = SwingUtils.brighten(c,
+					final Color hover = SwingUtils.brighten(c, 51);
+					final Color disabled = SwingUtils.brighten(c,
 							(int) -(((c.getRed() + c.getGreen() + c.getBlue()) / 3) / 1.3));
 					cprefCopy.setColorEnabledHoverButton(SwingUtils.getHexRGB(hover));
 					cprefCopy.setColorDisabledButton(SwingUtils.getHexRGB(disabled));
@@ -1324,45 +1419,60 @@ public class Main {
 				sampleDisabledButton.repaint();
 			}
 		});
-		apButtonEnabledHover.addColorChangeListener(c -> {
-			cprefCopy.setColorEnabledHoverButton(SwingUtils.getHexRGB(c));
-			sampleButton.repaint();
-			sampleDisabledButton.repaint();
+		apButtonEnabledHover.addColorChangeListener(new ColorChangeListener() {
+			@Override
+			public void colorChanged(Color c) {
+				cprefCopy.setColorEnabledHoverButton(SwingUtils.getHexRGB(c));
+				sampleButton.repaint();
+				sampleDisabledButton.repaint();
+			}
 		});
 
-		apButtonDisabled.addColorChangeListener(c -> {
-			cprefCopy.setColorDisabledButton(SwingUtils.getHexRGB(c));
-			sampleButton.repaint();
-			sampleDisabledButton.repaint();
+		apButtonDisabled.addColorChangeListener(new ColorChangeListener() {
+			@Override
+			public void colorChanged(Color c) {
+				cprefCopy.setColorDisabledButton(SwingUtils.getHexRGB(c));
+				sampleButton.repaint();
+				sampleDisabledButton.repaint();
+			}
 		});
-		apButtonText.addColorChangeListener(c -> {
-			cprefCopy.setColorText(SwingUtils.getHexRGB(c));
-			sampleButton.repaint();
-			sampleDisabledButton.repaint();
+		apButtonText.addColorChangeListener(new ColorChangeListener() {
+			@Override
+			public void colorChanged(Color c) {
+				cprefCopy.setColorText(SwingUtils.getHexRGB(c));
+				sampleButton.repaint();
+				sampleDisabledButton.repaint();
+			}
 		});
-		apButtonTextDisabled.addColorChangeListener(c -> {
-			cprefCopy.setDisabledColorText(SwingUtils.getHexRGB(c));
-			sampleButton.repaint();
-			sampleDisabledButton.repaint();
+		apButtonTextDisabled.addColorChangeListener(new ColorChangeListener() {
+			@Override
+			public void colorChanged(Color c) {
+				cprefCopy.setDisabledColorText(SwingUtils.getHexRGB(c));
+				sampleButton.repaint();
+				sampleDisabledButton.repaint();
+			}
 		});
-		apButtonReset.addActionListener(ev2 -> {
-			ColorPreferences cp2 = UserPreferences.defaultColorPreferences;
-			cprefCopy.setColorDisabledButton(cp2.getColorDisabledButton());
-			cprefCopy.setColorEnabledButton(cp2.getColorEnabledButton());
-			cprefCopy.setColorEnabledHoverButton(cp2.getColorEnabledHoverButton());
-			cprefCopy.setColorText(cp2.getColorText());
-			cprefCopy.setDisabledColorText(cp2.getDisabledColorText());
+		apButtonReset.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev2) {
+				final ColorPreferences cp2 = UserPreferences.defaultColorPreferences;
+				cprefCopy.setColorDisabledButton(cp2.getColorDisabledButton());
+				cprefCopy.setColorEnabledButton(cp2.getColorEnabledButton());
+				cprefCopy.setColorEnabledHoverButton(cp2.getColorEnabledHoverButton());
+				cprefCopy.setColorText(cp2.getColorText());
+				cprefCopy.setDisabledColorText(cp2.getDisabledColorText());
 
-			apButtonDisabled.setColor(new Color(Integer.parseInt(cp2.getColorDisabledButton(), 16)));
-			apButtonEnabled.setColor(new Color(Integer.parseInt(cp2.getColorEnabledButton(), 16)));
-			apButtonEnabledHover.setColor(new Color(Integer.parseInt(cp2.getColorEnabledHoverButton(), 16)));
-			apButtonText.setColor(new Color(Integer.parseInt(cp2.getColorText(), 16)));
-			apButtonTextDisabled.setColor(new Color(Integer.parseInt(cp2.getDisabledColorText(), 16)));
-			sampleButton.repaint();
-			sampleDisabledButton.repaint();
+				apButtonDisabled.setColor(new Color(Integer.parseInt(cp2.getColorDisabledButton(), 16)));
+				apButtonEnabled.setColor(new Color(Integer.parseInt(cp2.getColorEnabledButton(), 16)));
+				apButtonEnabledHover.setColor(new Color(Integer.parseInt(cp2.getColorEnabledHoverButton(), 16)));
+				apButtonText.setColor(new Color(Integer.parseInt(cp2.getColorText(), 16)));
+				apButtonTextDisabled.setColor(new Color(Integer.parseInt(cp2.getDisabledColorText(), 16)));
+				sampleButton.repaint();
+				sampleDisabledButton.repaint();
+			}
 		});
 
-		Box apButtonSettingsSamples = Box.createHorizontalBox();
+		final Box apButtonSettingsSamples = Box.createHorizontalBox();
 		apButtonSettingsSamples.add(sampleButton);
 		apButtonSettingsSamples.add(sampleDisabledButton);
 
@@ -1373,7 +1483,7 @@ public class Main {
 
 		apPane.addTab(Messages.getString("Main.appearancePaneButtons"), apButtonSettingsFull);
 
-		JVBoxPanel ivBox = new JVBoxPanel();
+		final JVBoxPanel ivBox = new JVBoxPanel();
 
 		final JCheckBox enableIVHandling = new JCheckBox(Messages.getString("Main.enableIVHandling"));
 		final JCheckBox hideIncomingWindows = new JCheckBox(Messages.getString("Main.hideIncomingWindows"));
@@ -1382,12 +1492,12 @@ public class Main {
 		final JCheckBox showWhenInTray = new JCheckBox(Messages.getString("Main.showWindowsInTray"));
 		final JCheckBox sendClosePackets = new JCheckBox(Messages.getString("Main.sendClosePackets"));
 
-		enableIVHandling.setToolTipText(Messages.getString("Main.enableIVHandlingToolTop"));
-		loadTextures.setToolTipText(Messages.getString("Main.loadItemTexturesToolTop"));
-		showWhenInTray.setToolTipText(Messages.getString("Main.showWindowsInTrayToolTop"));
-		sendClosePackets.setToolTipText(Messages.getString("Main.sendClosePacketsToolTop"));
-		hideIncomingWindows.setToolTipText(Messages.getString("Main.hideIncomingWindowsToolTop"));
-		hiddenWindowsResponse.setToolTipText(Messages.getString("Main.hiddenWindowsResponseToolTop"));
+		enableIVHandling.setToolTipText(Messages.getString("Main.enableIVHandlingToolTip"));
+		loadTextures.setToolTipText(Messages.getString("Main.loadItemTexturesToolTip"));
+		showWhenInTray.setToolTipText(Messages.getString("Main.showWindowsInTrayToolTip"));
+		sendClosePackets.setToolTipText(Messages.getString("Main.sendClosePacketsToolTip"));
+		hideIncomingWindows.setToolTipText(Messages.getString("Main.hideIncomingWindowsToolTip"));
+		hiddenWindowsResponse.setToolTipText(Messages.getString("Main.hiddenWindowsResponseToolTip"));
 
 		enableIVHandling.setSelected(up.isEnableInventoryHandling());
 		loadTextures.setSelected(up.isLoadInventoryTextures());
@@ -1397,31 +1507,37 @@ public class Main {
 		hiddenWindowsResponse.setSelected(up.isHiddenWindowsResponse());
 		hiddenWindowsResponse.setEnabled(hideIncomingWindows.isSelected());
 
-		hideIncomingWindows.addActionListener(ev2 -> {
-			hiddenWindowsResponse.setEnabled(hideIncomingWindows.isSelected());
+		hideIncomingWindows.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev2) {
+				hiddenWindowsResponse.setEnabled(hideIncomingWindows.isSelected());
+			}
 		});
 
 		enableIVHandling.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				recDisable(ivBox);
 			}
 
-			private void recDisable(Component ct) {
+			private void recDisable(final Component ct) {
 				if (ct instanceof Container) {
 					setEb(ct);
-					for (Component cpt : ((Container) ct).getComponents())
+					for (final Component cpt : ((Container) ct).getComponents()) {
 						recDisable(cpt);
-				} else
+					}
+				} else {
 					setEb(ct);
+				}
 			}
 
-			private void setEb(Component ct) {
+			private void setEb(final Component ct) {
 				if ((ct instanceof JCheckBox) && !ct.equals(enableIVHandling)) {
 					ct.setEnabled(enableIVHandling.isSelected());
-					if (ct.equals(hiddenWindowsResponse))
+					if (ct.equals(hiddenWindowsResponse)) {
 						ct.setEnabled(hideIncomingWindows.isSelected() && hideIncomingWindows.isEnabled());
+					}
 				}
 			}
 		});
@@ -1435,7 +1551,7 @@ public class Main {
 						addActionListener(new ActionListener() {
 
 							@Override
-							public void actionPerformed(ActionEvent e) {
+							public void actionPerformed(final ActionEvent e) {
 								JOptionPane.showOptionDialog(od, Messages.getString("Main.inventoryHandlingHelp"),
 										Messages.getString("Main.inventoryHandlingHelpTitle"),
 										JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
@@ -1466,18 +1582,19 @@ public class Main {
 			}
 		});
 
-		for (Component ct : ivBox.getComponents())
-			if (!(ct instanceof JTextPane) && !ct.equals(enableIVHandling))
+		for (final Component ct : ivBox.getComponents())
+			if (!(ct instanceof JTextPane) && !ct.equals(enableIVHandling)) {
 				ct.setEnabled(enableIVHandling.isSelected());
+			}
 
 		ivBox.alignAll();
 
-		JVBoxPanel gnBox = new JVBoxPanel();
+		final JVBoxPanel gnBox = new JVBoxPanel();
 
-		JComboBox<Language> languages = new JComboBox<>(Language.values());
+		final JComboBox<Language> languages = new JComboBox<>(Language.values());
 		languages.setSelectedItem(up.getAppLanguage());
 
-		JComboBox<String> unicodeDisplay = new JComboBox<>(
+		final JComboBox<String> unicodeDisplay = new JComboBox<>(
 				new String[] { UserPreferences.Constants.UNICODECHARS_KEY_AUTO,
 						UserPreferences.Constants.UNICODECHARS_KEY_FORCE_CUSTOM,
 						UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE });
@@ -1486,7 +1603,7 @@ public class Main {
 		gnBox.add(new JLabel(Messages.getString("Main.settingsLangChangeLabel")));
 		gnBox.add(languages);
 		gnBox.add(new JLabel(" "));
-		gnBox.add(new JSeparator(JSeparator.HORIZONTAL));
+		gnBox.add(new JSeparator(SwingConstants.HORIZONTAL));
 		gnBox.add(new JLabel(Messages.getString("Main.unicodeDisplayMode")));
 		gnBox.add(unicodeDisplay);
 		gnBox.add(new JTextPane() {
@@ -1505,34 +1622,38 @@ public class Main {
 		jtp.add(Messages.getString("Main.settingsTabSkins"), skBox);
 		jtp.add(Messages.getString("Main.settingsTabProtocol"), pkBox);
 		jtp.add(Messages.getString("Main.settingsTabInventory"), ivBox);
-		jtp.addChangeListener(e -> {
-			JTabbedPane tp = (JTabbedPane) e.getSource();
-			if (tp.getSelectedIndex() == 5) {
-				JOptionPane.showOptionDialog(win, Messages.getString("Main.protocolSettingsWarning"),
-						Messages.getString("Main.protocolSettingsWarningTitle"), JOptionPane.OK_OPTION,
-						JOptionPane.WARNING_MESSAGE, null, new Object[] { Messages.getString("Main.ok") }, e);
+		jtp.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				final JTabbedPane tp = (JTabbedPane) e.getSource();
+				if (tp.getSelectedIndex() == 5) {
+					JOptionPane.showOptionDialog(win, Messages.getString("Main.protocolSettingsWarning"),
+							Messages.getString("Main.protocolSettingsWarningTitle"), JOptionPane.OK_OPTION,
+							JOptionPane.WARNING_MESSAGE, null, new Object[] { Messages.getString("Main.ok") }, e);
+				}
 			}
 		});
 		b.add(jtp);
 
-		JButton sOk = new JButton(Messages.getString("Main.ok"));
-		JButton sCancel = new JButton(Messages.getString("Main.settingsCancel"));
+		final JButton sOk = new JButton(Messages.getString("Main.ok"));
+		final JButton sCancel = new JButton(Messages.getString("Main.settingsCancel"));
 
 		sOk.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				Status rsBehavior = (Status) rPackBehaviorBox.getSelectedItem();
-				boolean showResourcePackMessages = rsPackShowCheck.isSelected();
-				String resourcePackMessage = rsPackMsgText.getText();
-				Position resourcePackMessagePosition = (Position) rsPackMessagePosition.getSelectedItem();
+			public void actionPerformed(final ActionEvent e) {
+				final Status rsBehavior = (Status) rPackBehaviorBox.getSelectedItem();
+				final boolean showResourcePackMessages = rsPackShowCheck.isSelected();
+				final String resourcePackMessage = rsPackMsgText.getText();
+				final Position resourcePackMessagePosition = (Position) rsPackMessagePosition.getSelectedItem();
 
-				SkinRule skinFetchRule = (SkinRule) ruleBox.getSelectedItem();
+				final SkinRule skinFetchRule = (SkinRule) ruleBox.getSelectedItem();
 
-				boolean ignoreKeepAlive = ignoreKAPackets.isSelected();
-				boolean ignoreDisconnect = ignoreDSPackets.isSelected();
-				String brand = brandField.getText();
-				boolean sendMCBrand = !brand.isEmpty();
+				final boolean ignoreKeepAlive = ignoreKAPackets.isSelected();
+				final boolean ignoreDisconnect = ignoreDSPackets.isSelected();
+				final boolean forceLegacyPing = forceLegacySLP.isSelected();
+				final String brand = brandField.getText();
+				final boolean sendMCBrand = !brand.isEmpty();
 
 				up.setResourcePackBehavior(rsBehavior);
 				up.setShowResourcePackMessages(showResourcePackMessages);
@@ -1543,6 +1664,7 @@ public class Main {
 
 				up.setIgnoreKeepAlive(ignoreKeepAlive);
 				up.setIgnoreDisconnect(ignoreDisconnect);
+				up.setForceLegacySLP(forceLegacyPing);
 				up.setAdditionalPing((int) pingField.getValue());
 				up.setBrand(brand);
 				up.setSendMCBrand(sendMCBrand);
@@ -1551,32 +1673,35 @@ public class Main {
 				up.setTrayShowDisconnectMessages(showDMessages.isSelected());
 				up.setTrayKeyWords(trMessagesKeywords.getListData());
 
-				if (!enableIVHandling.isSelected())
-					for (MinecraftClient cl : clients.values()) {
-						for (ItemsWindow iw : cl.getOpenWindows().values())
+				if (!enableIVHandling.isSelected()) {
+					for (final MinecraftClient cl : clients.values()) {
+						for (final ItemsWindow iw : cl.getOpenWindows().values()) {
 							iw.closeWindow();
+						}
 						cl.getInventory().closeWindow();
 					}
+				}
 
 				if ((!enableIVHandling.isSelected() || !loadTextures.isSelected())
 						&& ((up.isEnableInventoryHandling() != enableIVHandling.isSelected())
 								|| (up.isLoadInventoryTextures() != loadTextures.isSelected()))
 						&& ItemsWindow.getTexturesSize() > 0) {
-					int response = JOptionPane.showOptionDialog(od,
+					final int response = JOptionPane.showOptionDialog(od,
 							Messages.getString("Main.inventoryHandlingDisabled"),
 							Messages.getString("Main.inventoryHandlingDisabledTitle"), JOptionPane.YES_NO_OPTION,
 							JOptionPane.QUESTION_MESSAGE, null,
 							new Object[] { Messages.getString("Main.inventoryHandlingDisabledYes"),
 									Messages.getString("Main.inventoryHandlingDisabledNo") },
 							0);
-					if (response == 0)
+					if (response == 0) {
 						ItemsWindow.clearTextures(Main.this);
+					}
 				}
 
 				if ((enableIVHandling.isSelected() && loadTextures.isSelected())
 						&& (up.isEnableInventoryHandling() != enableIVHandling.isSelected())
-						|| (up.isLoadInventoryTextures() != loadTextures.isSelected())) {
-					int response = JOptionPane.showOptionDialog(od, Messages.getString("Main.itemLoadingEnabled"),
+						|| (up.isLoadInventoryTextures() != loadTextures.isSelected() && loadTextures.isSelected())) {
+					final int response = JOptionPane.showOptionDialog(od, Messages.getString("Main.itemLoadingEnabled"),
 							Messages.getString("Main.itemLoadingEnabledTitle"), JOptionPane.YES_NO_OPTION,
 							JOptionPane.QUESTION_MESSAGE, null,
 							new Object[] { Messages.getString("Main.itemLoadingEnabledYes"),
@@ -1585,11 +1710,12 @@ public class Main {
 					if (response == 0) {
 						od.dispose();
 						ItemsWindow.initTextures(Main.this, false);
-						if (clients.size() > 0)
+						if (clients.size() > 0) {
 							JOptionPane.showOptionDialog(od, Messages.getString("Main.itemTexturesLoaded"),
 									Messages.getString("Main.itemTexturesLoadedTitle"), JOptionPane.OK_CANCEL_OPTION,
 									JOptionPane.INFORMATION_MESSAGE, null,
 									new Object[] { Messages.getString("Main.ok") }, 0);
+						}
 					}
 				}
 
@@ -1606,12 +1732,12 @@ public class Main {
 				up.setShowWindowsInTray(showWhenInTray.isSelected());
 				up.setSendWindowClosePackets(sendClosePackets.isSelected());
 
-				boolean langChanged = up.getAppLanguage() != languages.getSelectedItem()
-						|| up.getUnicodeCharactersMode() != unicodeDisplay.getSelectedItem();
+				final boolean langChanged = up.getAppLanguage() != languages.getSelectedItem()
+						|| !(up.getUnicodeCharactersMode().equals(unicodeDisplay.getSelectedItem()));
 				up.setAppLanguage((Language) languages.getSelectedItem());
 				up.setUnicodeCharactersMode((String) unicodeDisplay.getSelectedItem());
 
-				ColorPreferences cp2 = up.getColorPreferences();
+				final ColorPreferences cp2 = up.getColorPreferences();
 				cp2.setColorDisabledButton(SwingUtils.getHexRGB(apButtonDisabled.getColor()));
 				cp2.setColorEnabledButton(SwingUtils.getHexRGB(apButtonEnabled.getColor()));
 				cp2.setColorEnabledHoverButton(SwingUtils.getHexRGB(apButtonEnabledHover.getColor()));
@@ -1622,14 +1748,15 @@ public class Main {
 				PlayerSkinCache.getSkincache().clear();
 
 				if (langChanged) {
-					int response = JOptionPane.showOptionDialog(od, Messages.getString("Main.langChangedLabel"),
+					final int response = JOptionPane.showOptionDialog(od, Messages.getString("Main.langChangedLabel"),
 							Messages.getString("Main.langChangedDialogTitle"), JOptionPane.OK_OPTION,
 							JOptionPane.INFORMATION_MESSAGE, null,
 							new Object[] { Messages.getString("Main.langChangedLabelDialogOptionRestart"),
 									Messages.getString("Main.langChangedLabelDialogOptionContinue") },
 							0);
-					if (response == 0)
+					if (response == 0) {
 						System.exit(0);
+					}
 				}
 
 				od.dispose();
@@ -1637,11 +1764,14 @@ public class Main {
 			}
 		});
 
-		sCancel.addActionListener(ev2 -> {
-			od.dispose();
+		sCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev2) {
+				od.dispose();
+			}
 		});
 
-		Box sControls = Box.createHorizontalBox();
+		final Box sControls = Box.createHorizontalBox();
 
 		sControls.add(sOk);
 		sControls.add(sCancel);
@@ -1677,8 +1807,9 @@ public class Main {
 		chatSend.setEnabled(false);
 		chatSend.setMargin(new Insets(5, 5, 5, 5));
 
-		for (Component ct : chatControls.getComponents())
+		for (final Component ct : chatControls.getComponents()) {
 			ct.setFont(ct.getFont().deriveFont(13.5f));
+		}
 
 		chatControls.add(chatInput);
 		chatControls.add(chatSend);
@@ -1690,15 +1821,15 @@ public class Main {
 		hotbar.setEditable(false);
 		hotbar.setFont(mcFont.deriveFont(13.5f));
 
-		JScrollPane hjsc = new JScrollPane(hotbar);
+		final JScrollPane hjsc = new JScrollPane(hotbar);
 		hjsc.setMaximumSize(chatControls.getMaximumSize());
 
-		JTabbedPane controlsTabPane = new JTabbedPane();
+		final JTabbedPane controlsTabPane = new JTabbedPane();
 //		JScrollPane controlsScrollPane = new JScrollPane(controlsTabPane);
 
 		win.addComponentListener(new ComponentAdapter() {
 			@Override
-			public void componentResized(ComponentEvent e) {
+			public void componentResized(final ComponentEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {
 
 					@Override
@@ -1709,30 +1840,36 @@ public class Main {
 			}
 		});
 
-		JVBoxPanel playerBox = new JVBoxPanel();
-		JPanel statisticsContainer = new JPanel();
+		final JVBoxPanel playerBox = new JVBoxPanel();
+		final JPanel statisticsContainer = new JPanel();
 
 		final JCheckBox toggleSneak = new JCheckBox(Messages.getString("Main.toggleSneak"));
-		toggleSneak.addActionListener(ev -> {
-			try {
-				MinecraftClient cl = clients.get(fPane);
-				cl.toggleSneaking();
-				toggleSneak.setSelected(cl.isSneaking());
-			} catch (Exception e1) {
-				e1.printStackTrace();
+		toggleSneak.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				try {
+					final MinecraftClient cl = clients.get(fPane);
+					cl.toggleSneaking();
+					toggleSneak.setSelected(cl.isSneaking());
+				} catch (final Exception e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 
 		playerBox.add(toggleSneak);
 
 		final JCheckBox toggleSprint = new JCheckBox(Messages.getString("Main.toggleSprint"));
-		toggleSprint.addActionListener(ev -> {
-			try {
-				MinecraftClient cl = clients.get(fPane);
-				cl.toggleSprinting();
-				toggleSprint.setSelected(cl.isSprinting());
-			} catch (Exception e1) {
-				e1.printStackTrace();
+		toggleSprint.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				try {
+					final MinecraftClient cl = clients.get(fPane);
+					cl.toggleSprinting();
+					toggleSprint.setSelected(cl.isSprinting());
+				} catch (final Exception e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 
@@ -1745,13 +1882,13 @@ public class Main {
 		healthBar.setString(Messages.getString("Main.healthBar"));
 		foodBar.setString(Messages.getString("Main.foodBar"));
 
-		JButton[] movementButtons = new JButton[] { new BasicArrowButton(SwingConstants.NORTH),
+		final JButton[] movementButtons = new JButton[] { new BasicArrowButton(SwingConstants.NORTH),
 				new BasicArrowButton(SwingConstants.SOUTH_WEST), new BasicArrowButton(SwingConstants.WEST),
 				new BasicArrowButton(SwingConstants.NORTH_WEST), new BasicArrowButton(SwingConstants.SOUTH),
 				new BasicArrowButton(SwingConstants.NORTH_EAST), new BasicArrowButton(SwingConstants.EAST),
 				new BasicArrowButton(SwingConstants.SOUTH_EAST) };
 
-		JButton jumpButton = new BasicArrowButton(SwingConstants.NORTH_EAST);
+		final JButton jumpButton = new BasicArrowButton(SwingConstants.NORTH_EAST);
 		jumpButton.setEnabled(false);
 
 		final JCheckBox lockPos = new JCheckBox(Messages.getString("Main.lockPlayerPosition"));
@@ -1761,15 +1898,15 @@ public class Main {
 		SwingUtils.alignSpinner(speed);
 		SwingUtils.alignSpinner(blocks);
 
-		Box speedBox = Box.createHorizontalBox();
-		Box blocksBox = Box.createHorizontalBox();
+		final Box speedBox = Box.createHorizontalBox();
+		final Box blocksBox = Box.createHorizontalBox();
 
 		speedBox.add(new JLabel(Messages.getString("Main.movementSpeed")));
 		blocksBox.add(new JLabel(Messages.getString("Main.distanceToWalk")));
 		speedBox.add(speed);
 		blocksBox.add(blocks);
 
-		for (final Component ct : speedBox.getComponents())
+		for (final Component ct : speedBox.getComponents()) {
 			SwingUtilities.invokeLater(new Runnable() {
 
 				@Override
@@ -1777,7 +1914,8 @@ public class Main {
 					ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
 				}
 			});
-		for (final Component ct : blocksBox.getComponents())
+		}
+		for (final Component ct : blocksBox.getComponents()) {
 			SwingUtilities.invokeLater(new Runnable() {
 
 				@Override
@@ -1785,6 +1923,7 @@ public class Main {
 					ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
 				}
 			});
+		}
 
 		for (int x = 0; x < movementButtons.length; x++) {
 			final int direction = x;
@@ -1792,19 +1931,19 @@ public class Main {
 				final int directionL = direction;
 
 				@Override
-				public void actionPerformed(ActionEvent arg0) {
+				public void actionPerformed(final ActionEvent arg0) {
 					try {
-						MinecraftClient cl = clients.get(fPane);
+						final MinecraftClient cl = clients.get(fPane);
 						cl.move(directionL, (double) speed.getValue(), (double) blocks.getValue(),
 								lockPos.isSelected());
-					} catch (Exception e1) {
+					} catch (final Exception e1) {
 						e1.printStackTrace();
 					}
 				}
 			});
 		}
 
-		JPanel movementPanel = new JPanel(new GridLayout(3, 3));
+		final JPanel movementPanel = new JPanel(new GridLayout(3, 3));
 		movementPanel.add(movementButtons[1]);
 		movementPanel.add(movementButtons[0]);
 		movementPanel.add(movementButtons[7]);
@@ -1840,27 +1979,28 @@ public class Main {
 		playerBox.add(movementPanel);
 		playerBox.alignAll();
 
-		Box playerListBox = Box.createVerticalBox();
+		final Box playerListBox = Box.createVerticalBox();
 
-		JPlaceholderField filterField = new JMinecraftField(Messages.getString("Main.playerNamesFilter"));
+		final JPlaceholderField filterField = new JMinecraftField(Messages.getString("Main.playerNamesFilter"));
 		filterField.setMaximumSize(new Dimension(SwingUtils.sSize.width, 0));
 
 		final JMinecraftPlayerList playerList = new JMinecraftPlayerList(filterField, win, entry.getHost());
-		JScrollPane playerListPane = new JScrollPane(playerList);
+		final JScrollPane playerListPane = new JScrollPane(playerList);
 
 		playerList.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(final MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-					JMinecraftPlayerList pl = (JMinecraftPlayerList) e.getSource();
-					PlayerInfo pInfo = pl.getSelectedValue();
+					final JMinecraftPlayerList pl = (JMinecraftPlayerList) e.getSource();
+					final PlayerInfo pInfo = pl.getSelectedValue();
 					if (pInfo != null && chatInput.isEnabled()) {
-						String uName = pInfo.getName();
+						final String uName = pInfo.getName();
 						String ct = chatInput.getText();
-						boolean prependSpace = !(ct.isEmpty() || (ct.substring(ct.length() - 1).equals(" ")));
-						if (prependSpace)
+						final boolean prependSpace = !(ct.isEmpty() || (ct.substring(ct.length() - 1).equals(" ")));
+						if (prependSpace) {
 							ct += " ";
+						}
 						chatInput.setText(ct + uName + " ");
 						chatInput.requestFocus();
 					}
@@ -1870,11 +2010,14 @@ public class Main {
 
 		filterField.addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void keyPressed(final KeyEvent e) {
 				playerListPane.getVerticalScrollBar().setValue(0);
 				playerList.setListData(playerList.getListData());
-				SwingUtilities.invokeLater(() -> {
-					playerList.repaint();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						playerList.repaint();
+					}
 				});
 			}
 		});
@@ -1882,20 +2025,21 @@ public class Main {
 		playerListBox.add(filterField);
 		playerListBox.add(playerListPane);
 
-		JVBoxPanel statisticsBox = new JVBoxPanel();
-		JScrollPane statisticsPane = new JScrollPane(statisticsBox);
+		final JVBoxPanel statisticsBox = new JVBoxPanel();
+		final JScrollPane statisticsPane = new JScrollPane(statisticsBox);
 
-		JButton refreshStats = new JButton(Messages.getString("Main.refreshStatsButton"));
+		final JButton refreshStats = new JButton(Messages.getString("Main.refreshStatsButton"));
 		refreshStats.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				MinecraftClient cl = clients.get(fPane);
-				if (cl != null)
+			public void actionPerformed(final ActionEvent e) {
+				final MinecraftClient cl = clients.get(fPane);
+				if (cl != null) {
 					try {
 						cl.refreshStatistics();
-					} catch (IOException e1) {
+					} catch (final IOException e1) {
 						e1.printStackTrace();
 					}
+				}
 			}
 		});
 
@@ -1903,17 +2047,17 @@ public class Main {
 		statisticsBox.add(statisticsContainer);
 		statisticsBox.alignAll();
 
-		JVBoxPanel inventoryBox = new JVBoxPanel();
+		final JVBoxPanel inventoryBox = new JVBoxPanel();
 
 		final JButton showInventory = new JButton(Messages.getString("Main.showInventoryButton"));
 		showInventory.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				if (!up.isEnableInventoryHandling())
 					return;
 
-				MinecraftClient cl = clients.get(fPane);
+				final MinecraftClient cl = clients.get(fPane);
 				cl.getInventory().openWindow(win, up.isSendWindowClosePackets());
 			}
 		});
@@ -1921,11 +2065,11 @@ public class Main {
 		inventoryBox.add(showInventory);
 		inventoryBox.alignAll();
 
-		JVBoxPanel worldBox = new JVBoxPanel();
+		final JVBoxPanel worldBox = new JVBoxPanel();
 
-		Box timeBox = Box.createHorizontalBox();
+		final Box timeBox = Box.createHorizontalBox();
 
-		JLabel timeLabel = new JLabel(Messages.getString("Main.worldTimeLabel"));
+		final JLabel timeLabel = new JLabel(Messages.getString("Main.worldTimeLabel"));
 		final JLabel timeValueLabel = new JLabel("-:-");
 
 		timeBox.add(timeLabel);
@@ -1934,79 +2078,84 @@ public class Main {
 		worldBox.add(timeBox);
 		worldBox.alignAll();
 
-		JVBoxPanel autoMsgBox = new JVBoxPanel();
+		final JVBoxPanel autoMsgBox = new JVBoxPanel();
 
-		JCheckBox autoMsgEnable = new JCheckBox(Messages.getString("Main.enabled"));
+		final JCheckBox autoMsgEnable = new JCheckBox(Messages.getString("Main.enabled"));
 
-		JSpinner autoMsgDelay = new JSpinner(new SpinnerNumberModel(1, 0, Integer.MAX_VALUE, 1));
+		final JSpinner autoMsgDelay = new JSpinner(new SpinnerNumberModel(1, 0, Integer.MAX_VALUE, 1));
 		SwingUtils.alignSpinner(autoMsgDelay);
-		JSpinner autoMsgInterval = new JSpinner(new SpinnerNumberModel(1, 0, Integer.MAX_VALUE, 1));
+		final JSpinner autoMsgInterval = new JSpinner(new SpinnerNumberModel(1, 0, Integer.MAX_VALUE, 1));
 		SwingUtils.alignSpinner(autoMsgInterval);
 
-		ChangeListener cls = new ChangeListener() {
+		final ChangeListener cls = new ChangeListener() {
 			boolean permitted = false;
 
 			@Override
-			public void stateChanged(ChangeEvent e) {
+			public void stateChanged(final ChangeEvent e) {
 				System.out.println(permitted);
-				JSpinner src = (JSpinner) e.getSource();
-				int val = (int) src.getValue();
+				final JSpinner src = (JSpinner) e.getSource();
+				final int val = (int) src.getValue();
 				if (val < 1 && !permitted) {
 					src.setValue(1);
-					String msg = Messages.getString("Main.autoValWarning");
-					int resp = JOptionPane.showOptionDialog(win, msg, Messages.getString("Main.autoValWarningTitle"),
-							JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null,
+					final String msg = Messages.getString("Main.autoValWarning");
+					final int resp = JOptionPane.showOptionDialog(win, msg,
+							Messages.getString("Main.autoValWarningTitle"), JOptionPane.YES_NO_OPTION,
+							JOptionPane.WARNING_MESSAGE, null,
 							new Object[] { Messages.getString("Main.yes"), Messages.getString("Main.no") }, 0);
 					if (resp == 0) {
 						permitted = true;
 					}
-				} else if (val > 1 && permitted)
+				} else if (val > 1 && permitted) {
 					permitted = false;
+				}
 			}
 		};
 
 		autoMsgDelay.addChangeListener(cls);
 		autoMsgInterval.addChangeListener(cls);
 
-		JRadioButton intSeconds = new JRadioButton(Messages.getString("Main.seconds"));
+		final JRadioButton intSeconds = new JRadioButton(Messages.getString("Main.seconds"));
 		intSeconds.setSelected(true);
-		JRadioButton intMinutes = new JRadioButton(Messages.getString("Main.minutes"));
-		ButtonGroup gp = new ButtonGroup();
+		final JRadioButton intMinutes = new JRadioButton(Messages.getString("Main.minutes"));
+		final ButtonGroup gp = new ButtonGroup();
 		gp.add(intMinutes);
 		gp.add(intSeconds);
 
-		JMemList<String> autoMessages = new JMemList<String>();
-		JScrollPane autoMsgPane = new JScrollPane(autoMessages);
+		final JMemList<String> autoMessages = new JMemList<String>();
+		final JScrollPane autoMsgPane = new JScrollPane(autoMessages);
 
-		JButton addMsg = new JButton("+");
-		JButton removeMsg = new JButton("-");
-		JButton downMsg = new JButton("v");
-		JButton upMsg = new JButton("^");
+		final JButton addMsg = new JButton("+");
+		final JButton removeMsg = new JButton("-");
+		final JButton downMsg = new JButton("v");
+		final JButton upMsg = new JButton("^");
 
 		removeMsg.setEnabled(false);
 		upMsg.setEnabled(false);
 		downMsg.setEnabled(false);
 
-		autoMessages.addListSelectionListener(e -> {
-			if (!e.getValueIsAdjusting()) {
-				@SuppressWarnings("unchecked")
-				JMemList<String> ls = (JMemList<String>) e.getSource();
+		autoMessages.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					@SuppressWarnings("unchecked")
+					final JMemList<String> ls = (JMemList<String>) e.getSource();
 
-				boolean eb = ls.getSelectedIndex() != -1 && ls.getSelectedValue() != null;
-				removeMsg.setEnabled(eb);
-				upMsg.setEnabled(eb && ls.getSelectedIndex() > 0);
-				downMsg.setEnabled(eb && ls.getSelectedIndex() < ls.getListData().length - 1);
+					final boolean eb = ls.getSelectedIndex() != -1 && ls.getSelectedValue() != null;
+					removeMsg.setEnabled(eb);
+					upMsg.setEnabled(eb && ls.getSelectedIndex() > 0);
+					downMsg.setEnabled(eb && ls.getSelectedIndex() < ls.getListData().length - 1);
+				}
 			}
 		});
 
 		upMsg.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				if (autoMessages.getSelectedIndex() > 0) {
-					String[] ld = autoMessages.getListData();
-					int x = autoMessages.getSelectedIndex();
-					String bf = ld[x - 1];
+					final String[] ld = autoMessages.getListData();
+					final int x = autoMessages.getSelectedIndex();
+					final String bf = ld[x - 1];
 					ld[x - 1] = ld[x];
 					ld[x] = bf;
 					autoMessages.setListData(ld);
@@ -2018,11 +2167,11 @@ public class Main {
 		downMsg.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				if (autoMessages.getSelectedIndex() < autoMessages.getListData().length - 1) {
-					String[] ld = autoMessages.getListData();
-					int x = autoMessages.getSelectedIndex();
-					String bf = ld[x + 1];
+					final String[] ld = autoMessages.getListData();
+					final int x = autoMessages.getSelectedIndex();
+					final String bf = ld[x + 1];
 					ld[x + 1] = ld[x];
 					ld[x] = bf;
 					autoMessages.setListData(ld);
@@ -2034,15 +2183,16 @@ public class Main {
 		removeMsg.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				if (autoMessages.getSelectedIndex() != -1) {
-					int z = autoMessages.getSelectedIndex();
-					String[] ld = autoMessages.getListData();
-					List<String> ls = new ArrayList<>();
+					final int z = autoMessages.getSelectedIndex();
+					final String[] ld = autoMessages.getListData();
+					final List<String> ls = new ArrayList<>();
 					for (int x = 0; x < ld.length; x++)
-						if (x != z)
+						if (x != z) {
 							ls.add(ld[x]);
-					autoMessages.setListData((String[]) ls.toArray(new String[ls.size()]));
+						}
+					autoMessages.setListData(ls.toArray(new String[ls.size()]));
 					autoMessages.setSelectedIndex(
 							z >= autoMessages.getListData().length ? autoMessages.getListData().length - 1 : z);
 				}
@@ -2052,70 +2202,72 @@ public class Main {
 		addMsg.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				JVBoxPanel autoMsgAddPanel = new JVBoxPanel();
+			public void actionPerformed(final ActionEvent e) {
+				final JVBoxPanel autoMsgAddPanel = new JVBoxPanel();
 				autoMsgAddPanel.add(new JLabel(Messages.getString("Main.autoMsgAddLabel")));
 
-				JPlaceholderField jpf = new JPlaceholderField(Messages.getString("Main.message"));
+				final JPlaceholderField jpf = new JPlaceholderField(Messages.getString("Main.message"));
 				autoMsgAddPanel.add(jpf);
 
 				autoMsgAddPanel.alignAll();
 
-				int resp = JOptionPane.showOptionDialog(win, autoMsgAddPanel,
+				final int resp = JOptionPane.showOptionDialog(win, autoMsgAddPanel,
 						Messages.getString("Main.autoMsgAddTitle"), JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.QUESTION_MESSAGE, null, null, 0);
 
 				if (resp == 0 && !jpf.getText().replace(" ", "").isEmpty()) {
 					String[] ld = autoMessages.getListData();
 					ld = ld == null ? new String[0] : ld;
-					String[] nld = new String[ld.length + 1];
-					for (int x = 0; x < ld.length; x++)
+					final String[] nld = new String[ld.length + 1];
+					for (int x = 0; x < ld.length; x++) {
 						nld[x] = ld[x];
+					}
 					nld[nld.length - 1] = jpf.getText();
 					autoMessages.setListData(nld);
 				}
 			}
 		});
 
-		Box msgCtlBox = Box.createHorizontalBox();
+		final Box msgCtlBox = Box.createHorizontalBox();
 		msgCtlBox.add(addMsg);
 		msgCtlBox.add(removeMsg);
 		msgCtlBox.add(upMsg);
 		msgCtlBox.add(downMsg);
 
-		ActionListener ac = new ActionListener() {
+		final ActionListener ac = new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				boolean eb = autoMsgEnable.isSelected();
-				for (Component ct : autoMsgBox.getComponents()) {
-					if (ct instanceof JRadioButton || ct instanceof JSpinner)
+			public void actionPerformed(final ActionEvent e) {
+				final boolean eb = autoMsgEnable.isSelected();
+				for (final Component ct : autoMsgBox.getComponents()) {
+					if (ct instanceof JRadioButton || ct instanceof JSpinner) {
 						ct.setEnabled(eb);
+					}
 				}
 			}
 		};
 		autoMsgEnable.addActionListener(ac);
 
-		Box autoMsgSvCtl = Box.createHorizontalBox();
+		final Box autoMsgSvCtl = Box.createHorizontalBox();
 
-		JButton autoMsgSave = new JButton(Messages.getString("Main.save"));
-		JButton autoMsgLoad = new JButton(Messages.getString("Main.load"));
+		final JButton autoMsgSave = new JButton(Messages.getString("Main.save"));
+		final JButton autoMsgLoad = new JButton(Messages.getString("Main.load"));
 
 		autoMsgSave.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fc = new JFileChooser(new File("."));
+			public void actionPerformed(final ActionEvent e) {
+				final JFileChooser fc = new JFileChooser(new File("."));
 				fc.setAcceptAllFileFilterUsed(false);
 				fc.setApproveButtonText(Messages.getString("Main.save"));
 				fc.setDialogTitle(Messages.getString("Main.autoMsgSaveTitle"));
 				fc.setSelectedFile(new File("autoMessages.amf"));
 				fc.setFileFilter(new FileNameExtensionFilter(Messages.getString("Main.autoMsgFileName"), "amf"));
-				int ret = fc.showSaveDialog(win);
+				final int ret = fc.showSaveDialog(win);
 				if (ret == JFileChooser.APPROVE_OPTION) {
-					File out = IOUtils.forceExtension(fc.getSelectedFile(), ".amf");
+					final File out = IOUtils.forceExtension(fc.getSelectedFile(), ".amf");
 					if (out.exists()) {
-						int ov = JOptionPane.showOptionDialog(win, Messages.getString("Main.overwriteFile"),
+						final int ov = JOptionPane.showOptionDialog(win, Messages.getString("Main.overwriteFile"),
 								Messages.getString("Main.overwriteFileTitle"), JOptionPane.YES_NO_OPTION,
 								JOptionPane.WARNING_MESSAGE, null,
 								new Object[] { Messages.getString("Main.yes"), Messages.getString("Main.no") }, 0);
@@ -2124,7 +2276,7 @@ public class Main {
 					}
 					try {
 						IOUtils.saveAmfFile(out, autoMessages);
-					} catch (IOException e1) {
+					} catch (final IOException e1) {
 						e1.printStackTrace();
 						SwingUtils.showErrorDialog(win, Messages.getString("Main.errorTitle"), e1,
 								Messages.getString("Main.autoMsgSaveError"));
@@ -2136,19 +2288,19 @@ public class Main {
 		autoMsgLoad.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fc = new JFileChooser(new File("."));
+			public void actionPerformed(final ActionEvent e) {
+				final JFileChooser fc = new JFileChooser(new File("."));
 				fc.setAcceptAllFileFilterUsed(false);
 				fc.setApproveButtonText(Messages.getString("Main.load"));
 				fc.setDialogTitle(Messages.getString("Main.autoMsgLoadTitle"));
 				fc.setFileFilter(new FileNameExtensionFilter(Messages.getString("Main.autoMsgFileName"), "amf"));
-				int ret = fc.showOpenDialog(win);
+				final int ret = fc.showOpenDialog(win);
 				if (ret == JFileChooser.APPROVE_OPTION) {
-					File f = fc.getSelectedFile();
+					final File f = fc.getSelectedFile();
 					if (f.exists()) {
 						try {
 							autoMessages.setListData(IOUtils.loadAmfFile(f));
-						} catch (IOException e1) {
+						} catch (final IOException e1) {
 							e1.printStackTrace();
 							SwingUtils.showErrorDialog(win, Messages.getString("Main.errorTitle"), e1,
 									Messages.getString("Main.autoMsgLoadError"));
@@ -2178,16 +2330,16 @@ public class Main {
 
 		autoMsgBox.alignAll();
 
-		JVBoxPanel autoRespBox = new JVBoxPanel();
+		final JVBoxPanel autoRespBox = new JVBoxPanel();
 
-		JCheckBox autoRespEnabled = new JCheckBox(Messages.getString("Main.enabled"));
+		final JCheckBox autoRespEnabled = new JCheckBox(Messages.getString("Main.enabled"));
 
-		JAutoResponseList autoResponses = new JAutoResponseList();
-		JScrollPane autoResponsesPane = new JScrollPane(autoResponses);
+		final JAutoResponseList autoResponses = new JAutoResponseList();
+		final JScrollPane autoResponsesPane = new JScrollPane(autoResponses);
 
-		JButton addAutoResponse = new JButton("+");
-		JButton removeAutoResponse = new JButton("-");
-		JButton editAutoResponse = new JButton(Messages.getString("Main.edit"));
+		final JButton addAutoResponse = new JButton("+");
+		final JButton removeAutoResponse = new JButton("-");
+		final JButton editAutoResponse = new JButton(Messages.getString("Main.edit"));
 
 		removeAutoResponse.setEnabled(false);
 		editAutoResponse.setEnabled(false);
@@ -2195,21 +2347,21 @@ public class Main {
 		autoResponses.addListSelectionListener(new ListSelectionListener() {
 
 			@Override
-			public void valueChanged(ListSelectionEvent e) {
+			public void valueChanged(final ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
-					JAutoResponseList rs = (JAutoResponseList) e.getSource();
-					boolean en = rs.getSelectedIndex() != -1;
+					final JAutoResponseList rs = (JAutoResponseList) e.getSource();
+					final boolean en = rs.getSelectedIndex() != -1;
 					removeAutoResponse.setEnabled(en);
 					editAutoResponse.setEnabled(en);
 				}
 			}
 		});
 
-		ActionListener acl = new ActionListener() {
+		final ActionListener acl = new ActionListener() {
 
 			@SuppressWarnings("unchecked")
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 
 				AutoResponseRule rule = null;
 
@@ -2217,45 +2369,51 @@ public class Main {
 					rule = autoResponses.getSelectedValue();
 				}
 
-				JVBoxPanel addResponseBox = new JVBoxPanel();
+				final JVBoxPanel addResponseBox = new JVBoxPanel();
 
-				JTextField ruleNameField = new JTextField(
+				final JTextField ruleNameField = new JTextField(
 						Messages.getString("Main.autoResponseDefaultRuleName") + " " + Integer.toString(
 								autoResponses.getListData() == null ? 1 : autoResponses.getListData().length + 1));
-				JStringMemList triggers = new JStringMemList();
-				JStringMemList noTriggers = new JStringMemList();
-				JStringMemList effects = new JStringMemList();
+				final JStringMemList triggers = new JStringMemList();
+				final JStringMemList noTriggers = new JStringMemList();
+				final JStringMemList effects = new JStringMemList();
 
-				JScrollPane triggersPane = new JScrollPane(triggers);
-				JScrollPane noTriggersPane = new JScrollPane(noTriggers);
-				JScrollPane effectsPane = new JScrollPane(effects);
+				final JScrollPane triggersPane = new JScrollPane(triggers);
+				final JScrollPane noTriggersPane = new JScrollPane(noTriggers);
+				final JScrollPane effectsPane = new JScrollPane(effects);
 
-				Box triggersCtl = Box.createHorizontalBox();
-				Box noTriggersCtl = Box.createHorizontalBox();
-				Box effectsCtl = Box.createHorizontalBox();
+				final Box triggersCtl = Box.createHorizontalBox();
+				final Box noTriggersCtl = Box.createHorizontalBox();
+				final Box effectsCtl = Box.createHorizontalBox();
 
-				JButton addTrigger = new JButton("+");
-				JButton addNotTrigger = new JButton("+");
-				JButton addEffect = new JButton("+");
+				final JButton addTrigger = new JButton("+");
+				final JButton addNotTrigger = new JButton("+");
+				final JButton addEffect = new JButton("+");
 
-				JButton removeTrigger = new JButton("-");
-				JButton removeNotTrigger = new JButton("-");
-				JButton removeEffect = new JButton("-");
+				final JButton removeTrigger = new JButton("-");
+				final JButton removeNotTrigger = new JButton("-");
+				final JButton removeEffect = new JButton("-");
 
 				removeTrigger.setEnabled(false);
 				removeNotTrigger.setEnabled(false);
 				removeEffect.setEnabled(false);
 
-				ListSelectionListener sl = (ev) -> {
-					Object source = ev.getSource();
-					int index = ((JList<String>) source).getSelectedIndex();
-					if (!ev.getValueIsAdjusting()) {
-						if (source.equals(triggers))
-							removeTrigger.setEnabled(index != -1);
-						if (source.equals(noTriggers))
-							removeNotTrigger.setEnabled(index != -1);
-						if (source.equals(effects))
-							removeEffect.setEnabled(index != -1);
+				final ListSelectionListener sl = new ListSelectionListener() {
+					@Override
+					public void valueChanged(ListSelectionEvent ev) {
+						final Object source = ev.getSource();
+						final int index = ((JList<String>) source).getSelectedIndex();
+						if (!ev.getValueIsAdjusting()) {
+							if (source.equals(triggers)) {
+								removeTrigger.setEnabled(index != -1);
+							}
+							if (source.equals(noTriggers)) {
+								removeNotTrigger.setEnabled(index != -1);
+							}
+							if (source.equals(effects)) {
+								removeEffect.setEnabled(index != -1);
+							}
+						}
 					}
 				};
 
@@ -2263,45 +2421,57 @@ public class Main {
 				noTriggers.addListSelectionListener(sl);
 				effects.addListSelectionListener(sl);
 
-				ActionListener remAc = (ev) -> {
-					Object src = ev.getSource();
-					if (src.equals(removeTrigger))
-						triggers.removeString(triggers.getSelectedIndex());
-					if (src.equals(removeNotTrigger))
-						noTriggers.removeString(noTriggers.getSelectedIndex());
-					if (src.equals(removeEffect))
-						effects.removeString(effects.getSelectedIndex());
-				};
-
-				ActionListener addAc = new ActionListener() {
-
+				final ActionListener remAc = new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
-						Object src = ev.getSource();
-						String label = "";
-						if (src.equals(addTrigger))
-							label = Messages.getString("Main.addTrigger");
-						if (src.equals(addNotTrigger))
-							label = Messages.getString("Main.addException");
-						if (src.equals(addEffect))
-							label = Messages.getString("Main.addEffect");
+						final Object src = ev.getSource();
+						if (src.equals(removeTrigger)) {
+							triggers.removeString(triggers.getSelectedIndex());
+						}
+						if (src.equals(removeNotTrigger)) {
+							noTriggers.removeString(noTriggers.getSelectedIndex());
+						}
+						if (src.equals(removeEffect)) {
+							effects.removeString(effects.getSelectedIndex());
+						}
+					}
+				};
 
-						JTextField jtf = new JTextField();
-						JVBoxPanel jvb = new JVBoxPanel();
+				final ActionListener addAc = new ActionListener() {
+
+					@Override
+					public void actionPerformed(final ActionEvent ev) {
+						final Object src = ev.getSource();
+						String label = "";
+						if (src.equals(addTrigger)) {
+							label = Messages.getString("Main.addTrigger");
+						}
+						if (src.equals(addNotTrigger)) {
+							label = Messages.getString("Main.addException");
+						}
+						if (src.equals(addEffect)) {
+							label = Messages.getString("Main.addEffect");
+						}
+
+						final JTextField jtf = new JTextField();
+						final JVBoxPanel jvb = new JVBoxPanel();
 						jvb.add(new JLabel(label + ":"));
 						jvb.add(jtf);
 						jvb.alignAll();
 						jtf.requestFocus();
-						int resp = JOptionPane.showOptionDialog(win, jvb, label, JOptionPane.OK_CANCEL_OPTION,
+						final int resp = JOptionPane.showOptionDialog(win, jvb, label, JOptionPane.OK_CANCEL_OPTION,
 								JOptionPane.QUESTION_MESSAGE, null, null, 0);
 						if (resp == 0 && !jtf.getText().replace(" ", "").isEmpty()) {
-							String txt = jtf.getText();
-							if (src.equals(addTrigger))
+							final String txt = jtf.getText();
+							if (src.equals(addTrigger)) {
 								triggers.addString(txt);
-							if (src.equals(addNotTrigger))
+							}
+							if (src.equals(addNotTrigger)) {
 								noTriggers.addString(txt);
-							if (src.equals(addEffect))
+							}
+							if (src.equals(addEffect)) {
 								effects.addString(txt);
+							}
 						}
 					}
 				};
@@ -2321,33 +2491,33 @@ public class Main {
 				effectsCtl.add(addEffect);
 				effectsCtl.add(removeEffect);
 
-				JRadioButton effectsRandom = new JRadioButton(Messages.getString("Main.random"));
-				JRadioButton effectsOrdered = new JRadioButton(Messages.getString("Main.ordered"));
-				JRadioButton effectsAll = new JRadioButton(Messages.getString("Main.all"));
+				final JRadioButton effectsRandom = new JRadioButton(Messages.getString("Main.random"));
+				final JRadioButton effectsOrdered = new JRadioButton(Messages.getString("Main.ordered"));
+				final JRadioButton effectsAll = new JRadioButton(Messages.getString("Main.all"));
 				effectsRandom.setSelected(true);
-				ButtonGroup bgp = new ButtonGroup();
+				final ButtonGroup bgp = new ButtonGroup();
 				bgp.add(effectsOrdered);
 				bgp.add(effectsRandom);
 				bgp.add(effectsAll);
 
-				JRadioButton triggersAnd = new JRadioButton(Messages.getString("Main.and"));
-				JRadioButton triggersOr = new JRadioButton(Messages.getString("Main.or"));
+				final JRadioButton triggersAnd = new JRadioButton(Messages.getString("Main.and"));
+				final JRadioButton triggersOr = new JRadioButton(Messages.getString("Main.or"));
 				triggersOr.setSelected(true);
-				ButtonGroup tgp = new ButtonGroup();
+				final ButtonGroup tgp = new ButtonGroup();
 				tgp.add(triggersAnd);
 				tgp.add(triggersOr);
 
-				Box triggersBox = Box.createHorizontalBox();
+				final Box triggersBox = Box.createHorizontalBox();
 				triggersBox.add(triggersOr);
 				triggersBox.add(triggersAnd);
 
-				JSpinner allInterval = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+				final JSpinner allInterval = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
 				allInterval.setEnabled(effectsAll.isSelected());
 
-				ActionListener radioListener = new ActionListener() {
+				final ActionListener radioListener = new ActionListener() {
 
 					@Override
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(final ActionEvent e) {
 						allInterval.setEnabled(effectsAll.isSelected());
 					}
 				};
@@ -2356,7 +2526,7 @@ public class Main {
 				effectsOrdered.addActionListener(radioListener);
 				effectsAll.addActionListener(radioListener);
 
-				Box radioBox = Box.createHorizontalBox();
+				final Box radioBox = Box.createHorizontalBox();
 				radioBox.add(effectsRandom);
 				radioBox.add(effectsOrdered);
 				radioBox.add(effectsAll);
@@ -2390,23 +2560,24 @@ public class Main {
 				addResponseBox.alignAll();
 
 				if (rule != null) {
-					String name = rule.getName();
-					List<String> rTriggers = rule.getTriggers();
-					List<String> rExceptions = rule.getExceptions();
-					List<String> rEffects = rule.getEffects();
-					EffectType effectType = rule.getType();
-					TriggerType triggerType = rule.getTriggerType();
-					int interval = rule.getInterval();
+					final String name = rule.getName();
+					final List<String> rTriggers = rule.getTriggers();
+					final List<String> rExceptions = rule.getExceptions();
+					final List<String> rEffects = rule.getEffects();
+					final EffectType effectType = rule.getType();
+					final TriggerType triggerType = rule.getTriggerType();
+					final int interval = rule.getInterval();
 
 					ruleNameField.setText(name);
-					triggers.setListData((String[]) rTriggers.toArray(new String[rTriggers.size()]));
-					noTriggers.setListData((String[]) rExceptions.toArray(new String[rExceptions.size()]));
-					effects.setListData((String[]) rEffects.toArray(new String[rEffects.size()]));
+					triggers.setListData(rTriggers.toArray(new String[rTriggers.size()]));
+					noTriggers.setListData(rExceptions.toArray(new String[rExceptions.size()]));
+					effects.setListData(rEffects.toArray(new String[rEffects.size()]));
 
 					allInterval.setValue(interval);
 
-					if (triggerType == TriggerType.AND)
+					if (triggerType == TriggerType.AND) {
 						triggersAnd.doClick();
+					}
 
 					switch (effectType) {
 						case ALL: {
@@ -2424,29 +2595,28 @@ public class Main {
 					}
 				}
 
-				Box jj = Box.createHorizontalBox();
+				final Box jj = Box.createHorizontalBox();
 				jj.add(new JLabel(" "));
 				jj.add(addResponseBox);
 				jj.add(new JLabel(" "));
-				JScrollPane sp = new JScrollPane(jj);
+				final JScrollPane sp = new JScrollPane(jj);
 				sp.setPreferredSize(new Dimension(SwingUtils.sSize.width / 3, SwingUtils.sSize.height / 2));
-				SwingUtilities.invokeLater(() -> {
-				});
-				int resp = JOptionPane.showOptionDialog(win, sp, Messages.getString("Main.autoResponseAddTitle"),
+				final int resp = JOptionPane.showOptionDialog(win, sp, Messages.getString("Main.autoResponseAddTitle"),
 						JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, 0);
 				if (resp == 0) {
 					String ruleName = ruleNameField.getText();
-					String[] triggersList = triggers.getListData();
-					String[] exceptionsList = noTriggers.getListData();
-					String[] effectsList = effects.getListData();
-					EffectType eType = effectsRandom.isSelected() ? EffectType.RANDOM
+					final String[] triggersList = triggers.getListData();
+					final String[] exceptionsList = noTriggers.getListData();
+					final String[] effectsList = effects.getListData();
+					final EffectType eType = effectsRandom.isSelected() ? EffectType.RANDOM
 							: effectsOrdered.isSelected() ? EffectType.ORDERED : EffectType.ALL;
-					int interval = (int) (allInterval.getValue());
+					final int interval = (int) (allInterval.getValue());
 
-					if (ruleName.replace(" ", "").isEmpty())
+					if (ruleName.replace(" ", "").isEmpty()) {
 						ruleName = Messages.getString("Main.autoResponseDefaultRuleName") + " "
 								+ ((autoResponses.getListData() == null) ? "1"
 										: (Integer.toString(autoResponses.getListData().length + 1)));
+					}
 
 					if ((triggersList == null || triggersList.length <= 0)
 							|| (effectsList == null || effectsList.length <= 0)) {
@@ -2456,7 +2626,7 @@ public class Main {
 						return;
 					}
 
-					TriggerType triggerType = triggersAnd.isSelected() ? TriggerType.AND : TriggerType.OR;
+					final TriggerType triggerType = triggersAnd.isSelected() ? TriggerType.AND : TriggerType.OR;
 
 					if (e.getActionCommand().equals("edit")) {
 						rule.setEffects(effectsList);
@@ -2467,9 +2637,10 @@ public class Main {
 						rule.setType(eType);
 						rule.setTriggerType(triggerType);
 						autoResponses.repaint();
-					} else
+					} else {
 						autoResponses.addRule(new AutoResponseRule(ruleName, eType, triggerType, interval, triggersList,
 								exceptionsList, effectsList));
+					}
 
 				}
 			}
@@ -2479,7 +2650,7 @@ public class Main {
 		removeAutoResponse.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				autoResponses.removeRule(autoResponses.getSelectedIndex());
 			}
 		});
@@ -2487,40 +2658,39 @@ public class Main {
 		editAutoResponse.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				acl.actionPerformed(new ActionEvent(e.getSource(), e.getID(), "edit"));
 			}
 		});
 
-		Box autoResponseCtl = Box.createHorizontalBox();
+		final Box autoResponseCtl = Box.createHorizontalBox();
 		autoResponseCtl.add(addAutoResponse);
 		autoResponseCtl.add(removeAutoResponse);
 		autoResponseCtl.add(editAutoResponse);
 
-		Box autoResponsesIOCtl = Box.createHorizontalBox();
+		final Box autoResponsesIOCtl = Box.createHorizontalBox();
 
-		JButton autoRespSave = new JButton(Messages.getString("Main.save"));
-		JButton autoRespLoad = new JButton(Messages.getString("Main.load"));
+		final JButton autoRespSave = new JButton(Messages.getString("Main.save"));
+		final JButton autoRespLoad = new JButton(Messages.getString("Main.load"));
 
 		autoRespLoad.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fc = new JFileChooser(new File("."));
+			public void actionPerformed(final ActionEvent e) {
+				final JFileChooser fc = new JFileChooser(new File("."));
 				fc.setAcceptAllFileFilterUsed(false);
 				fc.setDialogTitle(Messages.getString("Main.autoMsgLoadTitle"));
 				fc.setFileFilter(new FileNameExtensionFilter(Messages.getString("Main.autoRespFileName"), "arf"));
 				fc.setSelectedFile(new File("automaticResponses.arf"));
 				fc.setApproveButtonText(Messages.getString("Main.load"));
-				int resp = fc.showOpenDialog(win);
+				final int resp = fc.showOpenDialog(win);
 				if (resp == JFileChooser.APPROVE_OPTION) {
-					File in = fc.getSelectedFile();
+					final File in = fc.getSelectedFile();
 					if (in.exists()) {
 						try {
-							List<AutoResponseRule> rules = IOUtils.loadArfFile(in);
-							autoResponses.setListData(
-									(AutoResponseRule[]) rules.toArray(new AutoResponseRule[rules.size()]));
-						} catch (Exception e2) {
+							final List<AutoResponseRule> rules = IOUtils.loadArfFile(in);
+							autoResponses.setListData(rules.toArray(new AutoResponseRule[rules.size()]));
+						} catch (final Exception e2) {
 							SwingUtils.showErrorDialog(win, Messages.getString("Main.errorTitle"), e2,
 									Messages.getString("Main.autoMsgLoadError"));
 							e2.printStackTrace();
@@ -2534,28 +2704,27 @@ public class Main {
 		autoRespSave.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fc = new JFileChooser(new File("."));
+			public void actionPerformed(final ActionEvent e) {
+				final JFileChooser fc = new JFileChooser(new File("."));
 				fc.setAcceptAllFileFilterUsed(false);
 				fc.setDialogTitle(Messages.getString("Main.autoMsgSaveTitle"));
 				fc.setFileFilter(new FileNameExtensionFilter(Messages.getString("Main.autoRespFileName"), "arf"));
 				fc.setSelectedFile(new File("automaticResponses.arf"));
 				fc.setApproveButtonText(Messages.getString("Main.save"));
-				int resp = fc.showSaveDialog(win);
+				final int resp = fc.showSaveDialog(win);
 				if (resp == JFileChooser.APPROVE_OPTION) {
-					File out = IOUtils.forceExtension(fc.getSelectedFile(), ".arf");
+					final File out = IOUtils.forceExtension(fc.getSelectedFile(), ".arf");
 					if (out.exists()) {
-						int rsp = JOptionPane.showOptionDialog(win, Messages.getString("Main.overwriteFile"),
+						final int rsp = JOptionPane.showOptionDialog(win, Messages.getString("Main.overwriteFile"),
 								Messages.getString("Main.overwriteFileTitle"), JOptionPane.YES_NO_OPTION,
 								JOptionPane.WARNING_MESSAGE, null,
 								new Object[] { Messages.getString("Main.yes"), Messages.getString("Main.no") }, 0);
-						if (rsp != 0) {
+						if (rsp != 0)
 							return;
-						}
 					}
 					try {
 						IOUtils.writeArfFile(out, autoResponses);
-					} catch (Exception e2) {
+					} catch (final Exception e2) {
 						e2.printStackTrace();
 						SwingUtils.showErrorDialog(win, Messages.getString("Main.errorTitle"), e2,
 								Messages.getString("Main.autoMsgSaveError"));
@@ -2576,7 +2745,7 @@ public class Main {
 
 		autoRespBox.alignAll();
 
-		JTabbedPane messagesTabPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+		final JTabbedPane messagesTabPane = new JTabbedPane(SwingConstants.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 		messagesTabPane.addTab(Messages.getString("Main.intervalMessagesTab"), autoMsgBox);
 		messagesTabPane.addTab(Messages.getString("Main.autoResponsesTab"), autoRespBox);
 
@@ -2590,7 +2759,7 @@ public class Main {
 		fPane.add(box);
 		fPane.add(controlsTabPane);
 
-		Runnable rn = new Runnable() {
+		final Runnable rn = new Runnable() {
 			@Override
 			public void run() {
 				autoMsgInterval.setMaximumSize(new Dimension(win.getWidth(), 20));
@@ -2623,14 +2792,15 @@ public class Main {
 						try {
 							protocol = MinecraftStat.serverListPing(host, port).getProtocol();
 							boolean contains = false;
-							for (ProtocolNumber num : ProtocolNumber.values())
+							for (final ProtocolNumber num : ProtocolNumber.values())
 								if (num.protocol == protocol) {
 									contains = true;
 									break;
 								}
-							if (!contains)
+							if (!contains) {
 								protocol = -2;
-						} catch (Exception e) {
+							}
+						} catch (final Exception e) {
 							SwingUtils.appendColoredText(
 									"\u00a7c" + Messages.getString("Main.connectionFailedChatMessage") + e.toString(),
 									pane);
@@ -2650,12 +2820,13 @@ public class Main {
 
 				if (protocol == -2) {
 
-					Box bb = Box.createVerticalBox();
+					final Box bb = Box.createVerticalBox();
 
-					JComboBox<String> pcBox = new JComboBox<>();
+					final JComboBox<String> pcBox = new JComboBox<>();
 					pcBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-					for (ProtocolNumber num : ProtocolNumber.values())
+					for (final ProtocolNumber num : ProtocolNumber.values()) {
 						pcBox.addItem(num.name);
+					}
 
 					bb.add(new JLabel(Messages.getString("Main.chooseMinecraftVersionLabel")));
 					bb.add(pcBox);
@@ -2670,10 +2841,12 @@ public class Main {
 				if (protocol != -1) {
 					final int iprotocol = protocol;
 					try {
-						if (iprotocol == 755)
+						if (iprotocol == 755) {
 							showInventory.setEnabled(false);
-						if (iprotocol >= 393)
+						}
+						if (iprotocol >= 393) {
 							controlsTabPane.setEnabledAt(2, false);
+						}
 						final MinecraftClient cl = new MinecraftClient(host, port, iprotocol);
 						clients.put(fPane, cl);
 
@@ -2683,28 +2856,30 @@ public class Main {
 								while (cl.isConnected()) {
 									try {
 										int sleepVal = (int) (autoMsgDelay.getValue()) * 1000;
-										if (intMinutes.isSelected())
+										if (intMinutes.isSelected()) {
 											sleepVal *= 60;
+										}
 										Thread.sleep(sleepVal);
 										if (autoMsgEnable.isSelected() && autoMessages.getListData() != null) {
-											List<String> msgs = new ArrayList<String>();
-											for (String s : autoMessages.getListData())
-												msgs.add(s);
+											final List<String> msgs = new ArrayList<String>();
+											Collections.addAll(msgs, autoMessages.getListData());
 											for (int x = 0; x < msgs.size(); x++) {
 												if (!cl.isConnected())
 													return;
 												cl.sendChatMessage(msgs.get(x));
-												if (x < msgs.size() - 1)
+												if (x < msgs.size() - 1) {
 													try {
 														Thread.sleep((int) autoMsgInterval.getValue() * 1000);
-													} catch (Exception e) {
+													} catch (final Exception e) {
 														e.printStackTrace();
 													}
-												if (!autoMsgEnable.isSelected())
+												}
+												if (!autoMsgEnable.isSelected()) {
 													break;
+												}
 											}
 										}
-									} catch (Exception e2) {
+									} catch (final Exception e2) {
 //										e2.printStackTrace();
 									}
 								}
@@ -2713,10 +2888,12 @@ public class Main {
 
 						cl.getPlayersTabList().addChangeListener(new MapChangeListener<UUID, PlayerInfo>() {
 							@Override
-							public void itemRemoved(Object key, PlayerInfo value, HashMap<UUID, PlayerInfo> map) {
-								List<PlayerInfo> pl = new ArrayList<PlayerInfo>();
-								for (UUID ukey : map.keySet())
+							public void itemRemoved(final Object key, final PlayerInfo value,
+									final HashMap<UUID, PlayerInfo> map) {
+								final List<PlayerInfo> pl = new ArrayList<PlayerInfo>();
+								for (final UUID ukey : map.keySet()) {
 									pl.add(map.get(ukey));
+								}
 								if (pl.size() <= 0)
 									return;
 								PlayerInfo[] infs = new PlayerInfo[pl.size()];
@@ -2725,17 +2902,22 @@ public class Main {
 							}
 
 							@Override
-							public void itemAdded(UUID key, PlayerInfo value, HashMap<UUID, PlayerInfo> map) {
-								List<PlayerInfo> pl = new ArrayList<PlayerInfo>();
-								for (UUID ukey : map.keySet())
+							public void itemAdded(final UUID key, final PlayerInfo value,
+									final HashMap<UUID, PlayerInfo> map) {
+								final List<PlayerInfo> pl = new ArrayList<PlayerInfo>();
+								for (final UUID ukey : map.keySet()) {
 									pl.add(map.get(ukey));
+								}
 								if (pl.size() <= 0)
 									return;
 								PlayerInfo[] infs = new PlayerInfo[pl.size()];
 								infs = pl.toArray(infs);
 								playerList.setListData(infs);
-								SwingUtilities.invokeLater(() -> {
-									playerList.repaint();
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										playerList.repaint();
+									}
 								});
 							}
 						});
@@ -2745,7 +2927,7 @@ public class Main {
 							final JTextPane hjtp = hotbar;
 
 							@Override
-							public void messageReceived(final String message, Position pos) {
+							public void messageReceived(final String message, final Position pos) {
 								if (pos == Position.HOTBAR) {
 									hjtp.setText("");
 									SwingUtils.appendColoredText(message, hjtp);
@@ -2758,17 +2940,19 @@ public class Main {
 																.contains(cl.getUsername().toLowerCase()));
 										if (!shouldDisplay && up.getTrayMessageMode()
 												.equals(Constants.TRAY_MESSAGES_KEY_KEYWORD)) {
-											String[] keyWords = up.getTrayKeyWords();
-											if (keyWords != null)
-												for (String keyWord : keyWords)
-													if (message.toLowerCase().contains(keyWord.toLowerCase()))
+											final String[] keyWords = up.getTrayKeyWords();
+											if (keyWords != null) {
+												for (final String keyWord : keyWords)
+													if (message.toLowerCase().contains(keyWord.toLowerCase())) {
 														shouldDisplay = true;
+													}
+											}
 										}
 
 										if (shouldDisplay) {
 											trayLastMessageType = 0;
 											trayLastMessageSender = cl;
-											String ttext = ChatMessages.removeColors(message);
+											final String ttext = ChatMessages.removeColors(message);
 											trayIcon.displayMessage(
 													cl.getHost() + ":" + cl.getPort() + " (" + cl.getUsername() + ")",
 													ttext, MessageType.NONE);
@@ -2777,12 +2961,12 @@ public class Main {
 
 									SwingUtils.appendColoredText(message + "\r\n", jtp);
 									if (autoRespEnabled.isSelected() && autoResponses.getListData() != null) {
-										String rText = ChatMessages.removeColors(message);
-										for (AutoResponseRule rule : autoResponses.getListData()) {
-											String[] matches = rule.match(rText);
+										final String rText = ChatMessages.removeColors(message);
+										for (final AutoResponseRule rule : autoResponses.getListData()) {
+											final String[] matches = rule.match(rText);
 											if (matches != null && matches.length > 0) {
-												int interval = rule.getInterval() * 1000;
-												Timer tm = new Timer(true);
+												final int interval = rule.getInterval() * 1000;
+												final Timer tm = new Timer(true);
 												tm.scheduleAtFixedRate(new TimerTask() {
 													String[] localM = matches;
 													int index = 0;
@@ -2796,12 +2980,14 @@ public class Main {
 														try {
 															cl.sendChatMessage(localM[index]);
 															index++;
-															if (index >= localM.length)
+															if (index >= localM.length) {
 																cancel();
-														} catch (Exception e) {
+															}
+														} catch (final Exception e) {
 															e.printStackTrace();
-															for (ClientListener cll : cl.getClientListeners())
+															for (final ClientListener cll : cl.getClientListeners()) {
 																cll.disconnected(e.toString());
+															}
 															cl.close();
 														}
 													}
@@ -2811,21 +2997,25 @@ public class Main {
 									}
 									try {
 										Thread.sleep(10);
-									} catch (InterruptedException e) {
+									} catch (final InterruptedException e) {
 										e.printStackTrace();
 									}
-									SwingUtilities.invokeLater(() -> {
-										jsc.repaint();
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											jsc.repaint();
+										}
 									});
 
-									if (!jsc.getVerticalScrollBar().getValueIsAdjusting())
+									if (!jsc.getVerticalScrollBar().getValueIsAdjusting()) {
 										jsc.getVerticalScrollBar()
 												.setValue(jsc.getVerticalScrollBar().getMaximum() * 2);
+									}
 								}
 							}
 
 							@Override
-							public void disconnected(String reason) {
+							public void disconnected(final String reason) {
 								autoMessagesThread.interrupt();
 								SwingUtils.appendColoredText(
 										"\u00a7c" + Messages.getString("Main.connectionLostChatMessage") + ": \r\n"
@@ -2835,42 +3025,48 @@ public class Main {
 								if (trayIcon != null && up.isTrayShowDisconnectMessages()
 										&& !reason.equals(Messages.getString("Main.trayClosedReason"))) {
 									trayLastMessageType = 1;
-									String ttext = Messages.getString("Main.connectionLostTrayMessage")
+									final String ttext = Messages.getString("Main.connectionLostTrayMessage")
 											+ ChatMessages.removeColors(reason);
 									trayIcon.displayMessage(
 											cl.getHost() + ":" + cl.getPort() + " (" + cl.getUsername() + ")", ttext,
 											MessageType.ERROR);
-									PopupMenu pm = trayIcon.getPopupMenu();
+									final PopupMenu pm = trayIcon.getPopupMenu();
 									for (int x1 = 0; x1 < pm.getItemCount(); x1++) {
-										MenuComponent ct = pm.getItem(x1);
+										final MenuComponent ct = pm.getItem(x1);
 										if (ct instanceof Menu) {
-											Menu cm = (Menu) ct;
-											String lbl = cm.getLabel();
-											if (lbl.equals(cl.getHost() + ":" + cl.getPort()))
-												for (int y1 = 0; y1 < cm.getItemCount(); x1++) {
-													Menu pmenu = (Menu) cm.getItem(y1);
-													if (pmenu.getLabel().equals(cl.getUsername()))
+											final Menu cm = (Menu) ct;
+											final String lbl = cm.getLabel();
+											if (lbl.equals(cl.getHost() + ":" + cl.getPort())) {
+												for (final int y1 = 0; y1 < cm.getItemCount(); x1++) {
+													final Menu pmenu = (Menu) cm.getItem(y1);
+													if (pmenu.getLabel().equals(cl.getUsername())) {
 														cm.remove(y1);
+													}
 												}
-											if (cm.getItemCount() == 0)
+											}
+											if (cm.getItemCount() == 0) {
 												pm.remove(cm);
+											}
 										}
 									}
 								}
 
 								showInventory.setEnabled(false);
-								for (Component ct : chatControls.getComponents())
+								for (final Component ct : chatControls.getComponents()) {
 									ct.setEnabled(false);
+								}
 								for (int x = 0; x < tabPane.getTabCount(); x++) {
-									Component ct = tabPane.getTabComponentAt(x);
-									if (ct == null)
+									final Component ct = tabPane.getTabComponentAt(x);
+									if (ct == null) {
 										continue;
+									}
 									if (ct.getName().equals(entry.getHost() + "_" + entry.getName() + "_" + username)
 											&& (ct instanceof Box)) {
-										Box ctb = (Box) ct;
-										for (Component ctt : ctb.getComponents())
-											if (ctt instanceof JLabel)
+										final Box ctb = (Box) ct;
+										for (final Component ctt : ctb.getComponents())
+											if (ctt instanceof JLabel) {
 												ctt.setForeground(Color.gray);
+											}
 									}
 								}
 								cl.close();
@@ -2878,11 +3074,13 @@ public class Main {
 							}
 
 							@Override
-							public void healthUpdate(float health, int food) {
-								if (health > healthBar.getMaximum())
+							public void healthUpdate(final float health, final int food) {
+								if (health > healthBar.getMaximum()) {
 									healthBar.setMaximum((int) health);
-								if (food > foodBar.getMaximum())
+								}
+								if (food > foodBar.getMaximum()) {
 									foodBar.setMaximum(food);
+								}
 
 								healthBar.setValue((int) health);
 								foodBar.setValue(food);
@@ -2895,16 +3093,19 @@ public class Main {
 							}
 
 							@Override
-							public void positionChanged(double x, double y, double z) {
+							public void positionChanged(final double x, final double y, final double z) {
 								String sx = Double.toString(x);
 								String sy = Double.toString(y);
 								String sz = Double.toString(z);
-								if (sx.contains("."))
+								if (sx.contains(".")) {
 									sx = sx.substring(0, sx.lastIndexOf(".") + 2);
-								if (sy.contains("."))
+								}
+								if (sy.contains(".")) {
 									sy = sy.substring(0, sy.lastIndexOf(".") + 2);
-								if (sz.contains("."))
+								}
+								if (sz.contains(".")) {
 									sz = sz.substring(0, sz.lastIndexOf(".") + 2);
+								}
 
 								xLabel.setText("X: " + sx);
 								yLabel.setText("Y: " + sy);
@@ -2914,19 +3115,20 @@ public class Main {
 							Map<String, Integer> trueValues = new HashMap<String, Integer>();
 
 							@Override
-							public void statisticsReceived(Map<String, Integer> values) {
+							public void statisticsReceived(final Map<String, Integer> values) {
 								if (values.size() == 0)
 									return;
 								statisticsContainer.removeAll();
-								for (String key : values.keySet()) {
-									String tkey = TranslationUtils.translateKey(key);
-									if (tkey == key)
+								for (final String key : values.keySet()) {
+									final String tkey = TranslationUtils.translateKey(key);
+									if (tkey == key) {
 										continue;
+									}
 									trueValues.put(tkey, values.get(key));
 								}
 
 								statisticsContainer.setLayout(new GridLayout(trueValues.size(), 2));
-								for (String key : trueValues.keySet()) {
+								for (final String key : trueValues.keySet()) {
 									statisticsContainer.add(new JLabel(key));
 									statisticsContainer.add(new JLabel("   " + Integer.toString(trueValues.get(key))));
 								}
@@ -2935,15 +3137,16 @@ public class Main {
 							}
 
 							@Override
-							public void windowOpened(int id, ItemsWindow win, PacketRegistry reg) {
+							public void windowOpened(final int id, final ItemsWindow win, final PacketRegistry reg) {
 								if (up.isHideIncomingWindows()) {
-									if (up.isHiddenWindowsResponse())
+									if (up.isHiddenWindowsResponse()) {
 										try {
 											cl.sendPacket(
 													PacketFactory.constructPacket(reg, "ClientCloseWindowPacket", id));
-										} catch (Exception e) {
+										} catch (final Exception e) {
 											e.printStackTrace();
 										}
+									}
 									return;
 								}
 								if (!up.isShowWindowsInTray() && trayIcon != null)
@@ -2952,15 +3155,17 @@ public class Main {
 							}
 
 							@Override
-							public void timeUpdated(long time, long worldAge) {
-								if (time < 0)
+							public void timeUpdated(long time, final long worldAge) {
+								if (time < 0) {
 									time = time * -1;
+								}
 
 								time = time % 24000;
 
 								int hours = 6 + (int) (time / 1000);
-								if (hours >= 24)
+								if (hours >= 24) {
 									hours -= 24;
+								}
 								double minutesDouble = time % 1000;
 								minutesDouble = (minutesDouble / 1000) * 60;
 								int minutes = (int) Math.round(minutesDouble);
@@ -2969,7 +3174,7 @@ public class Main {
 									hours++;
 								}
 
-								String timeString = IOUtils.padString(Integer.toString(hours), 2, "0", 1) + ":"
+								final String timeString = IOUtils.padString(Integer.toString(hours), 2, "0", 1) + ":"
 										+ IOUtils.padString(Integer.toString(minutes), 2, "0", 1);
 
 								timeValueLabel.setText(timeString);
@@ -2980,7 +3185,7 @@ public class Main {
 						cl.connect(username);
 						try {
 							Thread.sleep(1000);
-						} catch (InterruptedException e2) {
+						} catch (final InterruptedException e2) {
 							e2.printStackTrace();
 						}
 						autoMessagesThread.start();
@@ -2999,7 +3204,7 @@ public class Main {
 						chatInput.addKeyListener(new KeyAdapter() {
 
 							@Override
-							public void keyPressed(KeyEvent e) {
+							public void keyPressed(final KeyEvent e) {
 
 								if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 									chatSend.requestFocusInWindow();
@@ -3012,31 +3217,33 @@ public class Main {
 						chatSend.addActionListener(new ActionListener() {
 
 							@Override
-							public void actionPerformed(ActionEvent e) {
-								String message = chatInput.getText();
+							public void actionPerformed(final ActionEvent e) {
+								final String message = chatInput.getText();
 								if (!message.isEmpty()) {
 									try {
 										cl.sendChatMessage(message);
-									} catch (IOException e1) {
+									} catch (final IOException e1) {
 										SwingUtils.appendColoredText(
 												"\u00a7c" + Messages.getString("Main.connectionLostChatMessage2")
 														+ ": \r\n" + e1.toString(),
 												pane);
 										e1.printStackTrace();
-										for (Component ct : chatControls.getComponents())
+										for (final Component ct : chatControls.getComponents()) {
 											ct.setEnabled(false);
+										}
 									}
 									chatInput.setText("");
 								}
 							}
 						});
 
-						for (Component ct : chatControls.getComponents())
+						for (final Component ct : chatControls.getComponents()) {
 							ct.setEnabled(true);
+						}
 
 					} catch (
 
-					IOException e) {
+					final IOException e) {
 						SwingUtils.appendColoredText("\u00a7c" + Messages.getString("Main.connectionFailedChatMessage2")
 								+ "\r\n\r\n" + e.toString(), pane);
 					}

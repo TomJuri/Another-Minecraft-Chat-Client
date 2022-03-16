@@ -20,7 +20,7 @@ public class ClientStatusPacket extends Packet {
 	 *                 0 for respawn<br>
 	 *                 1 for stats
 	 */
-	public ClientStatusPacket(PacketRegistry reg, Integer actionID) {
+	public ClientStatusPacket(final PacketRegistry reg, final Integer actionID) {
 		super(reg);
 		putVarInt(actionID);
 	}

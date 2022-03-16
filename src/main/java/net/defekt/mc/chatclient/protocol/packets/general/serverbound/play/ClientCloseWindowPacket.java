@@ -17,7 +17,7 @@ public class ClientCloseWindowPacket extends Packet {
 	 * @param reg      packet registry used to construct this packet
 	 * @param windowID window ID
 	 */
-	public ClientCloseWindowPacket(PacketRegistry reg, Integer windowID) {
+	public ClientCloseWindowPacket(final PacketRegistry reg, final Integer windowID) {
 		super(reg);
 		putByte(windowID);
 	}

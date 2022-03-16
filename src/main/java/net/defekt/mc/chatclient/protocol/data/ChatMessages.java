@@ -33,14 +33,14 @@ public class ChatMessages {
 	public static String parse(String json) {
 		json = json.replace(pChar + "k", "").replace(pChar + "l", "").replace(pChar + "m", "").replace(pChar + "n", "");
 		try {
-			JsonElement el = new JsonParser().parse(json);
+			final JsonElement el = new JsonParser().parse(json);
 			JsonObject root;
 			if (el.isJsonPrimitive())
 				return el.getAsJsonPrimitive().getAsString();
 
 			root = el.getAsJsonObject();
 
-			AtomicReference<String> strRef = new AtomicReference<String>("");
+			final AtomicReference<String> strRef = new AtomicReference<String>("");
 
 			if (root.has("text")) {
 				strRef.set(root.get("text").getAsString());
@@ -48,22 +48,24 @@ public class ChatMessages {
 			}
 
 			String colorAppend = "";
-			if (root.has("color"))
+			if (root.has("color")) {
 				colorAppend = pChar + ChatColor.translateColorName(root.get("color").getAsString());
+			}
 
 			strRef.set(colorAppend + strRef.get());
 
 			recursiveParse(root, strRef);
 
-			if (strRef.get().contains(pChar) && root.has("translate"))
+			if (strRef.get().contains(pChar) && root.has("translate")) {
 				strRef.set(root.get("translate").getAsString());
+			}
 			return strRef.get();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return json;
 		}
 	}
 
-	private static void recursiveParse(JsonElement ob, AtomicReference<String> str) {
+	private static void recursiveParse(final JsonElement ob, final AtomicReference<String> str) {
 
 		if ((ob.isJsonPrimitive()) && !ob.getAsString().isEmpty())
 			if (str.get().contains(pChar + "%s")) {
@@ -72,36 +74,39 @@ public class ChatMessages {
 				str.set(str.get() + ob.getAsString());
 			}
 
-		if (ob.isJsonArray())
-			for (JsonElement el : ob.getAsJsonArray())
+		if (ob.isJsonArray()) {
+			for (final JsonElement el : ob.getAsJsonArray()) {
 				recursiveParse(el, str);
+			}
+		}
 
 		if (ob.isJsonObject()) {
-			JsonObject obj = ob.getAsJsonObject();
-			for (Entry<String, JsonElement> entry : obj.entrySet()) {
+			final JsonObject obj = ob.getAsJsonObject();
+			for (final Entry<String, JsonElement> entry : obj.entrySet()) {
 
-				String key = entry.getKey();
-				JsonElement value = entry.getValue();
+				final String key = entry.getKey();
+				final JsonElement value = entry.getValue();
 
 				switch (key) {
 					case "translate": {
 
-						String translated = TranslationUtils.translateKey(value.getAsString());
+						final String translated = TranslationUtils.translateKey(value.getAsString());
 						str.set(str.get() + translated);
 						break;
 					}
 
 					case "text": {
 						if (!value.getAsString().isEmpty())
-							if (str.get().contains(pChar + "%s"))
+							if (str.get().contains(pChar + "%s")) {
 								str.set(str.get().replaceFirst(pChar + "%s", value.getAsString()));
-							else {
+							} else {
 
 								String colorAppend = "";
-								if (obj.has("color"))
+								if (obj.has("color")) {
 									colorAppend = pChar + ChatColor.translateColorName(obj.get("color").getAsString());
-								else
+								} else {
 									colorAppend = pChar + "f";
+								}
 
 								str.set(str.get() + colorAppend + value.getAsString());
 							}
@@ -131,14 +136,15 @@ public class ChatMessages {
 	 * @param message message to remove colors from
 	 * @return colorless message
 	 */
-	public static String removeColors(String message) {
-		StringBuilder colorless = new StringBuilder();
-		char[] chs = message.toCharArray();
+	public static String removeColors(final String message) {
+		final StringBuilder colorless = new StringBuilder();
+		final char[] chs = message.toCharArray();
 		for (int x = 0; x < chs.length; x++)
-			if (chs[x] == pChar.charAt(0))
+			if (chs[x] == pChar.charAt(0)) {
 				x++;
-			else
+			} else {
 				colorless.append(chs[x]);
+			}
 
 		return colorless.toString();
 	}

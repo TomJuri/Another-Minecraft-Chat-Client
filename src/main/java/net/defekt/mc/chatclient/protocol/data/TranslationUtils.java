@@ -28,29 +28,30 @@ import net.defekt.mc.chatclient.ui.UserPreferences.Language;
  * @author Defective4
  *
  */
-@SuppressWarnings("serial")
+
 public class TranslationUtils {
 	private TranslationUtils() {
 	}
 
 	private static final Map<Language, Map<String, String>> translationKeys = new HashMap<UserPreferences.Language, Map<String, String>>() {
 		{
-			for (Language lang : Language.values()) {
-				InputStream is = TranslationUtils.class
+			for (final Language lang : Language.values()) {
+				final InputStream is = TranslationUtils.class
 						.getResourceAsStream("/resources/lang/minecraft/" + lang.getCode().toLowerCase() + ".lang");
-				if (is == null)
+				if (is == null) {
 					continue;
-				Map<String, String> kMap = new HashMap<String, String>();
+				}
+				final Map<String, String> kMap = new HashMap<String, String>();
 				try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 					String line;
 					while ((line = br.readLine()) != null)
 						if (line.contains("=") && line.split("=").length > 1) {
-							String[] ags = line.split("=");
+							final String[] ags = line.split("=");
 							kMap.put(ags[0], ags[1]);
 						}
 
 					br.close();
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					e.printStackTrace();
 				}
 				put(lang, kMap);
@@ -60,48 +61,53 @@ public class TranslationUtils {
 
 	private static final Map<Integer, Map<Integer, ItemInfo>> items = new HashMap<Integer, Map<Integer, ItemInfo>>() {
 		{
-			List<Integer> protocols = new ArrayList<Integer>();
-			Map<Integer, Integer> protocolBinds = PacketFactory.getProtocolBinds();
-			for (ProtocolNumber protocol : ProtocolNumber.values()) {
+			final List<Integer> protocols = new ArrayList<Integer>();
+			final Map<Integer, Integer> protocolBinds = PacketFactory.getProtocolBinds();
+			for (final ProtocolNumber protocol : ProtocolNumber.values()) {
 				int protocolNum = protocol.protocol;
-				if (protocolBinds.containsKey(protocolNum))
+				if (protocolBinds.containsKey(protocolNum)) {
 					protocolNum = protocolBinds.get(protocolNum);
-				if (!protocols.contains(protocolNum))
+				}
+				if (!protocols.contains(protocolNum)) {
 					protocols.add(protocolNum);
+				}
 			}
 
-			for (int protocol : protocols) {
-				ProtocolNumber pNum = ProtocolNumber.getForNumber(protocol);
+			for (final int protocol : protocols) {
+				final ProtocolNumber pNum = ProtocolNumber.getForNumber(protocol);
 				try {
-					HashMap<Integer, ItemInfo> infs = new HashMap<>();
-					String pName = pNum.name;
-					if (TranslationUtils.class.getResourceAsStream("/resources/items/" + pName + ".json") == null)
+					final HashMap<Integer, ItemInfo> infs = new HashMap<>();
+					final String pName = pNum.name;
+					if (TranslationUtils.class.getResourceAsStream("/resources/items/" + pName + ".json") == null) {
 						continue;
-					JsonArray el = new JsonParser()
+					}
+					final JsonArray el = new JsonParser()
 							.parse(new InputStreamReader(
 									TranslationUtils.class.getResourceAsStream("/resources/items/" + pName + ".json")))
 							.getAsJsonArray();
-					for (JsonElement elem : el) {
-						JsonObject job = elem.getAsJsonObject();
-						JsonObject items = job.get("items").getAsJsonObject().get("item").getAsJsonObject();
-						for (Entry<String, JsonElement> item : items.entrySet()) {
-							String itemS = item.getKey();
-							JsonObject itemData = item.getValue().getAsJsonObject();
-							int itemID = itemData.get("numeric_id").getAsInt();
+					for (final JsonElement elem : el) {
+						final JsonObject job = elem.getAsJsonObject();
+						final JsonObject items = job.get("items").getAsJsonObject().get("item").getAsJsonObject();
+						for (final Entry<String, JsonElement> item : items.entrySet()) {
+							final String itemS = item.getKey();
+							final JsonObject itemData = item.getValue().getAsJsonObject();
+							final int itemID = itemData.get("numeric_id").getAsInt();
 							String itemName = itemS;
 							if (itemData.has("name")) {
 								itemName = translateKey("item." + itemData.get("name").getAsString() + ".name");
 								if (itemName.equals(itemData.get("name").getAsString())
-										&& itemData.has("display_name"))
-										itemName = itemData.get("display_name").getAsString();
-							} else if (itemData.has("display_name"))
+										&& itemData.has("display_name")) {
+									itemName = itemData.get("display_name").getAsString();
+								}
+							} else if (itemData.has("display_name")) {
 								itemName = itemData.get("display_name").getAsString();
+							}
 							infs.put(itemID, new ItemInfo(itemName, itemS));
 						}
 					}
 					put(protocol, infs);
 
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -115,13 +121,14 @@ public class TranslationUtils {
 	 * @param protocol protocol of this item
 	 * @return item information
 	 */
-	public static ItemInfo getItemForID(int id, int protocol) {
-		if (PacketFactory.getProtocolBinds().containsKey(protocol))
+	public static ItemInfo getItemForID(final int id, int protocol) {
+		if (PacketFactory.getProtocolBinds().containsKey(protocol)) {
 			protocol = PacketFactory.getProtocolBinds().get(protocol);
-		ItemInfo none = new ItemInfo("" + id, "" + id);
+		}
+		final ItemInfo none = new ItemInfo("" + id, "" + id);
 
 		if (items.containsKey(protocol)) {
-			Map<Integer, ItemInfo> itemMap = items.get(protocol);
+			final Map<Integer, ItemInfo> itemMap = items.get(protocol);
 			return itemMap.containsKey(id) ? itemMap.get(id) : none;
 		}
 		return none;
@@ -133,10 +140,10 @@ public class TranslationUtils {
 	 * @param key key
 	 * @return translated string
 	 */
-	public static String translateKey(String key) {
-		Language lang = translationKeys.containsKey(Main.up.getAppLanguage()) ? Main.up.getAppLanguage()
+	public static String translateKey(final String key) {
+		final Language lang = translationKeys.containsKey(Main.up.getAppLanguage()) ? Main.up.getAppLanguage()
 				: Language.English;
-		Map<String, String> kMap = translationKeys.get(lang);
+		final Map<String, String> kMap = translationKeys.get(lang);
 		if (kMap.containsKey(key))
 			return kMap.get(key).replace("%s", "\u00A7%s");
 		return key;

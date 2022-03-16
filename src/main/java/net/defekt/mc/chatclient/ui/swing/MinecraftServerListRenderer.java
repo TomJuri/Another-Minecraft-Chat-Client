@@ -38,21 +38,20 @@ import net.defekt.mc.chatclient.ui.ServerEntry;
 public class MinecraftServerListRenderer extends DefaultListCellRenderer {
 	private static final long serialVersionUID = 1L;
 
-	@SuppressWarnings("serial")
 	@Override
-	public Component getListCellRendererComponent(JList<? extends Object> list, Object value, int index,
-			boolean isSelected, boolean cellHasFocus) {
+	public Component getListCellRendererComponent(final JList<? extends Object> list, final Object value,
+			final int index, final boolean isSelected, final boolean cellHasFocus) {
 
-		ServerEntry entry = (ServerEntry) value;
-		Box serverBox = Box.createVerticalBox();
+		final ServerEntry entry = (ServerEntry) value;
+		final Box serverBox = Box.createVerticalBox();
 		serverBox.setMinimumSize(new Dimension(list.getMinimumSize().width, 100));
 
-		JLabel name = new JLabel(" " + entry.getName());
-		JTextPane version = new JTextPane();
+		final JLabel name = new JLabel(" " + entry.getName());
+		final JTextPane version = new JTextPane();
 		version.setText("???");
-		JLabel players = new JLabel(" " + Messages.getString("MinecraftServerListRenderer.serverListPlayersLabel")
+		final JLabel players = new JLabel(" " + Messages.getString("MinecraftServerListRenderer.serverListPlayersLabel")
 				+ entry.getVersion() + ")");
-		JTextPane description = new JTextPane();
+		final JTextPane description = new JTextPane();
 		description.setText(" " + Messages.getString("MinecraftServerListRenderer.serverListStatusPinging"));
 
 		serverBox.add(name);
@@ -61,11 +60,11 @@ public class MinecraftServerListRenderer extends DefaultListCellRenderer {
 		serverBox.add(description);
 		serverBox.add(new JLabel(" "));
 
-		for (Component ct : serverBox.getComponents()) {
+		for (final Component ct : serverBox.getComponents()) {
 			ct.setFont(Main.mcFont);
 			ct.setForeground(Color.white);
 			if (ct instanceof JTextPane) {
-				JTextPane jtp = (JTextPane) ct;
+				final JTextPane jtp = (JTextPane) ct;
 				jtp.setForeground(ChatColor.translateColorCode("7"));
 				jtp.setOpaque(false);
 				jtp.setEditable(false);
@@ -81,12 +80,13 @@ public class MinecraftServerListRenderer extends DefaultListCellRenderer {
 		BufferedImage icon = null;
 
 		if (entry.getInfo() != null) {
-			StatusInfo inf = entry.getInfo();
-			if (inf.getOnlinePlayers() != -1)
+			final StatusInfo inf = entry.getInfo();
+			if (inf.getOnlinePlayers() != -1) {
 				players.setText(
 						" " + Integer.toString(inf.getOnlinePlayers()) + "/" + Integer.toString(inf.getMaxPlayers())
 								+ " " + Messages.getString("MinecraftServerListRenderer.serverListPlayersLabel2")
 								+ entry.getVersion() + ")");
+			}
 			description.setText("");
 			SwingUtils.appendColoredText(" " + inf.getDescription().replace("\n", "\n "), description);
 			version.setText(inf.getVersionName().isEmpty() ? " ???" : "");
@@ -94,10 +94,10 @@ public class MinecraftServerListRenderer extends DefaultListCellRenderer {
 
 		}
 		if (entry.getIcon() != null) {
-			String ibase = entry.getIcon();
+			final String ibase = entry.getIcon();
 			try {
 				icon = ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(ibase.getBytes())));
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -120,23 +120,25 @@ public class MinecraftServerListRenderer extends DefaultListCellRenderer {
 		});
 
 		if (list instanceof JMinecraftServerList) {
-			JMinecraftServerList jmc = (JMinecraftServerList) list;
-			if (jmc.getSelectedIndex() == -1)
+			final JMinecraftServerList jmc = (JMinecraftServerList) list;
+			if (jmc.getSelectedIndex() == -1) {
 				jmc.setListData(jmc.getListData());
+			}
 		}
 
 		final BufferedImage icon2 = icon;
 
-		Box bBox = Box.createHorizontalBox();
+		final Box bBox = Box.createHorizontalBox();
 		bBox.add(new JPanel() {
 			{
 				setPreferredSize(new Dimension(72, 68));
 			}
 
 			@Override
-			public void paintComponent(Graphics g) {
-				if (icon2 != null)
+			public void paintComponent(final Graphics g) {
+				if (icon2 != null) {
 					g.drawImage(icon2, 4, 4, 64, 64, null);
+				}
 			}
 		});
 		bBox.add(serverBox);

@@ -19,7 +19,8 @@ public class ClientConfirmTransactionPacket extends Packet {
 	 * @param actionID action ID
 	 * @param accepted accepted state
 	 */
-	public ClientConfirmTransactionPacket(PacketRegistry reg, Byte windowID, Short actionID, Boolean accepted) {
+	public ClientConfirmTransactionPacket(final PacketRegistry reg, final Byte windowID, final Short actionID,
+			final Boolean accepted) {
 		super(reg);
 		putByte(windowID);
 		putShort(actionID);

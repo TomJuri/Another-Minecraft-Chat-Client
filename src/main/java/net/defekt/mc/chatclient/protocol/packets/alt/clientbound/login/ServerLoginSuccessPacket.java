@@ -24,9 +24,9 @@ public class ServerLoginSuccessPacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerLoginSuccessPacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerLoginSuccessPacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
-		VarInputStream is = getInputStream();
+		final VarInputStream is = getInputStream();
 		uuid = is.readUUID().toString();
 		username = is.readString();
 	}

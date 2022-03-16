@@ -22,7 +22,7 @@ public class ServerCloseWindowPacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerCloseWindowPacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerCloseWindowPacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
 		this.windowID = getInputStream().readUnsignedByte();
 	}

@@ -24,9 +24,9 @@ public class ServerTimeUpdatePacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerTimeUpdatePacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerTimeUpdatePacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
-		VarInputStream is = getInputStream();
+		final VarInputStream is = getInputStream();
 		worldAge = is.readLong();
 		time = is.readLong();
 	}

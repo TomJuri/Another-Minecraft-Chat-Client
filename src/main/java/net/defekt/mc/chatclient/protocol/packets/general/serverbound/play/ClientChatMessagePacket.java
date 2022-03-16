@@ -17,7 +17,7 @@ public class ClientChatMessagePacket extends Packet {
 	 * @param reg     packet registry used to construct this packet
 	 * @param message chat message
 	 */
-	public ClientChatMessagePacket(PacketRegistry reg, String message) {
+	public ClientChatMessagePacket(final PacketRegistry reg, final String message) {
 		super(reg);
 		putString(message);
 	}

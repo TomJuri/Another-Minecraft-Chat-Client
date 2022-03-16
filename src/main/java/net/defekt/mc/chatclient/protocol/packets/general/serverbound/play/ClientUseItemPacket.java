@@ -16,7 +16,7 @@ public class ClientUseItemPacket extends Packet {
 	 * 
 	 * @param reg packet registry used to construct this packet
 	 */
-	public ClientUseItemPacket(PacketRegistry reg) {
+	public ClientUseItemPacket(final PacketRegistry reg) {
 		super(reg);
 		putVarInt(0);
 	}

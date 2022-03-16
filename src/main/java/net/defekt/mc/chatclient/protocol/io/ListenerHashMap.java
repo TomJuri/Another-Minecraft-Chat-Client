@@ -22,7 +22,7 @@ public class ListenerHashMap<K, V> extends HashMap<K, V> {
 	 * 
 	 * @param listener change listener
 	 */
-	public void addChangeListener(MapChangeListener<K, V> listener) {
+	public void addChangeListener(final MapChangeListener<K, V> listener) {
 		listeners.add(listener);
 	}
 
@@ -31,9 +31,10 @@ public class ListenerHashMap<K, V> extends HashMap<K, V> {
 	 * 
 	 * @param listener change listener
 	 */
-	public void removeChangeListener(MapChangeListener<K, V> listener) {
-		if (listeners.contains(listener))
+	public void removeChangeListener(final MapChangeListener<K, V> listener) {
+		if (listeners.contains(listener)) {
 			listeners.remove(listener);
+		}
 	}
 
 	/**
@@ -46,27 +47,29 @@ public class ListenerHashMap<K, V> extends HashMap<K, V> {
 	}
 
 	@Override
-	public V put(K key, V value) {
-		V v = super.put(key, value);
+	public V put(final K key, final V value) {
+		final V v = super.put(key, value);
 		activateAdd(key, value);
 		return v;
 	}
 
 	@Override
-	public V remove(Object key) {
-		V v = super.remove(key);
+	public V remove(final Object key) {
+		final V v = super.remove(key);
 		activateRemove(key, get(key));
 		return v;
 	}
 
-	private void activateAdd(K key, V value) {
-		for (MapChangeListener<K, V> listener : listeners)
+	private void activateAdd(final K key, final V value) {
+		for (final MapChangeListener<K, V> listener : listeners) {
 			listener.itemAdded(key, value, this);
+		}
 	}
 
-	private void activateRemove(Object key, V value) {
-		for (MapChangeListener<K, V> listener : listeners)
+	private void activateRemove(final Object key, final V value) {
+		for (final MapChangeListener<K, V> listener : listeners) {
 			listener.itemRemoved(key, value, this);
+		}
 	}
 
 	/**

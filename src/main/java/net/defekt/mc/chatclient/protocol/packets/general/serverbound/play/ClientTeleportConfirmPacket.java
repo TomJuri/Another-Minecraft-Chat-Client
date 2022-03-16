@@ -17,7 +17,7 @@ public class ClientTeleportConfirmPacket extends Packet {
 	 * @param reg        packet registry used to construct this packet
 	 * @param teleportID teleportation ID
 	 */
-	public ClientTeleportConfirmPacket(PacketRegistry reg, int teleportID) {
+	public ClientTeleportConfirmPacket(final PacketRegistry reg, final int teleportID) {
 		super(reg);
 		this.id = 0x00;
 		putVarInt(teleportID);

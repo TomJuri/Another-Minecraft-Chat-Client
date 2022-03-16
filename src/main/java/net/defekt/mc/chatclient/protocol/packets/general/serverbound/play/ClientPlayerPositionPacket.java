@@ -20,7 +20,8 @@ public class ClientPlayerPositionPacket extends Packet {
 	 * @param z        new Z position
 	 * @param onGround if player is on ground
 	 */
-	public ClientPlayerPositionPacket(PacketRegistry reg, Double x, Double y, Double z, Boolean onGround) {
+	public ClientPlayerPositionPacket(final PacketRegistry reg, final Double x, final Double y, final Double z,
+			final Boolean onGround) {
 		super(reg);
 		putDouble(x);
 		putDouble(y);

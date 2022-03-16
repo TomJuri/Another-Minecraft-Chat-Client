@@ -17,7 +17,7 @@ public class ClientHeldItemChangePacket extends Packet {
 	 * @param reg  packet registry used to construct this packet
 	 * @param slot slot to change to
 	 */
-	public ClientHeldItemChangePacket(PacketRegistry reg, Short slot) {
+	public ClientHeldItemChangePacket(final PacketRegistry reg, final Short slot) {
 		super(reg);
 		putShort(slot);
 	}

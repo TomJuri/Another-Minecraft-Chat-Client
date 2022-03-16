@@ -40,7 +40,7 @@ public class ClientResourcePackStatusPacket extends Packet {
 		 */
 		public final int num;
 
-		private Status(int num) {
+		private Status(final int num) {
 			this.num = num;
 		}
 	}
@@ -51,7 +51,7 @@ public class ClientResourcePackStatusPacket extends Packet {
 	 * @param reg    packet registry used to construct this packet
 	 * @param status resource pack status
 	 */
-	public ClientResourcePackStatusPacket(PacketRegistry reg, Status status) {
+	public ClientResourcePackStatusPacket(final PacketRegistry reg, final Status status) {
 		super(reg);
 		putVarInt(status.num);
 	}

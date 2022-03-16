@@ -60,90 +60,104 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 	 * @param win         parent window containing this list
 	 * @param addr        associated server's address
 	 */
-	public JMinecraftPlayerList(JTextField filterField, final JFrame win, final String addr) {
+	public JMinecraftPlayerList(final JTextField filterField, final JFrame win, final String addr) {
 		setCellRenderer(new MinecraftPlayerListRenderer(filterField, this));
 		setBackground(new Color(35, 35, 35));
 
 		addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(final MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON3) {
 					setSelectedIndex(locationToIndex(e.getPoint()));
-					PlayerInfo inf = getSelectedValue();
+					final PlayerInfo inf = getSelectedValue();
 
-					JPopupMenu jp = new JPopupMenu();
+					final JPopupMenu jp = new JPopupMenu();
 					JMenuItem placeholder;
 					try {
 						placeholder = new JMenuItem(inf.getName(),
 								new ImageIcon(IOUtils.scaleImage(PlayerSkinCache.getHead(inf.getUUID()), 2)));
-					} catch (Exception e2) {
+					} catch (final Exception e2) {
 						placeholder = new JMenuItem(inf.getName());
 					}
 					placeholder.setEnabled(false);
 
-					JMenuItem playerInfo = new JMenuItem(
+					final JMenuItem playerInfo = new JMenuItem(
 							Messages.getString("JMinecraftPlayerList.playerListOptionPlayerInfo"));
-					playerInfo.addActionListener(ev -> {
-						showUserInfo(inf);
+					playerInfo.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent ev) {
+							showUserInfo(inf);
+						}
 					});
 
-					JMenuItem resetSkin = new JMenuItem(
+					final JMenuItem resetSkin = new JMenuItem(
 							Messages.getString("JMinecraftPlayerList.playerListOptionResetSkin"));
-					resetSkin.addActionListener(ev -> {
-						if (PlayerSkinCache.getSkincache().containsKey(inf.getUUID()))
-							PlayerSkinCache.getSkincache().remove(inf.getUUID());
+					resetSkin.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent ev) {
+							if (PlayerSkinCache.getSkincache().containsKey(inf.getUUID())) {
+								PlayerSkinCache.getSkincache().remove(inf.getUUID());
+							}
+						}
 					});
 
-					JMenuItem resetAllSkins = new JMenuItem(
+					final JMenuItem resetAllSkins = new JMenuItem(
 							Messages.getString("JMinecraftPlayerList.playerListOptionClearSkinCache"));
-					resetAllSkins.addActionListener(ev -> {
+					resetAllSkins.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent ev) {
 
-						PlayerSkinCache.getSkincache().clear();
-						SwingUtilities.invokeLater(() -> {
-							repaint();
-						});
+							PlayerSkinCache.getSkincache().clear();
+							SwingUtilities.invokeLater(new Runnable() {
+								@Override
+								public void run() {
+									repaint();
+								}
+							});
+						}
 					});
 
-					JMenuItem exportList = new JMenuItem(
+					final JMenuItem exportList = new JMenuItem(
 							Messages.getString("JMinecraftPlayerList.playerListOptionExportPlayerList"));
 					exportList.addActionListener(new ActionListener() {
 
 						@Override
-						public void actionPerformed(ActionEvent e) {
+						public void actionPerformed(final ActionEvent e) {
 
 							if (mcl == null)
 								return;
-							String fname = addr.replace(".", "_") + " player list";
-							JFileChooser jfc = new JFileChooser();
+							final String fname = addr.replace(".", "_") + " player list";
+							final JFileChooser jfc = new JFileChooser();
 							jfc.setDialogTitle(Messages.getString("JMinecraftPlayerList.exportDialogTitle"));
 							jfc.setAcceptAllFileFilterUsed(false);
 							jfc.addChoosableFileFilter(new FileNameExtensionFilter(
 									Messages.getString("JMinecraftPlayerList.exportDialogFileTypeCSV"), "csv"));
 							jfc.setSelectedFile(new File(fname));
-							int ret = jfc.showSaveDialog(win);
+							final int ret = jfc.showSaveDialog(win);
 							if (ret == JFileChooser.APPROVE_OPTION) {
 								File sel = jfc.getSelectedFile();
-								String ext = "csv";
+								final String ext = "csv";
 								if (!sel.getName().contains(".")
-										|| !sel.getName().substring(sel.getName().lastIndexOf(".")).equals("." + ext))
-
+										|| !sel.getName().substring(sel.getName().lastIndexOf(".")).equals("." + ext)) {
 									sel = new File(sel.getPath() + "." + ext);
+								}
 
 								try {
 									switch (ext) {
 										default: {
-											PrintWriter pw = new PrintWriter(new FileOutputStream(sel));
+											final PrintWriter pw = new PrintWriter(new FileOutputStream(sel));
 											pw.println(Messages.getString("JMinecraftPlayerList.exportFileColumns"));
-											for (UUID uid : mcl.getPlayersTabList().keySet()) {
-												PlayerInfo pinf = mcl.getPlayersTabList().get(uid);
-												String name = pinf.getName();
-												String dname = pinf.getDisplayName() == null ? "N/A"
+											for (final UUID uid : mcl.getPlayersTabList().keySet()) {
+												final PlayerInfo pinf = mcl.getPlayersTabList().get(uid);
+												final String name = pinf.getName();
+												final String dname = pinf.getDisplayName() == null ? "N/A"
 														: ChatMessages.removeColors(
 																ChatMessages.parse(pinf.getDisplayName()));
-												String uuid = pinf.getUUID().toString();
-												String ping = pinf.getPing() > 0 ? Integer.toString(pinf.getPing())
+												final String uuid = pinf.getUUID().toString();
+												final String ping = pinf.getPing() > 0
+														? Integer.toString(pinf.getPing())
 														: "?";
-												String skurl = PlayerSkinCache.getSkincache()
+												final String skurl = PlayerSkinCache.getSkincache()
 														.containsKey(pinf.getUUID())
 																? PlayerSkinCache.getSkincache().get(pinf.getUUID())
 																		.getUrl()
@@ -156,7 +170,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 											break;
 										}
 									}
-								} catch (Exception e2) {
+								} catch (final Exception e2) {
 									SwingUtils.showErrorDialog(win,
 											Messages.getString("JMinecraftPlayerList.exportErrorDialogTitle"), e2,
 											Messages.getString("JMinecraftPlayerList.exportErrorDialogMessage")
@@ -180,19 +194,18 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 
 	}
 
-	@SuppressWarnings("serial")
-	private void showUserInfo(PlayerInfo info) {
-		JFrame diag = new JFrame(Messages.getString("JMinecraftPlayerList.userInfoDialogTitle") + info.getName());
+	private void showUserInfo(final PlayerInfo info) {
+		final JFrame diag = new JFrame(Messages.getString("JMinecraftPlayerList.userInfoDialogTitle") + info.getName());
 		diag.setAlwaysOnTop(true);
 		diag.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		Box box = Box.createVerticalBox();
+		final Box box = Box.createVerticalBox();
 
-		String name = info.getName();
-		String dname = info.getDisplayName() == null ? "N/A" : ChatMessages.parse(info.getDisplayName());
-		int ping = info.getPing();
-		String pingI = Integer.toString(ping);
-		String uuid = info.getUUID().toString();
+		final String name = info.getName();
+		final String dname = info.getDisplayName() == null ? "N/A" : ChatMessages.parse(info.getDisplayName());
+		final int ping = info.getPing();
+		final String pingI = Integer.toString(ping);
+		final String uuid = info.getUUID().toString();
 
 		box.add(new JLabel(Messages.getString("JMinecraftPlayerList.userInfoDialogName") + name));
 		box.add(new JPanel() {
@@ -200,7 +213,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 			{
 				setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 				add(new JLabel(Messages.getString("JMinecraftPlayerList.userInfoDialogDisplayName")));
-				JTextPane jtp = new JTextPane();
+				final JTextPane jtp = new JTextPane();
 				jtp.setMaximumSize(new Dimension(SwingUtils.sSize.width, 20));
 				jtp.setEditable(false);
 				jtp.setOpaque(false);
@@ -244,7 +257,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 					}
 
 					@Override
-					public void paintComponent(Graphics g) {
+					public void paintComponent(final Graphics g) {
 						super.paintComponent(g);
 						g.drawImage(bbf, 0, 0, 16, 16, null);
 					}
@@ -263,7 +276,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 			{
 				setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 				add(new JLabel(Messages.getString("JMinecraftPlayerList.userInfoDialogUUID")));
-				JTextPane jtp = new JTextPane();
+				final JTextPane jtp = new JTextPane();
 				jtp.setMaximumSize(new Dimension(SwingUtils.sSize.width, 20));
 				jtp.setEditable(false);
 				jtp.setOpaque(false);
@@ -278,23 +291,23 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 				addActionListener(new ActionListener() {
 
 					@Override
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(final ActionEvent e) {
 						diag.dispose();
-						BufferedImage skin = PlayerSkinCache.getSkincache().get(info.getUUID()).getImg();
-						BufferedImage p1 = IOUtils.renderPlayerSkin(skin, 0);
-						BufferedImage p2 = IOUtils.renderPlayerSkin(skin, 1);
+						final BufferedImage skin = PlayerSkinCache.getSkincache().get(info.getUUID()).getImg();
+						final BufferedImage p1 = IOUtils.renderPlayerSkin(skin, 0);
+						final BufferedImage p2 = IOUtils.renderPlayerSkin(skin, 1);
 
-						BufferedImage[] igs = new BufferedImage[] { p1, p2, skin };
+						final BufferedImage[] igs = new BufferedImage[] { p1, p2, skin };
 
 						final int[] inRef = new int[] { 0 };
 
-						JFrame win = new JFrame(
+						final JFrame win = new JFrame(
 								Messages.getString("JMinecraftPlayerList.userSkinDialogTitle") + info.getName());
 						win.setAlwaysOnTop(true);
 						win.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-						Box box = Box.createVerticalBox();
-						JPanel jp = new JPanel() {
+						final Box box = Box.createVerticalBox();
+						final JPanel jp = new JPanel() {
 							private static final long serialVersionUID = 1L;
 							{
 								setPreferredSize(new Dimension(
@@ -303,7 +316,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 							}
 
 							@Override
-							public void paintComponent(Graphics g) {
+							public void paintComponent(final Graphics g) {
 								super.paintComponent(g);
 								g.drawImage(IOUtils.resizeImageProp(igs[inRef[0]], getHeight()), 0, 0, null);
 							}
@@ -316,26 +329,40 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 								setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 								add(new JButton("<") {
 									{
-										addActionListener(ev -> {
-											inRef[0]--;
-											if (inRef[0] < 0)
-												inRef[0] = igs.length - 1;
-											SwingUtilities.invokeLater(() -> {
-												jp.repaint();
-											});
+										addActionListener(new ActionListener() {
+											@Override
+											public void actionPerformed(ActionEvent ev) {
+												inRef[0]--;
+												if (inRef[0] < 0) {
+													inRef[0] = igs.length - 1;
+												}
+												SwingUtilities.invokeLater(new Runnable() {
+													@Override
+													public void run() {
+														jp.repaint();
+													}
+												});
+											}
 										});
 									}
 								});
 								add(new JLabel(Messages.getString("JMinecraftPlayerList.userSkinDialogChangeView")));
 								add(new JButton(">") {
 									{
-										addActionListener(ev -> {
-											inRef[0]++;
-											if (inRef[0] >= igs.length)
-												inRef[0] = 0;
-											SwingUtilities.invokeLater(() -> {
-												jp.repaint();
-											});
+										addActionListener(new ActionListener() {
+											@Override
+											public void actionPerformed(ActionEvent ev) {
+												inRef[0]++;
+												if (inRef[0] >= igs.length) {
+													inRef[0] = 0;
+												}
+												SwingUtilities.invokeLater(new Runnable() {
+													@Override
+													public void run() {
+														jp.repaint();
+													}
+												});
+											}
 										});
 									}
 								});
@@ -351,9 +378,10 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 			}
 		});
 
-		for (Component ct : box.getComponents())
-			if (ct instanceof JComponent)
+		for (final Component ct : box.getComponents())
+			if (ct instanceof JComponent) {
 				((JComponent) ct).setAlignmentX(Component.LEFT_ALIGNMENT);
+			}
 
 		diag.setContentPane(box);
 		diag.pack();
@@ -376,7 +404,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 	 * 
 	 * @param mcl Minecraft client instance
 	 */
-	public void setMcl(MinecraftClient mcl) {
+	public void setMcl(final MinecraftClient mcl) {
 		this.mcl = mcl;
 	}
 }

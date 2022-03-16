@@ -27,14 +27,14 @@ public class ServerStatisticsPacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerStatisticsPacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerStatisticsPacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
-		VarInputStream is = getInputStream();
+		final VarInputStream is = getInputStream();
 
-		int count = is.readVarInt();
+		final int count = is.readVarInt();
 		for (int x = 0; x < count; x++) {
-			String key = is.readString();
-			int value = is.readVarInt();
+			final String key = is.readString();
+			final int value = is.readVarInt();
 			values.put(key, value);
 		}
 	}

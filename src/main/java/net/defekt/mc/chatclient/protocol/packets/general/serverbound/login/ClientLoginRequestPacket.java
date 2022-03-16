@@ -17,7 +17,7 @@ public class ClientLoginRequestPacket extends Packet {
 	 * @param reg      packet registry used to contruct this packet
 	 * @param username player's username
 	 */
-	public ClientLoginRequestPacket(PacketRegistry reg, String username) {
+	public ClientLoginRequestPacket(final PacketRegistry reg, final String username) {
 		super(reg);
 		putString(username);
 		id = 0;

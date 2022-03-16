@@ -26,9 +26,9 @@ public class ServerOpenWindowPacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerOpenWindowPacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerOpenWindowPacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
-		VarInputStream is = getInputStream();
+		final VarInputStream is = getInputStream();
 		windowID = is.readUnsignedByte();
 		windowType = is.readVarInt();
 		windowTitle = is.readString();

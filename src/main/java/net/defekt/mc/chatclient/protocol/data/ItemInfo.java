@@ -16,7 +16,7 @@ public class ItemInfo {
 	 * @param name     item name
 	 * @param fileName item's internal name
 	 */
-	protected ItemInfo(String name, String fileName) {
+	protected ItemInfo(final String name, final String fileName) {
 		this.name = name;
 		this.fileName = fileName;
 	}

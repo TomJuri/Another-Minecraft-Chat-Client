@@ -57,7 +57,7 @@ public class MinecraftClient {
 	private OutputStream os = null;
 
 	private boolean compression = false;
-	private int cThreshold = -1;
+	private final int cThreshold = -1;
 
 	private boolean sneaking = false;
 	private boolean sprinting = false;
@@ -68,8 +68,8 @@ public class MinecraftClient {
 
 	private final ListenerHashMap<UUID, PlayerInfo> playersTabList = new ListenerHashMap<UUID, PlayerInfo>();
 
-	private List<InternalPacketListener> packetListeners = new ArrayList<InternalPacketListener>();
-	private List<ClientListener> clientListeners = new ArrayList<ClientListener>();
+	private final List<InternalPacketListener> packetListeners = new ArrayList<InternalPacketListener>();
+	private final List<ClientListener> clientListeners = new ArrayList<ClientListener>();
 
 	private final Map<Integer, ItemsWindow> openWindows = new HashMap<Integer, ItemsWindow>();
 	private ItemsWindow inventory = null;
@@ -82,7 +82,7 @@ public class MinecraftClient {
 	 * 
 	 * @param listener a client listener for receiving client updates
 	 */
-	public void addClientListener(ClientListener listener) {
+	public void addClientListener(final ClientListener listener) {
 		clientListeners.add(listener);
 	}
 
@@ -91,7 +91,7 @@ public class MinecraftClient {
 	 * 
 	 * @param listener client listener to remove
 	 */
-	public void removeClientListener(ClientListener listener) {
+	public void removeClientListener(final ClientListener listener) {
 		clientListeners.remove(listener);
 	}
 
@@ -115,7 +115,7 @@ public class MinecraftClient {
 	 *                     example when could not find a matching packet registry
 	 *                     implementation for specified protocol)
 	 */
-	public MinecraftClient(String host, int port, int protocol) throws IOException {
+	public MinecraftClient(final String host, final int port, final int protocol) throws IOException {
 		this.host = host;
 		this.port = port;
 		this.protocol = protocol;
@@ -127,24 +127,28 @@ public class MinecraftClient {
 	 * Closes this MinecraftClient
 	 */
 	public void close() {
-		if (soc != null && !soc.isClosed())
+		if (soc != null && !soc.isClosed()) {
 			try {
 				connected = false;
 				try {
-					for (ItemsWindow win : openWindows.values())
+					for (final ItemsWindow win : openWindows.values()) {
 						win.closeWindow();
+					}
 					inventory.closeWindow();
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					e.printStackTrace();
 				}
 				soc.close();
-				if (packetReaderThread != null)
+				if (packetReaderThread != null) {
 					packetReaderThread.interrupt();
-				if (playerPositionThread != null)
+				}
+				if (playerPositionThread != null) {
 					playerPositionThread.interrupt();
-			} catch (IOException e) {
+				}
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
+		}
 	}
 
 	private boolean connected = false;
@@ -157,7 +161,7 @@ public class MinecraftClient {
 	 * 
 	 * @param state next client state
 	 */
-	protected void setCurrentState(State state) {
+	protected void setCurrentState(final State state) {
 		this.state = state;
 	}
 
@@ -167,7 +171,7 @@ public class MinecraftClient {
 	 * @param username username of connecting client
 	 * @throws IOException thrown when client was unable to connect to target server
 	 */
-	public void connect(String username) throws IOException {
+	public void connect(final String username) throws IOException {
 		this.username = username;
 
 		try {
@@ -183,10 +187,10 @@ public class MinecraftClient {
 			inventory = new ItemsWindow(Messages.getString("MinecraftClient.clientInventoryName"), 46, 0, this, reg);
 			packetListeners.add(new ClientPacketListener(this));
 
-			Packet handshake = new HandshakePacket(reg, protocol, host, port, 2);
+			final Packet handshake = new HandshakePacket(reg, protocol, host, port, 2);
 			os.write(handshake.getData(compression));
 
-			Packet login = PacketFactory.constructPacket(reg, "ClientLoginRequestPacket", username);
+			final Packet login = PacketFactory.constructPacket(reg, "ClientLoginRequestPacket", username);
 			os.write(login.getData(compression));
 
 //			int len = is.readVarInt();
@@ -219,8 +223,8 @@ public class MinecraftClient {
 				public void run() {
 					try {
 						while (connected) {
-							int len = is.readVarInt();
-							byte[] data = new byte[len];
+							final int len = is.readVarInt();
+							final byte[] data = new byte[len];
 							is.readFully(data);
 
 							VarInputStream packetbuf = new VarInputStream(new ByteArrayInputStream(data));
@@ -228,16 +232,16 @@ public class MinecraftClient {
 							final byte[] packetData;
 
 							if (compression) {
-								int dlen = packetbuf.readVarInt();
+								final int dlen = packetbuf.readVarInt();
 								if (dlen == 0) {
 									id = packetbuf.readVarInt();
 									packetData = new byte[len - VarOutputStream.checkVarIntSize(dlen) - 1];
 									packetbuf.readFully(packetData);
 								} else {
-									byte[] toProcess = new byte[len - VarOutputStream.checkVarIntSize(dlen)];
+									final byte[] toProcess = new byte[len - VarOutputStream.checkVarIntSize(dlen)];
 									packetbuf.readFully(toProcess);
 
-									byte[] inflated = new byte[dlen];
+									final byte[] inflated = new byte[dlen];
 									inflater.setInput(toProcess);
 									inflater.inflate(inflated);
 									inflater.reset();
@@ -256,18 +260,22 @@ public class MinecraftClient {
 							}
 
 							if (id != -1) {
-								Class<? extends Packet> pClass = reg.getByID(id, state);
-								if (pClass == null)
+								final Class<? extends Packet> pClass = reg.getByID(id, state);
+								if (pClass == null) {
 									continue;
-								Packet packet = PacketFactory.constructPacket(reg, pClass.getSimpleName(), packetData);
-								for (InternalPacketListener lis : packetListeners)
+								}
+								final Packet packet = PacketFactory.constructPacket(reg, pClass.getSimpleName(),
+										packetData);
+								for (final InternalPacketListener lis : packetListeners) {
 									lis.packetReceived(packet, reg);
+								}
 							}
 						}
-					} catch (Exception e) {
+					} catch (final Exception e) {
 //						e.printStackTrace();
-						for (ClientListener cl : clientListeners)
+						for (final ClientListener cl : clientListeners) {
 							cl.disconnected(e.toString());
+						}
 						close();
 					}
 				}
@@ -277,7 +285,7 @@ public class MinecraftClient {
 			synchronized (lock) {
 				try {
 					lock.wait(5000);
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
@@ -288,27 +296,28 @@ public class MinecraftClient {
 					try {
 						while (true) {
 							Thread.sleep(1000);
-							if (x == Integer.MIN_VALUE)
+							if (x == Integer.MIN_VALUE) {
 								continue;
+							}
 							try {
 								if (soc.isClosed()) {
 									close();
 									return;
 								}
-								Packet playerPositionPacket = PacketFactory.constructPacket(reg,
+								final Packet playerPositionPacket = PacketFactory.constructPacket(reg,
 										"ClientPlayerPositionPacket", x, y, z, true);
 								os.write(playerPositionPacket.getData(isCompressionEnabled()));
-							} catch (Exception e) {
+							} catch (final Exception e) {
 								e.printStackTrace();
 							}
 						}
-					} catch (InterruptedException e) {
+					} catch (final InterruptedException e) {
 					}
 				}
 			});
 			playerPositionThread.start();
 
-		} catch (IOException ex) {
+		} catch (final IOException ex) {
 			close();
 			throw ex;
 		}
@@ -378,10 +387,11 @@ public class MinecraftClient {
 	 * 
 	 * @param x new X position
 	 */
-	protected void setX(double x) {
+	protected void setX(final double x) {
 		this.x = x;
-		for (ClientListener cl : clientListeners)
+		for (final ClientListener cl : clientListeners) {
 			cl.positionChanged(this.x, this.y, this.z);
+		}
 	}
 
 	/**
@@ -390,10 +400,11 @@ public class MinecraftClient {
 	 * 
 	 * @param y new Y position
 	 */
-	protected void setY(double y) {
+	protected void setY(final double y) {
 		this.y = y;
-		for (ClientListener cl : clientListeners)
+		for (final ClientListener cl : clientListeners) {
 			cl.positionChanged(this.x, this.y, this.z);
+		}
 	}
 
 	/**
@@ -402,10 +413,11 @@ public class MinecraftClient {
 	 * 
 	 * @param z new Z position
 	 */
-	protected void setZ(double z) {
+	protected void setZ(final double z) {
 		this.z = z;
-		for (ClientListener cl : clientListeners)
+		for (final ClientListener cl : clientListeners) {
 			cl.positionChanged(this.x, this.y, this.z);
+		}
 	}
 
 	/**
@@ -416,10 +428,10 @@ public class MinecraftClient {
 	 */
 	public void toggleSneaking() throws IOException {
 		sneaking = !sneaking;
-		EntityAction action = sneaking ? EntityAction.START_SNEAKING : EntityAction.STOP_SNEAKING;
+		final EntityAction action = sneaking ? EntityAction.START_SNEAKING : EntityAction.STOP_SNEAKING;
 		try {
 			sendPacket(PacketFactory.constructPacket(reg, "ClientEntityActionPacket", entityID, action));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			sneaking = !sneaking;
 			throw e;
 		}
@@ -433,10 +445,10 @@ public class MinecraftClient {
 	 */
 	public void toggleSprinting() throws IOException {
 		sprinting = !sprinting;
-		EntityAction action = sprinting ? EntityAction.START_SPRINTING : EntityAction.STOP_SPRINTING;
+		final EntityAction action = sprinting ? EntityAction.START_SPRINTING : EntityAction.STOP_SPRINTING;
 		try {
 			sendPacket(PacketFactory.constructPacket(reg, "ClientEntityActionPacket", entityID, action));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			sprinting = !sprinting;
 			throw e;
 		}
@@ -448,10 +460,10 @@ public class MinecraftClient {
 	 * @param packet packet to send
 	 * @throws IOException thrown when there was an error sending packet
 	 */
-	public void sendPacket(Packet packet) throws IOException {
-		if (connected && soc != null && !soc.isClosed())
+	public void sendPacket(final Packet packet) throws IOException {
+		if (connected && soc != null && !soc.isClosed()) {
 			os.write(packet.getData(compression));
-		else
+		} else
 			throw new IOException(notConnectedError);
 	}
 
@@ -462,7 +474,7 @@ public class MinecraftClient {
 	 * @throws IOException thrown when server was not connected, or there was an
 	 *                     error sending packet to server
 	 */
-	public void sendChatMessage(String message) throws IOException {
+	public void sendChatMessage(final String message) throws IOException {
 		sendPacket(PacketFactory.constructPacket(reg, "ClientChatMessagePacket", message));
 	}
 
@@ -480,7 +492,7 @@ public class MinecraftClient {
 	 * 
 	 * @param entityID new entity ID
 	 */
-	protected void setEntityID(int entityID) {
+	protected void setEntityID(final int entityID) {
 		this.entityID = entityID;
 	}
 
@@ -573,7 +585,7 @@ public class MinecraftClient {
 	 * 
 	 * @param yaw new yaw value
 	 */
-	protected void setYaw(float yaw) {
+	protected void setYaw(final float yaw) {
 		this.yaw = yaw;
 	}
 
@@ -583,7 +595,7 @@ public class MinecraftClient {
 	 * 
 	 * @param pitch new pitch value
 	 */
-	protected void setPitch(float pitch) {
+	protected void setPitch(final float pitch) {
 		this.pitch = pitch;
 	}
 
@@ -594,13 +606,13 @@ public class MinecraftClient {
 	 * 
 	 * @param direction player's look
 	 */
-	public void setLook(float direction) {
+	public void setLook(final float direction) {
 		try {
 			this.yaw = direction;
 			os.write(PacketFactory
 					.constructPacket(reg, "ClientPlayerPositionAndLookPacket", x, y, z, direction, 0f, true)
 					.getData(isCompressionEnabled()));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -625,7 +637,7 @@ public class MinecraftClient {
 					for (int x = 0; x < (1 / speedModifier) * blocks; x++) {
 						try {
 							Thread.sleep(1000 / 20);
-						} catch (InterruptedException e1) {
+						} catch (final InterruptedException e1) {
 							e1.printStackTrace();
 						}
 						if (MinecraftClient.this.x == Integer.MIN_VALUE)
@@ -691,7 +703,7 @@ public class MinecraftClient {
 							setZ(tz);
 							sendPacket(PacketFactory.constructPacket(reg, "ClientPlayerPositionAndLookPacket", tx,
 									MinecraftClient.this.y, tz, MinecraftClient.this.yaw, 0f, true));
-						} catch (Exception e) {
+						} catch (final Exception e) {
 
 						}
 
@@ -719,9 +731,10 @@ public class MinecraftClient {
 	 * @param id  window's id
 	 * @param win opened window
 	 */
-	protected void setOpenWindow(int id, ItemsWindow win) {
-		for (ItemsWindow window : openWindows.values())
+	protected void setOpenWindow(final int id, final ItemsWindow win) {
+		for (final ItemsWindow window : openWindows.values()) {
 			window.closeWindow(true);
+		}
 		inventory.closeWindow(true);
 		openWindows.clear();
 		openWindows.put(id, win);
@@ -745,14 +758,29 @@ public class MinecraftClient {
 		return inventory;
 	}
 
+	/**
+	 * Check if packet compression is enabled
+	 * 
+	 * @return whether compression is enabled
+	 */
 	public boolean isCompression() {
 		return compression;
 	}
 
-	public void setCompression(boolean compression) {
+	/**
+	 * Set packet compression
+	 * 
+	 * @param compression whether compression should be enabled
+	 */
+	public void setCompression(final boolean compression) {
 		this.compression = compression;
 	}
 
+	/**
+	 * Check if client is connected
+	 * 
+	 * @return connected state
+	 */
 	public boolean isConnected() {
 		return connected;
 	}

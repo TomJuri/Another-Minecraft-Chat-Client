@@ -28,13 +28,14 @@ public class ServerWindowItemsPacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerWindowItemsPacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerWindowItemsPacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
-		VarInputStream is = getInputStream();
+		final VarInputStream is = getInputStream();
 		windowID = is.readUnsignedByte();
-		short count = is.readShort();
-		for (int x = 0; x < count; x++)
+		final short count = is.readShort();
+		for (int x = 0; x < count; x++) {
 			items.add(is.readSlotData(PacketFactory.getProtocolFor(reg)));
+		}
 	}
 
 	/**

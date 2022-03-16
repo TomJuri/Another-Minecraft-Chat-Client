@@ -19,7 +19,7 @@ public class ClientKeepAlivePacket extends Packet {
 	 * @param reg packet registry used to construct this packet
 	 * @param id  keep-alive ID as VarInt
 	 */
-	public ClientKeepAlivePacket(PacketRegistry reg, Integer id) {
+	public ClientKeepAlivePacket(final PacketRegistry reg, final Integer id) {
 		super(reg);
 		putVarInt(id);
 	}

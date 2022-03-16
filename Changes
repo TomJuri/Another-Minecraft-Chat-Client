@@ -1,15 +1,15 @@
 AMCC Change Log
-v1.5.4
-
-Thanks to qiuzilu for providing a Chinese translation 
-and making me aware of an issue with Unicode characters!
-
-Caution! This release is yet to be tested! Please report any Issues!
+v1.5.5
 
 [+] Added:
-- Partial Chinese translation.
-- Chinese (and other Unicode) characters support for chat
-- New option in preferences under "General" tab for changing display mode of Unicode characters:
-  - Autmatic (Default) - Font will be adjusted on the fly to display Unicode characters
-  - Force Custom Font - Old behavior, Unicode font will almost never be used (Except for GUI elements in Chinese language)
-  - Force Unicode Font - Completely unload Minecraftia font, and use only Unicode font
+- Minecraft Version 1.18.2
+- Legacy server list ping, you can now view status of servers before Minecraft version 1.7
+- Option to force legacy SLP under "Protocol" tab in preferences
+
+[+] Fixed:
+- Some dialogs in preferences
+- All issues related to PlayerListItemPacket
+
+[/] Changed:
+- Windows executable file is now assembled using WinRun4j instead of Launch4j.
+  Antiviruses shouldn't report false-positives anymore

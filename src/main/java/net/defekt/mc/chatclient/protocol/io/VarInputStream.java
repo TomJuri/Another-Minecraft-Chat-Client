@@ -28,7 +28,7 @@ public class VarInputStream extends DataInputStream {
 	 * 
 	 * @param in input steam to wrap
 	 */
-	public VarInputStream(InputStream in) {
+	public VarInputStream(final InputStream in) {
 		super(in);
 	}
 
@@ -41,8 +41,8 @@ public class VarInputStream extends DataInputStream {
 	 * @throws IOException thrown when there was an error reading from stream
 	 */
 	public String readString() throws IOException {
-		int i = readVarInt();
-		byte[] data = new byte[i];
+		final int i = readVarInt();
+		final byte[] data = new byte[i];
 		readFully(data);
 		return new String(data, StandardCharsets.UTF_8);
 	}
@@ -56,8 +56,8 @@ public class VarInputStream extends DataInputStream {
 	 * @throws IOException thrown when there was an error reading from stream
 	 */
 	public UUID readUUID() throws IOException {
-		long mostSig = readLong();
-		long leastSig = readLong();
+		final long mostSig = readLong();
+		final long leastSig = readLong();
 		return new UUID(mostSig, leastSig);
 	}
 
@@ -75,7 +75,7 @@ public class VarInputStream extends DataInputStream {
 		byte read;
 		do {
 			read = readByte();
-			int value = (read & 0b01111111);
+			final int value = (read & 0b01111111);
 			result |= (value << (7 * numRead));
 
 			numRead++;
@@ -94,12 +94,12 @@ public class VarInputStream extends DataInputStream {
 	 * @throws IOException thrown when there was an error reading from stream
 	 */
 	@SuppressWarnings("resource")
-	public ItemStack readSlotData(int protocol) throws IOException {
+	public ItemStack readSlotData(final int protocol) throws IOException {
 		if (protocol >= 755)
 			return null;
 		if (protocol >= 477 && !readBoolean())
 			return new ItemStack((short) 0, 0, (short) 0, null);
-		int id = protocol >= 477 ? readVarInt() : readShort();
+		final int id = protocol >= 477 ? readVarInt() : readShort();
 		int count = 0;
 		short damage = 0;
 		Tag<?> tag = null;
@@ -107,9 +107,9 @@ public class VarInputStream extends DataInputStream {
 			count = readByte();
 			damage = protocol <= 340 ? readShort() : 0;
 			try {
-				NBTInputStream is = new NBTInputStream(this, false);
+				final NBTInputStream is = new NBTInputStream(this, false);
 				tag = is.readTag();
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				tag = null;
 			}
 		}

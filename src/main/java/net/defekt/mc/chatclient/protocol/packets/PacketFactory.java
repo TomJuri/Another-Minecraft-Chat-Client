@@ -28,7 +28,7 @@ import net.defekt.mc.chatclient.ui.Messages;
  * @author Defective4
  *
  */
-@SuppressWarnings("serial")
+
 public class PacketFactory {
 
 	private static final Map<Integer, Integer> protocolBinds = new HashMap<Integer, Integer>() {
@@ -49,6 +49,7 @@ public class PacketFactory {
 			put(735, 735);
 			put(754, 753);
 			put(756, 755);
+			put(758, 757);
 		}
 	};
 
@@ -68,7 +69,7 @@ public class PacketFactory {
 				put(753, new PacketRegistryV753());
 				put(755, new PacketRegistryV755());
 				put(757, new PacketRegistryV757());
-			} catch (NoClassDefFoundError e) {
+			} catch (final NoClassDefFoundError e) {
 				e.printStackTrace();
 			}
 		}
@@ -82,8 +83,9 @@ public class PacketFactory {
 	 * @throws IOException thrown when specified protocol is not implemented
 	 */
 	public static PacketRegistry constructPacketRegistry(int protocol) throws IOException {
-		if (protocolBinds.containsKey(protocol))
+		if (protocolBinds.containsKey(protocol)) {
 			protocol = protocolBinds.get(protocol);
+		}
 
 		if (packetRegistries.containsKey(protocol))
 			return packetRegistries.get(protocol);
@@ -102,19 +104,22 @@ public class PacketFactory {
 	 * @throws IOException thrown when there was an error constructing packet, or
 	 *                     packet with this name was not found
 	 */
-	public static Packet constructPacket(PacketRegistry reg, String name, Object... arguments) throws IOException {
-		Object[] relArguments = new Object[arguments.length + 1];
-		for (int x = 1; x < relArguments.length; x++)
+	public static Packet constructPacket(final PacketRegistry reg, final String name, final Object... arguments)
+			throws IOException {
+		final Object[] relArguments = new Object[arguments.length + 1];
+		for (int x = 1; x < relArguments.length; x++) {
 			relArguments[x] = arguments[x - 1];
+		}
 		relArguments[0] = reg;
 
-		Class<?>[] argumentClasses = new Class<?>[relArguments.length];
-		for (int x = 1; x < argumentClasses.length; x++)
+		final Class<?>[] argumentClasses = new Class<?>[relArguments.length];
+		for (int x = 1; x < argumentClasses.length; x++) {
 			argumentClasses[x] = relArguments[x].getClass();
+		}
 		argumentClasses[0] = PacketRegistry.class;
 
 		try {
-			Packet pk = reg.getByName(name).getDeclaredConstructor(argumentClasses).newInstance(relArguments);
+			final Packet pk = reg.getByName(name).getDeclaredConstructor(argumentClasses).newInstance(relArguments);
 			return pk;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException | NullPointerException e) {
@@ -132,8 +137,8 @@ public class PacketFactory {
 	 * @param reg packet registry to use
 	 * @return registry's protocol
 	 */
-	public static int getProtocolFor(PacketRegistry reg) {
-		for (int protocol : packetRegistries.keySet())
+	public static int getProtocolFor(final PacketRegistry reg) {
+		for (final int protocol : packetRegistries.keySet())
 			if (packetRegistries.get(protocol).getClass().equals(reg.getClass()))
 				return protocol;
 		return -1;

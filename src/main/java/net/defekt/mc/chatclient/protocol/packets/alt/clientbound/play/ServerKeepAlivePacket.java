@@ -25,7 +25,7 @@ public class ServerKeepAlivePacket extends Packet {
 	 * @param data packet data
 	 * @throws IOException never thrown
 	 */
-	public ServerKeepAlivePacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerKeepAlivePacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
 		this.id = getInputStream().readVarInt();
 	}

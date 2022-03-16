@@ -32,6 +32,7 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerOpenWindowPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPlayerListItemPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPlayerListItemPacket.Action;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPlayerListItemPacket.PlayerListItem;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPlayerPositionAndLookPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPluginMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerResourcePackSendPacket;
@@ -70,7 +71,7 @@ public class ClientPacketListener implements InternalPacketListener {
 	 * 
 	 * @param client A Minecraft client this listener is bound o
 	 */
-	protected ClientPacketListener(MinecraftClient client) {
+	protected ClientPacketListener(final MinecraftClient client) {
 		this.cl = client;
 		this.os = cl.getOutputStream();
 		this.protocol = cl.getProtocol();
@@ -84,8 +85,9 @@ public class ClientPacketListener implements InternalPacketListener {
 				}
 
 				if (System.currentTimeMillis() - lastKeepAlivePacket > 60000) {
-					for (ClientListener cls : cl.getClientListeners())
+					for (final ClientListener cls : cl.getClientListeners()) {
 						cls.disconnected("Timed Out");
+					}
 					cl.close();
 				}
 			}
@@ -99,170 +101,186 @@ public class ClientPacketListener implements InternalPacketListener {
 			if (packet instanceof ServerLoginSetCompressionPacket) {
 				cl.setCompression(true);
 			} else if (packet instanceof ServerLoginEncryptionPacket) {
-				for (ClientListener ls : cl.getClientListeners())
+				for (final ClientListener ls : cl.getClientListeners()) {
 					ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnectedNoAuth"));
+				}
 				cl.close();
 			} else if (packet instanceof ServerLoginResponsePacket) {
-				for (ClientListener ls : cl.getClientListeners())
+				for (final ClientListener ls : cl.getClientListeners()) {
 					ls.disconnected(ChatMessages.parse(((ServerLoginResponsePacket) packet).getResponse()));
+				}
 				cl.close();
 			} else if (packet instanceof ServerTimeUpdatePacket) {
-				ServerTimeUpdatePacket sti = (ServerTimeUpdatePacket) packet;
-				for (ClientListener cls : cl.getClientListeners())
+				final ServerTimeUpdatePacket sti = (ServerTimeUpdatePacket) packet;
+				for (final ClientListener cls : cl.getClientListeners()) {
 					cls.timeUpdated(sti.getTime(), sti.getWorldAge());
+				}
 			} else if (packet instanceof ServerConfirmTransactionPacket) {
 				if (!up.isEnableInventoryHandling() || protocol >= 755)
 					return;
 
-				int windowID = (int) packet.accessPacketMethod("getWindowID");
-				short actionID = (short) packet.accessPacketMethod("getActionID");
-				boolean accepted = (boolean) packet.accessPacketMethod("isAccepted");
+				final int windowID = (int) packet.accessPacketMethod("getWindowID");
+				final short actionID = (short) packet.accessPacketMethod("getActionID");
+				final boolean accepted = (boolean) packet.accessPacketMethod("isAccepted");
 
-				ItemsWindow win = windowID == 0 ? cl.getInventory()
+				final ItemsWindow win = windowID == 0 ? cl.getInventory()
 						: cl.getOpenWindows().containsKey(windowID) ? cl.getOpenWindows().get(windowID) : null;
 
 				if (win != null)
-					if (accepted)
+					if (accepted) {
 						win.finishTransaction(actionID);
-					else
+					} else {
 						win.cancelTransaction(actionID);
+					}
 
-				if (!accepted)
+				if (!accepted) {
 					cl.sendPacket(PacketFactory.constructPacket(registry, "ClientConfirmTransactionPacket",
 							(byte) windowID, actionID, accepted));
+				}
 
 			} else if (packet instanceof ServerSetSlotPacket) {
 				if (!up.isEnableInventoryHandling() || protocol >= 755)
 					return;
 
-				int windowID = (int) packet.accessPacketMethod("getWindowID");
+				final int windowID = (int) packet.accessPacketMethod("getWindowID");
 
-				short slot = (short) packet.accessPacketMethod("getSlot");
-				ItemStack item = (ItemStack) packet.accessPacketMethod("getItem");
+				final short slot = (short) packet.accessPacketMethod("getSlot");
+				final ItemStack item = (ItemStack) packet.accessPacketMethod("getItem");
 				if (windowID == 0
 						|| (cl.getOpenWindows().containsKey(windowID) && cl.getOpenWindows().get(windowID) != null)) {
-					ItemsWindow iWin = windowID == 0 ? cl.getInventory() : cl.getOpenWindows().get(windowID);
+					final ItemsWindow iWin = windowID == 0 ? cl.getInventory() : cl.getOpenWindows().get(windowID);
 					iWin.putItem(slot, item);
 				}
 			} else if (packet instanceof ServerCloseWindowPacket) {
 				if (!up.isEnableInventoryHandling() || protocol >= 755)
 					return;
 
-				int windowID = (int) packet.accessPacketMethod("getWindowID");
-				if (cl.getOpenWindows().containsKey(windowID) && cl.getOpenWindows().get(windowID) != null)
+				final int windowID = (int) packet.accessPacketMethod("getWindowID");
+				if (cl.getOpenWindows().containsKey(windowID) && cl.getOpenWindows().get(windowID) != null) {
 					cl.getOpenWindows().get(windowID).closeWindow();
-				else if (windowID == 0)
+				} else if (windowID == 0) {
 					cl.getInventory().closeWindow();
+				}
 			} else if (packet instanceof ServerWindowItemsPacket) {
 				if (!up.isEnableInventoryHandling() || protocol >= 755)
 					return;
 
-				int windowID = (int) packet.accessPacketMethod("getWindowID");
-				List<ItemStack> items = (List<ItemStack>) packet.accessPacketMethod("getItems");
+				final int windowID = (int) packet.accessPacketMethod("getWindowID");
+				final List<ItemStack> items = (List<ItemStack>) packet.accessPacketMethod("getItems");
 				if (windowID == 0
 						|| (cl.getOpenWindows().containsKey(windowID) && cl.getOpenWindows().get(windowID) != null)) {
-					ItemsWindow iWin = windowID == 0 ? cl.getInventory() : cl.getOpenWindows().get(windowID);
-					for (int x = 0; x < items.size(); x++)
+					final ItemsWindow iWin = windowID == 0 ? cl.getInventory() : cl.getOpenWindows().get(windowID);
+					for (int x = 0; x < items.size(); x++) {
 						iWin.putItem(x, items.get(x));
+					}
 				}
 			} else if (packet instanceof ServerOpenWindowPacket
 					|| packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerOpenWindowPacket) {
 				if (!up.isEnableInventoryHandling() || protocol >= 755)
 					return;
 
-				int windowID = (int) packet.accessPacketMethod("getWindowID");
-				String windowTitle = ChatMessages
+				final int windowID = (int) packet.accessPacketMethod("getWindowID");
+				final String windowTitle = ChatMessages
 						.removeColors(ChatMessages.parse((String) packet.accessPacketMethod("getWindowTitle")));
 				int slots = 0;
-				if (packet instanceof ServerOpenWindowPacket)
+				if (packet instanceof ServerOpenWindowPacket) {
 					slots = ((int) packet.accessPacketMethod("getSlots"));
-				else {
-					int windowType = (int) packet.accessPacketMethod("getWindowType");
-					if (windowID <= 5)
+				} else {
+					final int windowType = (int) packet.accessPacketMethod("getWindowType");
+					if (windowID <= 5) {
 						slots = (windowType + 1) * 9;
-					else
+					} else
 						return;
 				}
 
-				ItemsWindow win = new ItemsWindow(windowTitle, slots, windowID, cl, registry);
+				final ItemsWindow win = new ItemsWindow(windowTitle, slots, windowID, cl, registry);
 				cl.setOpenWindow(windowID, win);
-				for (ClientListener l : cl.getClientListeners())
+				for (final ClientListener l : cl.getClientListeners()) {
 					l.windowOpened(windowID, win, registry);
+				}
 
 			} else if (packet instanceof ServerStatisticsPacket) {
-				Map<String, Integer> values = (Map<String, Integer>) packet.accessPacketMethod("getValues");
-				for (ClientListener l : cl.getClientListeners())
+				final Map<String, Integer> values = (Map<String, Integer>) packet.accessPacketMethod("getValues");
+				for (final ClientListener l : cl.getClientListeners()) {
 					l.statisticsReceived(values);
+				}
 			} else if (packet instanceof ServerPlayerListItemPacket) {
-				HashMap<UUID, PlayerInfo> playersTabList = cl.getPlayersTabList();
-				Action action = (Action) packet.accessPacketMethod("getAction");
-				UUID pid = (UUID) packet.accessPacketMethod("getUUID");
-				switch (action) {
-					case ADD_PLAYER: {
-						playersTabList.put(pid,
-								new PlayerInfo((String) packet.accessPacketMethod("getPlayerName"),
-										(String) packet.accessPacketMethod("getTextures"),
-										(String) packet.accessPacketMethod("getDisplayName"),
-										(int) packet.accessPacketMethod("getPing"), pid));
-						break;
-					}
-					case UPDATE_DISPLAY_NAME: {
-						if (!playersTabList.containsKey(pid))
+				final HashMap<UUID, PlayerInfo> playersTabList = cl.getPlayersTabList();
+				final Action action = (Action) packet.accessPacketMethod("getAction");
+				final List<PlayerListItem> playerList = (List<PlayerListItem>) packet
+						.accessPacketMethod("getPlayersList");
+				for (final PlayerListItem player : playerList) {
+					final UUID pid = player.getUuid();
+					switch (action) {
+						case ADD_PLAYER: {
+							playersTabList.put(pid, new PlayerInfo(player.getPlayerName(), player.getTextures(),
+									player.getDisplayName(), player.getPing(), pid));
 							break;
-						PlayerInfo old = playersTabList.get(pid);
-						playersTabList.put(pid, new PlayerInfo(old.getName(), old.getTexture(),
-								(String) packet.accessPacketMethod("getDisplayName"), old.getPing(), pid));
-						break;
-					}
-					case REMOVE_PLAYER: {
-						playersTabList.remove(pid);
-						break;
-					}
-					case UPDATE_LATENCY: {
-						if (!playersTabList.containsKey(pid))
+						}
+						case UPDATE_DISPLAY_NAME: {
+							if (!playersTabList.containsKey(pid)) {
+								break;
+							}
+							final PlayerInfo old = playersTabList.get(pid);
+							playersTabList.put(pid, new PlayerInfo(old.getName(), old.getTexture(),
+									player.getDisplayName(), old.getPing(), pid));
 							break;
-						PlayerInfo old = playersTabList.get(pid);
-						playersTabList.put(pid, new PlayerInfo(old.getName(), old.getTexture(), old.getDisplayName(),
-								(int) packet.accessPacketMethod("getPing"), pid));
-						break;
-					}
-					case UPDATE_GAMEMODE: {
-						break;
+						}
+						case REMOVE_PLAYER: {
+							playersTabList.remove(pid);
+							break;
+						}
+						case UPDATE_LATENCY: {
+							if (!playersTabList.containsKey(pid)) {
+								break;
+							}
+							final PlayerInfo old = playersTabList.get(pid);
+							playersTabList.put(pid, new PlayerInfo(old.getName(), old.getTexture(),
+									old.getDisplayName(), player.getPing(), pid));
+							break;
+						}
+						case UPDATE_GAMEMODE: {
+							break;
+						}
 					}
 				}
 
 			} else if (packet instanceof ServerJoinGamePacket) {
-				int entityID = (int) packet.accessPacketMethod("getEntityID");
+				final int entityID = (int) packet.accessPacketMethod("getEntityID");
 				cl.setEntityID(entityID);
 				cl.getPlayersTabList().clear();
 
 				if (!up.isSendMCBrand())
 					return;
 
-				String cname = protocol > 340 ? "minecraft:brand" : "MC|Brand";
+				final String cname = protocol > 340 ? "minecraft:brand" : "MC|Brand";
 
-				for (int x = 0; x < cl.getInventory().getSize(); x++)
+				for (int x = 0; x < cl.getInventory().getSize(); x++) {
 					cl.getInventory().putItem(x, new ItemStack((short) 0, 1, (short) 0, null));
+				}
 
 				os.write(PacketFactory
 						.constructPacket(registry, "ClientPluginMessagePacket", cname, up.getBrand().getBytes())
 						.getData(cl.isCompressionEnabled()));
 
-				for (int x = 0; x <= 1; x++)
+				for (int x = 0; x <= 1; x++) {
 					os.write(PacketFactory.constructPacket(registry, "ClientStatusPacket", x)
 							.getData(cl.isCompressionEnabled()));
+				}
 			} else if (packet instanceof ServerUpdateHealthPacket) {
-				if (((float) packet.accessPacketMethod("getHealth") <= 0))
+				if (((float) packet.accessPacketMethod("getHealth") <= 0)) {
 					os.write(PacketFactory.constructPacket(registry, "ClientStatusPacket", 0)
 							.getData(cl.isCompressionEnabled()));
-				float hp = (float) packet.accessPacketMethod("getHealth");
-				int food = (int) packet.accessPacketMethod("getFood");
-				for (ClientListener ls : cl.getClientListeners())
+				}
+				final float hp = (float) packet.accessPacketMethod("getHealth");
+				final int food = (int) packet.accessPacketMethod("getFood");
+				for (final ClientListener ls : cl.getClientListeners()) {
 					ls.healthUpdate(hp, food);
+				}
 			} else if (packet instanceof ServerLoginSuccessPacket
-					|| packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.login.ServerLoginSuccessPacket)
+					|| packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.login.ServerLoginSuccessPacket) {
 				cl.setCurrentState(State.IN);
-			else if (packet instanceof ServerKeepAlivePacket
+			} else if (packet instanceof ServerKeepAlivePacket
 					|| packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerKeepAlivePacket) {
 				lastKeepAlivePacket = System.currentTimeMillis();
 				if (up.isIgnoreKeepAlive())
@@ -274,31 +292,32 @@ public class ClientPacketListener implements InternalPacketListener {
 						try {
 							Thread.sleep(up.getAdditionalPing());
 							if (packet instanceof ServerKeepAlivePacket) {
-								long id = (long) packet.accessPacketMethod("getId");
+								final long id = (long) packet.accessPacketMethod("getId");
 								os.write(PacketFactory.constructPacket(registry, "ClientKeepAlivePacket", id)
 										.getData(cl.isCompressionEnabled()));
 							} else {
-								int id = (int) packet.accessPacketMethod("getId");
+								final int id = (int) packet.accessPacketMethod("getId");
 								os.write(PacketFactory.constructPacket(registry, "ClientKeepAlivePacket", id)
 										.getData(cl.isCompressionEnabled()));
 							}
-						} catch (Exception e) {
+						} catch (final Exception e) {
 							e.printStackTrace();
 						}
 					}
 				}).start();
 			} else if (packet instanceof ServerChatMessagePacket) {
-				String json = (String) packet.accessPacketMethod("getMessage");
+				final String json = (String) packet.accessPacketMethod("getMessage");
 
-				for (ClientListener ls : cl.getClientListeners())
+				for (final ClientListener ls : cl.getClientListeners()) {
 					ls.messageReceived(ChatMessages.parse(json), (Position) packet.accessPacketMethod("getPosition"));
+				}
 			} else if (packet instanceof ServerPlayerPositionAndLookPacket
 					|| packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerPlayerPositionAndLookPacket) {
-				double x = (double) packet.accessPacketMethod("getX");
-				double y = (double) packet.accessPacketMethod("getY");
-				double z = (double) packet.accessPacketMethod("getZ");
-				float yaw = (float) packet.accessPacketMethod("getYaw");
-				float pitch = (float) packet.accessPacketMethod("getPitch");
+				final double x = (double) packet.accessPacketMethod("getX");
+				final double y = (double) packet.accessPacketMethod("getY");
+				final double z = (double) packet.accessPacketMethod("getZ");
+				final float yaw = (float) packet.accessPacketMethod("getYaw");
+				final float pitch = (float) packet.accessPacketMethod("getPitch");
 
 				cl.setX(x);
 				cl.setY(y);
@@ -307,7 +326,7 @@ public class ClientPacketListener implements InternalPacketListener {
 				cl.setPitch(pitch);
 
 				if (packet instanceof ServerPlayerPositionAndLookPacket) {
-					int teleportID = (int) packet.accessPacketMethod("getTeleportID");
+					final int teleportID = (int) packet.accessPacketMethod("getTeleportID");
 					os.write(new ClientTeleportConfirmPacket(registry, teleportID).getData(cl.isCompressionEnabled()));
 				}
 
@@ -319,40 +338,46 @@ public class ClientPacketListener implements InternalPacketListener {
 					cl.getLock().notify();
 				}
 			} else if (packet instanceof ServerDisconnectPacket) {
-				String json = (String) packet.accessPacketMethod("getReason");
-				boolean dsIgnore = up.isIgnoreDisconnect();
+				final String json = (String) packet.accessPacketMethod("getReason");
+				final boolean dsIgnore = up.isIgnoreDisconnect();
 
-				for (ClientListener ls : cl.getClientListeners())
-					if (dsIgnore)
+				for (final ClientListener ls : cl.getClientListeners())
+					if (dsIgnore) {
 						ls.messageReceived("\u00A7cPacket " + Integer.toHexString(packet.getID()) + ": "
 								+ ChatMessages.parse(json), Position.CHAT);
-					else
+					} else {
 						ls.disconnected(ChatMessages.parse(json));
-				if (!dsIgnore)
+					}
+				if (!dsIgnore) {
 					cl.close();
+				}
 			} else if (packet instanceof ServerPluginMessagePacket) {
-				String channel = (String) packet.accessPacketMethod("getChannel");
-				byte[] data = (byte[]) packet.accessPacketMethod("getDataF");
+				final String channel = (String) packet.accessPacketMethod("getChannel");
+				final byte[] data = (byte[]) packet.accessPacketMethod("getDataF");
 
-				String commonChannelName = channel.replace("minecraft:", "").replace("MC|", "").toLowerCase();
+				final String commonChannelName = channel.replace("minecraft:", "").replace("MC|", "").toLowerCase();
 
-				if (commonChannelName.equals("register"))
+				if (commonChannelName.equals("register")) {
 					os.write(PacketFactory.constructPacket(registry, "ClientPluginMessagePacket", channel, data)
 							.getData(cl.isCompressionEnabled()));
+				}
 			} else if (packet instanceof ServerResourcePackSendPacket
 					|| packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerResourcePackSendPacket) {
-				if (up.isShowResourcePackMessages())
-					for (ClientListener ls : cl.getClientListeners())
+				if (up.isShowResourcePackMessages()) {
+					for (final ClientListener ls : cl.getClientListeners()) {
 						ls.messageReceived(
 								up.getResourcePackMessage().replace("%res",
 										(String) packet.accessPacketMethod("getUrl")),
 								up.getResourcePackMessagePosition());
+					}
+				}
 
-				boolean altResourcePack = protocol <= 110;
+				final boolean altResourcePack = protocol <= 110;
 
-				List<Object> rsPackArgs = new ArrayList<>();
-				if (altResourcePack)
+				final List<Object> rsPackArgs = new ArrayList<>();
+				if (altResourcePack) {
 					rsPackArgs.add(packet.accessPacketMethod("getHash"));
+				}
 
 				rsPackArgs.add(up.getResourcePackBehavior());
 
@@ -365,7 +390,7 @@ public class ClientPacketListener implements InternalPacketListener {
 
 		} catch (
 
-		IOException e) {
+		final IOException e) {
 			e.printStackTrace();
 		}
 	}

@@ -22,9 +22,9 @@ public class JMinecraftField extends JPlaceholderField {
 	 * 
 	 * @param placeholder placeholder to display on this field
 	 */
-	public JMinecraftField(String placeholder) {
+	public JMinecraftField(final String placeholder) {
 		super(placeholder);
-		boolean unicodeFont = !Main.up.isLangUnicodeSupported()
+		final boolean unicodeFont = !Main.up.isLangUnicodeSupported()
 				|| Main.up.getUnicodeCharactersMode().equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE);
 		Font font;
 		if (unicodeFont) {

@@ -45,9 +45,9 @@ public class ServerChatMessagePacket extends Packet {
 	 * @param data packet's data
 	 * @throws IOException never thrown
 	 */
-	public ServerChatMessagePacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerChatMessagePacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
-		VarInputStream is = getInputStream();
+		final VarInputStream is = getInputStream();
 		this.message = is.readString();
 		this.position = is.readByte();
 	}

@@ -17,7 +17,7 @@ public class ModInfo {
 	 * @param modID   mod ID
 	 * @param version mod's version
 	 */
-	public ModInfo(String modID, String version) {
+	public ModInfo(final String modID, final String version) {
 		this.modID = modID;
 		this.version = version;
 	}

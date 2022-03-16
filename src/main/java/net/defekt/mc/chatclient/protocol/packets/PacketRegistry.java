@@ -13,7 +13,7 @@ import java.util.Map;
  * @author Defective4
  *
  */
-@SuppressWarnings("serial")
+
 public abstract class PacketRegistry {
 
 	/**
@@ -75,10 +75,10 @@ public abstract class PacketRegistry {
 	 * @param packet packet class
 	 * @return packet ID, or -1 if not found
 	 */
-	public int getPacketID(Class<? extends Packet> packet) {
-		for (State s : packets.keySet()) {
-			Map<Integer, Class<? extends Packet>> pmap = packets.get(s);
-			for (int id : pmap.keySet())
+	public int getPacketID(final Class<? extends Packet> packet) {
+		for (final State s : packets.keySet()) {
+			final Map<Integer, Class<? extends Packet>> pmap = packets.get(s);
+			for (final int id : pmap.keySet())
 				if (pmap.get(id).equals(packet))
 					return id;
 		}
@@ -91,10 +91,10 @@ public abstract class PacketRegistry {
 	 * @param packet packet name
 	 * @return packet's class, or null if not found
 	 */
-	public Class<? extends Packet> getByName(String packet) {
-		for (State s : packets.keySet()) {
-			Map<Integer, Class<? extends Packet>> pmap = packets.get(s);
-			for (int id : pmap.keySet())
+	public Class<? extends Packet> getByName(final String packet) {
+		for (final State s : packets.keySet()) {
+			final Map<Integer, Class<? extends Packet>> pmap = packets.get(s);
+			for (final int id : pmap.keySet())
 				if (pmap.get(id).getSimpleName().equals(packet))
 					return pmap.get(id);
 		}
@@ -108,9 +108,9 @@ public abstract class PacketRegistry {
 	 * @param state state the packet belongs to
 	 * @return packet's class, or null if not found
 	 */
-	public Class<? extends Packet> getByID(int id, State state) {
+	public Class<? extends Packet> getByID(final int id, final State state) {
 		if (packets.containsKey(state)) {
-			Map<Integer, Class<? extends Packet>> pmap = packets.get(state);
+			final Map<Integer, Class<? extends Packet>> pmap = packets.get(state);
 
 			if (pmap.containsKey(id))
 				return pmap.get(id);

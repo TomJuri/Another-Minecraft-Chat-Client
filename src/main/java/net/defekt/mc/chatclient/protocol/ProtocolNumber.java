@@ -9,7 +9,8 @@ package net.defekt.mc.chatclient.protocol;
  */
 @SuppressWarnings("javadoc")
 public enum ProtocolNumber {
-	V1_18_1(757, "1.18.1"), V1_17_1(756, "1.17.1"), V1_17(755, "1.17"), V1_16_5(754, "1.16.5"), V1_16_3(753, "1.16.3"),
+	V1_18_2(758, "1.18.2"), V1_18_1(757, "1.18.1"), V1_17_1(756, "1.17.1"), V1_17(755, "1.17"), V1_16_5(754, "1.16.5"),
+	V1_16_3(753, "1.16.3"),
 //	V1_16_2(736, "1.16.2"),
 //	V1_16_1(736, "1.16.1"),
 //	V1_16(735, "1.16"),
@@ -32,7 +33,7 @@ public enum ProtocolNumber {
 	 */
 	public final String name;
 
-	private ProtocolNumber(int protocol, String name) {
+	private ProtocolNumber(final int protocol, final String name) {
 		this.protocol = protocol;
 		this.name = name;
 	}
@@ -61,15 +62,15 @@ public enum ProtocolNumber {
 	 * @param name human readable version name ("x.x.x")
 	 * @return enum representing this version or last supported version
 	 */
-	public static ProtocolNumber getForName(String name) {
-		for (ProtocolNumber num : ProtocolNumber.values())
+	public static ProtocolNumber getForName(final String name) {
+		for (final ProtocolNumber num : ProtocolNumber.values())
 			if (num.name.equals(name))
 				return num;
 		return ProtocolNumber.values()[0];
 	}
 
-	public static ProtocolNumber getForNumber(int protocol) {
-		for (ProtocolNumber num : ProtocolNumber.values())
+	public static ProtocolNumber getForNumber(final int protocol) {
+		for (final ProtocolNumber num : ProtocolNumber.values())
 			if (num.protocol == protocol)
 				return num;
 		return ProtocolNumber.values()[ProtocolNumber.values().length - 1];

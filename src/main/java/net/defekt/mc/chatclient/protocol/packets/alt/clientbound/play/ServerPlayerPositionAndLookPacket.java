@@ -30,9 +30,9 @@ public class ServerPlayerPositionAndLookPacket extends Packet {
 	 * @param data packet data
 	 * @throws IOException never thrown
 	 */
-	public ServerPlayerPositionAndLookPacket(PacketRegistry reg, byte[] data) throws IOException {
+	public ServerPlayerPositionAndLookPacket(final PacketRegistry reg, final byte[] data) throws IOException {
 		super(reg, data);
-		VarInputStream is = getInputStream();
+		final VarInputStream is = getInputStream();
 		x = is.readDouble();
 		y = is.readDouble();
 		z = is.readDouble();

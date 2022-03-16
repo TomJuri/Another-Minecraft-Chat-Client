@@ -27,7 +27,7 @@ public class VarOutputStream extends DataOutputStream {
 	 * 
 	 * @param out output stream to wrap
 	 */
-	public VarOutputStream(OutputStream out) {
+	public VarOutputStream(final OutputStream out) {
 		super(out);
 	}
 
@@ -39,8 +39,8 @@ public class VarOutputStream extends DataOutputStream {
 	 * @param v string to write
 	 * @throws IOException thrown when there was an error writting to stream
 	 */
-	public void writeString(String v) throws IOException {
-		byte[] sBytes = v.getBytes(StandardCharsets.UTF_8);
+	public void writeString(final String v) throws IOException {
+		final byte[] sBytes = v.getBytes(StandardCharsets.UTF_8);
 		writeVarInt(sBytes.length);
 		write(sBytes);
 	}
@@ -51,12 +51,12 @@ public class VarOutputStream extends DataOutputStream {
 	 * @param v VarInt value
 	 * @return size of VarInt
 	 */
-	public static int checkVarIntSize(int v) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		VarOutputStream vos = new VarOutputStream(bos);
+	public static int checkVarIntSize(final int v) {
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final VarOutputStream vos = new VarOutputStream(bos);
 		try {
 			vos.writeVarInt(v);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new IllegalStateException(e);
 		}
 		return bos.size();
@@ -70,7 +70,7 @@ public class VarOutputStream extends DataOutputStream {
 	 * @throws IOException thrown when there was an error writing to stream
 	 */
 	@SuppressWarnings("resource")
-	public void writeSlotData(ItemStack is, int protocol) throws IOException {
+	public void writeSlotData(final ItemStack is, final int protocol) throws IOException {
 		if (protocol >= 477) {
 			writeBoolean(is.getId() != 0);
 			writeVarInt(is.getId());
@@ -80,12 +80,14 @@ public class VarOutputStream extends DataOutputStream {
 				return;
 		}
 		writeByte(is.getCount());
-		if (protocol < 393)
+		if (protocol < 393) {
 			writeShort(is.getDamage());
-		if (is.getNbt() == null)
+		}
+		if (is.getNbt() == null) {
 			writeByte(0);
-		else
+		} else {
 			new NBTOutputStream(this).writeTag(is.getNbt());
+		}
 	}
 
 	/**
@@ -100,8 +102,9 @@ public class VarOutputStream extends DataOutputStream {
 		do {
 			byte temp = (byte) (value & 0b01111111);
 			value >>>= 7;
-			if (value != 0)
+			if (value != 0) {
 				temp |= 0b10000000;
+			}
 			writeByte(temp);
 		} while (value != 0);
 	}

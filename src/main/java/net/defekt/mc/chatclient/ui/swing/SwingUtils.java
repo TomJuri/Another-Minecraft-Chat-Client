@@ -49,7 +49,7 @@ import net.defekt.mc.chatclient.ui.UserPreferences.Constants;
  * @author Defective4
  *
  */
-@SuppressWarnings("serial")
+
 public class SwingUtils {
 	/**
 	 * Set system look and feel.<br>
@@ -69,8 +69,8 @@ public class SwingUtils {
 	 * 
 	 * @param spinner spinner to align
 	 */
-	public static void alignSpinner(JSpinner spinner) {
-		DefaultEditor editor = (DefaultEditor) spinner.getEditor();
+	public static void alignSpinner(final JSpinner spinner) {
+		final DefaultEditor editor = (DefaultEditor) spinner.getEditor();
 		editor.getTextField().setHorizontalAlignment(SwingConstants.LEFT);
 	}
 
@@ -84,9 +84,9 @@ public class SwingUtils {
 	 * 
 	 * @param win window to center
 	 */
-	public static void centerWindow(Window win) {
-		int x = (sSize.width - win.getWidth()) / 2;
-		int y = (sSize.height - win.getHeight()) / 2;
+	public static void centerWindow(final Window win) {
+		final int x = (sSize.width - win.getWidth()) / 2;
+		final int y = (sSize.height - win.getHeight()) / 2;
 
 		win.setLocation(x, y);
 	}
@@ -102,50 +102,53 @@ public class SwingUtils {
 	 *             <font style="color: 5555ff;">World</font>""
 	 * @param pane pane to append text to
 	 */
-	public static void appendColoredText(String text, JTextPane pane) {
-		StyledDocument doc = pane.getStyledDocument();
-		StyleContext ctx = new StyleContext();
-		Style style = ctx.addStyle("style", null);
+	public static void appendColoredText(final String text, final JTextPane pane) {
+		final StyledDocument doc = pane.getStyledDocument();
+		final StyleContext ctx = new StyleContext();
+		final Style style = ctx.addStyle("style", null);
 
-		String[] split = text.split("\u00A7");
+		final String[] split = text.split("\u00A7");
 		boolean lineSupported = true;
-		int ctxIndex = doc.getLength();
-		for (String part : split)
+		final int ctxIndex = doc.getLength();
+		for (final String part : split) {
 			try {
-				if (text.startsWith(part))
+				if (text.startsWith(part)) {
 					doc.insertString(doc.getLength(), part, null);
-				else {
-					String code = part.substring(0, 1);
+				} else {
+					final String code = part.substring(0, 1);
 					Color c;
 					boolean isHex = false;
-					if (code.equals("#") && part.length() > 7)
+					if (code.equals("#") && part.length() > 7) {
 						try {
-							String hex = part.substring(1, 7);
-							int rgb = Integer.parseInt(hex, 16);
+							final String hex = part.substring(1, 7);
+							final int rgb = Integer.parseInt(hex, 16);
 							c = new Color(rgb);
 							isHex = true;
-						} catch (Exception e) {
+						} catch (final Exception e) {
 							c = ChatColor.translateColorCode(code);
 						}
-					else
+					} else {
 						c = ChatColor.translateColorCode(code);
+					}
 					StyleConstants.setForeground(style, c);
 
-					String rest = part.substring(isHex ? 7 : 1);
+					final String rest = part.substring(isHex ? 7 : 1);
 
-					if (!net.defekt.mc.chatclient.ui.swing.SwingConstants.checkMCSupported(rest))
+					if (!net.defekt.mc.chatclient.ui.swing.SwingConstants.checkMCSupported(rest)) {
 						lineSupported = false;
+					}
 
 					doc.insertString(doc.getLength(), rest, style);
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
+		}
 
 		if ((!lineSupported
 				&& !Main.up.getUnicodeCharactersMode().equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_CUSTOM))
 				|| Main.up.getUnicodeCharactersMode().equals(Constants.UNICODECHARS_KEY_FORCE_UNICODE)) {
-			SimpleAttributeSet set = new SimpleAttributeSet();
+			final SimpleAttributeSet set = new SimpleAttributeSet();
 			StyleConstants.setFontFamily(set, "arial");
 			StyleConstants.setFontSize(set, 16);
 			StyleConstants.setBold(set, true);
@@ -161,22 +164,29 @@ public class SwingUtils {
 	 * @param ex      exception to display details of
 	 * @param message custom dialog message
 	 */
-	public static void showErrorDialog(Window parent, String title, Exception ex, String message) {
+	public static void showErrorDialog(final Window parent, final String title, final Exception ex,
+			final String message) {
 		final JDialog errDial = new JDialog(parent);
 		errDial.setModal(true);
 		errDial.setTitle(title);
 
-		JOptionPane jop = new JOptionPane(message, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
+		final JOptionPane jop = new JOptionPane(message, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
 				new Object[] { new JButton(Messages.getString("Main.ok")) {
 					{
-						addActionListener(ev -> {
-							errDial.dispose();
+						addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent ev) {
+								errDial.dispose();
+							}
 						});
 					}
 				}, new JButton(Messages.getString("SwingUtils.errorDialogOptionDetails")) {
 					{
-						addActionListener(ev -> {
-							showExceptionDetails(parent, ex);
+						addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent ev) {
+								showExceptionDetails(parent, ex);
+							}
 						});
 					}
 				} });
@@ -193,7 +203,7 @@ public class SwingUtils {
 	 * @param c color to convert
 	 * @return HEX string
 	 */
-	public static String getHexRGB(Color c) {
+	public static String getHexRGB(final Color c) {
 		return Integer.toHexString(c.getRGB()).substring(2);
 	}
 
@@ -204,25 +214,31 @@ public class SwingUtils {
 	 * @param index color modifier
 	 * @return modified color
 	 */
-	public static Color brighten(Color c, int index) {
+	public static Color brighten(final Color c, final int index) {
 		int r = c.getRed();
 		int g = c.getGreen();
 		int b = c.getBlue();
 		for (int x = 0; x < Math.abs(index); x++)
 			if (index < 0) {
-				if (r > 1)
+				if (r > 1) {
 					r--;
-				if (g > 1)
+				}
+				if (g > 1) {
 					g--;
-				if (b > 1)
+				}
+				if (b > 1) {
 					b--;
+				}
 			} else {
-				if (r < 255)
+				if (r < 255) {
 					r++;
-				if (g < 255)
+				}
+				if (g < 255) {
 					g++;
-				if (b < 255)
+				}
+				if (b < 255) {
 					b++;
+				}
 			}
 		return new Color(r, g, b);
 	}
@@ -241,47 +257,53 @@ public class SwingUtils {
 	 *                    "fix"
 	 * @param changesList list of changes
 	 */
-	public static void showVersionDialog(String oldVersion, String newVersion, int difference, String versionType,
-			List<String> changesList) {
-		JFrame win = new JFrame();
+	public static void showVersionDialog(final String oldVersion, final String newVersion, final int difference,
+			final String versionType, final List<String> changesList) {
+		final JFrame win = new JFrame();
 		win.setTitle("New version available!");
 		win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		Box message = Box.createVerticalBox();
+		final Box message = Box.createVerticalBox();
 		message.add(new JLabel("<html><font style=\"font-weight:bold;\">A new update is available!</font><br><br>"
 				+ "An update is available to download!<br><br>" + "Current version: <font style=\"font-weight:bold;\">"
 				+ oldVersion + "</font><br>" + "New version: <font style=\"font-weight:bold;\">" + newVersion
 				+ "</font><br><br>" + "You are <font style=\"font-weight:bold;\">" + Integer.toString(difference)
 				+ "</font> " + versionType + " versions behind!</html>"));
 
-		for (Component ct : message.getComponents())
-			if (ct instanceof JComponent)
+		for (final Component ct : message.getComponents())
+			if (ct instanceof JComponent) {
 				((JComponent) ct).setAlignmentX(Component.LEFT_ALIGNMENT);
+			}
 
-		JButton ok = new JButton(Messages.getString("Main.ok"));
-		ok.addActionListener(ev -> {
-			synchronized (win) {
-				win.notify();
+		final JButton ok = new JButton(Messages.getString("Main.ok"));
+		ok.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				synchronized (win) {
+					win.notify();
+				}
 			}
 		});
 
-		JButton changes = new JButton(Messages.getString("SwingUtils.updateDialogOptionShowChanges"));
+		final JButton changes = new JButton(Messages.getString("SwingUtils.updateDialogOptionShowChanges"));
 		changes.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 
-				StringBuilder msg = new StringBuilder();
-				for (String line : changesList) {
-					if (line.startsWith("["))
+				final StringBuilder msg = new StringBuilder();
+				for (final String line : changesList) {
+					if (line.startsWith("[")) {
 						msg.append("<font style=\"font-weight: bold;\">");
+					}
 					msg.append(line).append("<br>");
-					if (line.startsWith("["))
+					if (line.startsWith("[")) {
 						msg.append("</font>");
+					}
 				}
 
-				JLabel message = new JLabel("<html>" + msg.append("</html>").toString());
-				JScrollPane jsp = new JScrollPane(message);
+				final JLabel message = new JLabel("<html>" + msg.append("</html>").toString());
+				final JScrollPane jsp = new JScrollPane(message);
 				jsp.setPreferredSize(win.getSize());
 				JOptionPane.showOptionDialog(win, jsp,
 						Messages.getString("SwingUtils.updateDialogChangesTitle") + newVersion,
@@ -289,12 +311,12 @@ public class SwingUtils {
 						new String[] { Messages.getString("Main.ok") }, 0);
 			}
 		});
-		JButton update = new JButton(Messages.getString("SwingUtils.updateDialogOptionUpdate"));
+		final JButton update = new JButton(Messages.getString("SwingUtils.updateDialogOptionUpdate"));
 		update.setEnabled(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE));
 		update.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				try {
 					Desktop.getDesktop()
 							.browse(new URI("https://github.com/Defective4/Another-Minecraft-Chat-Client/releases"));
@@ -304,13 +326,16 @@ public class SwingUtils {
 			}
 		});
 
-		JButton exit = new JButton(Messages.getString("SwingUtils.updateDialogOptionExit"));
-		exit.addActionListener(ev -> {
-			System.exit(0);
+		final JButton exit = new JButton(Messages.getString("SwingUtils.updateDialogOptionExit"));
+		exit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				System.exit(0);
+			}
 		});
 
-		JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
-				new Object[] { ok, changes, update, exit });
+		final JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION,
+				null, new Object[] { ok, changes, update, exit });
 
 		win.setContentPane(pane);
 		win.pack();
@@ -322,7 +347,7 @@ public class SwingUtils {
 		synchronized (win) {
 			try {
 				win.wait();
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				e.printStackTrace();
 			}
 
@@ -331,15 +356,16 @@ public class SwingUtils {
 		win.dispose();
 	}
 
-	private static void showExceptionDetails(Window parent, Exception ex) {
+	private static void showExceptionDetails(final Window parent, final Exception ex) {
 
-		Box box = Box.createVerticalBox();
+		final Box box = Box.createVerticalBox();
 		box.add(new JLabel(Messages.getString("SwingUtils.exceptionDetailsDialogLabel")));
 		box.add(new JScrollPane(new JTextArea() {
 			{
 				append(ex.toString() + "\r\n");
-				for (StackTraceElement ste : ex.getStackTrace())
+				for (final StackTraceElement ste : ex.getStackTrace()) {
 					append(ste.toString() + "\r\n");
+				}
 				setForeground(new Color(200, 0, 0));
 				setFont(getFont().deriveFont(11f));
 			}
@@ -349,10 +375,11 @@ public class SwingUtils {
 			}
 		});
 
-		for (Component ct : box.getComponents()) {
-			if (ct instanceof JComponent)
+		for (final Component ct : box.getComponents()) {
+			if (ct instanceof JComponent) {
 				((JComponent) ct).setAlignmentX(Component.LEFT_ALIGNMENT);
-			if (ct instanceof JScrollPane)
+			}
+			if (ct instanceof JScrollPane) {
 				SwingUtilities.invokeLater(new Runnable() {
 
 					@Override
@@ -360,6 +387,7 @@ public class SwingUtils {
 						((JScrollPane) ct).getVerticalScrollBar().setValue(0);
 					}
 				});
+			}
 		}
 
 		JOptionPane.showOptionDialog(parent, box, Messages.getString("SwingUtils.exceptionDetailsDialogTitle"),

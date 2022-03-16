@@ -88,7 +88,7 @@ public class ItemsWindow {
 	 * @param client   Minecraft client instance
 	 * @param registry Packet registry instance
 	 */
-	public ItemsWindow(String title, int size, final int windowID, final MinecraftClient client,
+	public ItemsWindow(final String title, final int size, final int windowID, final MinecraftClient client,
 			final PacketRegistry registry) {
 
 		isInventory = size == 46;
@@ -106,13 +106,13 @@ public class ItemsWindow {
 			bts[x1] = new JButton(" ");
 
 			BufferedImage picon = null;
-			if (isInventory)
+			if (isInventory) {
 				picon = getPlaceholderIcon(x1);
+			}
 			bts[x1].setIcon(picon == null ? null : new ImageIcon(picon));
 
 			bts[x1].addMouseListener(new MouseAdapter() {
 				final int xIndex = xIndexLocal;
-				@SuppressWarnings("serial")
 				final JPopupMenu pm = new JPopupMenu() {
 					{
 						final boolean isHotbar = isInventory && (xIndex >= 36 && xIndex <= 44);
@@ -121,14 +121,14 @@ public class ItemsWindow {
 								addActionListener(new ActionListener() {
 
 									@Override
-									public void actionPerformed(ActionEvent arg0) {
+									public void actionPerformed(final ActionEvent arg0) {
 										try {
-											short actionID = (short) rand.nextInt(Short.MAX_VALUE);
+											final short actionID = (short) rand.nextInt(Short.MAX_VALUE);
 											client.sendPacket(PacketFactory.constructPacket(registry,
 													"ClientWindowClickPacket", windowID, (short) xIndex, (byte) 0,
 													actionID, 1, emptyItem));
 											int newPosition = 0;
-											String itemName = items[xIndex] == null ? ""
+											final String itemName = items[xIndex] == null ? ""
 													: TranslationUtils
 															.getItemForID(items[xIndex].getId(),
 																	PacketFactory.getProtocolFor(registry))
@@ -137,37 +137,44 @@ public class ItemsWindow {
 											if (isInventory) {
 												int armorPlace = -1;
 												for (int x = 0; x < armorNames.length; x++) {
-													String armorName = armorNames[x];
-													if (itemName.contains(armorName))
+													final String armorName = armorNames[x];
+													if (itemName.contains(armorName)) {
 														armorPlace = x;
-													if (armorPlace > 3)
+													}
+													if (armorPlace > 3) {
 														armorPlace = 3;
+													}
 
 													if (!(items[armorPlace + 5] == null
-															|| items[armorPlace + 5].getId() == 0))
+															|| items[armorPlace + 5].getId() == 0)) {
 														armorPlace = -1;
+													}
 												}
 
-												if (itemName.contains("elytra") && xIndex != 6)
+												if (itemName.contains("elytra") && xIndex != 6) {
 													newPosition = 6;
-												else if (itemName.contains("shield") && xIndex != 45)
+												} else if (itemName.contains("shield") && xIndex != 45) {
 													newPosition = 45;
-												else if (armorPlace != -1 && !(xIndex < 9 && xIndex >= 5))
+												} else if (armorPlace != -1 && !(xIndex < 9 && xIndex >= 5)) {
 													newPosition = 5 + armorPlace;
-												else if (!isHotbar && !(xIndex < 9 && xIndex >= 5) && xIndex != 45)
+												} else if (!isHotbar && !(xIndex < 9 && xIndex >= 5) && xIndex != 45) {
 													for (int x = 36; x <= 44; x++) {
 														newPosition = x;
-														if (items[x] == null || items[x].getId() == 0)
+														if (items[x] == null || items[x].getId() == 0) {
 															break;
+														}
 													}
-												else
+												} else {
 													for (int x = 9; x < 36; x++) {
 														newPosition = x;
-														if (items[x] == null || items[x].getId() == 0)
+														if (items[x] == null || items[x].getId() == 0) {
 															break;
+														}
 													}
-											} else
+												}
+											} else {
 												newPosition = -1;
+											}
 
 											final int newPositionLocal = newPosition;
 											pendingTransactions.put(actionID, new Runnable() {
@@ -176,13 +183,14 @@ public class ItemsWindow {
 
 												@Override
 												public void run() {
-													if (items[xIndexI] != null)
+													if (items[xIndexI] != null) {
 														putItem(newPositionI, items[xIndexI]);
+													}
 													putItem(xIndexI, new ItemStack((short) 0, 1, (short) -1, null));
 												}
 											});
 
-										} catch (IOException e) {
+										} catch (final IOException e) {
 											e.printStackTrace();
 										}
 									}
@@ -195,9 +203,9 @@ public class ItemsWindow {
 								addActionListener(new ActionListener() {
 
 									@Override
-									public void actionPerformed(ActionEvent arg0) {
+									public void actionPerformed(final ActionEvent arg0) {
 										try {
-											short actionID = (short) rand.nextInt(Short.MAX_VALUE);
+											final short actionID = (short) rand.nextInt(Short.MAX_VALUE);
 											client.sendPacket(PacketFactory.constructPacket(registry,
 													"ClientWindowClickPacket", windowID, (short) xIndex, (byte) 1,
 													actionID, 4, emptyItem));
@@ -208,7 +216,7 @@ public class ItemsWindow {
 													putItem(xIndex, new ItemStack((short) 0, 1, (short) -1, null));
 												}
 											});
-										} catch (IOException e) {
+										} catch (final IOException e) {
 											e.printStackTrace();
 										}
 									}
@@ -222,11 +230,11 @@ public class ItemsWindow {
 									addActionListener(new ActionListener() {
 
 										@Override
-										public void actionPerformed(ActionEvent e) {
+										public void actionPerformed(final ActionEvent e) {
 											try {
 												client.sendPacket(PacketFactory.constructPacket(registry,
 														"ClientHeldItemChangePacket", (short) (xIndex - 36)));
-											} catch (Exception e2) {
+											} catch (final Exception e2) {
 												e2.printStackTrace();
 											}
 										}
@@ -240,13 +248,13 @@ public class ItemsWindow {
 										addActionListener(new ActionListener() {
 
 											@Override
-											public void actionPerformed(ActionEvent e) {
+											public void actionPerformed(final ActionEvent e) {
 												try {
 													client.sendPacket(PacketFactory.constructPacket(registry,
 															"ClientHeldItemChangePacket", (short) (xIndex - 36)));
 													client.sendPacket(PacketFactory.constructPacket(registry,
 															"ClientUseItemPacket"));
-												} catch (Exception e2) {
+												} catch (final Exception e2) {
 													e2.printStackTrace();
 												}
 											}
@@ -259,12 +267,12 @@ public class ItemsWindow {
 										addActionListener(new ActionListener() {
 
 											@Override
-											public void actionPerformed(ActionEvent e) {
+											public void actionPerformed(final ActionEvent e) {
 												try {
 													client.sendPacket(PacketFactory.constructPacket(registry,
 															"ClientPlayerDiggingPacket", Status.FINISH_ACTION, 0, 0, 0,
 															(byte) 0));
-												} catch (Exception e2) {
+												} catch (final Exception e2) {
 													e2.printStackTrace();
 												}
 											}
@@ -277,14 +285,14 @@ public class ItemsWindow {
 										addActionListener(new ActionListener() {
 
 											@Override
-											public void actionPerformed(ActionEvent e) {
+											public void actionPerformed(final ActionEvent e) {
 												try {
 													client.sendPacket(PacketFactory.constructPacket(registry,
 															"ClientHeldItemChangePacket", (short) (xIndex - 36)));
 													client.sendPacket(PacketFactory.constructPacket(registry,
 															"ClientPlayerDiggingPacket", Status.SWAP_ITEMS, 0, 0, 0,
 															(byte) 0));
-												} catch (Exception e3) {
+												} catch (final Exception e3) {
 													e3.printStackTrace();
 												}
 											}
@@ -297,9 +305,10 @@ public class ItemsWindow {
 				};
 
 				@Override
-				public void mouseClicked(MouseEvent e) {
-					if (e.getButton() == MouseEvent.BUTTON3)
+				public void mouseClicked(final MouseEvent e) {
+					if (e.getButton() == MouseEvent.BUTTON3) {
 						pm.show((Component) e.getSource(), e.getX(), e.getY());
+					}
 				}
 			});
 
@@ -307,23 +316,24 @@ public class ItemsWindow {
 				final int xIndex = xIndexLocal;
 
 				@Override
-				public void actionPerformed(ActionEvent e) {
+				public void actionPerformed(final ActionEvent e) {
 					try {
-						boolean isHotbar = isInventory && (xIndex >= 36 && xIndex <= 44);
+						final boolean isHotbar = isInventory && (xIndex >= 36 && xIndex <= 44);
 
-						if (isHotbar && PacketFactory.getProtocolFor(registry) > 47)
+						if (isHotbar && PacketFactory.getProtocolFor(registry) > 47) {
 							try {
 								client.sendPacket(PacketFactory.constructPacket(registry, "ClientHeldItemChangePacket",
 										(short) (xIndex - 36)));
 								client.sendPacket(PacketFactory.constructPacket(registry, "ClientUseItemPacket"));
-							} catch (Exception e2) {
+							} catch (final Exception e2) {
 								e2.printStackTrace();
 							}
-						else if (!isInventory)
+						} else if (!isInventory) {
 							client.sendPacket(PacketFactory.constructPacket(registry, "ClientWindowClickPacket",
 									windowID, (short) xIndex, (byte) 0, (short) rand.nextInt(Short.MAX_VALUE), 0,
 									emptyItem));
-					} catch (IOException e1) {
+						}
+					} catch (final IOException e1) {
 						e1.printStackTrace();
 					}
 				}
@@ -337,19 +347,19 @@ public class ItemsWindow {
 	 * @param main     Main class instance
 	 * @param preStart is this method invoked before application was launched
 	 */
-	public static void initTextures(Main main, boolean preStart) {
-		JFrame win = new JFrame(Messages.getString("ItemsWindow.itemWindowItemLoadDialogTitle"));
+	public static void initTextures(final Main main, final boolean preStart) {
+		final JFrame win = new JFrame(Messages.getString("ItemsWindow.itemWindowItemLoadDialogTitle"));
 		win.setDefaultCloseOperation(preStart ? JFrame.EXIT_ON_CLOSE : WindowConstants.DO_NOTHING_ON_CLOSE);
 
-		JVBoxPanel message = new JVBoxPanel();
+		final JVBoxPanel message = new JVBoxPanel();
 		message.add(new JLabel(Messages.getString("ItemsWindow.itemWindowItemLoadDialogLabel")));
 
-		JLabel pLabel = new JLabel(" ");
-		JProgressBar jpb = new JProgressBar(0, 0);
+		final JLabel pLabel = new JLabel(" ");
+		final JProgressBar jpb = new JProgressBar(0, 0);
 		message.add(pLabel);
 		message.alignAll();
 
-		JOptionPane ppane = new JOptionPane(message, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
+		final JOptionPane ppane = new JOptionPane(message, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
 				new Component[] { jpb });
 
 		win.setContentPane(ppane);
@@ -371,26 +381,27 @@ public class ItemsWindow {
 
 			zis = new ZipInputStream(ItemsWindow.class.getResourceAsStream("/resources/textures.jar"));
 			while ((ze = zis.getNextEntry()) != null) {
-				if (!ze.getName().contains(".png"))
+				if (!ze.getName().contains(".png")) {
 					continue;
-				byte[] entryData = IOUtils.readFully(zis, false);
+				}
+				final byte[] entryData = IOUtils.readFully(zis, false);
 				String name = ze.getName().substring(ze.getName().lastIndexOf("/") + 1);
 				name = name.substring(0, name.lastIndexOf("."));
 				pLabel.setText(name);
 				try {
-					BufferedImage raw = ImageIO.read(new ByteArrayInputStream(entryData));
-					BufferedImage target = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-					Graphics2D g2 = target.createGraphics();
+					final BufferedImage raw = ImageIO.read(new ByteArrayInputStream(entryData));
+					final BufferedImage target = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+					final Graphics2D g2 = target.createGraphics();
 					g2.drawImage(raw, 0, 0, 32, 32, null);
 					itemTextures.put(name, target);
-				} catch (Exception e2) {
+				} catch (final Exception e2) {
 					e2.printStackTrace();
 				}
 				jpb.setValue(jpb.getValue() + 1);
 				zis.closeEntry();
 			}
 			zis.close();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 		win.dispose();
@@ -401,7 +412,7 @@ public class ItemsWindow {
 	 * 
 	 * @param main Main class instance
 	 */
-	public static void clearTextures(Main main) {
+	public static void clearTextures(final Main main) {
 		itemTextures.clear();
 	}
 
@@ -420,7 +431,7 @@ public class ItemsWindow {
 	 * @param index slot index
 	 * @return placeholder image
 	 */
-	private BufferedImage getPlaceholderIcon(int index) {
+	private BufferedImage getPlaceholderIcon(final int index) {
 		switch (index) {
 			case 5: {
 				return itemTextures.get("empty_armor_slot_helmet");
@@ -450,11 +461,11 @@ public class ItemsWindow {
 	 * @param item  item stack for this slot
 	 */
 	@SuppressWarnings("unchecked")
-	public void putItem(int index, ItemStack item) {
+	public void putItem(final int index, final ItemStack item) {
 		if (index >= items.length || index < 0)
 			return;
 
-		ItemInfo itemInfo = TranslationUtils.getItemForID(item.getId(), PacketFactory.getProtocolFor(registry));
+		final ItemInfo itemInfo = TranslationUtils.getItemForID(item.getId(), PacketFactory.getProtocolFor(registry));
 
 		items[index] = item.getId() == 0 ? null : item;
 		if (itemTextures.containsKey(itemInfo.getFileName())) {
@@ -464,15 +475,17 @@ public class ItemsWindow {
 			bts[index].setText(item.getId() == 0 ? " " : "" + item.getId());
 			if (bts[index].getText().replace(" ", "").isEmpty()) {
 				BufferedImage pimg = null;
-				if (isInventory)
+				if (isInventory) {
 					pimg = getPlaceholderIcon(index);
+				}
 				bts[index].setIcon(pimg == null ? null : new ImageIcon(pimg));
-			} else
+			} else {
 				bts[index].setIcon(null);
+			}
 		}
-		JButton btn = bts[index];
+		final JButton btn = bts[index];
 
-		for (MouseListener ml : btn.getMouseListeners())
+		for (final MouseListener ml : btn.getMouseListeners())
 			if (ml instanceof TooltipMouseListener) {
 				ml.mouseExited(new MouseEvent(btn, 0, System.currentTimeMillis(), 0, 0, 0, 0, 0, 0, false, 0));
 				btn.removeMouseListener(ml);
@@ -485,21 +498,24 @@ public class ItemsWindow {
 				CompoundMap map = (CompoundMap) item.getNbt().getValue();
 				if (map.containsKey("display")) {
 					map = (CompoundMap) map.get("display").getValue();
-					if (map.containsKey("Name"))
+					if (map.containsKey("Name")) {
 						label = "\u00A7f" + ChatMessages.parse((String) map.get("Name").getValue());
-					if (map.containsKey("Lore"))
-						for (StringTag lore : (List<StringTag>) map.get("Lore").getValue())
+					}
+					if (map.containsKey("Lore")) {
+						for (final StringTag lore : (List<StringTag>) map.get("Lore").getValue()) {
 							label += "\r\n\u00A75" + ChatMessages.parse(lore.getValue());
+						}
+					}
 				}
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
 		btn.addMouseListener(new TooltipMouseListener(label, btn));
 		btn.revalidate();
 		if (dialog != null) {
-			for (JButton b : bts) {
+			for (final JButton b : bts) {
 				b.revalidate();
 				b.repaint();
 			}
@@ -514,18 +530,18 @@ public class ItemsWindow {
 		private final MinecraftToolTip tp;
 		private final JButton btn;
 
-		private TooltipMouseListener(String label, JButton btn) {
+		private TooltipMouseListener(final String label, final JButton btn) {
 			tp = new MinecraftToolTip(label);
 			this.btn = btn;
 		}
 
 		@Override
-		public void mouseExited(MouseEvent e) {
+		public void mouseExited(final MouseEvent e) {
 			tp.hide();
 		}
 
 		@Override
-		public void mouseEntered(MouseEvent e) {
+		public void mouseEntered(final MouseEvent e) {
 			tp.show(btn.getX() + (int) (btn.getWidth() * 1.1) + dialog.getX(),
 					btn.getY() + btn.getHeight() + dialog.getY());
 			dialog.requestFocus();
@@ -563,10 +579,11 @@ public class ItemsWindow {
 	 * @param silently if set to true, no window close packet will be sent when
 	 *                 closing window
 	 */
-	public void closeWindow(boolean silently) {
+	public void closeWindow(final boolean silently) {
 		closeSilently = true;
-		if (dialog != null)
+		if (dialog != null) {
 			dialog.dispose();
+		}
 		dialog = null;
 	}
 
@@ -575,7 +592,7 @@ public class ItemsWindow {
 	 * 
 	 * @param actionID transaction ID
 	 */
-	public void finishTransaction(short actionID) {
+	public void finishTransaction(final short actionID) {
 		if (pendingTransactions.containsKey(actionID)) {
 			pendingTransactions.get(actionID).run();
 			pendingTransactions.remove(actionID);
@@ -587,9 +604,10 @@ public class ItemsWindow {
 	 * 
 	 * @param actionID transaction ID
 	 */
-	public void cancelTransaction(short actionID) {
-		if (pendingTransactions.containsKey(actionID))
+	public void cancelTransaction(final short actionID) {
+		if (pendingTransactions.containsKey(actionID)) {
 			pendingTransactions.remove(actionID);
+		}
 	}
 
 	/**
@@ -598,7 +616,7 @@ public class ItemsWindow {
 	 * @param parent           parent component
 	 * @param sendClosePackets send a packet when this window is closed
 	 */
-	public void openWindow(Window parent, final boolean sendClosePackets) {
+	public void openWindow(final Window parent, final boolean sendClosePackets) {
 		if (isShowing)
 			return;
 		dialog = new JDialog(parent);
@@ -607,37 +625,41 @@ public class ItemsWindow {
 			final boolean sendClosePacketsL = sendClosePackets;
 
 			@Override
-			public void windowClosed(WindowEvent e) {
-				for (JButton bt : bts)
-					for (MouseListener ml : bt.getMouseListeners())
+			public void windowClosed(final WindowEvent e) {
+				for (final JButton bt : bts) {
+					for (final MouseListener ml : bt.getMouseListeners()) {
 						ml.mouseExited(new MouseEvent(bt, 0, System.currentTimeMillis(), 0, 0, 0, 0, 0, 1, false, 0));
-				if (sendClosePacketsL && !closeSilently)
+					}
+				}
+				if (sendClosePacketsL && !closeSilently) {
 					try {
 						client.sendPacket(PacketFactory.constructPacket(registry, "ClientCloseWindowPacket", windowID));
-					} catch (Exception e2) {
+					} catch (final Exception e2) {
 						return;
 					}
-				else
+				} else {
 					closeSilently = false;
+				}
 				isShowing = false;
 			}
 		});
 
 		dialog.setTitle(title);
 
-		JPanel panel = new JPanel(new GridLayout((size / 9) - (isInventory ? 5 : 0), 9));
-		boolean hasShield = PacketFactory.getProtocolFor(registry) >= 107;
+		final JPanel panel = new JPanel(new GridLayout((size / 9) - (isInventory ? 5 : 0), 9));
+		final boolean hasShield = PacketFactory.getProtocolFor(registry) >= 107;
 
 		for (int x = isInventory ? 5 : 0; x < bts.length - (isInventory ? 1 : 0); x++) {
-			JButton bt = bts[x];
+			final JButton bt = bts[x];
 			panel.add(bt);
 			if (x == 8 && isInventory) {
 				if (hasShield) {
 					panel.add(new JLabel(" "));
 					panel.add(bts[45]);
 				}
-				for (int y = 0; y < (hasShield ? 3 : 5); y++)
+				for (int y = 0; y < (hasShield ? 3 : 5); y++) {
 					panel.add(new JLabel(" "));
+				}
 			}
 		}
 

@@ -1,0 +1,1 @@
+net.defekt.mc.chatclient.protocol.MinecraftStat.query("localhost",25565);

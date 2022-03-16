@@ -20,7 +20,7 @@ public class PlayerSkinInfo {
 	 * @param img player's skin image
 	 * @param url player's skin url
 	 */
-	protected PlayerSkinInfo(BufferedImage img, String url) {
+	protected PlayerSkinInfo(final BufferedImage img, final String url) {
 		this.img = img;
 		this.url = url;
 	}
