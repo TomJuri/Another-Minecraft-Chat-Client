@@ -4,13 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -19,6 +22,7 @@ import com.google.gson.JsonParser;
 
 import net.defekt.mc.chatclient.protocol.data.ChatMessages;
 import net.defekt.mc.chatclient.protocol.data.ModInfo;
+import net.defekt.mc.chatclient.protocol.data.QueryInfo;
 import net.defekt.mc.chatclient.protocol.data.StatusInfo;
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.HandshakePacket;
@@ -35,6 +39,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
  *
  */
 public class MinecraftStat {
+
 	/**
 	 * Perform a Server List Ping on specified server to get its status
 	 * 
@@ -44,7 +49,21 @@ public class MinecraftStat {
 	 * @throws IOException thrown when there was an error pinging target server
 	 */
 	public static StatusInfo serverListPing(final String host, final int port) throws IOException {
+		return serverListPing(host, port, 10000);
+	}
+
+	/**
+	 * Perform a Server List Ping on specified server to get its status
+	 * 
+	 * @param host    hostname of target server
+	 * @param port    port of target server
+	 * @param timeout timeout
+	 * @return An object containing data returned by server
+	 * @throws IOException thrown when there was an error pinging target server
+	 */
+	public static StatusInfo serverListPing(final String host, final int port, int timeout) throws IOException {
 		try (Socket soc = new Socket()) {
+			soc.setSoTimeout(timeout);
 			soc.connect(new InetSocketAddress(host, port));
 
 			final OutputStream os = soc.getOutputStream();
@@ -67,11 +86,25 @@ public class MinecraftStat {
 			soc.close();
 
 			final JsonObject obj = new JsonParser().parse(json).getAsJsonObject();
+			final JsonObject players = obj.get("players").getAsJsonObject();
 
-			final int online = obj.get("players").getAsJsonObject().get("online").getAsInt();
-			final int max = obj.get("players").getAsJsonObject().get("max").getAsInt();
+			final int online = players.get("online").getAsInt();
+			final int max = players.get("max").getAsInt();
+			final JsonArray sample = players.has("sample") ? players.get("sample").getAsJsonArray() : null;
 			final String version = obj.get("version").getAsJsonObject().get("name").getAsString();
 			final int protocol = obj.get("version").getAsJsonObject().get("protocol").getAsInt();
+
+			String[] playersList;
+			if (sample != null) {
+				playersList = new String[sample.size()];
+				for (int x = 0; x < sample.size(); x++) {
+					JsonObject player = sample.get(x).getAsJsonObject();
+					if (player.has("name"))
+						playersList[x] = player.get("name").getAsString();
+				}
+			} else {
+				playersList = new String[0];
+			}
 
 			String description;
 			try {
@@ -96,12 +129,10 @@ public class MinecraftStat {
 				}
 			}
 
-			return new StatusInfo(description, online, max, version, protocol, icon, modType, modList);
+			return new StatusInfo(description, online, max, version, protocol, icon, modType, modList, playersList);
 
 		}
 	}
-
-	// TODO Documentation, query and RCON
 
 	/**
 	 * @param host hostname of a target server
@@ -177,5 +208,81 @@ public class MinecraftStat {
 				}
 			}
 		}).start();
+	}
+
+	/**
+	 * Query server information Note that Query is completely separate from Server
+	 * List Ping
+	 * 
+	 * @param host server hostname
+	 * @param port server port
+	 * @return query result
+	 * @throws IOException when there was an error querying the server
+	 */
+	public static QueryInfo query(String host, int port) throws IOException {
+		byte[] sesID = generateSessionID();
+		try (DatagramSocket soc = new DatagramSocket()) {
+			soc.setSoTimeout(1000);
+			soc.connect(new InetSocketAddress(host, port));
+			byte[] received = new byte[1024];
+			soc.send(createQueryPacket(sesID, 9));
+			soc.receive(new DatagramPacket(received, received.length));
+
+			byte[] tokenBytes = new byte[10];
+			for (int x = 5; received[x] != 0; x++) {
+				tokenBytes[x - 5] = received[x];
+			}
+
+			int token = Integer.parseInt(new String(tokenBytes).trim());
+			ByteBuffer intBuffer = ByteBuffer.allocate(4);
+			intBuffer.putInt(token);
+
+			byte[] tokenIntegerBytes = intBuffer.array();
+			soc.send(createQueryPacket(sesID, 0, tokenIntegerBytes));
+			soc.receive(new DatagramPacket(received, received.length));
+
+			byte[] trimResponse = new byte[received.length - 5];
+			for (int x = 5; x < received.length; x++) {
+				trimResponse[x - 5] = received[x];
+			}
+
+			String[] queryValues = new String(trimResponse).trim().split("\0");
+			String motd = queryValues[0];
+			String gamemode = queryValues[1];
+			String map = queryValues[2];
+			String online = queryValues[3];
+			String max = queryValues[4];
+
+			return new QueryInfo(motd, gamemode, map, online, max);
+		}
+	}
+
+	private static DatagramPacket createQueryPacket(byte[] sesID, int type) {
+		return createQueryPacket(sesID, type, null);
+	}
+
+	private static DatagramPacket createQueryPacket(byte[] sesID, int type, byte[] payload) {
+		payload = payload == null ? new byte[0] : payload;
+		byte[] packet = new byte[sesID.length + payload.length + 3];
+		packet[0] = (byte) 0xFE;
+		packet[1] = (byte) 0xFD;
+		packet[2] = (byte) type;
+		for (int x = 0; x < 4; x++) {
+			packet[x + 3] = sesID[x];
+		}
+		for (int x = 0; x < payload.length; x++) {
+			packet[x + 3 + 4] = payload[x];
+		}
+
+		return new DatagramPacket(packet, packet.length);
+	}
+
+	private static byte[] generateSessionID() {
+		Random rand = new Random();
+		byte[] sesID = new byte[4];
+		rand.nextBytes(sesID);
+		for (int x = 0; x < sesID.length; x++)
+			sesID[x] = (byte) (sesID[x] & 0x0F0F0F0F);
+		return sesID;
 	}
 }

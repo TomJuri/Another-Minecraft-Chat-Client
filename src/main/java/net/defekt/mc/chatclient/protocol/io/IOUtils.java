@@ -32,7 +32,6 @@ import net.defekt.mc.chatclient.ui.swing.JMemList;
  *
  */
 public class IOUtils {
-
 	/**
 	 * Read all bytes from stream
 	 * 

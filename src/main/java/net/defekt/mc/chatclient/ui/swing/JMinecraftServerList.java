@@ -9,11 +9,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.Base64;
 import java.util.Random;
 
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import net.defekt.mc.chatclient.ui.Main;
 import net.defekt.mc.chatclient.ui.Messages;
@@ -98,12 +105,80 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
 								}
 							};
 
+							final JMenuItem queryItem = new JMenuItem(
+									Messages.getString("JMinecraftServerList.detailsLabel")) {
+								{
+									addActionListener(new ActionListener() {
+										@Override
+										public void actionPerformed(ActionEvent e) {
+											ServerDetailsDialog dialog = new ServerDetailsDialog(main.getMainWindow(),
+													et);
+											dialog.setVisible(true);
+										}
+									});
+								}
+							};
+
+							final JMenuItem saveIconItem = new JMenuItem(
+									Messages.getString("JMinecraftServerList.saveIconLabel")) {
+								{
+									addActionListener(new ActionListener() {
+
+										@Override
+										public void actionPerformed(ActionEvent e) {
+											if (et.getIcon() != null) {
+												try {
+													byte[] image = Base64.getDecoder().decode(et.getIcon().getBytes());
+
+													JFileChooser fc = new JFileChooser();
+													fc.setDialogTitle(Messages.getString("Main.save"));
+													fc.setApproveButtonText(Messages.getString("Main.save"));
+													fc.setAcceptAllFileFilterUsed(false);
+													fc.setFileFilter(new FileNameExtensionFilter("PNG File", ".png"));
+													fc.setSelectedFile(new File("icon.png"));
+
+													int op = fc.showSaveDialog(main.getMainWindow());
+													if (op == JFileChooser.APPROVE_OPTION) {
+														File out = fc.getSelectedFile();
+														try (OutputStream os = new FileOutputStream(out)) {
+															os.write(image);
+															os.close();
+															JOptionPane.showOptionDialog(main.getMainWindow(),
+																	Messages.getString(
+																			"JMinecraftServerList.exportIconSuccess"),
+																	"...", JOptionPane.CANCEL_OPTION,
+																	JOptionPane.INFORMATION_MESSAGE, null,
+																	new String[] { Messages.getString("Main.ok") }, 0);
+														} catch (Exception ex) {
+															ex.printStackTrace();
+															SwingUtils.showErrorDialog(main.getMainWindow(),
+																	Messages.getString(
+																			"JMinecraftPlayerList.exportErrorDialogTitle"),
+																	ex, Messages.getString(
+																			"JMinecraftServerList.saveIconErrorMessage"));
+														}
+													}
+
+												} catch (Exception ex) {
+													ex.printStackTrace();
+												}
+											}
+										}
+									});
+								}
+							};
+
+							if (et.getIcon() == null)
+								saveIconItem.setEnabled(false);
+
 							mupItem.setEnabled(selIndex > 0);
 							mdownItem.setEnabled(selIndex < getListData().length - 1);
 
 							pm.add(conItem);
 							pm.add(mupItem);
 							pm.add(mdownItem);
+							pm.add(queryItem);
+							pm.add(saveIconItem);
 							pm.show(JMinecraftServerList.this, e.getX(), e.getY());
 						}
 					}

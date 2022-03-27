@@ -70,6 +70,7 @@ public class MinecraftClient {
 
 	private final List<InternalPacketListener> packetListeners = new ArrayList<InternalPacketListener>();
 	private final List<ClientListener> clientListeners = new ArrayList<ClientListener>();
+	private final boolean forge;
 
 	private final Map<Integer, ItemsWindow> openWindows = new HashMap<Integer, ItemsWindow>();
 	private ItemsWindow inventory = null;
@@ -110,15 +111,17 @@ public class MinecraftClient {
 	 * @param host     address of server to connect to
 	 * @param port     port of target server
 	 * @param protocol protocol that will be used to connect to server
+	 * @param forge    whether this client should connect with Forge support
 	 * @throws IOException thrown when there was an error initializing
 	 *                     {@link PacketRegistry} for specified protocol (for
 	 *                     example when could not find a matching packet registry
 	 *                     implementation for specified protocol)
 	 */
-	public MinecraftClient(final String host, final int port, final int protocol) throws IOException {
+	public MinecraftClient(final String host, final int port, final int protocol, boolean forge) throws IOException {
 		this.host = host;
 		this.port = port;
 		this.protocol = protocol;
+		this.forge = forge;
 		this.reg = PacketFactory.constructPacketRegistry(protocol);
 		state = State.LOGIN;
 	}
@@ -187,7 +190,8 @@ public class MinecraftClient {
 			inventory = new ItemsWindow(Messages.getString("MinecraftClient.clientInventoryName"), 46, 0, this, reg);
 			packetListeners.add(new ClientPacketListener(this));
 
-			final Packet handshake = new HandshakePacket(reg, protocol, host, port, 2);
+			final Packet handshake = new HandshakePacket(reg, protocol,
+					host + (forge ? (protocol <= 340 ? "\0FML\0" : "") : ""), port, 2);
 			os.write(handshake.getData(compression));
 
 			final Packet login = PacketFactory.constructPacket(reg, "ClientLoginRequestPacket", username);
@@ -783,5 +787,13 @@ public class MinecraftClient {
 	 */
 	public boolean isConnected() {
 		return connected;
+	}
+
+	/**
+	 * 
+	 * @return if this client should connect with Forge support
+	 */
+	public boolean isForge() {
+		return forge;
 	}
 }

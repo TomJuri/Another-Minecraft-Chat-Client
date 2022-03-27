@@ -85,7 +85,10 @@ public class MinecraftServerListRenderer extends DefaultListCellRenderer {
 				players.setText(
 						" " + Integer.toString(inf.getOnlinePlayers()) + "/" + Integer.toString(inf.getMaxPlayers())
 								+ " " + Messages.getString("MinecraftServerListRenderer.serverListPlayersLabel2")
-								+ entry.getVersion() + ")");
+								+ entry.getVersion() + ")"
+								+ (inf.getModType() != null
+										? " (" + Messages.getString("MinecraftServerListRenderer.modded") + ")"
+										: ""));
 			}
 			description.setText("");
 			SwingUtils.appendColoredText(" " + inf.getDescription().replace("\n", "\n "), description);

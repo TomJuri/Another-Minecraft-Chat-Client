@@ -1,5 +1,6 @@
 package net.defekt.mc.chatclient.protocol;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -13,7 +14,10 @@ import java.util.UUID;
 import net.defekt.mc.chatclient.protocol.data.ChatMessages;
 import net.defekt.mc.chatclient.protocol.data.ItemStack;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
+import net.defekt.mc.chatclient.protocol.data.ModInfo;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
+import net.defekt.mc.chatclient.protocol.data.StatusInfo;
+import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
@@ -41,6 +45,7 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerTimeUpdatePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerUpdateHealthPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerWindowItemsPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPluginMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientTeleportConfirmPacket;
 import net.defekt.mc.chatclient.ui.Main;
 import net.defekt.mc.chatclient.ui.Messages;
@@ -356,6 +361,57 @@ public class ClientPacketListener implements InternalPacketListener {
 				final byte[] data = (byte[]) packet.accessPacketMethod("getDataF");
 
 				final String commonChannelName = channel.replace("minecraft:", "").replace("MC|", "").toLowerCase();
+
+				if (channel.equalsIgnoreCase("fml|hs")) {
+					byte discriminator = data[0];
+					switch (discriminator) {
+						case 0: {
+							byte protocol = data[1];
+							cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[] { 1, protocol }));
+
+							ModInfo[] mods;
+							try {
+								StatusInfo info = MinecraftStat.serverListPing(cl.getHost(), cl.getPort(), 10000);
+								mods = info.getModList().toArray(new ModInfo[0]);
+							} catch (Exception ex) {
+								mods = new ModInfo[0];
+							}
+							ByteArrayOutputStream modListBuffer = new ByteArrayOutputStream();
+							VarOutputStream modListStream = new VarOutputStream(modListBuffer);
+							modListStream.writeByte(2);
+							modListStream.writeByte(mods.length);
+							for (ModInfo mod : mods) {
+								modListStream.writeString(mod.getModID());
+								modListStream.writeString(mod.getVersion());
+							}
+
+							cl.sendPacket(
+									new ClientPluginMessagePacket(registry, channel, modListBuffer.toByteArray()));
+							break;
+						}
+						case 2: {
+							cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[] { -1, 2 }));
+							cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[] { -1, 3 }));
+							break;
+						}
+						case -1: {
+							byte phase = data[1];
+							byte response = 0;
+							switch (phase) {
+								case 2: {
+									response = 4;
+									break;
+								}
+								case 3: {
+									response = 5;
+									break;
+								}
+							}
+							cl.sendPacket(
+									new ClientPluginMessagePacket(registry, channel, new byte[] { -1, response }));
+						}
+					}
+				}
 
 				if (commonChannelName.equals("register")) {
 					os.write(PacketFactory.constructPacket(registry, "ClientPluginMessagePacket", channel, data)

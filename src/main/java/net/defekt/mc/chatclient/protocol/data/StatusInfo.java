@@ -23,6 +23,7 @@ public class StatusInfo implements Serializable {
 	private String icon;
 	private final String modType;
 	private final List<ModInfo> modList;
+	private final String[] playersList;
 
 	/**
 	 * Constructs status info object
@@ -37,9 +38,11 @@ public class StatusInfo implements Serializable {
 	 *                    null.
 	 * @param modList     server's mods list if present, else it should be null, or
 	 *                    empty.
+	 * @param players     list of players playing on this server
 	 */
 	public StatusInfo(final String description, final int online, final int max, final String version,
-			final int protocol, final String icon, final String modType, final List<ModInfo> modList) {
+			final int protocol, final String icon, final String modType, final List<ModInfo> modList,
+			String... players) {
 		this.description = description;
 		this.onlinePlayers = online;
 		this.maxPlayers = max;
@@ -48,6 +51,7 @@ public class StatusInfo implements Serializable {
 		this.icon = icon;
 		this.modType = modType;
 		this.modList = modList == null ? new ArrayList<ModInfo>() : modList;
+		this.playersList = players;
 	}
 
 	/**
@@ -127,5 +131,12 @@ public class StatusInfo implements Serializable {
 	 */
 	public List<ModInfo> getModList() {
 		return modList;
+	}
+
+	/**
+	 * @return list of players on the server
+	 */
+	public String[] getPlayersList() {
+		return playersList;
 	}
 }

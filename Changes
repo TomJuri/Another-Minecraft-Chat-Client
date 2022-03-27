@@ -1,15 +1,14 @@
 AMCC Change Log
-v1.5.5
+v1.6.0
 
 [+] Added:
-- Minecraft Version 1.18.2
-- Legacy server list ping, you can now view status of servers before Minecraft version 1.7
-- Option to force legacy SLP under "Protocol" tab in preferences
-
-[+] Fixed:
-- Some dialogs in preferences
-- All issues related to PlayerListItemPacket
-
-[/] Changed:
-- Windows executable file is now assembled using WinRun4j instead of Launch4j.
-  Antiviruses shouldn't report false-positives anymore
+- Forge Support! (currently only for Minecraft 1.8 - 1.12.2)
+- Updated Chinese translation
+- Query Protocol
+- Server details, under right-click menu in server list.
+  Here is what you can do with it:
+  - Check server address
+  - Query the server
+  - See what players are currently on the server
+  - See all installed mods on a Forge server
+- Option to save server icon, also under right-click menu

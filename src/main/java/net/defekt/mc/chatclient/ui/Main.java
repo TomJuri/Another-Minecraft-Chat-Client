@@ -132,13 +132,13 @@ public class Main {
 
 	private static BufferedImage logoImage = null;
 
-	public static final String version = "1.5.5";
-	private static final String changelogURL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
+	public static final String VERSION = "1.6.0";
+	private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
 
 	public static Font mcFont = Font.decode(null);
 
 	private static void checkForUpdates() {
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(new URL(changelogURL).openStream()))) {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(new URL(CHANGELOG_URL).openStream()))) {
 			final List<String> cgLines = new ArrayList<String>();
 			String line;
 			while ((line = br.readLine()) != null) {
@@ -148,14 +148,14 @@ public class Main {
 			if (cgLines.size() > 1 && cgLines.get(0).equals("AMCC Change Log")) {
 				final String newVersionString = IOUtils.padString(cgLines.get(1).substring(1).replace(".", ""), 3, "0",
 						0);
-				final String thisVersionString = IOUtils.padString(version.replace(".", ""), 3, "0", 0);
+				final String thisVersionString = IOUtils.padString(VERSION.replace(".", ""), 3, "0", 0);
 
 				final int newVersion = Integer.parseInt(newVersionString);
 				final int thisVersion = Integer.parseInt(thisVersionString);
 
 				if (newVersion > thisVersion) {
 					String newVersionSm = cgLines.get(1).substring(1);
-					String oldVersionSm = version;
+					String oldVersionSm = VERSION;
 
 					if (newVersionSm.length() - newVersionSm.replace(".", "").length() < 2) {
 						newVersionSm += ".0";
@@ -193,7 +193,7 @@ public class Main {
 					cgLines.remove(0);
 					cgLines.remove(0);
 
-					SwingUtils.showVersionDialog("v" + version, "v" + newVersionSm, diff, vtype, cgLines);
+					SwingUtils.showVersionDialog("v" + VERSION, "v" + newVersionSm, diff, vtype, cgLines);
 				}
 			}
 
@@ -318,8 +318,9 @@ public class Main {
 		});
 	}
 
-	private void addToList(final String host, final int port, final String name, final String version) {
-		final ServerEntry entry = new ServerEntry(host, port, name, version);
+	private void addToList(final String host, final int port, final String name, final String version,
+			final ForgeMode forgeMode) {
+		final ServerEntry entry = new ServerEntry(host, port, name, version, forgeMode);
 		for (final ServerEntry se : servers)
 			if (se.equals(entry))
 				return;
@@ -387,7 +388,7 @@ public class Main {
 
 		synchronized (up.getServers()) {
 			for (final ServerEntry ent : up.getServers()) {
-				addToList(ent.getHost(), ent.getPort(), ent.getName(), ent.getVersion());
+				addToList(ent.getHost(), ent.getPort(), ent.getName(), ent.getVersion(), ent.getForgeMode());
 				ent.ping();
 			}
 		}
@@ -401,7 +402,8 @@ public class Main {
 				final ServerEntry[] ets = lanListComponent.getListData() == null ? new ServerEntry[0]
 						: lanListComponent.getListData();
 				final ServerEntry ent = new ServerEntry(sender.getHostAddress(), port,
-						sender.getHostAddress() + ":" + Integer.toString(port), Messages.getString("Main.Auto"));
+						sender.getHostAddress() + ":" + Integer.toString(port), Messages.getString("Main.Auto"),
+						ForgeMode.AUTO);
 				for (final ServerEntry et : ets)
 					if (et.equals(ent))
 						return;
@@ -512,8 +514,8 @@ public class Main {
 								open.addActionListener(new ActionListener() {
 									@Override
 									public void actionPerformed(ActionEvent ev2) {
-										ml.mouseClicked(new MouseEvent(win, 0, System.currentTimeMillis(), 0, 0, 0, 0, 0, 1,
-												false, MouseEvent.BUTTON1));
+										ml.mouseClicked(new MouseEvent(win, 0, System.currentTimeMillis(), 0, 0, 0, 0,
+												0, 1, false, MouseEvent.BUTTON1));
 									}
 								});
 								open.setFont(win.getFont().deriveFont(Font.BOLD));
@@ -645,7 +647,7 @@ public class Main {
 			}
 		});
 
-		win.setTitle("Another Minecraft Chat Client v" + version);
+		win.setTitle("Another Minecraft Chat Client v" + VERSION);
 		if (logoImage != null) {
 			win.setIconImage(logoImage);
 		}
@@ -683,6 +685,10 @@ public class Main {
 				for (final ProtocolNumber num : ProtocolNumber.values()) {
 					versionField.addItem(num.name);
 				}
+				final JComboBox<ForgeMode> forgeField = new JComboBox<>();
+				for (final ForgeMode mode : ForgeMode.values()) {
+					forgeField.addItem(mode);
+				}
 
 				final Box contents = Box.createVerticalBox();
 
@@ -694,7 +700,12 @@ public class Main {
 				contents.add(new JLabel(" "));
 				contents.add(nameField);
 				contents.add(hostField);
+				contents.add(new JLabel(" "));
+				contents.add(new JLabel(Messages.getString("Main.version") + ":"));
 				contents.add(versionField);
+				contents.add(new JLabel(" "));
+				contents.add(new JLabel("Forge:"));
+				contents.add(forgeField);
 
 				for (final Component c : contents.getComponents())
 					if (c instanceof JComponent) {
@@ -724,7 +735,8 @@ public class Main {
 								port = Integer.parseInt(ag[1]);
 							}
 
-							addToList(host, port, name, (String) versionField.getSelectedItem());
+							addToList(host, port, name, (String) versionField.getSelectedItem(),
+									(ForgeMode) forgeField.getSelectedItem());
 
 							break;
 						} else {
@@ -2785,7 +2797,9 @@ public class Main {
 			public void run() {
 
 				final String host = entry.getHost();
+				final boolean forge = entry.isForge();
 				final int port = entry.getPort();
+				final ForgeMode forgeMode = entry.getForgeMode();
 				int protocol = -1;
 				switch (entry.getVersion()) {
 					case "Auto": {
@@ -2841,13 +2855,14 @@ public class Main {
 				if (protocol != -1) {
 					final int iprotocol = protocol;
 					try {
-						if (iprotocol == 755) {
+						if (iprotocol >= 755) {
 							showInventory.setEnabled(false);
 						}
 						if (iprotocol >= 393) {
 							controlsTabPane.setEnabledAt(2, false);
 						}
-						final MinecraftClient cl = new MinecraftClient(host, port, iprotocol);
+						final MinecraftClient cl = new MinecraftClient(host, port, iprotocol,
+								forgeMode == ForgeMode.AUTO ? forge : forgeMode == ForgeMode.NEVER ? false : true);
 						clients.put(fPane, cl);
 
 						final Thread autoMessagesThread = new Thread(new Runnable() {
@@ -3256,6 +3271,10 @@ public class Main {
 
 	public ActionListener getConnectionACL() {
 		return alis;
+	}
+
+	public JFrame getMainWindow() {
+		return win;
 	}
 
 }

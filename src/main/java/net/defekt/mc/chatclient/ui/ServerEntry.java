@@ -18,6 +18,7 @@ public class ServerEntry implements Serializable {
 	private final String host;
 	private final int port;
 	private final String name;
+	private ForgeMode forgeMode;
 
 	private String version = "Auto";
 
@@ -49,11 +50,13 @@ public class ServerEntry implements Serializable {
 	 * @param name    server name
 	 * @param version human-readable server version
 	 */
-	protected ServerEntry(final String host, final int port, final String name, final String version) {
+	protected ServerEntry(final String host, final int port, final String name, final String version,
+			final ForgeMode forgeMode) {
 		this.host = host;
 		this.port = port;
 		this.name = name;
 		this.version = version;
+		this.forgeMode = forgeMode;
 	}
 
 	/**
@@ -172,5 +175,25 @@ public class ServerEntry implements Serializable {
 			return false;
 		final ServerEntry ent = (ServerEntry) et;
 		return (ent.getHost().equals(host) && ent.getPort() == port && ent.getName().equals(name));
+	}
+
+	/**
+	 * @return if Forge is enabled on this server
+	 */
+	public boolean isForge() {
+		if (info == null)
+			return false;
+		return info.getModType() != null && info.getModList().size() > 0;
+	}
+
+	/**
+	 * Returns how Forge servers should be handled
+	 * 
+	 * @return Forge mode
+	 */
+	public ForgeMode getForgeMode() {
+		if (forgeMode == null)
+			forgeMode = ForgeMode.AUTO;
+		return forgeMode;
 	}
 }
