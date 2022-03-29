@@ -29,23 +29,23 @@ You can access their settings in the "Auto. messages" tab in the control panel o
 
 ### ⏰ Interval messages
 Interval messages allow user to send chat messages periodically.<br>
-For example you can use them to automated advertisements.<br>
+For example you can use them for automated advertisements.<br><br>
 Setting up interval messages is relatively easy.<br>
-You just have to add your messages using the "+" button, adjusting values in delay and interval fields and finally check the "Enable" check box.<br>
+You just have to add your messages using the "+" button, adjust values in delay and interval fields and finally check the "Enable" check box.<br>
 Your client should now send defined messages every *x* seconds/minutes as specifed by user.<br>
 
 ### 🔔 Automatic responses
 Automatic responses can be used to automatically respond to certain messages.<br>
 You can use them, for example, to reply to private messages while you are AFK,<br>
-or to respond in-game events, or even commands.<br>
-They are a little more complex to set up than interval messages, but it shouldn't be a hassle to understand all available options.<br>
+or to respond to in-game events.<br>
+They are a little more complex to set up than interval messages, but it shouldn't be a hassle to understand all available options.<br><br>
 First you have to add a rule.<br>
 Rules consist of three basic components:<br>
 
 - Triggers - they determine *when* the client should respond.<br>
 If for example there is a trigger "Pie", client will respond when someone says "Pie" on chat.<br>
 Triggers have two modes:<br>
-"**Or**" - is the main mode. It activates the rule when *any* of triggers is present.<br>
+"**Or**" - is the main mode. It activates the rule when *any* of the triggers is present.<br>
 For example, when you added "Foo" and "Bar", client will react when someone says either, or both of these words.<br>
 "**And**" - will activate only when every defined phrase is present in one chat message.<br>
 
