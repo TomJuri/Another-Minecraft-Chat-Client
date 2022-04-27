@@ -2,6 +2,12 @@ package net.defekt.mc.chatclient.protocol;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,12 +16,24 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
+import net.defekt.mc.chatclient.protocol.MojangAPI.RequestResponse;
 import net.defekt.mc.chatclient.protocol.data.ChatMessages;
+import net.defekt.mc.chatclient.protocol.data.Hosts;
 import net.defekt.mc.chatclient.protocol.data.ItemStack;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.data.ModInfo;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
 import net.defekt.mc.chatclient.protocol.data.StatusInfo;
+import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
@@ -44,6 +62,7 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerTimeUpdatePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerUpdateHealthPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerWindowItemsPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.serverbound.login.ClientLoginEncryptionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPluginMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientTeleportConfirmPacket;
 import net.defekt.mc.chatclient.ui.Main;
@@ -103,10 +122,62 @@ public class ClientPacketListener implements InternalPacketListener {
             if (packet instanceof ServerLoginSetCompressionPacket) {
                 cl.setCompression(true);
             } else if (packet instanceof ServerLoginEncryptionPacket) {
-                for (final ClientListener ls : cl.getClientListeners()) {
-                    ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnectedNoAuth"));
+                ServerLoginEncryptionPacket sPacket = (ServerLoginEncryptionPacket) packet;
+                switch (cl.getAuthType()) {
+                    default:
+                    case Offline: {
+                        for (final ClientListener ls : cl.getClientListeners()) {
+                            ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnectedNoAuth"));
+                        }
+                        cl.close();
+                        break;
+                    }
+                    case Mojang: {
+                        PublicKey publicKey = sPacket.getPublicKey();
+                        byte[] verifyToken = sPacket.getVerifyToken();
+                        String serverID = sPacket.getServerID();
+
+                        byte[] clientSecret = new byte[16];
+                        new SecureRandom().nextBytes(clientSecret);
+
+                        Cipher rsa = Cipher.getInstance("RSA");
+                        rsa.init(Cipher.ENCRYPT_MODE, publicKey);
+
+                        byte[] encryptedSecret = rsa.doFinal(clientSecret);
+                        byte[] encryptedToken = rsa.doFinal(verifyToken);
+
+                        String sha = IOUtils.sha1(serverID.getBytes(), clientSecret, publicKey.getEncoded());
+
+                        RequestResponse resp = MojangAPI.makeJSONRequest(
+                                (cl.getAuthType() == AuthType.Mojang ? Hosts.MOJANG_SESSIONSERVER
+                                        : Hosts.ALTENING_SESSIONSERVER) + "/session/minecraft/join",
+                                new HashMap<String, JsonElement>() {
+                                    {
+                                        put("accessToken", new JsonPrimitive(cl.getAuthToken()));
+                                        put("selectedProfile", new JsonPrimitive(cl.getAuthID()));
+                                        put("serverId", new JsonPrimitive(sha));
+                                    }
+                                }); // TODO TheAltening
+                        try {
+                            JsonObject json = resp.getJson();
+                            if (json.has("error")) {
+                                String errMsg = json.has("errorMessage") ? json.get("errorMessage").getAsString()
+                                        : json.get("error").getAsString();
+                                for (final ClientListener ls : cl.getClientListeners()) {
+                                    ls.disconnected(
+                                            Messages.getString("MinecraftClient.clientErrorDisconnected") + errMsg);
+                                }
+                                cl.close();
+                                break;
+                            }
+                        } catch (Exception ex) {
+                        }
+
+                        cl.sendPacket(new ClientLoginEncryptionPacket(registry, encryptedSecret, encryptedToken));
+                        cl.enableEncryption(clientSecret);
+                        break;
+                    }
                 }
-                cl.close();
             } else if (packet instanceof ServerLoginResponsePacket) {
                 for (final ClientListener ls : cl.getClientListeners()) {
                     ls.disconnected(ChatMessages.parse(((ServerLoginResponsePacket) packet).getResponse()));
@@ -437,7 +508,9 @@ public class ClientPacketListener implements InternalPacketListener {
 
         } catch (
 
-        final IOException e) {
+        final IOException | InvalidKeySpecException | NoSuchAlgorithmException | InvalidKeyException
+                | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
+                | InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
     }

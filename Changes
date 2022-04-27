@@ -1,14 +1,12 @@
 AMCC Change Log
-v1.6.0
+v1.7.0
 
 [+] Added:
-- Forge Support! (currently only for Minecraft 1.8 - 1.12.2)
-- Updated Chinese translation
-- Query Protocol
-- Server details, under right-click menu in server list.
-  Here is what you can do with it:
-  - Check server address
-  - Query the server
-  - See what players are currently on the server
-  - See all installed mods on a Forge server
-- Option to save server icon, also under right-click menu
+- Online mode support! You can now log in using Mojang Account (needs testing).
+
+[+] Fixed:
+- Fixed minor bug in Unicode characters support
+
+[+] To add:
+- Proxy support
+- Attacking nearby entities

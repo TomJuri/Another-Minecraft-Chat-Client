@@ -6,10 +6,13 @@ import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 
+/**
+ * An adapter class for {@link ClientListener}
+ * 
+ * @author Defective4
+ *
+ */
 public abstract class ClientAdapter implements ClientListener {
-
-    public ClientAdapter() {
-    }
 
     @Override
     public void messageReceived(String message, Position position) {

@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +15,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.zip.Inflater;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import net.defekt.mc.chatclient.protocol.data.Hosts;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
 import net.defekt.mc.chatclient.protocol.io.ListenerHashMap;
@@ -55,6 +67,7 @@ public class MinecraftClient {
 
     private Socket soc = null;
     private OutputStream os = null;
+    private VarInputStream is = null;
 
     private boolean compression = false;
     private final int cThreshold = -1;
@@ -175,7 +188,53 @@ public class MinecraftClient {
      * @throws IOException thrown when client was unable to connect to target server
      */
     public void connect(final String username) throws IOException {
-        this.username = username;
+        connect(AuthType.Offline, username, null);
+    }
+
+    private Cipher eCipher = null;
+    private Cipher dCipher = null;
+
+    protected void enableEncryption(byte[] secret) throws InvalidKeyException, NoSuchAlgorithmException,
+            NoSuchPaddingException, InvalidAlgorithmParameterException {
+        SecretKey key = new SecretKeySpec(secret, "AES");
+        eCipher = Cipher.getInstance("AES/CFB8/NoPadding");
+        eCipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(secret));
+        dCipher = Cipher.getInstance("AES/CFB8/NoPadding");
+        dCipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(secret));
+
+        this.is = new VarInputStream(new CipherInputStream(is, dCipher));
+        this.os = new CipherOutputStream(os, eCipher);
+    }
+
+    private String authID = "";
+    private String authToken = null;
+    private AuthType authType = AuthType.Offline;
+
+    /**
+     * Connect this client to the server
+     * 
+     * @param auth     authentication type to use
+     * @param token    an username or email
+     * @param password authentication password or null it offline
+     * @throws IOException
+     */
+    public void connect(final AuthType auth, final String token, final String password) throws IOException {
+        this.authType = auth;
+        switch (auth) {
+            default:
+            case Offline: {
+                this.username = token;
+                break;
+            }
+            case Mojang: {
+                MojangUser user = MojangAPI.authenticateUser(token, password,
+                        auth == AuthType.Mojang ? Hosts.MOJANG_AUTHSERVER : Hosts.ALTENING_AUTHSERVER);
+                this.username = user.getUserName();
+                this.authID = user.getUserID();
+                this.authToken = user.getAccessToken();
+                break;
+            }
+        }
 
         try {
             if (connected || this.soc != null)
@@ -186,7 +245,7 @@ public class MinecraftClient {
             this.connected = true;
 
             this.os = soc.getOutputStream();
-            final VarInputStream is = new VarInputStream(soc.getInputStream());
+            this.is = new VarInputStream(soc.getInputStream());
             inventory = new ItemsWindow(Messages.getString("MinecraftClient.clientInventoryName"), 46, 0, this, reg);
             packetListeners.add(new ClientPacketListener(this));
 
@@ -795,5 +854,26 @@ public class MinecraftClient {
      */
     public boolean isForge() {
         return forge;
+    }
+
+    /**
+     * @return client's online UUID
+     */
+    public String getAuthID() {
+        return authID;
+    }
+
+    /**
+     * @return client's authentication token
+     */
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    /**
+     * @return authentication method used by client
+     */
+    public AuthType getAuthType() {
+        return authType;
     }
 }

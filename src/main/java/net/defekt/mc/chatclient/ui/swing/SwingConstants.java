@@ -7,7 +7,7 @@ package net.defekt.mc.chatclient.ui.swing;
  *
  */
 public class SwingConstants {
-	protected static final char[] minecraftiaChars = "\r\n!@#$%^&*()_+{}:\"|<>?`~,./;'\\[]-= abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZęóąśłżńĘÓĄŚŁŻŃ0123456789» ↙↘↗↖℅↓↑←→▲△■□●○§♀♂≥≤≠≈∫√÷×±”€"
+	protected static final char[] minecraftiaChars = "\r\n!@#$%^&*()_+{}:\"|<>?`~,./;'\\[]-= abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZźŹęóąśłżńĘÓĄŚŁŻŃ0123456789» ↙↘↗↖℅↓↑←→▲△■□●○§♀♂≥≤≠≈∫√÷×±”€"
 			.toCharArray();
 
 	protected static boolean checkMCSupported(final String s) {
