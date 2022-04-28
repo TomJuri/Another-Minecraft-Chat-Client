@@ -1,4 +1,5 @@
 ﻿# Another Minecraft Chat Client
+[![Sponsor](https://img.shields.io/badge/%E2%9D%A4-Buy%20me%20a%20coffee!-purple)](https://ko-fi.com/defective4_)<br>
 ![license](https://img.shields.io/github/license/Defective4/Minecraft-Chat-Client)
 ![version](https://img.shields.io/github/v/release/Defective4/Minecraft-Chat-Client)
 ![lastCommit](https://img.shields.io/github/last-commit/Defective4/Minecraft-Chat-Client)
