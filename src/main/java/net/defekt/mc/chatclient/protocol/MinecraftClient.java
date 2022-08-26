@@ -214,6 +214,7 @@ public class MinecraftClient {
 
     private Cipher eCipher = null;
     private Cipher dCipher = null;
+    private boolean isEncrypted = false;
 
     protected void enableEncryption(final byte[] secret) throws InvalidKeyException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidAlgorithmParameterException {
@@ -225,6 +226,8 @@ public class MinecraftClient {
 
         this.is = new VarInputStream(new CipherInputStream(is, dCipher));
         this.os = new CipherOutputStream(os, eCipher);
+
+        isEncrypted = true;
     }
 
     private String authID = "";
@@ -247,8 +250,9 @@ public class MinecraftClient {
                 this.username = token;
                 break;
             }
+            case TheAltening:
             case Mojang: {
-                final MojangUser user = MojangAPI.authenticateUser(token, password,
+                final MojangUser user = MojangAPI.authenticateUser(token, auth == AuthType.Mojang ? password : "none",
                         auth == AuthType.Mojang ? Hosts.MOJANG_AUTHSERVER : Hosts.ALTENING_AUTHSERVER);
                 this.username = user.getUserName();
                 this.authID = user.getUserID();
@@ -334,6 +338,7 @@ public class MinecraftClient {
                                     packet = PacketFactory.constructPacket(reg, pClass.getSimpleName(), packetData);
                                 }
                                 packet.setCompressed(compressed);
+                                packet.setEncrypted(isEncrypted);
                                 for (final InternalPacketListener lis : packetListeners) {
                                     lis.packetReceived(packet, reg);
                                 }
@@ -530,6 +535,7 @@ public class MinecraftClient {
      */
     public void sendPacket(final Packet packet) throws IOException {
         if (connected && soc != null && !soc.isClosed()) {
+            packet.setEncrypted(isEncrypted);
             for (final InternalPacketListener listener : outPacketListeners.toArray(new InternalPacketListener[0])) {
                 listener.packetReceived(packet, reg);
             }

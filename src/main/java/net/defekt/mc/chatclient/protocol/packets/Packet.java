@@ -28,6 +28,7 @@ public class Packet {
     private final VarOutputStream varBuffer = new VarOutputStream(rawBuffer);
     private final PacketRegistry reg;
     private int compressed = 0;
+    private boolean encrypted = false;
 
     /**
      * Constructs a RAW packet (universal)<br>
@@ -298,5 +299,13 @@ public class Packet {
 
     public PacketRegistry getReg() {
         return reg;
+    }
+
+    public boolean isEncrypted() {
+        return encrypted;
+    }
+
+    public void setEncrypted(final boolean encrypted) {
+        this.encrypted = encrypted;
     }
 }

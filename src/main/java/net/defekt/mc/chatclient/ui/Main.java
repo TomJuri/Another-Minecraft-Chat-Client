@@ -900,7 +900,8 @@ public class Main {
                         continue;
                     }
                     if (!up.isUsernameAlertSeen() && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)
-                            && ((AuthType) authType.getSelectedItem()) != AuthType.Mojang) {
+                            && ((AuthType) authType.getSelectedItem()) != AuthType.Mojang
+                            && ((AuthType) authType.getSelectedItem()) != AuthType.TheAltening) {
                         final int alResp = JOptionPane.showOptionDialog(win,
                                 Messages.getString("Main.nickIllegalCharsWarning1") + uname
                                         + Messages.getString("Main.nickIllegalCharsWarning2")
@@ -1255,6 +1256,10 @@ public class Main {
         maxPacketsOnListField.setValue(up.getMaxPacketsOnList());
         SwingUtils.alignSpinner(maxPacketsOnListField);
 
+        final JCheckBox disablePacketAnalyzer = new JCheckBox("Disable packet analyzer");
+        disablePacketAnalyzer.setToolTipText("Completely disables packet analyzer");
+        disablePacketAnalyzer.setSelected(up.isDisablePacketAnalyzer());
+
         pkBox.add(ignoreKAPackets);
         pkBox.add(ignoreDSPackets);
         pkBox.add(new JSeparator());
@@ -1263,6 +1268,7 @@ public class Main {
         pkBox.add(new JLabel(" "));
         pkBox.add(new JLabel("Max packets on packet analyzer list"));
         pkBox.add(maxPacketsOnListField);
+        pkBox.add(disablePacketAnalyzer);
         pkBox.add(new JLabel(" "));
         pkBox.add(new JSeparator());
         pkBox.add(new JLabel(" "));
@@ -1707,6 +1713,7 @@ public class Main {
                 final boolean sendMCBrand = !brand.isEmpty();
 
                 up.setMaxPacketsOnList((int) maxPacketsOnListField.getValue());
+                up.setDisablePacketAnalyzer(disablePacketAnalyzer.isSelected());
                 up.setResourcePackBehavior(rsBehavior);
                 up.setShowResourcePackMessages(showResourcePackMessages);
                 up.setResourcePackMessage(resourcePackMessage.replace("&", "\u00A7"));
@@ -2807,7 +2814,7 @@ public class Main {
             {
                 addActionListener(new ActionListener() {
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         if (pWin != null) {
                             pWin.dispose();
                             pWin = null;
@@ -2833,7 +2840,7 @@ public class Main {
 
         inButtons.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 showPacketPanel(inButtons.getPacket());
             }
         });
@@ -2845,7 +2852,7 @@ public class Main {
 
         outButtons.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 showPacketPanel(outButtons.getPacket());
             }
         });
@@ -2857,7 +2864,7 @@ public class Main {
 
         allButtons.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 showPacketPanel(allButtons.getPacket());
             }
         });
@@ -2869,7 +2876,7 @@ public class Main {
 
         unknownButtons.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 showPacketPanel(unknownButtons.getPacket());
             }
         });
@@ -2881,7 +2888,7 @@ public class Main {
 
         searchButtons.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 showPacketPanel(searchButtons.getPacket());
             }
         });
@@ -2897,7 +2904,7 @@ public class Main {
 
         packetAnalyzerSearchBtn.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
 
                 final JVBoxPanel optionsPanel = new JVBoxPanel();
                 final JTextField input = new JTextField();
@@ -2917,8 +2924,8 @@ public class Main {
                 optionsPanel.alignAll();
 
                 final int response = JOptionPane.showOptionDialog(pWin, optionsPanel, "Search...",
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[] { "Ok", "Cancel" },
-                        0);
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                        new Object[] { "Ok", "Cancel" }, 0);
 
                 String phrase;
                 if (response == 0 && (phrase = input.getText()) != null && !phrase.replace(" ", "").isEmpty()) {
@@ -2941,7 +2948,7 @@ public class Main {
 
         packetAnalyzerClearBtn.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 inModel.setRowCount(0);
                 outModel.setRowCount(0);
                 allModel.setRowCount(0);
@@ -3079,6 +3086,7 @@ public class Main {
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
                                 if (packetAnalyzerPauseBtn.isSelected()) return;
+                                if (up.isDisablePacketAnalyzer()) return;
                                 if (packet instanceof UnknownPacket) {
                                     unknownModel.insertRow(0,
                                             new Object[] { packet, "0x" + Integer.toHexString(packet.getID()), "C",
@@ -3107,6 +3115,7 @@ public class Main {
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
                                 if (packetAnalyzerPauseBtn.isSelected()) return;
+                                if (up.isDisablePacketAnalyzer()) return;
                                 outModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
                                         "S", packet.getClass().getSimpleName(), packet.getSize() });
                                 allModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
@@ -3338,6 +3347,10 @@ public class Main {
                                 }
                                 cl.close();
                                 clients.remove(fPane);
+                                if (pWin != null) {
+                                    pWin.dispose();
+                                    pWin = null;
+                                }
                             }
 
                             @Override
@@ -3552,13 +3565,14 @@ public class Main {
         pane.setEditable(false);
 
         final int compressed = packet.getCompressed();
-        final String compressedString = compressed == 1 ? "§cNo (Disabled)"
+        final String compressedString = compressed == 1 ? "§4No (Disabled)"
                 : compressed == 2 ? "§4No" : compressed == 3 ? "§2Yes" : "Unknown";
+        final String encryptedString = packet.isEncrypted() ? "§2Yes" : "§4No";
 
         pane.setText("Packet Name: " + packet.getClass().getSimpleName() + "\n" + "Packet Class: "
                 + packet.getClass().getName() + "\nPacket ID: 0x" + Integer.toHexString(packet.getID()) + "\nRegistry: "
                 + packet.getReg().getClass().getSimpleName() + "\nPacket Size: " + packet.getSize() + "\nCompressed: ");
-        SwingUtils.appendColoredText(compressedString, pane);
+        SwingUtils.appendColoredText(compressedString + "§0\nEncrypted: " + encryptedString, pane);
 
         infoPanel.add(pane);
 

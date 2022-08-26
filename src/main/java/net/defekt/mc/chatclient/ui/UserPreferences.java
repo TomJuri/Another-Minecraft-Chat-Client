@@ -197,6 +197,7 @@ public class UserPreferences implements Serializable {
     private boolean sendWindowClosePackets = true;
 
     private int maxPacketsOnList = 500;
+    private boolean disablePacketAnalyzer = false;
 
     protected static UserPreferences load() {
         try {
@@ -463,5 +464,13 @@ public class UserPreferences implements Serializable {
 
     public void setMaxPacketsOnList(final int maxPacketsOnList) {
         this.maxPacketsOnList = maxPacketsOnList;
+    }
+
+    public boolean isDisablePacketAnalyzer() {
+        return disablePacketAnalyzer;
+    }
+
+    public void setDisablePacketAnalyzer(final boolean disablePacketAnalyzer) {
+        this.disablePacketAnalyzer = disablePacketAnalyzer;
     }
 }

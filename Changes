@@ -1,9 +1,11 @@
 AMCC Change Log
 v1.8.0
+This is a pre-release!
 
 [+] Added:
 - New Protocol Manager Tool
   A new, poweful utility to debug traffic between client and server!
+- TheAltening authentication support
 
 [+] Fixed:
 - Updated Gradle build system

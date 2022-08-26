@@ -8,5 +8,5 @@ package net.defekt.mc.chatclient.protocol;
  */
 @SuppressWarnings("javadoc")
 public enum AuthType {
-    Offline, Mojang
+    Offline, Mojang, TheAltening
 }

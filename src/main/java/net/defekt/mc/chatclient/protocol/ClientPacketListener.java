@@ -132,6 +132,7 @@ public class ClientPacketListener implements InternalPacketListener {
                         cl.close();
                         break;
                     }
+                    case TheAltening:
                     case Mojang: {
                         final PublicKey publicKey = sPacket.getPublicKey();
                         final byte[] verifyToken = sPacket.getVerifyToken();
@@ -157,7 +158,7 @@ public class ClientPacketListener implements InternalPacketListener {
                                         put("selectedProfile", new JsonPrimitive(cl.getAuthID()));
                                         put("serverId", new JsonPrimitive(sha));
                                     }
-                                }); // TODO TheAltening
+                                });
                         try {
                             final JsonObject json = resp.getJson();
                             if (json.has("error")) {
