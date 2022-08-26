@@ -3345,12 +3345,15 @@ public class Main {
                                             }
                                     }
                                 }
+                                try {
+                                    if (pWin != null) {
+                                        pWin.dispose();
+                                        pWin = null;
+                                    }
+                                } catch (Exception ex) {
+                                }
                                 cl.close();
                                 clients.remove(fPane);
-                                if (pWin != null) {
-                                    pWin.dispose();
-                                    pWin = null;
-                                }
                             }
 
                             @Override

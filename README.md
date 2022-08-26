@@ -1,5 +1,4 @@
 ﻿# Another Minecraft Chat Client
-### Do you like AMCC? [Consider giving me a sponsorship! :purple_heart:](https://github.com/sponsors/Defective4)<br><br>
 ![license](https://img.shields.io/github/license/Defective4/Minecraft-Chat-Client)
 ![version](https://img.shields.io/github/v/release/Defective4/Minecraft-Chat-Client)
 ![lastCommit](https://img.shields.io/github/last-commit/Defective4/Minecraft-Chat-Client)
