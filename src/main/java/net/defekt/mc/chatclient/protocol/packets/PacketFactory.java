@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV107;
+import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV110;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV315;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV335;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV338;
@@ -17,6 +18,7 @@ import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV573;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV735;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV753;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV755;
+import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV756;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV757;
 import net.defekt.mc.chatclient.ui.Messages;
 
@@ -33,7 +35,6 @@ public class PacketFactory {
 
     private static final Map<Integer, Integer> protocolBinds = new HashMap<Integer, Integer>() {
         {
-            put(110, 107);
             put(109, 107);
             put(108, 107);
             put(210, 315);
@@ -46,9 +47,8 @@ public class PacketFactory {
             put(498, 477);
             put(575, 573);
             put(578, 573);
-            put(735, 735);
+//            put(735, 735);
             put(754, 753);
-            put(756, 755);
             put(758, 757);
         }
     };
@@ -58,6 +58,7 @@ public class PacketFactory {
             try {
                 put(47, new PacketRegistryV47());
                 put(107, new PacketRegistryV107());
+                put(110, new PacketRegistryV110());
                 put(315, new PacketRegistryV315());
                 put(335, new PacketRegistryV335());
                 put(338, new PacketRegistryV338());
@@ -68,6 +69,7 @@ public class PacketFactory {
                 put(735, new PacketRegistryV735());
                 put(753, new PacketRegistryV753());
                 put(755, new PacketRegistryV755());
+                put(756, new PacketRegistryV756());
                 put(757, new PacketRegistryV757());
             } catch (final NoClassDefFoundError e) {
                 e.printStackTrace();

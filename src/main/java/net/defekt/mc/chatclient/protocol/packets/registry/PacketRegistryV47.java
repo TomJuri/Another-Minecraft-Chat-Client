@@ -5,8 +5,12 @@ import java.util.Map;
 
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket;
+import net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityTeleportPacket;
 import net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerKeepAlivePacket;
 import net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerPlayerPositionAndLookPacket;
+import net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnEntityPacket;
+import net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket;
 import net.defekt.mc.chatclient.protocol.packets.alt.serverbound.play.ClientKeepAlivePacket;
 import net.defekt.mc.chatclient.protocol.packets.alt.serverbound.play.ClientResourcePackStatusPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginEncryptionPacket;
@@ -16,6 +20,7 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.Serve
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerCloseWindowPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerConfirmTransactionPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerDestroyEntitiesPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerDisconnectPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerJoinGamePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerOpenWindowPacket;
@@ -102,6 +107,13 @@ public class PacketRegistryV47 extends PacketRegistry {
                 put(0x2F, ServerSetSlotPacket.class);
                 put(0x23, ServerConfirmTransactionPacket.class);
                 put(0x03, ServerTimeUpdatePacket.class);
+
+                put(0x0F, ServerSpawnEntityPacket.class);
+                put(0x0C, ServerSpawnPlayerPacket.class);
+                put(0x13, ServerDestroyEntitiesPacket.class);
+                put(0x15, ServerEntityRelativeMovePacket.class);
+                put(0x17, ServerEntityRelativeMovePacket.class);
+                put(0x18, ServerEntityTeleportPacket.class);
             }
         };
     }

@@ -33,6 +33,8 @@ import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.data.ModInfo;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
 import net.defekt.mc.chatclient.protocol.data.StatusInfo;
+import net.defekt.mc.chatclient.protocol.entity.Entity;
+import net.defekt.mc.chatclient.protocol.entity.Player;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
@@ -47,7 +49,10 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerCloseWindowPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerConfirmTransactionPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerDestroyEntitiesPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerDisconnectPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerEntityRelativeMovePacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerEntityTeleportPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerJoinGamePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerKeepAlivePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerOpenWindowPacket;
@@ -58,6 +63,8 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPluginMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerResourcePackSendPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerSetSlotPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerSpawnEntityPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerSpawnPlayerPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerStatisticsPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerTimeUpdatePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerUpdateHealthPacket;
@@ -119,7 +126,83 @@ public class ClientPacketListener implements InternalPacketListener {
     @Override
     public void packetReceived(final Packet packet, final PacketRegistry registry) {
         try {
-            if (packet instanceof ServerLoginSetCompressionPacket) {
+            if (packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityTeleportPacket) {
+                net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityTeleportPacket tp = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityTeleportPacket) packet;
+                double x = tp.getX();
+                double y = tp.getY();
+                double z = tp.getZ();
+                int id = tp.getId();
+                Entity et = cl.getEntity(id);
+                if (et != null) {
+                    et.setX(x);
+                    et.setZ(y);
+                    et.setZ(z);
+                }
+            } else if (packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket) {
+                net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket move = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket) packet;
+                Entity entity = cl.getEntity(move.getEntityID());
+                if (entity == null) return;
+                double x = entity.getX();
+                double y = entity.getY();
+                double z = entity.getZ();
+
+                double dX = move.getDeltaX();
+                double dY = move.getDeltaY();
+                double dZ = move.getDeltaZ();
+
+                entity.setX(x + dX);
+                entity.setY(y + dY);
+                entity.setZ(z + dZ);
+
+            } else if (packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket) {
+                net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket sp = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket) packet;
+                if (sp.getId() == cl.getEntityID()) return;
+                cl.getStoredEntities().put(sp.getId(), new Player(sp.getUid(), sp.getX(), sp.getY(), sp.getZ()));
+            } else if (packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnEntityPacket) {
+                net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnEntityPacket sp = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnEntityPacket) packet;
+                cl.getStoredEntities().put(sp.getId(),
+                        new Entity(UUID.randomUUID(), sp.getType(), sp.getX(), sp.getY(), sp.getZ()));
+            } else if (packet instanceof ServerEntityTeleportPacket) {
+                ServerEntityTeleportPacket tp = (ServerEntityTeleportPacket) packet;
+                double x = tp.getX();
+                double y = tp.getY();
+                double z = tp.getZ();
+                int id = tp.getId();
+                Entity et = cl.getEntity(id);
+                if (et != null) {
+                    et.setX(x);
+                    et.setZ(y);
+                    et.setZ(z);
+                }
+            } else if (packet instanceof ServerEntityRelativeMovePacket) {
+                ServerEntityRelativeMovePacket move = (ServerEntityRelativeMovePacket) packet;
+                Entity entity = cl.getEntity(move.getEntityID());
+                if (entity == null) return;
+                double x = entity.getX();
+                double y = entity.getY();
+                double z = entity.getZ();
+
+                double dX = move.getDeltaX();
+                double dY = move.getDeltaY();
+                double dZ = move.getDeltaZ();
+
+                entity.setX(x + dX);
+                entity.setY(y + dY);
+                entity.setZ(z + dZ);
+
+            } else if (packet instanceof ServerDestroyEntitiesPacket) {
+                Map<Integer, Entity> ets = cl.getStoredEntities();
+                for (int id : ((ServerDestroyEntitiesPacket) packet).getEntityIDs())
+                    ets.remove(id);
+            } else if (packet instanceof ServerSpawnPlayerPacket) {
+                ServerSpawnPlayerPacket sp = (ServerSpawnPlayerPacket) packet;
+                if (sp.getId() == cl.getEntityID()) return;
+                cl.getStoredEntities().put(sp.getId(), new Player(sp.getUid(), sp.getX(), sp.getY(), sp.getZ()));
+            } else if (packet instanceof ServerSpawnEntityPacket) {
+                ServerSpawnEntityPacket sp = (ServerSpawnEntityPacket) packet;
+                cl.getStoredEntities().put(sp.getId(),
+                        new Entity(sp.getUid(), sp.getType(), sp.getX(), sp.getY(), sp.getZ()));
+            } else if (packet instanceof ServerLoginSetCompressionPacket) {
                 cl.setCompression(true);
             } else if (packet instanceof ServerLoginEncryptionPacket) {
                 final ServerLoginEncryptionPacket sPacket = (ServerLoginEncryptionPacket) packet;
@@ -344,6 +427,17 @@ public class ClientPacketListener implements InternalPacketListener {
             } else if (packet instanceof ServerLoginSuccessPacket
                     || packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.login.ServerLoginSuccessPacket) {
                 cl.setCurrentState(State.IN);
+                try {
+                    String uid;
+                    if (packet instanceof ServerLoginSuccessPacket) {
+                        uid = ((ServerLoginSuccessPacket) packet).getUuid();
+                    } else
+                        uid = ((net.defekt.mc.chatclient.protocol.packets.alt.clientbound.login.ServerLoginSuccessPacket) packet)
+                                .getUuid();
+                    cl.setUid(UUID.fromString(uid));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             } else if (packet instanceof ServerKeepAlivePacket
                     || packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerKeepAlivePacket) {
                 lastKeepAlivePacket = System.currentTimeMillis();

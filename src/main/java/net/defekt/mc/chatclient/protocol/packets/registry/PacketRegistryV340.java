@@ -12,7 +12,10 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.Serve
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerCloseWindowPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerConfirmTransactionPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerDestroyEntitiesPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerDisconnectPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerEntityRelativeMovePacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerEntityTeleportPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerJoinGamePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerKeepAlivePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerOpenWindowPacket;
@@ -21,6 +24,8 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPluginMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerResourcePackSendPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerSetSlotPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerSpawnEntityPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerSpawnPlayerPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerStatisticsPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerTimeUpdatePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerUpdateHealthPacket;
@@ -106,6 +111,13 @@ public class PacketRegistryV340 extends PacketRegistry {
                 put(0x16, ServerSetSlotPacket.class);
                 put(0x11, ServerConfirmTransactionPacket.class);
                 put(0x47, ServerTimeUpdatePacket.class);
+
+                put(0x03, ServerSpawnEntityPacket.class);
+                put(0x05, ServerSpawnPlayerPacket.class);
+                put(0x32, ServerDestroyEntitiesPacket.class);
+                put(0x26, ServerEntityRelativeMovePacket.class);
+                put(0x27, ServerEntityRelativeMovePacket.class);
+                put(0x4c, ServerEntityTeleportPacket.class);
             }
         };
     }

@@ -12,8 +12,11 @@ import java.awt.Insets;
 import java.awt.Menu;
 import java.awt.MenuComponent;
 import java.awt.MenuItem;
+import java.awt.Point;
 import java.awt.PopupMenu;
+import java.awt.Rectangle;
 import java.awt.SystemTray;
+import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
@@ -22,9 +25,13 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -59,6 +66,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -74,6 +82,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
@@ -110,6 +120,8 @@ import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
 import net.defekt.mc.chatclient.protocol.data.PlayerSkinCache;
 import net.defekt.mc.chatclient.protocol.data.TranslationUtils;
+import net.defekt.mc.chatclient.protocol.entity.Entity;
+import net.defekt.mc.chatclient.protocol.entity.Player;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.protocol.io.ListenerHashMap.MapChangeListener;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
@@ -2135,7 +2147,283 @@ public class Main {
         timeBox.add(timeLabel);
         timeBox.add(timeValueLabel);
 
+        JScrollPane drawingScroll = new JScrollPane();
+        JScrollBar hbar = drawingScroll.getHorizontalScrollBar();
+        JScrollBar vbar = drawingScroll.getVerticalScrollBar();
+
+        JButton openRadarBtn = new JButton("Open Entity Radar"); // TODO Lang
+        openRadarBtn.addActionListener(new ActionListener() {
+
+            JFrame rWin;
+
+            JRadioButtonMenuItem displayNames = new JRadioButtonMenuItem("Display Names");
+            JRadioButtonMenuItem realNames = new JRadioButtonMenuItem("Real Names") {
+                {
+                    setSelected(true);
+                }
+            };
+            JRadioButtonMenuItem noNames = new JRadioButtonMenuItem("No Names");
+
+            JCheckBoxMenuItem displayPlayers = new JCheckBoxMenuItem("Show Players") {
+                {
+                    setSelected(true);
+                }
+            };
+            JCheckBoxMenuItem displayEntities = new JCheckBoxMenuItem("Show Entities") {
+                {
+
+                    setSelected(true);
+                }
+            };
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (rWin != null) {
+                    rWin.dispose();
+                    rWin = null;
+                }
+                rWin = new JFrame("Entity Radar: " + username + " (" + selectedServer.getName() + ")");
+                rWin.setAlwaysOnTop(true);
+                rWin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+                ButtonGroup displayNamesGroup = new ButtonGroup();
+                displayNamesGroup.add(displayNames);
+                displayNamesGroup.add(realNames);
+                displayNamesGroup.add(noNames);
+
+                JMenuBar radarBar = new JMenuBar();
+
+                JMenu radarViewMenu = new JMenu("View");
+                JMenu radarViewDisplayNames = new JMenu("Player Names");
+                JMenu radarViewEntities = new JMenu("Entities");
+
+                radarViewDisplayNames.add(displayNames);
+                radarViewDisplayNames.add(realNames);
+                radarViewDisplayNames.add(noNames);
+
+                radarViewEntities.add(displayPlayers);
+                radarViewEntities.add(displayEntities);
+
+                radarViewMenu.add(new JCheckBoxMenuItem("Always on Top") {
+                    {
+                        setSelected(rWin.isAlwaysOnTop());
+                        addActionListener(e -> {
+                            rWin.setAlwaysOnTop(isSelected());
+                        });
+                    }
+                });
+                radarViewMenu.add(radarViewDisplayNames);
+                radarViewMenu.add(radarViewEntities);
+                radarBar.add(radarViewMenu);
+
+                JPanel drawingPanel = new JPanel() {
+
+                    Toolkit tk = Toolkit.getDefaultToolkit();
+
+                    private int scale = 10;
+                    private int scaleTimer = 0;
+
+                    Color background = new Color(0, 50, 0);
+                    Color backgroundLines = new Color(0, 100, 0);
+                    Color mainPlayerColor = new Color(0, 255, 0);
+                    Color playerColor = new Color(255, 255, 0);
+
+                    MinecraftClient client = clients.get(fPane);
+
+                    Entity selectedEntity = null;
+
+                    {
+                        addMouseMotionListener(new MouseMotionAdapter() {
+
+                            @Override
+                            public void mouseMoved(MouseEvent e) {
+                                selectedEntity = null;
+                            }
+                        });
+                        addMouseListener(new MouseAdapter() {
+
+                            @Override
+                            public void mouseClicked(MouseEvent e) {
+                                // TODO Entity Handling
+                            }
+                        });
+                        addMouseWheelListener(new MouseWheelListener() {
+
+                            @Override
+                            public void mouseWheelMoved(MouseWheelEvent e) {
+                                if (e.getWheelRotation() < 0) {
+                                    increaseScale();
+                                } else {
+                                    decreaseScale();
+                                }
+                            }
+                        });
+
+                        rWin.addKeyListener(new KeyListener() {
+
+                            private boolean isCtrlDown = false;
+
+                            @Override
+                            public void keyTyped(KeyEvent e) {
+                            }
+
+                            @Override
+                            public void keyReleased(KeyEvent e) {
+                                if (e.getKeyCode() == KeyEvent.VK_CONTROL) isCtrlDown = false;
+                            }
+
+                            @Override
+                            public void keyPressed(KeyEvent e) {
+                                switch (e.getKeyCode()) {
+                                    case KeyEvent.VK_CONTROL: {
+                                        isCtrlDown = true;
+                                        break;
+                                    }
+                                    case KeyEvent.VK_PLUS:
+                                    case KeyEvent.VK_EQUALS: {
+                                        if (isCtrlDown) increaseScale();
+                                        break;
+                                    }
+                                    case KeyEvent.VK_MINUS: {
+                                        if (isCtrlDown) decreaseScale();
+                                        break;
+                                    }
+                                    default:
+                                        break;
+                                }
+                            }
+                        });
+                    }
+
+                    private void increaseScale() {
+                        if (scale < 20) scale++;
+                        scaleTimer = 30;
+                    }
+
+                    private void decreaseScale() {
+                        if (scale > 1) scale--;
+                        scaleTimer = 30;
+                    }
+
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        int width = getWidth();
+                        int height = getHeight();
+                        g.setColor(background);
+                        g.fillRect(0, 0, width, height);
+                        g.setFont(mcFont.deriveFont((float) 12));
+
+                        int centerX = width / 2;
+                        int centerZ = height / 2;
+
+                        g.setColor(backgroundLines);
+                        int i = 0;
+                        while (i < width) {
+                            i += 5 * scale;
+                            g.drawLine(i, 0, i, height);
+                            g.drawLine(0, i, width, i);
+                        }
+
+                        if (scaleTimer > 0) {
+                            scaleTimer -= 1;
+                            g.setColor(mainPlayerColor);
+                            g.drawString("Scale: x" + scale, 5 + hbar.getValue(), 25 + vbar.getValue());
+                        }
+
+                        for (int id : client.getStoredEntities().keySet().toArray(new Integer[0])) {
+                            Entity entity = client.getEntity(id);
+                            if (entity != null) {
+                                int x = (int) (client.getX() - entity.getX());
+                                int z = (int) (client.getZ() - entity.getZ());
+                                x *= scale;
+                                z *= scale;
+                                x += centerX;
+                                z += centerZ;
+                                Point mouse = getMousePosition();
+                                if (!(entity instanceof Player)) {
+                                    if (displayEntities.isSelected()) {
+                                        if (mouse != null && new Rectangle(x - 4, z - 4, 8, 8).contains(mouse)
+                                                && selectedEntity == null) {
+                                            selectedEntity = entity;
+                                        }
+                                        drawMob(x, z, g, Color.red, entity.equals(selectedEntity));
+                                    }
+                                } else {
+                                    if (displayPlayers.isSelected()) {
+                                        if (mouse != null && new Rectangle(x - 12, z - 12, 24, 24).contains(mouse)
+                                                && selectedEntity == null) {
+                                            selectedEntity = entity;
+                                        }
+                                        drawPlayer(x, z, entity.getUid(), g, playerColor,
+                                                entity.equals(selectedEntity));
+                                    }
+                                }
+                            }
+                        }
+
+                        if (client != null) drawPlayer(centerX, centerZ, client.getUid(), g, mainPlayerColor, false);
+
+                        try {
+                            Thread.sleep(1000 / 100);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                        tk.sync();
+                        repaint();
+                    }
+
+                    private void drawPlayer(int x, int y, UUID uid, Graphics g, Color color, boolean selected) {
+                        BufferedImage image = PlayerSkinCache.getHead(uid);
+                        if (image != null) {
+                            if (selected) {
+                                g.setColor(Color.white);
+                                g.fillRect(x - 14, y - 14, 28, 28);
+                            }
+                            g.drawImage(image, x - 12, y - 12, 24, 24, null);
+                        }
+
+                        PlayerInfo info = client.getPlayersTabList().get(uid);
+                        if (info != null) {
+                            if (!noNames.isSelected()) {
+                                String name = realNames.isSelected() || info.getDisplayName() == null ? info.getName()
+                                        : ChatMessages.removeColors(info.getDisplayName());
+                                g.setColor(color);
+                                g.drawString(name, x - (g.getFontMetrics().stringWidth(name) / 2), y - 16);
+                            }
+                        }
+                    }
+
+                    private void drawMob(int x, int y, Graphics g, Color color, boolean selected) {
+                        if (selected) {
+                            g.setColor(Color.white);
+                            g.fillRect(x - 6, y - 6, 12, 12);
+                        }
+                        g.setColor(color);
+                        g.fillRect(x - 4, y - 4, 8, 8);
+                    }
+                };
+
+                drawingPanel.setPreferredSize(new Dimension(2048, 2048));
+                drawingScroll.setViewportView(drawingPanel);
+                drawingScroll.setPreferredSize(new Dimension(512, 512));
+
+                rWin.setJMenuBar(radarBar);
+                rWin.setContentPane(drawingScroll);
+                rWin.pack();
+                SwingUtilities.invokeLater(() -> {
+                    Rectangle bounds = drawingScroll.getViewport().getViewRect();
+                    hbar.setValue((hbar.getMaximum() - bounds.width) / 2);
+                    vbar.setValue((vbar.getMaximum() - bounds.height) / 2);
+                });
+
+                SwingUtils.centerWindow(rWin);
+                rWin.setVisible(true);
+            }
+        });
+
         worldBox.add(timeBox);
+        worldBox.add(new JLabel(" "));
+        worldBox.add(openRadarBtn);
         worldBox.alignAll();
 
         final JVBoxPanel autoMsgBox = new JVBoxPanel();
@@ -2152,7 +2440,6 @@ public class Main {
 
             @Override
             public void stateChanged(final ChangeEvent e) {
-                System.out.println(permitted);
                 final JSpinner src = (JSpinner) e.getSource();
                 final int val = (int) src.getValue();
                 if (val < 1 && !permitted) {
@@ -3344,13 +3631,6 @@ public class Main {
                                                 ctt.setForeground(Color.gray);
                                             }
                                     }
-                                }
-                                try {
-                                    if (pWin != null) {
-                                        pWin.dispose();
-                                        pWin = null;
-                                    }
-                                } catch (Exception ex) {
                                 }
                                 cl.close();
                                 clients.remove(fPane);

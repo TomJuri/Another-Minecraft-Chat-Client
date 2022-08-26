@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.Inflater;
 
 import javax.crypto.Cipher;
@@ -26,6 +27,7 @@ import javax.crypto.spec.SecretKeySpec;
 import net.defekt.mc.chatclient.protocol.data.Hosts;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
+import net.defekt.mc.chatclient.protocol.entity.Entity;
 import net.defekt.mc.chatclient.protocol.io.ListenerHashMap;
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
@@ -65,6 +67,9 @@ public class MinecraftClient {
     private float pitch = 0;
 
     private int entityID = 0;
+    private UUID uid = null;
+
+    private final Map<Integer, Entity> storedEntities = new ConcurrentHashMap<>();
 
     private Socket soc = null;
     private OutputStream os = null;
@@ -345,7 +350,7 @@ public class MinecraftClient {
                             }
                         }
                     } catch (final Exception e) {
-//						e.printStackTrace();
+						e.printStackTrace();
                         for (final ClientListener cl : clientListeners) {
                             cl.disconnected(e.toString());
                         }
@@ -888,5 +893,21 @@ public class MinecraftClient {
      */
     public AuthType getAuthType() {
         return authType;
+    }
+
+    public Map<Integer, Entity> getStoredEntities() {
+        return storedEntities;
+    }
+
+    public Entity getEntity(int id) {
+        return storedEntities.containsKey(id) ? storedEntities.get(id) : null;
+    }
+
+    public UUID getUid() {
+        return uid;
+    }
+
+    public void setUid(UUID uid) {
+        this.uid = uid;
     }
 }

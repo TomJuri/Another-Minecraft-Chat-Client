@@ -12,7 +12,6 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.Serve
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginSetCompressionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerCloseWindowPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerConfirmTransactionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerDestroyEntitiesPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerDisconnectPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerEntityRelativeMovePacket;
@@ -32,7 +31,6 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.login.ClientLoginRequestPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientChatMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientCloseWindowPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientConfirmTransactionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientEntityActionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientHeldItemChangePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientKeepAlivePacket;
@@ -46,11 +44,11 @@ import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.Client
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientWindowClickPacket;
 
 /**
- * A packet registry implementation for protocol 735
+ * A packet registry implementation for protocol 755
  * 
  * @author Defective4
  */
-public class PacketRegistryV735 extends PacketRegistry {
+public class PacketRegistryV756 extends PacketRegistry {
 
     @Override
     public Map<Integer, Class<? extends Packet>> initLoginPackets() {
@@ -71,20 +69,20 @@ public class PacketRegistryV735 extends PacketRegistry {
         return new HashMap<Integer, Class<? extends Packet>>() {
             private static final long serialVersionUID = 1L;
             {
-                put(0x10, ClientKeepAlivePacket.class);
+                put(0x0F, ClientKeepAlivePacket.class);
                 put(0x03, ClientChatMessagePacket.class);
-                put(0x20, ClientResourcePackStatusPacket.class);
-                put(0x0B, ClientPluginMessagePacket.class);
+                put(0x21, ClientResourcePackStatusPacket.class);
+                put(0x0A, ClientPluginMessagePacket.class);
                 put(0x04, ClientStatusPacket.class);
-                put(0x1C, ClientEntityActionPacket.class);
-                put(0x12, ClientPlayerPositionPacket.class);
-                put(0x13, ClientPlayerPositionAndLookPacket.class);
-                put(0x09, ClientWindowClickPacket.class);
-                put(0x0A, ClientCloseWindowPacket.class);
-                put(0x24, ClientHeldItemChangePacket.class);
-                put(0x1B, ClientPlayerDiggingPacket.class);
-                put(0x2E, ClientUseItemPacket.class);
-                put(0x07, ClientConfirmTransactionPacket.class);
+                put(0x1B, ClientEntityActionPacket.class);
+                put(0x11, ClientPlayerPositionPacket.class);
+                put(0x12, ClientPlayerPositionAndLookPacket.class);
+                put(0x08, ClientWindowClickPacket.class);
+                put(0x09, ClientCloseWindowPacket.class);
+                put(0x25, ClientHeldItemChangePacket.class);
+                put(0x1A, ClientPlayerDiggingPacket.class);
+                put(0x2F, ClientUseItemPacket.class);
+//				put(0x07, ClientConfirmTransactionPacket.class); <- No window confirmation packet in 1.17 ???
             }
         };
     }
@@ -94,28 +92,28 @@ public class PacketRegistryV735 extends PacketRegistry {
         return new HashMap<Integer, Class<? extends Packet>>() {
             private static final long serialVersionUID = 1L;
             {
-                put(0x20, ServerKeepAlivePacket.class);
-                put(0x0E, ServerChatMessagePacket.class);
-                put(0x35, ServerPlayerPositionAndLookPacket.class);
+                put(0x21, ServerKeepAlivePacket.class);
+                put(0x0F, ServerChatMessagePacket.class);
+                put(0x38, ServerPlayerPositionAndLookPacket.class);
                 put(0x1A, ServerDisconnectPacket.class);
-                put(0x39, ServerResourcePackSendPacket.class);
+                put(0x3C, ServerResourcePackSendPacket.class);
                 put(0x18, ServerPluginMessagePacket.class);
-                put(0x49, ServerUpdateHealthPacket.class);
-                put(0x25, ServerJoinGamePacket.class);
-                put(0x33, ServerPlayerListItemPacket.class);
+                put(0x52, ServerUpdateHealthPacket.class);
+                put(0x26, ServerJoinGamePacket.class);
+                put(0x36, ServerPlayerListItemPacket.class);
                 put(0x13, ServerCloseWindowPacket.class);
-                put(0x2F, ServerOpenWindowPacket.class);
+                put(0x2E, ServerOpenWindowPacket.class);
                 put(0x14, ServerWindowItemsPacket.class);
                 put(0x16, ServerSetSlotPacket.class);
-                put(0x12, ServerConfirmTransactionPacket.class);
-                put(0x4E, ServerTimeUpdatePacket.class);
+//				put(0x11, ServerConfirmTransactionPacket.class); <- Same as in serverbound version?
+                put(0x58, ServerTimeUpdatePacket.class);
 
                 put(0x02, ServerSpawnEntityPacket.class);
                 put(0x04, ServerSpawnPlayerPacket.class);
-                put(0x36, ServerDestroyEntitiesPacket.class);
-                put(0x27, ServerEntityRelativeMovePacket.class);
-                put(0x28, ServerEntityRelativeMovePacket.class);
-                put(0x56, ServerEntityTeleportPacket.class);
+                put(0x3A, ServerDestroyEntitiesPacket.class);
+                put(0x29, ServerEntityRelativeMovePacket.class);
+                put(0x2A, ServerEntityRelativeMovePacket.class);
+                put(0x61, ServerEntityTeleportPacket.class);
             }
         };
     }
