@@ -8,34 +8,34 @@ package net.defekt.mc.chatclient.protocol.data;
  */
 public class ItemInfo {
 
-	private final String name, fileName;
+    private final String name, fileName;
 
-	/**
-	 * Constructs new item info object
-	 * 
-	 * @param name     item name
-	 * @param fileName item's internal name
-	 */
-	protected ItemInfo(final String name, final String fileName) {
-		this.name = name;
-		this.fileName = fileName;
-	}
+    /**
+     * Constructs new item info object
+     * 
+     * @param name     item name
+     * @param fileName item's internal name
+     */
+    protected ItemInfo(final String name, final String fileName) {
+        this.name = name;
+        this.fileName = fileName;
+    }
 
-	/**
-	 * Get item's name
-	 * 
-	 * @return item name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Get item's name
+     * 
+     * @return item name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Get item's internal name
-	 * 
-	 * @return item's internal name
-	 */
-	public String getFileName() {
-		return fileName;
-	}
+    /**
+     * Get item's internal name
+     * 
+     * @return item's internal name
+     */
+    public String getFileName() {
+        return fileName;
+    }
 }

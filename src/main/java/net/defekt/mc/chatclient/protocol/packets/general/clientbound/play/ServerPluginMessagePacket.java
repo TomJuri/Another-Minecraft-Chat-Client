@@ -15,41 +15,41 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerPluginMessagePacket extends Packet {
 
-	private final String channel;
-	private final byte[] data;
+    private final String channel;
+    private final byte[] data;
 
-	/**
-	 * constructs {@link ServerPluginMessagePacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerPluginMessagePacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		final VarInputStream is = getInputStream();
-		this.channel = is.readString();
-		this.data = new byte[data.length - this.channel.length()
-				- VarOutputStream.checkVarIntSize(this.channel.length())];
-		is.readFully(this.data);
-	}
+    /**
+     * constructs {@link ServerPluginMessagePacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerPluginMessagePacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        final VarInputStream is = getInputStream();
+        this.channel = is.readString();
+        this.data = new byte[data.length - this.channel.length()
+                - VarOutputStream.checkVarIntSize(this.channel.length())];
+        is.readFully(this.data);
+    }
 
-	/**
-	 * Get data of this message
-	 * 
-	 * @return message data
-	 */
-	public byte[] getDataF() {
-		return data;
-	}
+    /**
+     * Get data of this message
+     * 
+     * @return message data
+     */
+    public byte[] getDataF() {
+        return data;
+    }
 
-	/**
-	 * Get message channel
-	 * 
-	 * @return message channel
-	 */
-	public String getChannel() {
-		return channel;
-	}
+    /**
+     * Get message channel
+     * 
+     * @return message channel
+     */
+    public String getChannel() {
+        return channel;
+    }
 
 }

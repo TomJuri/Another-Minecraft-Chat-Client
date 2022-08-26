@@ -14,27 +14,27 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerDisconnectPacket extends Packet {
 
-	private final String reason;
+    private final String reason;
 
-	/**
-	 * Constructs {@link ServerDisconnectPacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerDisconnectPacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		reason = getInputStream().readString();
-	}
+    /**
+     * Constructs {@link ServerDisconnectPacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerDisconnectPacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        reason = getInputStream().readString();
+    }
 
-	/**
-	 * Get raw JSON reason message
-	 * 
-	 * @return raw JSON reason
-	 */
-	public String getReason() {
-		return reason;
-	}
+    /**
+     * Get raw JSON reason message
+     * 
+     * @return raw JSON reason
+     */
+    public String getReason() {
+        return reason;
+    }
 
 }

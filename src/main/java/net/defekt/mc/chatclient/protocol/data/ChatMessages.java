@@ -1,11 +1,13 @@
 package net.defekt.mc.chatclient.protocol.data;
 
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 import net.defekt.mc.chatclient.protocol.ClientListener;
 
@@ -19,133 +21,78 @@ import net.defekt.mc.chatclient.protocol.ClientListener;
  */
 public class ChatMessages {
 
-	private static final String pChar = "\u00A7";
+    private static final String pChar = "\u00A7";
 
-	private ChatMessages() {
-	}
+    private ChatMessages() {
+    }
 
-	/**
-	 * Parse JSON chat message
-	 * 
-	 * @param json chat message
-	 * @return parsed text
-	 */
-	public static String parse(String json) {
-		json = json.replace(pChar + "k", "").replace(pChar + "l", "").replace(pChar + "m", "").replace(pChar + "n", "");
-		try {
-			final JsonElement el = new JsonParser().parse(json);
-			JsonObject root;
-			if (el.isJsonPrimitive())
-				return el.getAsJsonPrimitive().getAsString();
+    /**
+     * Parse JSON chat message
+     * 
+     * @param json chat message
+     * @return parsed text
+     */
+    public static String parse(String json) {
+        json = json.replace(pChar + "k", "").replace(pChar + "l", "").replace(pChar + "m", "").replace(pChar + "n", "");
+        try {
+            final JsonElement element = new JsonParser().parse(json);
+            String text = "";
 
-			root = el.getAsJsonObject();
+            if (element instanceof JsonObject) {
+                final JsonObject obj = element.getAsJsonObject();
+                text = obj.has("text") ? obj.get("text").getAsString() : "";
+                if (obj.has("translate")) {
+                    final String translate = obj.get("translate").getAsString();
+                    final String translated = TranslationUtils.translateKey(translate);
+                    final List<String> with = new ArrayList<String>();
 
-			final AtomicReference<String> strRef = new AtomicReference<String>("");
+                    if (obj.has("with")) {
+                        final JsonArray withArray = obj.getAsJsonArray("with");
+                        for (final JsonElement el : withArray) {
+                            with.add(parse(el.toString()));
+                        }
+                    }
 
-			if (root.has("text")) {
-				strRef.set(root.get("text").getAsString());
-				root.remove("text");
-			}
+                    text = String.format(translated, (Object[]) with.toArray(new String[0]));
+                }
 
-			String colorAppend = "";
-			if (root.has("color")) {
-				colorAppend = pChar + ChatColor.translateColorName(root.get("color").getAsString());
-			}
+                if (obj.has("color")) {
+                    text = pChar + ChatColor.translateColorName(obj.get("color").getAsString()) + text;
+                }
 
-			strRef.set(colorAppend + strRef.get());
+                if (obj.has("extra")) {
+                    text += parse(obj.get("extra").toString());
+                }
 
-			recursiveParse(root, strRef);
+            } else if (element instanceof JsonArray) {
+                for (final JsonElement el : element.getAsJsonArray()) {
+                    text += parse(el.toString());
+                }
+            } else if (element instanceof JsonPrimitive) return element.getAsString();
 
-			if (strRef.get().contains(pChar) && root.has("translate")) {
-				strRef.set(root.get("translate").getAsString());
-			}
-			return strRef.get();
-		} catch (final Exception e) {
-			return json;
-		}
-	}
+            return text;
+        } catch (final Exception ex) {
+            return json;
+        }
+    }
 
-	private static void recursiveParse(final JsonElement ob, final AtomicReference<String> str) {
+    /**
+     * Remove colors from message.<br>
+     * This method removes all color and formatting codes from message.
+     * 
+     * @param message message to remove colors from
+     * @return colorless message
+     */
+    public static String removeColors(final String message) {
+        final StringBuilder colorless = new StringBuilder();
+        final char[] chs = message.toCharArray();
+        for (int x = 0; x < chs.length; x++)
+            if (chs[x] == pChar.charAt(0)) {
+                x++;
+            } else {
+                colorless.append(chs[x]);
+            }
 
-		if ((ob.isJsonPrimitive()) && !ob.getAsString().isEmpty())
-			if (str.get().contains(pChar + "%s")) {
-				str.set(str.get().replaceFirst(pChar + "%s", ob.getAsString()));
-			} else {
-				str.set(str.get() + ob.getAsString());
-			}
-
-		if (ob.isJsonArray()) {
-			for (final JsonElement el : ob.getAsJsonArray()) {
-				recursiveParse(el, str);
-			}
-		}
-
-		if (ob.isJsonObject()) {
-			final JsonObject obj = ob.getAsJsonObject();
-			for (final Entry<String, JsonElement> entry : obj.entrySet()) {
-
-				final String key = entry.getKey();
-				final JsonElement value = entry.getValue();
-
-				switch (key) {
-					case "translate": {
-
-						final String translated = TranslationUtils.translateKey(value.getAsString());
-						str.set(str.get() + translated);
-						break;
-					}
-
-					case "text": {
-						if (!value.getAsString().isEmpty())
-							if (str.get().contains(pChar + "%s")) {
-								str.set(str.get().replaceFirst(pChar + "%s", value.getAsString()));
-							} else {
-
-								String colorAppend = "";
-								if (obj.has("color")) {
-									colorAppend = pChar + ChatColor.translateColorName(obj.get("color").getAsString());
-								} else {
-									colorAppend = pChar + "f";
-								}
-
-								str.set(str.get() + colorAppend + value.getAsString());
-							}
-						break;
-					}
-					case "with": {
-						recursiveParse(value, str);
-						break;
-					}
-					case "extra": {
-						recursiveParse(value, str);
-						break;
-					}
-					default: {
-						break;
-					}
-
-				}
-			}
-		}
-	}
-
-	/**
-	 * Remove colors from message.<br>
-	 * This method removes all color and formatting codes from message.
-	 * 
-	 * @param message message to remove colors from
-	 * @return colorless message
-	 */
-	public static String removeColors(final String message) {
-		final StringBuilder colorless = new StringBuilder();
-		final char[] chs = message.toCharArray();
-		for (int x = 0; x < chs.length; x++)
-			if (chs[x] == pChar.charAt(0)) {
-				x++;
-			} else {
-				colorless.append(chs[x]);
-			}
-
-		return colorless.toString();
-	}
+        return colorless.toString();
+    }
 }

@@ -11,22 +11,22 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientPlayerPositionPacket extends Packet {
 
-	/**
-	 * Contructs new {@link ClientPlayerPositionAndLookPacket}
-	 * 
-	 * @param reg      packet registry used to construct this packet
-	 * @param x        new X position
-	 * @param y        new Y position
-	 * @param z        new Z position
-	 * @param onGround if player is on ground
-	 */
-	public ClientPlayerPositionPacket(final PacketRegistry reg, final Double x, final Double y, final Double z,
-			final Boolean onGround) {
-		super(reg);
-		putDouble(x);
-		putDouble(y);
-		putDouble(z);
-		putBoolean(onGround);
-	}
+    /**
+     * Contructs new {@link ClientPlayerPositionAndLookPacket}
+     * 
+     * @param reg      packet registry used to construct this packet
+     * @param x        new X position
+     * @param y        new Y position
+     * @param z        new Z position
+     * @param onGround if player is on ground
+     */
+    public ClientPlayerPositionPacket(final PacketRegistry reg, final Double x, final Double y, final Double z,
+            final Boolean onGround) {
+        super(reg);
+        putDouble(x);
+        putDouble(y);
+        putDouble(z);
+        putBoolean(onGround);
+    }
 
 }

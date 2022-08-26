@@ -12,33 +12,33 @@ import java.util.HashMap;
  * @param <V> the type of mapped values
  */
 public class FallbackHashMap<K, V> extends HashMap<K, V> {
-	private static final long serialVersionUID = 1L;
-	private V defaultValue = null;
+    private static final long serialVersionUID = 1L;
+    private V defaultValue = null;
 
-	@Override
-	/**
-	 * Returns the value to which the specified key is mapped, or preset default
-	 * value if this map contains no mapping for the key.
-	 */
-	public V get(final Object key) {
-		return containsKey(key) ? super.get(key) : defaultValue;
-	}
+    @Override
+    /**
+     * Returns the value to which the specified key is mapped, or preset default
+     * value if this map contains no mapping for the key.
+     */
+    public V get(final Object key) {
+        return containsKey(key) ? super.get(key) : defaultValue;
+    }
 
-	/**
-	 * Get default value used by this map
-	 * 
-	 * @return default value
-	 */
-	public V getDefaultValue() {
-		return defaultValue;
-	}
+    /**
+     * Get default value used by this map
+     * 
+     * @return default value
+     */
+    public V getDefaultValue() {
+        return defaultValue;
+    }
 
-	/**
-	 * Set default value for this map
-	 * 
-	 * @param defaultValue default value
-	 */
-	public void setDefaultValue(final V defaultValue) {
-		this.defaultValue = defaultValue;
-	}
+    /**
+     * Set default value for this map
+     * 
+     * @param defaultValue default value
+     */
+    public void setDefaultValue(final V defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 }

@@ -11,15 +11,15 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientChatMessagePacket extends Packet {
 
-	/**
-	 * Constructs new {@link ClientChatMessagePacket}
-	 * 
-	 * @param reg     packet registry used to construct this packet
-	 * @param message chat message
-	 */
-	public ClientChatMessagePacket(final PacketRegistry reg, final String message) {
-		super(reg);
-		putString(message);
-	}
+    /**
+     * Constructs new {@link ClientChatMessagePacket}
+     * 
+     * @param reg     packet registry used to construct this packet
+     * @param message chat message
+     */
+    public ClientChatMessagePacket(final PacketRegistry reg, final String message) {
+        super(reg);
+        putString(message);
+    }
 
 }

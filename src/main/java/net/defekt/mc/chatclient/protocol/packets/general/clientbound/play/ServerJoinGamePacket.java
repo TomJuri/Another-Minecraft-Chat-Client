@@ -13,27 +13,27 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerJoinGamePacket extends Packet {
 
-	private final int entityID;
+    private final int entityID;
 
-	/**
-	 * Constructs {@link ServerJoinGamePacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerJoinGamePacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		this.entityID = getInputStream().readInt();
-	}
+    /**
+     * Constructs {@link ServerJoinGamePacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerJoinGamePacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        this.entityID = getInputStream().readInt();
+    }
 
-	/**
-	 * Get player's entity ID
-	 * 
-	 * @return entity ID
-	 */
-	public int getEntityID() {
-		return entityID;
-	}
+    /**
+     * Get player's entity ID
+     * 
+     * @return entity ID
+     */
+    public int getEntityID() {
+        return entityID;
+    }
 
 }

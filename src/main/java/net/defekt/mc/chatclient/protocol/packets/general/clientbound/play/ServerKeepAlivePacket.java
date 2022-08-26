@@ -14,27 +14,27 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerKeepAlivePacket extends Packet {
 
-	private final long id;
+    private final long id;
 
-	/**
-	 * constructs {@link ServerKeepAlivePacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerKeepAlivePacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		this.id = getInputStream().readLong();
-	}
+    /**
+     * constructs {@link ServerKeepAlivePacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerKeepAlivePacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        this.id = getInputStream().readLong();
+    }
 
-	/**
-	 * Get packet's Keep-Alive ID
-	 * 
-	 * @return keep-alive ID as {@link Long}
-	 */
-	public long getId() {
-		return id;
-	}
+    /**
+     * Get packet's Keep-Alive ID
+     * 
+     * @return keep-alive ID as {@link Long}
+     */
+    public long getId() {
+        return id;
+    }
 
 }

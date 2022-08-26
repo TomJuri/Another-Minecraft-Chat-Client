@@ -11,16 +11,16 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientTeleportConfirmPacket extends Packet {
 
-	/**
-	 * Constructs new {@link ClientTeleportConfirmPacket}
-	 * 
-	 * @param reg        packet registry used to construct this packet
-	 * @param teleportID teleportation ID
-	 */
-	public ClientTeleportConfirmPacket(final PacketRegistry reg, final int teleportID) {
-		super(reg);
-		this.id = 0x00;
-		putVarInt(teleportID);
-	}
+    /**
+     * Constructs new {@link ClientTeleportConfirmPacket}
+     * 
+     * @param reg        packet registry used to construct this packet
+     * @param teleportID teleportation ID
+     */
+    public ClientTeleportConfirmPacket(final PacketRegistry reg, final int teleportID) {
+        super(reg);
+        this.id = 0x00;
+        putVarInt(teleportID);
+    }
 
 }

@@ -43,10 +43,11 @@ public class IOUtils {
      * @return sha1 string
      * @throws NoSuchAlgorithmException never thrown
      */
-    public static String sha1(byte[]... args) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
-        for (byte[] arg : args)
+    public static String sha1(final byte[]... args) throws NoSuchAlgorithmException {
+        final MessageDigest md = MessageDigest.getInstance("SHA-1");
+        for (final byte[] arg : args) {
             md.update(arg);
+        }
         return new BigInteger(md.digest()).toString(16);
     }
 
@@ -164,8 +165,7 @@ public class IOUtils {
      * @return rendered skin of player
      */
     public static BufferedImage renderPlayerSkin(final BufferedImage skin, final int direction) {
-        if (direction > 2)
-            return null;
+        if (direction > 2) return null;
         final BufferedImage et = new BufferedImage(16, 32, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D g2 = et.createGraphics();
 
@@ -295,8 +295,7 @@ public class IOUtils {
         try (DataInputStream dis = new DataInputStream(new FileInputStream(in))) {
             final byte[] header = new byte[9];
             dis.read(header);
-            if (!new String(header).equals("AMCCAMFV1"))
-                throw new IOException("Invalid file header!");
+            if (!new String(header).equals("AMCCAMFV1")) throw new IOException("Invalid file header!");
 
             final List<String> items = new ArrayList<String>();
             int len;
@@ -336,8 +335,7 @@ public class IOUtils {
      * @throws IOException thrown when there was an error while writing to file
      */
     public static void writeArfFile(final File out, final JAutoResponseList list) throws IOException {
-        if (list.getListData() == null)
-            throw new IOException("Rules list empty");
+        if (list.getListData() == null) throw new IOException("Rules list empty");
         try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(out))) {
             final List<AutoResponseRule> rules = new ArrayList<AutoResponseRule>();
             Collections.addAll(rules, list.getListData());

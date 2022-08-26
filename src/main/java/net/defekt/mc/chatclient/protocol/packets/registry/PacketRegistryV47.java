@@ -46,64 +46,64 @@ import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.Client
  */
 public class PacketRegistryV47 extends PacketRegistry {
 
-	@Override
-	public Map<Integer, Class<? extends Packet>> initLoginPackets() {
-		return new HashMap<Integer, Class<? extends Packet>>() {
-			private static final long serialVersionUID = 1L;
-			{
-				put(0x99, ClientLoginRequestPacket.class);
-				put(0x00, ServerLoginResponsePacket.class);
-				put(0x01, ServerLoginEncryptionPacket.class);
-				put(0x02, ServerLoginSuccessPacket.class);
-				put(0x03, ServerLoginSetCompressionPacket.class);
-			}
-		};
-	}
+    @Override
+    public Map<Integer, Class<? extends Packet>> initLoginPackets() {
+        return new HashMap<Integer, Class<? extends Packet>>() {
+            private static final long serialVersionUID = 1L;
+            {
+                put(0x99, ClientLoginRequestPacket.class);
+                put(0x00, ServerLoginResponsePacket.class);
+                put(0x01, ServerLoginEncryptionPacket.class);
+                put(0x02, ServerLoginSuccessPacket.class);
+                put(0x03, ServerLoginSetCompressionPacket.class);
+            }
+        };
+    }
 
-	@Override
-	protected Map<Integer, Class<? extends Packet>> initOutPackets() {
-		return new HashMap<Integer, Class<? extends Packet>>() {
-			private static final long serialVersionUID = 1L;
-			{
-				put(0x00, ClientKeepAlivePacket.class);
-				put(0x01, ClientChatMessagePacket.class);
-				put(0x19, ClientResourcePackStatusPacket.class);
-				put(0x17, ClientPluginMessagePacket.class);
-				put(0x16, ClientStatusPacket.class);
-				put(0x0B, ClientEntityActionPacket.class);
-				put(0x04, ClientPlayerPositionPacket.class);
-				put(0x06, ClientPlayerPositionAndLookPacket.class);
-				put(0x0E, ClientWindowClickPacket.class);
-				put(0x0D, ClientCloseWindowPacket.class);
-				put(0x09, ClientHeldItemChangePacket.class);
-				put(0x0F, ClientConfirmTransactionPacket.class);
-			}
-		};
-	}
+    @Override
+    protected Map<Integer, Class<? extends Packet>> initOutPackets() {
+        return new HashMap<Integer, Class<? extends Packet>>() {
+            private static final long serialVersionUID = 1L;
+            {
+                put(0x00, ClientKeepAlivePacket.class);
+                put(0x01, ClientChatMessagePacket.class);
+                put(0x19, ClientResourcePackStatusPacket.class);
+                put(0x17, ClientPluginMessagePacket.class);
+                put(0x16, ClientStatusPacket.class);
+                put(0x0B, ClientEntityActionPacket.class);
+                put(0x04, ClientPlayerPositionPacket.class);
+                put(0x06, ClientPlayerPositionAndLookPacket.class);
+                put(0x0E, ClientWindowClickPacket.class);
+                put(0x0D, ClientCloseWindowPacket.class);
+                put(0x09, ClientHeldItemChangePacket.class);
+                put(0x0F, ClientConfirmTransactionPacket.class);
+            }
+        };
+    }
 
-	@Override
-	protected Map<Integer, Class<? extends Packet>> initInPackets() {
-		return new HashMap<Integer, Class<? extends Packet>>() {
-			private static final long serialVersionUID = 1L;
-			{
-				put(0x00, ServerKeepAlivePacket.class);
-				put(0x02, ServerChatMessagePacket.class);
-				put(0x08, ServerPlayerPositionAndLookPacket.class);
-				put(0x40, ServerDisconnectPacket.class);
-				put(0x48, ServerResourcePackSendPacket.class);
-				put(0x3F, ServerPluginMessagePacket.class);
-				put(0x06, ServerUpdateHealthPacket.class);
-				put(0x01, ServerJoinGamePacket.class);
-				put(0x38, ServerPlayerListItemPacket.class);
-				put(0x37, ServerStatisticsPacket.class);
-				put(0x2E, ServerCloseWindowPacket.class);
-				put(0x2D, ServerOpenWindowPacket.class);
-				put(0x30, ServerWindowItemsPacket.class);
-				put(0x2F, ServerSetSlotPacket.class);
-				put(0x23, ServerConfirmTransactionPacket.class);
-				put(0x03, ServerTimeUpdatePacket.class);
-			}
-		};
-	}
+    @Override
+    protected Map<Integer, Class<? extends Packet>> initInPackets() {
+        return new HashMap<Integer, Class<? extends Packet>>() {
+            private static final long serialVersionUID = 1L;
+            {
+                put(0x00, ServerKeepAlivePacket.class);
+                put(0x02, ServerChatMessagePacket.class);
+                put(0x08, ServerPlayerPositionAndLookPacket.class);
+                put(0x40, ServerDisconnectPacket.class);
+                put(0x48, ServerResourcePackSendPacket.class);
+                put(0x3F, ServerPluginMessagePacket.class);
+                put(0x06, ServerUpdateHealthPacket.class);
+                put(0x01, ServerJoinGamePacket.class);
+                put(0x38, ServerPlayerListItemPacket.class);
+                put(0x37, ServerStatisticsPacket.class);
+                put(0x2E, ServerCloseWindowPacket.class);
+                put(0x2D, ServerOpenWindowPacket.class);
+                put(0x30, ServerWindowItemsPacket.class);
+                put(0x2F, ServerSetSlotPacket.class);
+                put(0x23, ServerConfirmTransactionPacket.class);
+                put(0x03, ServerTimeUpdatePacket.class);
+            }
+        };
+    }
 
 }

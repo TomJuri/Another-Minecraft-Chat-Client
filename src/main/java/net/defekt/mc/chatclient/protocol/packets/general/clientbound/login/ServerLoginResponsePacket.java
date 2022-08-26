@@ -14,27 +14,27 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerLoginResponsePacket extends Packet {
 
-	private final String response;
+    private final String response;
 
-	/**
-	 * Contructs {@link ServerLoginResponsePacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerLoginResponsePacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		this.response = getInputStream().readString();
-	}
+    /**
+     * Contructs {@link ServerLoginResponsePacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerLoginResponsePacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        this.response = getInputStream().readString();
+    }
 
-	/**
-	 * Get message sent by server
-	 * 
-	 * @return server message
-	 */
-	public String getResponse() {
-		return response;
-	}
+    /**
+     * Get message sent by server
+     * 
+     * @return server message
+     */
+    public String getResponse() {
+        return response;
+    }
 
 }

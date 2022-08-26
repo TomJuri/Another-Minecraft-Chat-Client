@@ -15,50 +15,50 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerOpenWindowPacket extends Packet {
 
-	private final int windowID;
-	private final int windowType;
-	private final String windowTitle;
+    private final int windowID;
+    private final int windowType;
+    private final String windowTitle;
 
-	/**
-	 * Constructs {@link ServerOpenWindowPacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerOpenWindowPacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		final VarInputStream is = getInputStream();
-		windowID = is.readUnsignedByte();
-		windowType = is.readVarInt();
-		windowTitle = is.readString();
-	}
+    /**
+     * Constructs {@link ServerOpenWindowPacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerOpenWindowPacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        final VarInputStream is = getInputStream();
+        windowID = is.readUnsignedByte();
+        windowType = is.readVarInt();
+        windowTitle = is.readString();
+    }
 
-	/**
-	 * Get opened window's ID
-	 * 
-	 * @return window ID
-	 */
-	public int getWindowID() {
-		return windowID;
-	}
+    /**
+     * Get opened window's ID
+     * 
+     * @return window ID
+     */
+    public int getWindowID() {
+        return windowID;
+    }
 
-	/**
-	 * Get opened window type
-	 * 
-	 * @return window type
-	 */
-	public int getWindowType() {
-		return windowType;
-	}
+    /**
+     * Get opened window type
+     * 
+     * @return window type
+     */
+    public int getWindowType() {
+        return windowType;
+    }
 
-	/**
-	 * Get opened window title
-	 * 
-	 * @return window title
-	 */
-	public String getWindowTitle() {
-		return windowTitle;
-	}
+    /**
+     * Get opened window title
+     * 
+     * @return window title
+     */
+    public String getWindowTitle() {
+        return windowTitle;
+    }
 
 }

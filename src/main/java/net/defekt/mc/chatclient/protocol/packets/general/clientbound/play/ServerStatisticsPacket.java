@@ -18,34 +18,34 @@ import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.Client
  */
 public class ServerStatisticsPacket extends Packet {
 
-	private final Map<String, Integer> values = new HashMap<String, Integer>();
+    private final Map<String, Integer> values = new HashMap<String, Integer>();
 
-	/**
-	 * constructs {@link ServerJoinGamePacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerStatisticsPacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		final VarInputStream is = getInputStream();
+    /**
+     * constructs {@link ServerJoinGamePacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerStatisticsPacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        final VarInputStream is = getInputStream();
 
-		final int count = is.readVarInt();
-		for (int x = 0; x < count; x++) {
-			final String key = is.readString();
-			final int value = is.readVarInt();
-			values.put(key, value);
-		}
-	}
+        final int count = is.readVarInt();
+        for (int x = 0; x < count; x++) {
+            final String key = is.readString();
+            final int value = is.readVarInt();
+            values.put(key, value);
+        }
+    }
 
-	/**
-	 * Get received values
-	 * 
-	 * @return map of received values
-	 */
-	public Map<String, Integer> getValues() {
-		return values;
-	}
+    /**
+     * Get received values
+     * 
+     * @return map of received values
+     */
+    public Map<String, Integer> getValues() {
+        return values;
+    }
 
 }

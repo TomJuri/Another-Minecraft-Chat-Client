@@ -16,50 +16,50 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerSetSlotPacket extends Packet {
 
-	private final int windowID;
-	private final short slot;
-	private final ItemStack item;
+    private final int windowID;
+    private final short slot;
+    private final ItemStack item;
 
-	/**
-	 * Constructs {@link ServerSetSlotPacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerSetSlotPacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		final VarInputStream is = getInputStream();
-		windowID = is.readByte();
-		slot = is.readShort();
-		item = is.readSlotData(PacketFactory.getProtocolFor(reg));
-	}
+    /**
+     * Constructs {@link ServerSetSlotPacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerSetSlotPacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        final VarInputStream is = getInputStream();
+        windowID = is.readByte();
+        slot = is.readShort();
+        item = is.readSlotData(PacketFactory.getProtocolFor(reg));
+    }
 
-	/**
-	 * Get window's ID
-	 * 
-	 * @return window ID
-	 */
-	public int getWindowID() {
-		return windowID;
-	}
+    /**
+     * Get window's ID
+     * 
+     * @return window ID
+     */
+    public int getWindowID() {
+        return windowID;
+    }
 
-	/**
-	 * Get slot of this item
-	 * 
-	 * @return item slot
-	 */
-	public short getSlot() {
-		return slot;
-	}
+    /**
+     * Get slot of this item
+     * 
+     * @return item slot
+     */
+    public short getSlot() {
+        return slot;
+    }
 
-	/**
-	 * Get net item stack
-	 * 
-	 * @return item stack
-	 */
-	public ItemStack getItem() {
-		return item;
-	}
+    /**
+     * Get net item stack
+     * 
+     * @return item stack
+     */
+    public ItemStack getItem() {
+        return item;
+    }
 
 }

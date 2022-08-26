@@ -122,7 +122,7 @@ public class ClientPacketListener implements InternalPacketListener {
             if (packet instanceof ServerLoginSetCompressionPacket) {
                 cl.setCompression(true);
             } else if (packet instanceof ServerLoginEncryptionPacket) {
-                ServerLoginEncryptionPacket sPacket = (ServerLoginEncryptionPacket) packet;
+                final ServerLoginEncryptionPacket sPacket = (ServerLoginEncryptionPacket) packet;
                 switch (cl.getAuthType()) {
                     default:
                     case Offline: {
@@ -133,22 +133,22 @@ public class ClientPacketListener implements InternalPacketListener {
                         break;
                     }
                     case Mojang: {
-                        PublicKey publicKey = sPacket.getPublicKey();
-                        byte[] verifyToken = sPacket.getVerifyToken();
-                        String serverID = sPacket.getServerID();
+                        final PublicKey publicKey = sPacket.getPublicKey();
+                        final byte[] verifyToken = sPacket.getVerifyToken();
+                        final String serverID = sPacket.getServerID();
 
-                        byte[] clientSecret = new byte[16];
+                        final byte[] clientSecret = new byte[16];
                         new SecureRandom().nextBytes(clientSecret);
 
-                        Cipher rsa = Cipher.getInstance("RSA");
+                        final Cipher rsa = Cipher.getInstance("RSA");
                         rsa.init(Cipher.ENCRYPT_MODE, publicKey);
 
-                        byte[] encryptedSecret = rsa.doFinal(clientSecret);
-                        byte[] encryptedToken = rsa.doFinal(verifyToken);
+                        final byte[] encryptedSecret = rsa.doFinal(clientSecret);
+                        final byte[] encryptedToken = rsa.doFinal(verifyToken);
 
-                        String sha = IOUtils.sha1(serverID.getBytes(), clientSecret, publicKey.getEncoded());
+                        final String sha = IOUtils.sha1(serverID.getBytes(), clientSecret, publicKey.getEncoded());
 
-                        RequestResponse resp = MojangAPI.makeJSONRequest(
+                        final RequestResponse resp = MojangAPI.makeJSONRequest(
                                 (cl.getAuthType() == AuthType.Mojang ? Hosts.MOJANG_SESSIONSERVER
                                         : Hosts.ALTENING_SESSIONSERVER) + "/session/minecraft/join",
                                 new HashMap<String, JsonElement>() {
@@ -159,9 +159,9 @@ public class ClientPacketListener implements InternalPacketListener {
                                     }
                                 }); // TODO TheAltening
                         try {
-                            JsonObject json = resp.getJson();
+                            final JsonObject json = resp.getJson();
                             if (json.has("error")) {
-                                String errMsg = json.has("errorMessage") ? json.get("errorMessage").getAsString()
+                                final String errMsg = json.has("errorMessage") ? json.get("errorMessage").getAsString()
                                         : json.get("error").getAsString();
                                 for (final ClientListener ls : cl.getClientListeners()) {
                                     ls.disconnected(
@@ -170,7 +170,7 @@ public class ClientPacketListener implements InternalPacketListener {
                                 cl.close();
                                 break;
                             }
-                        } catch (Exception ex) {
+                        } catch (final Exception ex) {
                         }
 
                         cl.sendPacket(new ClientLoginEncryptionPacket(registry, encryptedSecret, encryptedToken));
@@ -189,8 +189,7 @@ public class ClientPacketListener implements InternalPacketListener {
                     cls.timeUpdated(sti.getTime(), sti.getWorldAge());
                 }
             } else if (packet instanceof ServerConfirmTransactionPacket) {
-                if (!up.isEnableInventoryHandling() || protocol >= 755)
-                    return;
+                if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
                 final int windowID = (int) packet.accessPacketMethod("getWindowID");
                 final short actionID = (short) packet.accessPacketMethod("getActionID");
@@ -199,12 +198,11 @@ public class ClientPacketListener implements InternalPacketListener {
                 final ItemsWindow win = windowID == 0 ? cl.getInventory()
                         : cl.getOpenWindows().containsKey(windowID) ? cl.getOpenWindows().get(windowID) : null;
 
-                if (win != null)
-                    if (accepted) {
-                        win.finishTransaction(actionID);
-                    } else {
-                        win.cancelTransaction(actionID);
-                    }
+                if (win != null) if (accepted) {
+                    win.finishTransaction(actionID);
+                } else {
+                    win.cancelTransaction(actionID);
+                }
 
                 if (!accepted) {
                     cl.sendPacket(PacketFactory.constructPacket(registry, "ClientConfirmTransactionPacket",
@@ -212,8 +210,7 @@ public class ClientPacketListener implements InternalPacketListener {
                 }
 
             } else if (packet instanceof ServerSetSlotPacket) {
-                if (!up.isEnableInventoryHandling() || protocol >= 755)
-                    return;
+                if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
                 final int windowID = (int) packet.accessPacketMethod("getWindowID");
 
@@ -225,8 +222,7 @@ public class ClientPacketListener implements InternalPacketListener {
                     iWin.putItem(slot, item);
                 }
             } else if (packet instanceof ServerCloseWindowPacket) {
-                if (!up.isEnableInventoryHandling() || protocol >= 755)
-                    return;
+                if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
                 final int windowID = (int) packet.accessPacketMethod("getWindowID");
                 if (cl.getOpenWindows().containsKey(windowID) && cl.getOpenWindows().get(windowID) != null) {
@@ -235,8 +231,7 @@ public class ClientPacketListener implements InternalPacketListener {
                     cl.getInventory().closeWindow();
                 }
             } else if (packet instanceof ServerWindowItemsPacket) {
-                if (!up.isEnableInventoryHandling() || protocol >= 755)
-                    return;
+                if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
                 final int windowID = (int) packet.accessPacketMethod("getWindowID");
                 final List<ItemStack> items = (List<ItemStack>) packet.accessPacketMethod("getItems");
@@ -249,8 +244,7 @@ public class ClientPacketListener implements InternalPacketListener {
                 }
             } else if (packet instanceof ServerOpenWindowPacket
                     || packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerOpenWindowPacket) {
-                if (!up.isEnableInventoryHandling() || protocol >= 755)
-                    return;
+                if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
                 final int windowID = (int) packet.accessPacketMethod("getWindowID");
                 final String windowTitle = ChatMessages
@@ -323,8 +317,7 @@ public class ClientPacketListener implements InternalPacketListener {
                 cl.setEntityID(entityID);
                 cl.getPlayersTabList().clear();
 
-                if (!up.isSendMCBrand())
-                    return;
+                if (!up.isSendMCBrand()) return;
 
                 final String cname = protocol > 340 ? "minecraft:brand" : "MC|Brand";
 
@@ -353,8 +346,7 @@ public class ClientPacketListener implements InternalPacketListener {
             } else if (packet instanceof ServerKeepAlivePacket
                     || packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerKeepAlivePacket) {
                 lastKeepAlivePacket = System.currentTimeMillis();
-                if (up.isIgnoreKeepAlive())
-                    return;
+                if (up.isIgnoreKeepAlive()) return;
                 new Thread(new Runnable() {
 
                     @Override
@@ -426,24 +418,24 @@ public class ClientPacketListener implements InternalPacketListener {
                 final String commonChannelName = channel.replace("minecraft:", "").replace("MC|", "").toLowerCase();
 
                 if (channel.equalsIgnoreCase("fml|hs")) {
-                    byte discriminator = data[0];
+                    final byte discriminator = data[0];
                     switch (discriminator) {
                         case 0: {
-                            byte protocol = data[1];
+                            final byte protocol = data[1];
                             cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[] { 1, protocol }));
 
                             ModInfo[] mods;
                             try {
-                                StatusInfo info = MinecraftStat.serverListPing(cl.getHost(), cl.getPort(), 10000);
+                                final StatusInfo info = MinecraftStat.serverListPing(cl.getHost(), cl.getPort(), 10000);
                                 mods = info.getModList().toArray(new ModInfo[0]);
-                            } catch (Exception ex) {
+                            } catch (final Exception ex) {
                                 mods = new ModInfo[0];
                             }
-                            ByteArrayOutputStream modListBuffer = new ByteArrayOutputStream();
-                            VarOutputStream modListStream = new VarOutputStream(modListBuffer);
+                            final ByteArrayOutputStream modListBuffer = new ByteArrayOutputStream();
+                            final VarOutputStream modListStream = new VarOutputStream(modListBuffer);
                             modListStream.writeByte(2);
                             modListStream.writeByte(mods.length);
-                            for (ModInfo mod : mods) {
+                            for (final ModInfo mod : mods) {
                                 modListStream.writeString(mod.getModID());
                                 modListStream.writeString(mod.getVersion());
                             }
@@ -458,7 +450,7 @@ public class ClientPacketListener implements InternalPacketListener {
                             break;
                         }
                         case -1: {
-                            byte phase = data[1];
+                            final byte phase = data[1];
                             byte response = 0;
                             switch (phase) {
                                 case 2: {

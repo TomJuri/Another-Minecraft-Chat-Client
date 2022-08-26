@@ -11,20 +11,20 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientConfirmTransactionPacket extends Packet {
 
-	/**
-	 * Constructs new {@link ClientConfirmTransactionPacket}
-	 * 
-	 * @param reg      packet registry used to construct this packet
-	 * @param windowID window ID
-	 * @param actionID action ID
-	 * @param accepted accepted state
-	 */
-	public ClientConfirmTransactionPacket(final PacketRegistry reg, final Byte windowID, final Short actionID,
-			final Boolean accepted) {
-		super(reg);
-		putByte(windowID);
-		putShort(actionID);
-		putBoolean(accepted);
-	}
+    /**
+     * Constructs new {@link ClientConfirmTransactionPacket}
+     * 
+     * @param reg      packet registry used to construct this packet
+     * @param windowID window ID
+     * @param actionID action ID
+     * @param accepted accepted state
+     */
+    public ClientConfirmTransactionPacket(final PacketRegistry reg, final Byte windowID, final Short actionID,
+            final Boolean accepted) {
+        super(reg);
+        putByte(windowID);
+        putShort(actionID);
+        putBoolean(accepted);
+    }
 
 }

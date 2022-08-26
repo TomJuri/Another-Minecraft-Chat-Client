@@ -11,16 +11,16 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientLoginRequestPacket extends Packet {
 
-	/**
-	 * Constructs new {@link ClientLoginRequestPacket}
-	 * 
-	 * @param reg      packet registry used to contruct this packet
-	 * @param username player's username
-	 */
-	public ClientLoginRequestPacket(final PacketRegistry reg, final String username) {
-		super(reg);
-		putString(username);
-		id = 0;
-	}
+    /**
+     * Constructs new {@link ClientLoginRequestPacket}
+     * 
+     * @param reg      packet registry used to contruct this packet
+     * @param username player's username
+     */
+    public ClientLoginRequestPacket(final PacketRegistry reg, final String username) {
+        super(reg);
+        putString(username);
+        id = 0;
+    }
 
 }

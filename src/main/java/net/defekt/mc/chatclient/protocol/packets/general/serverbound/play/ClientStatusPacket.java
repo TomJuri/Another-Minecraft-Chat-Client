@@ -12,17 +12,17 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientStatusPacket extends Packet {
 
-	/**
-	 * Constructs new {@link ClientStatusPacket}
-	 * 
-	 * @param reg      packet registry used to construct this packet
-	 * @param actionID action ID:<br>
-	 *                 0 for respawn<br>
-	 *                 1 for stats
-	 */
-	public ClientStatusPacket(final PacketRegistry reg, final Integer actionID) {
-		super(reg);
-		putVarInt(actionID);
-	}
+    /**
+     * Constructs new {@link ClientStatusPacket}
+     * 
+     * @param reg      packet registry used to construct this packet
+     * @param actionID action ID:<br>
+     *                 0 for respawn<br>
+     *                 1 for stats
+     */
+    public ClientStatusPacket(final PacketRegistry reg, final Integer actionID) {
+        super(reg);
+        putVarInt(actionID);
+    }
 
 }

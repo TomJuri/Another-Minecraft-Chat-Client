@@ -36,116 +36,116 @@ import net.defekt.mc.chatclient.ui.ServerEntry;
  *
  */
 public class MinecraftServerListRenderer extends DefaultListCellRenderer {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public Component getListCellRendererComponent(final JList<? extends Object> list, final Object value,
-			final int index, final boolean isSelected, final boolean cellHasFocus) {
+    @Override
+    public Component getListCellRendererComponent(final JList<? extends Object> list, final Object value,
+            final int index, final boolean isSelected, final boolean cellHasFocus) {
 
-		final ServerEntry entry = (ServerEntry) value;
-		final Box serverBox = Box.createVerticalBox();
-		serverBox.setMinimumSize(new Dimension(list.getMinimumSize().width, 100));
+        final ServerEntry entry = (ServerEntry) value;
+        final Box serverBox = Box.createVerticalBox();
+        serverBox.setMinimumSize(new Dimension(list.getMinimumSize().width, 100));
 
-		final JLabel name = new JLabel(" " + entry.getName());
-		final JTextPane version = new JTextPane();
-		version.setText("???");
-		final JLabel players = new JLabel(" " + Messages.getString("MinecraftServerListRenderer.serverListPlayersLabel")
-				+ entry.getVersion() + ")");
-		final JTextPane description = new JTextPane();
-		description.setText(" " + Messages.getString("MinecraftServerListRenderer.serverListStatusPinging"));
+        final JLabel name = new JLabel(" " + entry.getName());
+        final JTextPane version = new JTextPane();
+        version.setText("???");
+        final JLabel players = new JLabel(" " + Messages.getString("MinecraftServerListRenderer.serverListPlayersLabel")
+                + entry.getVersion() + ")");
+        final JTextPane description = new JTextPane();
+        description.setText(" " + Messages.getString("MinecraftServerListRenderer.serverListStatusPinging"));
 
-		serverBox.add(name);
-		serverBox.add(players);
-		serverBox.add(version);
-		serverBox.add(description);
-		serverBox.add(new JLabel(" "));
+        serverBox.add(name);
+        serverBox.add(players);
+        serverBox.add(version);
+        serverBox.add(description);
+        serverBox.add(new JLabel(" "));
 
-		for (final Component ct : serverBox.getComponents()) {
-			ct.setFont(Main.mcFont);
-			ct.setForeground(Color.white);
-			if (ct instanceof JTextPane) {
-				final JTextPane jtp = (JTextPane) ct;
-				jtp.setForeground(ChatColor.translateColorCode("7"));
-				jtp.setOpaque(false);
-				jtp.setEditable(false);
-				jtp.setAlignmentX(Component.LEFT_ALIGNMENT);
-			}
-		}
+        for (final Component ct : serverBox.getComponents()) {
+            ct.setFont(Main.mcFont);
+            ct.setForeground(Color.white);
+            if (ct instanceof JTextPane) {
+                final JTextPane jtp = (JTextPane) ct;
+                jtp.setForeground(ChatColor.translateColorCode("7"));
+                jtp.setOpaque(false);
+                jtp.setEditable(false);
+                jtp.setAlignmentX(Component.LEFT_ALIGNMENT);
+            }
+        }
 
-		version.setForeground(ChatColor.translateColorCode("7"));
-		players.setForeground(ChatColor.translateColorCode("7"));
-		serverBox.setOpaque(isSelected);
-		serverBox.setBackground(isSelected ? new Color(0, 0, 0, 155) : new Color(0, 0, 0, 0));
+        version.setForeground(ChatColor.translateColorCode("7"));
+        players.setForeground(ChatColor.translateColorCode("7"));
+        serverBox.setOpaque(isSelected);
+        serverBox.setBackground(isSelected ? new Color(0, 0, 0, 155) : new Color(0, 0, 0, 0));
 
-		BufferedImage icon = null;
+        BufferedImage icon = null;
 
-		if (entry.getInfo() != null) {
-			final StatusInfo inf = entry.getInfo();
-			if (inf.getOnlinePlayers() != -1) {
-				players.setText(
-						" " + Integer.toString(inf.getOnlinePlayers()) + "/" + Integer.toString(inf.getMaxPlayers())
-								+ " " + Messages.getString("MinecraftServerListRenderer.serverListPlayersLabel2")
-								+ entry.getVersion() + ")"
-								+ (inf.getModType() != null
-										? " (" + Messages.getString("MinecraftServerListRenderer.modded") + ")"
-										: ""));
-			}
-			description.setText("");
-			SwingUtils.appendColoredText(" " + inf.getDescription().replace("\n", "\n "), description);
-			version.setText(inf.getVersionName().isEmpty() ? " ???" : "");
-			SwingUtils.appendColoredText(" " + inf.getVersionName(), version);
+        if (entry.getInfo() != null) {
+            final StatusInfo inf = entry.getInfo();
+            if (inf.getOnlinePlayers() != -1) {
+                players.setText(
+                        " " + Integer.toString(inf.getOnlinePlayers()) + "/" + Integer.toString(inf.getMaxPlayers())
+                                + " " + Messages.getString("MinecraftServerListRenderer.serverListPlayersLabel2")
+                                + entry.getVersion() + ")"
+                                + (inf.getModType() != null
+                                        ? " (" + Messages.getString("MinecraftServerListRenderer.modded") + ")"
+                                        : ""));
+            }
+            description.setText("");
+            SwingUtils.appendColoredText(" " + inf.getDescription().replace("\n", "\n "), description);
+            version.setText(inf.getVersionName().isEmpty() ? " ???" : "");
+            SwingUtils.appendColoredText(" " + inf.getVersionName(), version);
 
-		}
-		if (entry.getIcon() != null) {
-			final String ibase = entry.getIcon();
-			try {
-				icon = ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(ibase.getBytes())));
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-		}
+        }
+        if (entry.getIcon() != null) {
+            final String ibase = entry.getIcon();
+            try {
+                icon = ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(ibase.getBytes())));
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
 
-		SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
-			public void run() {
-				list.repaint();
-			}
-		});
+            @Override
+            public void run() {
+                list.repaint();
+            }
+        });
 
-		SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
-			public void run() {
-				serverBox.repaint();
-				serverBox.revalidate();
-			}
-		});
+            @Override
+            public void run() {
+                serverBox.repaint();
+                serverBox.revalidate();
+            }
+        });
 
-		if (list instanceof JMinecraftServerList) {
-			final JMinecraftServerList jmc = (JMinecraftServerList) list;
-			if (jmc.getSelectedIndex() == -1) {
-				jmc.setListData(jmc.getListData());
-			}
-		}
+        if (list instanceof JMinecraftServerList) {
+            final JMinecraftServerList jmc = (JMinecraftServerList) list;
+            if (jmc.getSelectedIndex() == -1) {
+                jmc.setListData(jmc.getListData());
+            }
+        }
 
-		final BufferedImage icon2 = icon;
+        final BufferedImage icon2 = icon;
 
-		final Box bBox = Box.createHorizontalBox();
-		bBox.add(new JPanel() {
-			{
-				setPreferredSize(new Dimension(72, 68));
-			}
+        final Box bBox = Box.createHorizontalBox();
+        bBox.add(new JPanel() {
+            {
+                setPreferredSize(new Dimension(72, 68));
+            }
 
-			@Override
-			public void paintComponent(final Graphics g) {
-				if (icon2 != null) {
-					g.drawImage(icon2, 4, 4, 64, 64, null);
-				}
-			}
-		});
-		bBox.add(serverBox);
-		return bBox;
-	}
+            @Override
+            public void paintComponent(final Graphics g) {
+                if (icon2 != null) {
+                    g.drawImage(icon2, 4, 4, 64, 64, null);
+                }
+            }
+        });
+        bBox.add(serverBox);
+        return bBox;
+    }
 
 }

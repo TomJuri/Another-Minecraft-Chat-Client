@@ -12,26 +12,26 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientWindowClickPacket extends Packet {
 
-	/**
-	 * Constructs new {@link ClientWindowClickPacket}
-	 * 
-	 * @param reg      packet registry used to construct this packet
-	 * @param windowID window ID
-	 * @param slot     clicked slot
-	 * @param button   button used to click
-	 * @param action   action ID
-	 * @param mode     click mode
-	 * @param item     clicked item (currently must be empty)
-	 */
-	public ClientWindowClickPacket(final PacketRegistry reg, final Integer windowID, final Short slot,
-			final Byte button, final Short action, final Integer mode, final ItemStack item) {
-		super(reg);
-		putByte(windowID);
-		putShort(slot);
-		putByte(button);
-		putShort(action);
-		putVarInt(mode);
-		putSlotData(item);
-	}
+    /**
+     * Constructs new {@link ClientWindowClickPacket}
+     * 
+     * @param reg      packet registry used to construct this packet
+     * @param windowID window ID
+     * @param slot     clicked slot
+     * @param button   button used to click
+     * @param action   action ID
+     * @param mode     click mode
+     * @param item     clicked item (currently must be empty)
+     */
+    public ClientWindowClickPacket(final PacketRegistry reg, final Integer windowID, final Short slot,
+            final Byte button, final Short action, final Integer mode, final ItemStack item) {
+        super(reg);
+        putByte(windowID);
+        putShort(slot);
+        putByte(button);
+        putShort(action);
+        putVarInt(mode);
+        putSlotData(item);
+    }
 
 }

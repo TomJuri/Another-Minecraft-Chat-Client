@@ -20,7 +20,8 @@ public class ClientLoginEncryptionPacket extends Packet {
      * @param encryptedToken  server verification token encrypted with server's
      *                        public key
      */
-    public ClientLoginEncryptionPacket(PacketRegistry reg, byte[] encryptedSecret, byte[] encryptedToken) {
+    public ClientLoginEncryptionPacket(final PacketRegistry reg, final byte[] encryptedSecret,
+            final byte[] encryptedToken) {
         super(reg);
         id = 0x01;
         putVarInt(encryptedSecret.length);

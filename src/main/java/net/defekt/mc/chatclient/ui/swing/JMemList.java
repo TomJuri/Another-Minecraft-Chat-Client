@@ -10,24 +10,23 @@ import javax.swing.JList;
  * @param <E> the type of the elements of this list
  */
 public class JMemList<E> extends JList<E> {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private E[] listData = null;
+    private E[] listData = null;
 
-	@Override
-	public void setListData(final E[] entries) {
-		if (entries == null)
-			return;
-		super.setListData(entries);
-		listData = entries;
-	}
+    @Override
+    public void setListData(final E[] entries) {
+        if (entries == null) return;
+        super.setListData(entries);
+        listData = entries;
+    }
 
-	/**
-	 * Get stored list data
-	 * 
-	 * @return list data contained in this object
-	 */
-	public E[] getListData() {
-		return listData;
-	}
+    /**
+     * Get stored list data
+     * 
+     * @return list data contained in this object
+     */
+    public E[] getListData() {
+        return listData;
+    }
 }

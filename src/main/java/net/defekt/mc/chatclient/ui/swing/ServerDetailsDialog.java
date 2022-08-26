@@ -34,175 +34,176 @@ import net.defekt.mc.chatclient.ui.ServerEntry;
  */
 public class ServerDetailsDialog extends JDialog {
 
-	/**
-	 * Create new details dialog
-	 * 
-	 * @param parent parent window
-	 * @param server server
-	 */
-	public ServerDetailsDialog(Window parent, ServerEntry server) {
-		super(parent);
-		setModal(true);
-		setPreferredSize(new Dimension((int) (SwingUtils.sSize.width / 3), (int) (SwingUtils.sSize.height / 2.5)));
-		setTitle(Messages.getString("ServerDetailsDialog.detailsDialogTitle") + ": " + server.getName());
-		StatusInfo info = server.getInfo();
+    /**
+     * Create new details dialog
+     * 
+     * @param parent parent window
+     * @param server server
+     */
+    public ServerDetailsDialog(final Window parent, final ServerEntry server) {
+        super(parent);
+        setModal(true);
+        setPreferredSize(new Dimension(SwingUtils.sSize.width / 3, (int) (SwingUtils.sSize.height / 2.5)));
+        setTitle(Messages.getString("ServerDetailsDialog.detailsDialogTitle") + ": " + server.getName());
+        final StatusInfo info = server.getInfo();
 
-		JTabbedPane tabsPane = new JTabbedPane();
-		tabsPane.setBackground(new Color(35, 35, 35));
+        final JTabbedPane tabsPane = new JTabbedPane();
+        tabsPane.setBackground(new Color(35, 35, 35));
 
-		JVBoxPanel modsPane = new JVBoxPanel();
-		modsPane.setBackground(Color.white);
-		if (info == null || info.getModType() == null) {
-			modsPane.add(new JLabel(Messages.getString("ServerDetailsDialog.vanilla")));
-		} else {
-			for (ModInfo mod : info.getModList()) {
-				Box modBox = Box.createHorizontalBox();
-				JTextPane modLabel = new JTextPane();
-				modLabel.setEditable(false);
-				modLabel.setOpaque(false);
-				modLabel.setText((mod.getModID() + " (" + mod.getVersion() + ")"));
+        final JVBoxPanel modsPane = new JVBoxPanel();
+        modsPane.setBackground(Color.white);
+        if (info == null || info.getModType() == null) {
+            modsPane.add(new JLabel(Messages.getString("ServerDetailsDialog.vanilla")));
+        } else {
+            for (final ModInfo mod : info.getModList()) {
+                final Box modBox = Box.createHorizontalBox();
+                final JTextPane modLabel = new JTextPane();
+                modLabel.setEditable(false);
+                modLabel.setOpaque(false);
+                modLabel.setText((mod.getModID() + " (" + mod.getVersion() + ")"));
 
-				JButton cfLink = new JButton("CurseForge");
-				cfLink.addMouseListener(new MouseAdapter() {
+                final JButton cfLink = new JButton("CurseForge");
+                cfLink.addMouseListener(new MouseAdapter() {
 
-					private String oldString;
-					private String newString;
-					private JTextPane label = modLabel;
+                    private String oldString;
+                    private String newString;
+                    private final JTextPane label = modLabel;
 
-					@Override
-					public void mouseExited(MouseEvent e) {
-						JButton link = (JButton) e.getSource();
-						link.setText(oldString);
-						modLabel.setText(newString);
-					}
+                    @Override
+                    public void mouseExited(final MouseEvent e) {
+                        final JButton link = (JButton) e.getSource();
+                        link.setText(oldString);
+                        modLabel.setText(newString);
+                    }
 
-					@Override
-					public void mouseEntered(MouseEvent e) {
-						JButton link = (JButton) e.getSource();
-						oldString = link.getText();
-						newString = label.getText();
-						link.setText(newString);
-						modLabel.setText("");
-					}
-				});
+                    @Override
+                    public void mouseEntered(final MouseEvent e) {
+                        final JButton link = (JButton) e.getSource();
+                        oldString = link.getText();
+                        newString = label.getText();
+                        link.setText(newString);
+                        modLabel.setText("");
+                    }
+                });
 
-				cfLink.addActionListener(new ActionListener() {
+                cfLink.addActionListener(new ActionListener() {
 
-					private String modID = mod.getModID();
+                    private final String modID = mod.getModID();
 
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						try {
-							URL url = new URL("https://www.curseforge.com/minecraft/mc-mods/" + modID);
-							Desktop.getDesktop().browse(url.toURI());
+                    @Override
+                    public void actionPerformed(final ActionEvent e) {
+                        try {
+                            final URL url = new URL("https://www.curseforge.com/minecraft/mc-mods/" + modID);
+                            Desktop.getDesktop().browse(url.toURI());
 
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-				});
+                        } catch (final Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
 
-				modBox.add(modLabel);
-				modBox.add(cfLink);
+                modBox.add(modLabel);
+                modBox.add(cfLink);
 
-				modsPane.add(modBox);
-			}
-		}
+                modsPane.add(modBox);
+            }
+        }
 
-		modsPane.alignAll();
+        modsPane.alignAll();
 
-		JTextPane infoPane = initTextPane();
-		SwingUtils.appendColoredText(Messages.getString("ServerDetailsDialog.address") + ":\u00a77 " + server.getHost(),
-				infoPane);
-		SwingUtils.appendColoredText(
-				"\n" + Messages.getString("ServerDetailsDialog.port") + ":\u00a77 " + server.getPort(), infoPane);
-		SwingUtils.appendColoredText("\nForge: \u00a77" + server.getForgeMode(), infoPane);
+        final JTextPane infoPane = initTextPane();
+        SwingUtils.appendColoredText(Messages.getString("ServerDetailsDialog.address") + ":\u00a77 " + server.getHost(),
+                infoPane);
+        SwingUtils.appendColoredText(
+                "\n" + Messages.getString("ServerDetailsDialog.port") + ":\u00a77 " + server.getPort(), infoPane);
+        SwingUtils.appendColoredText("\nForge: \u00a77" + server.getForgeMode(), infoPane);
 
-		JTextPane playersPane = initTextPane();
-		if (info != null && info.getPlayersList().length > 0)
-			for (String player : info.getPlayersList())
-				SwingUtils.appendColoredText(player + "\n", playersPane);
-		else {
-			SwingUtils.appendColoredText("\u00a77" + Messages.getString("ServerDetailsDialog.none"), playersPane);
-		}
+        final JTextPane playersPane = initTextPane();
+        if (info != null && info.getPlayersList().length > 0) {
+            for (final String player : info.getPlayersList()) {
+                SwingUtils.appendColoredText(player + "\n", playersPane);
+            }
+        } else {
+            SwingUtils.appendColoredText("\u00a77" + Messages.getString("ServerDetailsDialog.none"), playersPane);
+        }
 
-		JTextPane queryPane = initTextPane();
-		populateQueryPane(null, queryPane);
-		JMinecraftButton refreshBtn = new JMinecraftButton(Messages.getString("Main.refreshOption"));
-		refreshBtn.addActionListener(new ActionListener() {
+        final JTextPane queryPane = initTextPane();
+        populateQueryPane(null, queryPane);
+        final JMinecraftButton refreshBtn = new JMinecraftButton(Messages.getString("Main.refreshOption"));
+        refreshBtn.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new Thread(new Runnable() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                new Thread(new Runnable() {
 
-					@Override
-					public void run() {
-						refreshBtn.setEnabled(false);
-						refreshBtn.setText(Messages.getString("ServerDetailsDialog.querying"));
-						try {
-							QueryInfo info = MinecraftStat.query(server.getHost(), server.getPort());
-							populateQueryPane(info, queryPane);
-							refreshBtn.setText(Messages.getString("Main.refreshOption"));
-						} catch (Exception ex) {
-							ex.printStackTrace();
-							refreshBtn.setText("(" + Messages.getString("ServerDetailsDialog.error") + ")");
-						}
-						refreshBtn.setEnabled(true);
-					}
-				}).start();
-			}
-		});
+                    @Override
+                    public void run() {
+                        refreshBtn.setEnabled(false);
+                        refreshBtn.setText(Messages.getString("ServerDetailsDialog.querying"));
+                        try {
+                            final QueryInfo info = MinecraftStat.query(server.getHost(), server.getPort());
+                            populateQueryPane(info, queryPane);
+                            refreshBtn.setText(Messages.getString("Main.refreshOption"));
+                        } catch (final Exception ex) {
+                            ex.printStackTrace();
+                            refreshBtn.setText("(" + Messages.getString("ServerDetailsDialog.error") + ")");
+                        }
+                        refreshBtn.setEnabled(true);
+                    }
+                }).start();
+            }
+        });
 
-		JVBoxPanel queryBox = new JVBoxPanel();
-		queryBox.add(queryPane);
-		queryBox.add(refreshBtn);
-		queryBox.setBackground(new Color(35, 35, 35));
-		queryBox.alignAll();
+        final JVBoxPanel queryBox = new JVBoxPanel();
+        queryBox.add(queryPane);
+        queryBox.add(refreshBtn);
+        queryBox.setBackground(new Color(35, 35, 35));
+        queryBox.alignAll();
 
-		tabsPane.addTab(Messages.getString("ServerDetailsDialog.infoTab"), infoPane);
-		tabsPane.addTab(Messages.getString("ServerDetailsDialog.queryTab"), queryBox);
-		tabsPane.addTab(Messages.getString("ServerDetailsDialog.modsTab"), new JScrollPane(modsPane));
-		tabsPane.addTab(Messages.getString("ServerDetailsDialog.playersTab"), new JScrollPane(playersPane));
-		if (info == null) {
-			tabsPane.setEnabledAt(2, false);
-			tabsPane.setEnabledAt(3, false);
-		}
-		setContentPane(tabsPane);
-		pack();
-		SwingUtils.centerWindow(this);
-	}
+        tabsPane.addTab(Messages.getString("ServerDetailsDialog.infoTab"), infoPane);
+        tabsPane.addTab(Messages.getString("ServerDetailsDialog.queryTab"), queryBox);
+        tabsPane.addTab(Messages.getString("ServerDetailsDialog.modsTab"), new JScrollPane(modsPane));
+        tabsPane.addTab(Messages.getString("ServerDetailsDialog.playersTab"), new JScrollPane(playersPane));
+        if (info == null) {
+            tabsPane.setEnabledAt(2, false);
+            tabsPane.setEnabledAt(3, false);
+        }
+        setContentPane(tabsPane);
+        pack();
+        SwingUtils.centerWindow(this);
+    }
 
-	private void populateQueryPane(QueryInfo info, JTextPane pane) {
-		String motd = "-";
-		String gamemode = "-";
-		String map = "-";
-		String online = "-";
-		String max = "-";
-		if (info != null) {
-			motd = info.getMotd();
-			gamemode = info.getGamemode();
-			map = info.getMap();
-			online = info.getOnlinePlayer();
-			max = info.getMaxPlayers();
-		}
+    private void populateQueryPane(final QueryInfo info, final JTextPane pane) {
+        String motd = "-";
+        String gamemode = "-";
+        String map = "-";
+        String online = "-";
+        String max = "-";
+        if (info != null) {
+            motd = info.getMotd();
+            gamemode = info.getGamemode();
+            map = info.getMap();
+            online = info.getOnlinePlayer();
+            max = info.getMaxPlayers();
+        }
 
-		pane.setText("");
-		SwingUtils.appendColoredText(Messages.getString("ServerDetailsDialog.motd") + ":\u00a77 " + motd, pane);
-		SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.gamemode") + ":\u00a77 " + gamemode,
-				pane);
-		SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.map") + ":\u00a77 " + map, pane);
-		SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.online") + ":\u00a77 " + online,
-				pane);
-		SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.maxPlayers") + ":\u00a77 " + max,
-				pane);
-	}
+        pane.setText("");
+        SwingUtils.appendColoredText(Messages.getString("ServerDetailsDialog.motd") + ":\u00a77 " + motd, pane);
+        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.gamemode") + ":\u00a77 " + gamemode,
+                pane);
+        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.map") + ":\u00a77 " + map, pane);
+        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.online") + ":\u00a77 " + online,
+                pane);
+        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.maxPlayers") + ":\u00a77 " + max,
+                pane);
+    }
 
-	private static JTextPane initTextPane() {
-		JTextPane pane = new JTextPane();
-		pane.setBackground(new Color(35, 35, 35));
-		pane.setForeground(Color.white);
-		pane.setEditable(false);
-		pane.setFont(Main.mcFont);
-		return pane;
-	}
+    public static JTextPane initTextPane() {
+        final JTextPane pane = new JTextPane();
+        pane.setBackground(new Color(35, 35, 35));
+        pane.setForeground(Color.white);
+        pane.setEditable(false);
+        pane.setFont(Main.mcFont);
+        return pane;
+    }
 }

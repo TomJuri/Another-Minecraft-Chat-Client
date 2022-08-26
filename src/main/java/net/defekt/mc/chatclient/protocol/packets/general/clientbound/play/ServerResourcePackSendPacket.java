@@ -14,39 +14,39 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerResourcePackSendPacket extends Packet {
 
-	private final String url;
-	private final String hash;
+    private final String url;
+    private final String hash;
 
-	/**
-	 * constructs {@link ServerResourcePackSendPacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerResourcePackSendPacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		final VarInputStream in = getInputStream();
-		url = in.readString();
-		hash = in.readString();
-	}
+    /**
+     * constructs {@link ServerResourcePackSendPacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerResourcePackSendPacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        final VarInputStream in = getInputStream();
+        url = in.readString();
+        hash = in.readString();
+    }
 
-	/**
-	 * Get resource pack URL
-	 * 
-	 * @return resource pack URL
-	 */
-	public String getUrl() {
-		return url;
-	}
+    /**
+     * Get resource pack URL
+     * 
+     * @return resource pack URL
+     */
+    public String getUrl() {
+        return url;
+    }
 
-	/**
-	 * Get resource pack's hash
-	 * 
-	 * @return resource pack's hash
-	 */
-	public String getHash() {
-		return hash;
-	}
+    /**
+     * Get resource pack's hash
+     * 
+     * @return resource pack's hash
+     */
+    public String getHash() {
+        return hash;
+    }
 
 }

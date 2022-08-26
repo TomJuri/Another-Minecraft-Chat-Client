@@ -11,15 +11,15 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientHeldItemChangePacket extends Packet {
 
-	/**
-	 * Constructs new {@link ClientHeldItemChangePacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param slot slot to change to
-	 */
-	public ClientHeldItemChangePacket(final PacketRegistry reg, final Short slot) {
-		super(reg);
-		putShort(slot);
-	}
+    /**
+     * Constructs new {@link ClientHeldItemChangePacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param slot slot to change to
+     */
+    public ClientHeldItemChangePacket(final PacketRegistry reg, final Short slot) {
+        super(reg);
+        putShort(slot);
+    }
 
 }

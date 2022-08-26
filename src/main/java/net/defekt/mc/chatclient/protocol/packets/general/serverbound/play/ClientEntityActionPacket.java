@@ -11,56 +11,56 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientEntityActionPacket extends Packet {
 
-	/**
-	 * Action type
-	 * 
-	 * @author Defective4
-	 *
-	 */
-	public enum EntityAction {
-		/**
-		 * Client will start sneaking.
-		 */
-		START_SNEAKING(0),
-		/**
-		 * Client will stop sneaking.
-		 */
-		STOP_SNEAKING(1),
-		/**
-		 * Client has to leave bed.
-		 */
-		LEAVE_BED(2),
-		/**
-		 * Client will start sprinting.
-		 */
-		START_SPRINTING(3),
-		/**
-		 * Client will stop sprinting.
-		 */
-		STOP_SPRINTING(4);
+    /**
+     * Action type
+     * 
+     * @author Defective4
+     *
+     */
+    public enum EntityAction {
+        /**
+         * Client will start sneaking.
+         */
+        START_SNEAKING(0),
+        /**
+         * Client will stop sneaking.
+         */
+        STOP_SNEAKING(1),
+        /**
+         * Client has to leave bed.
+         */
+        LEAVE_BED(2),
+        /**
+         * Client will start sprinting.
+         */
+        START_SPRINTING(3),
+        /**
+         * Client will stop sprinting.
+         */
+        STOP_SPRINTING(4);
 
-		/**
-		 * Action ID
-		 */
-		protected final int id;
+        /**
+         * Action ID
+         */
+        protected final int id;
 
-		private EntityAction(final int id) {
-			this.id = id;
-		}
-	}
+        private EntityAction(final int id) {
+            this.id = id;
+        }
+    }
 
-	/**
-	 * Constructs new {@link ClientEntityActionPacket}
-	 * 
-	 * @param reg      packet registry used to construct this packet
-	 * @param entityID client's entity Id
-	 * @param action   action to perform
-	 */
-	public ClientEntityActionPacket(final PacketRegistry reg, final Integer entityID, final EntityAction action) {
-		super(reg);
-		putVarInt(entityID);
-		putVarInt(action.id);
-		putVarInt(0);
-	}
+    /**
+     * Constructs new {@link ClientEntityActionPacket}
+     * 
+     * @param reg      packet registry used to construct this packet
+     * @param entityID client's entity Id
+     * @param action   action to perform
+     */
+    public ClientEntityActionPacket(final PacketRegistry reg, final Integer entityID, final EntityAction action) {
+        super(reg);
+        putVarInt(entityID);
+        putVarInt(action.id);
+        putVarInt(0);
+    }
 
 }

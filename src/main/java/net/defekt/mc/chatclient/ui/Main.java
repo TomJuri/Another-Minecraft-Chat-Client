@@ -35,8 +35,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -46,6 +49,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -75,8 +79,11 @@ import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
@@ -89,9 +96,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.table.DefaultTableModel;
 
 import net.defekt.mc.chatclient.protocol.AuthType;
 import net.defekt.mc.chatclient.protocol.ClientListener;
+import net.defekt.mc.chatclient.protocol.InternalPacketListener;
 import net.defekt.mc.chatclient.protocol.LANListener;
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.MinecraftStat;
@@ -103,8 +112,10 @@ import net.defekt.mc.chatclient.protocol.data.PlayerSkinCache;
 import net.defekt.mc.chatclient.protocol.data.TranslationUtils;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.protocol.io.ListenerHashMap.MapChangeListener;
+import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.UnknownPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket.Status;
 import net.defekt.mc.chatclient.ui.AutoResponseRule.EffectType;
@@ -125,6 +136,7 @@ import net.defekt.mc.chatclient.ui.swing.JPlaceholderField;
 import net.defekt.mc.chatclient.ui.swing.JStringMemList;
 import net.defekt.mc.chatclient.ui.swing.JVBoxPanel;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
+import net.defekt.mc.chatclient.ui.swing.TablePacketButton;
 
 @SuppressWarnings({ "javadoc" })
 public class Main {
@@ -134,7 +146,7 @@ public class Main {
 
     private static BufferedImage logoImage = null;
 
-    public static final String VERSION = "1.7.0";
+    public static final String VERSION = "1.7.1";
     private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
 
     public static Font mcFont = Font.decode(null);
@@ -202,6 +214,10 @@ public class Main {
         } catch (final Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(final String[] args) {
+        Main.main();
     }
 
     public static void main() {
@@ -295,8 +311,7 @@ public class Main {
             targetIndex = index + 1;
         }
 
-        if (targetIndex == -1)
-            return;
+        if (targetIndex == -1) return;
 
         final ServerEntry s1 = servers.get(index);
         final ServerEntry s2 = servers.get(targetIndex);
@@ -324,8 +339,7 @@ public class Main {
             final ForgeMode forgeMode) {
         final ServerEntry entry = new ServerEntry(host, port, name, version, forgeMode);
         for (final ServerEntry se : servers)
-            if (se.equals(entry))
-                return;
+            if (se.equals(entry)) return;
         synchronized (servers) {
             servers.add(entry);
         }
@@ -361,8 +375,7 @@ public class Main {
     private static boolean qmdShowing = false;
 
     private static void showQuickMessageDialog(final MinecraftClient cl) {
-        if (qmdShowing)
-            return;
+        if (qmdShowing) return;
         final JTextField mField = new JPlaceholderField(Messages.getString("Main.quickMessageDialog"));
 
         final String label = cl.getHost() + ":" + cl.getPort();
@@ -374,8 +387,7 @@ public class Main {
         qmdShowing = false;
         if (resp == 0) {
             final String msg = mField.getText();
-            if (msg.replace(" ", "").isEmpty())
-                return;
+            if (msg.replace(" ", "").isEmpty()) return;
             try {
                 cl.sendChatMessage(msg);
             } catch (final IOException e) {
@@ -407,8 +419,7 @@ public class Main {
                         sender.getHostAddress() + ":" + Integer.toString(port), Messages.getString("Main.Auto"),
                         ForgeMode.AUTO);
                 for (final ServerEntry et : ets)
-                    if (et.equals(ent))
-                        return;
+                    if (et.equals(ent)) return;
                 final ServerEntry[] ets2 = new ServerEntry[ets.length + 1];
                 for (int x = 0; x < ets.length; x++) {
                     ets2[x] = ets[x];
@@ -441,7 +452,7 @@ public class Main {
 
                     ok.addActionListener(new ActionListener() {
                         @Override
-                        public void actionPerformed(ActionEvent ev) {
+                        public void actionPerformed(final ActionEvent ev) {
                             if (rememberOp.isSelected()) {
                                 up.setCloseMode(Constants.WINDOW_CLOSE_EXIT);
                             }
@@ -451,7 +462,7 @@ public class Main {
 
                     cancel.addActionListener(new ActionListener() {
                         @Override
-                        public void actionPerformed(ActionEvent ev) {
+                        public void actionPerformed(final ActionEvent ev) {
                             diag.dispose();
                         }
                     });
@@ -462,8 +473,7 @@ public class Main {
                             if (rememberOp.isSelected()) {
                                 up.setCloseMode(Constants.WINDOW_CLOSE_TO_TRAY);
                             }
-                            if (trayIcon != null)
-                                return;
+                            if (trayIcon != null) return;
                             diag.dispose();
                             final SystemTray tray = SystemTray.getSystemTray();
                             trayIcon = new TrayIcon(IOUtils.scaleImage(logoImage, 0.5),
@@ -472,8 +482,7 @@ public class Main {
                                 final MouseListener ml = new MouseAdapter() {
                                     @Override
                                     public void mouseClicked(final MouseEvent e) {
-                                        if (e.getButton() != MouseEvent.BUTTON1)
-                                            return;
+                                        if (e.getButton() != MouseEvent.BUTTON1) return;
                                         tray.remove(trayIcon);
                                         trayIcon = null;
                                         win.setVisible(true);
@@ -507,7 +516,7 @@ public class Main {
                                 final MenuItem quit = new MenuItem(Messages.getString("Main.trayQuitItem"));
                                 quit.addActionListener(new ActionListener() {
                                     @Override
-                                    public void actionPerformed(ActionEvent ev2) {
+                                    public void actionPerformed(final ActionEvent ev2) {
                                         System.exit(0);
                                     }
                                 });
@@ -515,7 +524,7 @@ public class Main {
                                 final MenuItem open = new MenuItem(Messages.getString("Main.trayOpenGUIItem"));
                                 open.addActionListener(new ActionListener() {
                                     @Override
-                                    public void actionPerformed(ActionEvent ev2) {
+                                    public void actionPerformed(final ActionEvent ev2) {
                                         ml.mouseClicked(new MouseEvent(win, 0, System.currentTimeMillis(), 0, 0, 0, 0,
                                                 0, 1, false, MouseEvent.BUTTON1));
                                     }
@@ -532,10 +541,10 @@ public class Main {
                                     labels.get(srvLabel).add(cl);
                                 }
 
-                                final MenuItem options = new MenuItem(Messages.getString("Main.optionsMenu") + "...");
+                                final MenuItem options = new MenuItem(Messages.getString("Main.optionsMenu") + "Info");
                                 options.addActionListener(new ActionListener() {
                                     @Override
-                                    public void actionPerformed(ActionEvent ev2) {
+                                    public void actionPerformed(final ActionEvent ev2) {
                                         showOptionsDialog();
                                     }
                                 });
@@ -574,16 +583,15 @@ public class Main {
 
                                                 qmItem.addActionListener(new ActionListener() {
                                                     @Override
-                                                    public void actionPerformed(ActionEvent ev) {
+                                                    public void actionPerformed(final ActionEvent ev) {
                                                         showQuickMessageDialog(client);
                                                     }
                                                 });
 
                                                 invItem.addActionListener(new ActionListener() {
                                                     @Override
-                                                    public void actionPerformed(ActionEvent ev) {
-                                                        if (!up.isEnableInventoryHandling())
-                                                            return;
+                                                    public void actionPerformed(final ActionEvent ev) {
+                                                        if (!up.isEnableInventoryHandling()) return;
                                                         client.getInventory().openWindow(win,
                                                                 up.isSendWindowClosePackets());
                                                     }
@@ -778,7 +786,7 @@ public class Main {
         final JButton removeServer = new JMinecraftButton(Messages.getString("Main.removeServerOption"));
         removeServer.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent ev) {
+            public void actionPerformed(final ActionEvent ev) {
                 if (serverListComponent.getSelectedValue() != null) {
                     removeFromList(serverListComponent.getSelectedValue());
                     refresh.doClick();
@@ -794,8 +802,7 @@ public class Main {
             public void actionPerformed(final ActionEvent e) {
                 final ServerEntry et = sTypesPane.getSelectedIndex() == 0 ? serverListComponent.getSelectedValue()
                         : lanListComponent.getSelectedValue();
-                if (et == null)
-                    return;
+                if (et == null) return;
 
                 if (et.isRefreshing() || et.isError()) {
                     final String haltReason = et.isRefreshing() ? Messages.getString("Main.haltReasonRefreshing")
@@ -827,9 +834,9 @@ public class Main {
 
                 final JVBoxPanel box = new JVBoxPanel();
 
-                JComboBox<AuthType> authType = new JComboBox<AuthType>(AuthType.values());
+                final JComboBox<AuthType> authType = new JComboBox<AuthType>(AuthType.values());
 
-                box.add(new JLabel(Messages.getString("Main.selectAuthType") + ":")); // TODO Lang
+                box.add(new JLabel(Messages.getString("Main.selectAuthType") + ":"));
                 box.add(authType);
                 box.add(new JLabel(" "));
                 box.add(new JLabel(Messages.getString("Main.enterUsernameLabel")));
@@ -861,13 +868,13 @@ public class Main {
                     unameField.addItem(uname);
                 }
 
-                JPasswordField upassField = new JPasswordField();
+                final JPasswordField upassField = new JPasswordField();
                 upassField.setEnabled(((AuthType) authType.getSelectedItem()) == AuthType.Mojang);
 
                 authType.addActionListener(new ActionListener() {
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         upassField.setEnabled(((AuthType) authType.getSelectedItem()) == AuthType.Mojang);
                     }
                 });
@@ -877,7 +884,7 @@ public class Main {
 
                 box.add(uCtl);
                 box.add(new JLabel(" "));
-                box.add(new JLabel(Messages.getString("Main.enterPasswordLabel") + ":")); // TODO Lang
+                box.add(new JLabel(Messages.getString("Main.enterPasswordLabel") + ":"));
                 box.add(upassField);
                 box.alignAll();
 
@@ -885,8 +892,7 @@ public class Main {
                     final int response = JOptionPane.showOptionDialog(win, box,
                             Messages.getString("Main.enterUsernameTitle"), JOptionPane.OK_CANCEL_OPTION,
                             JOptionPane.QUESTION_MESSAGE, null, null, null);
-                    if (response != JOptionPane.OK_OPTION)
-                        return;
+                    if (response != JOptionPane.OK_OPTION) return;
 
                     final String uname = (String) unameField.getSelectedItem();
                     if (uname == null || (((AuthType) authType.getSelectedItem()) == AuthType.Mojang
@@ -1041,7 +1047,7 @@ public class Main {
         lanConnect.addActionListener(alis);
         lanRefresh.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent ev) {
+            public void actionPerformed(final ActionEvent ev) {
                 lanListComponent.setListData(new ServerEntry[0]);
             }
         });
@@ -1083,7 +1089,7 @@ public class Main {
                     {
                         addActionListener(new ActionListener() {
                             @Override
-                            public void actionPerformed(ActionEvent ev) {
+                            public void actionPerformed(final ActionEvent ev) {
                                 System.exit(0);
                             }
                         });
@@ -1098,7 +1104,7 @@ public class Main {
                     {
                         addActionListener(new ActionListener() {
                             @Override
-                            public void actionPerformed(ActionEvent e) {
+                            public void actionPerformed(final ActionEvent e) {
                                 showOptionsDialog();
                             }
                         });
@@ -1244,10 +1250,20 @@ public class Main {
         pingField.setValue(up.getAdditionalPing());
         SwingUtils.alignSpinner(pingField);
 
+        final JSpinner maxPacketsOnListField = new JSpinner(new SpinnerNumberModel(1, 1, 50000, 1)); // TODO Lang
+        maxPacketsOnListField.setToolTipText("TODO");
+        maxPacketsOnListField.setValue(up.getMaxPacketsOnList());
+        SwingUtils.alignSpinner(maxPacketsOnListField);
+
         pkBox.add(ignoreKAPackets);
         pkBox.add(ignoreDSPackets);
         pkBox.add(new JSeparator());
         pkBox.add(forceLegacySLP);
+        pkBox.add(new JSeparator());
+        pkBox.add(new JLabel(" "));
+        pkBox.add(new JLabel("Max packets on packet analyzer list"));
+        pkBox.add(maxPacketsOnListField);
+        pkBox.add(new JLabel(" "));
         pkBox.add(new JSeparator());
         pkBox.add(new JLabel(" "));
         pkBox.add(new JLabel(Messages.getString("Main.pingLabel")));
@@ -1295,7 +1311,7 @@ public class Main {
 
         trMessagesKeywords.addListSelectionListener(new ListSelectionListener() {
             @Override
-            public void valueChanged(ListSelectionEvent e) {
+            public void valueChanged(final ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     removeKeyword.setEnabled(e.getFirstIndex() != -1);
                 }
@@ -1304,9 +1320,8 @@ public class Main {
 
         removeKeyword.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                if (trMessagesKeywords.getSelectedIndex() == -1)
-                    return;
+            public void actionPerformed(final ActionEvent e) {
+                if (trMessagesKeywords.getSelectedIndex() == -1) return;
 
                 final String selected = trMessagesKeywords.getSelectedValue();
                 final int index = trMessagesKeywords.getSelectedIndex();
@@ -1329,7 +1344,7 @@ public class Main {
 
         addKeyword.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
 
                 final JTextField kwField = new JPlaceholderField(Messages.getString("Main.kewyordField"));
 
@@ -1342,8 +1357,7 @@ public class Main {
                 if (response == 0 && !kwField.getText().isEmpty()) {
                     final List<String> ld = new ArrayList<>();
                     Collections.addAll(ld, trMessagesKeywords.getListData());
-                    if (ld.contains(kwField.getText()))
-                        return;
+                    if (ld.contains(kwField.getText())) return;
                     ld.add(kwField.getText());
 
                     String[] ss = new String[ld.size()];
@@ -1368,7 +1382,7 @@ public class Main {
 
         clearRem.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent ev2) {
+            public void actionPerformed(final ActionEvent ev2) {
                 up.setCloseMode(0);
                 clearRem.setEnabled(false);
             }
@@ -1458,7 +1472,7 @@ public class Main {
         });
         apButtonEnabledHover.addColorChangeListener(new ColorChangeListener() {
             @Override
-            public void colorChanged(Color c) {
+            public void colorChanged(final Color c) {
                 cprefCopy.setColorEnabledHoverButton(SwingUtils.getHexRGB(c));
                 sampleButton.repaint();
                 sampleDisabledButton.repaint();
@@ -1467,7 +1481,7 @@ public class Main {
 
         apButtonDisabled.addColorChangeListener(new ColorChangeListener() {
             @Override
-            public void colorChanged(Color c) {
+            public void colorChanged(final Color c) {
                 cprefCopy.setColorDisabledButton(SwingUtils.getHexRGB(c));
                 sampleButton.repaint();
                 sampleDisabledButton.repaint();
@@ -1475,7 +1489,7 @@ public class Main {
         });
         apButtonText.addColorChangeListener(new ColorChangeListener() {
             @Override
-            public void colorChanged(Color c) {
+            public void colorChanged(final Color c) {
                 cprefCopy.setColorText(SwingUtils.getHexRGB(c));
                 sampleButton.repaint();
                 sampleDisabledButton.repaint();
@@ -1483,7 +1497,7 @@ public class Main {
         });
         apButtonTextDisabled.addColorChangeListener(new ColorChangeListener() {
             @Override
-            public void colorChanged(Color c) {
+            public void colorChanged(final Color c) {
                 cprefCopy.setDisabledColorText(SwingUtils.getHexRGB(c));
                 sampleButton.repaint();
                 sampleDisabledButton.repaint();
@@ -1491,7 +1505,7 @@ public class Main {
         });
         apButtonReset.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent ev2) {
+            public void actionPerformed(final ActionEvent ev2) {
                 final ColorPreferences cp2 = UserPreferences.defaultColorPreferences;
                 cprefCopy.setColorDisabledButton(cp2.getColorDisabledButton());
                 cprefCopy.setColorEnabledButton(cp2.getColorEnabledButton());
@@ -1546,7 +1560,7 @@ public class Main {
 
         hideIncomingWindows.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent ev2) {
+            public void actionPerformed(final ActionEvent ev2) {
                 hiddenWindowsResponse.setEnabled(hideIncomingWindows.isSelected());
             }
         });
@@ -1661,7 +1675,7 @@ public class Main {
         jtp.add(Messages.getString("Main.settingsTabInventory"), ivBox);
         jtp.addChangeListener(new ChangeListener() {
             @Override
-            public void stateChanged(ChangeEvent e) {
+            public void stateChanged(final ChangeEvent e) {
                 final JTabbedPane tp = (JTabbedPane) e.getSource();
                 if (tp.getSelectedIndex() == 5) {
                     JOptionPane.showOptionDialog(win, Messages.getString("Main.protocolSettingsWarning"),
@@ -1692,6 +1706,7 @@ public class Main {
                 final String brand = brandField.getText();
                 final boolean sendMCBrand = !brand.isEmpty();
 
+                up.setMaxPacketsOnList((int) maxPacketsOnListField.getValue());
                 up.setResourcePackBehavior(rsBehavior);
                 up.setShowResourcePackMessages(showResourcePackMessages);
                 up.setResourcePackMessage(resourcePackMessage.replace("&", "\u00A7"));
@@ -1803,7 +1818,7 @@ public class Main {
 
         sCancel.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent ev2) {
+            public void actionPerformed(final ActionEvent ev2) {
                 od.dispose();
             }
         });
@@ -1820,6 +1835,7 @@ public class Main {
         od.setVisible(true);
     }
 
+    @SuppressWarnings("unchecked")
     private JSplitPane createServerPane(final ServerEntry entry, final String username, final String password,
             final AuthType authType) {
 
@@ -1884,7 +1900,7 @@ public class Main {
         final JCheckBox toggleSneak = new JCheckBox(Messages.getString("Main.toggleSneak"));
         toggleSneak.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent ev) {
+            public void actionPerformed(final ActionEvent ev) {
                 try {
                     final MinecraftClient cl = clients.get(fPane);
                     cl.toggleSneaking();
@@ -1900,7 +1916,7 @@ public class Main {
         final JCheckBox toggleSprint = new JCheckBox(Messages.getString("Main.toggleSprint"));
         toggleSprint.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent ev) {
+            public void actionPerformed(final ActionEvent ev) {
                 try {
                     final MinecraftClient cl = clients.get(fPane);
                     cl.toggleSprinting();
@@ -2092,8 +2108,7 @@ public class Main {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
-                if (!up.isEnableInventoryHandling())
-                    return;
+                if (!up.isEnableInventoryHandling()) return;
 
                 final MinecraftClient cl = clients.get(fPane);
                 cl.getInventory().openWindow(win, up.isSendWindowClosePackets());
@@ -2173,9 +2188,8 @@ public class Main {
 
         autoMessages.addListSelectionListener(new ListSelectionListener() {
             @Override
-            public void valueChanged(ListSelectionEvent e) {
+            public void valueChanged(final ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                    @SuppressWarnings("unchecked")
                     final JMemList<String> ls = (JMemList<String>) e.getSource();
 
                     final boolean eb = ls.getSelectedIndex() != -1 && ls.getSelectedValue() != null;
@@ -2309,8 +2323,7 @@ public class Main {
                                 Messages.getString("Main.overwriteFileTitle"), JOptionPane.YES_NO_OPTION,
                                 JOptionPane.WARNING_MESSAGE, null,
                                 new Object[] { Messages.getString("Main.yes"), Messages.getString("Main.no") }, 0);
-                        if (ov != 0)
-                            return;
+                        if (ov != 0) return;
                     }
                     try {
                         IOUtils.saveAmfFile(out, autoMessages);
@@ -2397,7 +2410,6 @@ public class Main {
 
         final ActionListener acl = new ActionListener() {
 
-            @SuppressWarnings("unchecked")
             @Override
             public void actionPerformed(final ActionEvent e) {
 
@@ -2438,7 +2450,7 @@ public class Main {
 
                 final ListSelectionListener sl = new ListSelectionListener() {
                     @Override
-                    public void valueChanged(ListSelectionEvent ev) {
+                    public void valueChanged(final ListSelectionEvent ev) {
                         final Object source = ev.getSource();
                         final int index = ((JList<String>) source).getSelectedIndex();
                         if (!ev.getValueIsAdjusting()) {
@@ -2461,7 +2473,7 @@ public class Main {
 
                 final ActionListener remAc = new ActionListener() {
                     @Override
-                    public void actionPerformed(ActionEvent ev) {
+                    public void actionPerformed(final ActionEvent ev) {
                         final Object src = ev.getSource();
                         if (src.equals(removeTrigger)) {
                             triggers.removeString(triggers.getSelectedIndex());
@@ -2757,8 +2769,7 @@ public class Main {
                                 Messages.getString("Main.overwriteFileTitle"), JOptionPane.YES_NO_OPTION,
                                 JOptionPane.WARNING_MESSAGE, null,
                                 new Object[] { Messages.getString("Main.yes"), Messages.getString("Main.no") }, 0);
-                        if (rsp != 0)
-                            return;
+                        if (rsp != 0) return;
                     }
                     try {
                         IOUtils.writeArfFile(out, autoResponses);
@@ -2783,6 +2794,177 @@ public class Main {
 
         autoRespBox.alignAll();
 
+        final JVBoxPanel packetsBtnPane = new JVBoxPanel();
+        final JTabbedPane packetsPane = new JTabbedPane();
+        final JTabbedPane packetAnalyzerPane = new JTabbedPane();
+        final JTabbedPane outAnalyzerPane = new JTabbedPane();
+        final JTabbedPane inAnalyzerPane = new JTabbedPane();
+        final JTabbedPane allAnalyzerPane = new JTabbedPane();
+        final JTabbedPane unknownAnalyzerPane = new JTabbedPane();
+        final JTabbedPane searchAnalyzerPane = new JTabbedPane();
+
+        packetsBtnPane.add(new JButton("Open Protocol Manager") {
+            {
+                addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (pWin != null) {
+                            pWin.dispose();
+                            pWin = null;
+                        }
+                        pWin = new JFrame("Packet Manager");
+                        if (logoImage != null) {
+                            pWin.setIconImage(logoImage);
+                        }
+                        pWin.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+                        pWin.setContentPane(packetsPane);
+                        pWin.pack();
+                        SwingUtils.centerWindow(pWin);
+                        pWin.setVisible(true);
+                    }
+                });
+            }
+        });
+
+        final DefaultTableModel inModel = new DefaultTableModel();
+        final JTable inTable = new JTable(inModel);
+        final TablePacketButton inButtons = initTableColumns(inTable, inModel);
+
+        inButtons.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showPacketPanel(inButtons.getPacket());
+            }
+        });
+        inAnalyzerPane.add(new JScrollPane(inTable));
+
+        final DefaultTableModel outModel = new DefaultTableModel();
+        final JTable outTable = new JTable(outModel);
+        final TablePacketButton outButtons = initTableColumns(outTable, outModel);
+
+        outButtons.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showPacketPanel(outButtons.getPacket());
+            }
+        });
+        outAnalyzerPane.add(new JScrollPane(outTable));
+
+        final DefaultTableModel allModel = new DefaultTableModel();
+        final JTable allTable = new JTable(allModel);
+        final TablePacketButton allButtons = initTableColumns(allTable, allModel);
+
+        allButtons.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showPacketPanel(allButtons.getPacket());
+            }
+        });
+        allAnalyzerPane.add(new JScrollPane(allTable));
+
+        final DefaultTableModel unknownModel = new DefaultTableModel();
+        final JTable unknownTable = new JTable(unknownModel);
+        final TablePacketButton unknownButtons = initTableColumns(unknownTable, unknownModel);
+
+        unknownButtons.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showPacketPanel(unknownButtons.getPacket());
+            }
+        });
+        unknownAnalyzerPane.add(new JScrollPane(unknownTable));
+
+        final DefaultTableModel searchModel = new DefaultTableModel();
+        final JTable searchTable = new JTable(searchModel);
+        final TablePacketButton searchButtons = initTableColumns(searchTable, searchModel);
+
+        searchButtons.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showPacketPanel(searchButtons.getPacket());
+            }
+        });
+        searchAnalyzerPane.add(new JScrollPane(searchTable));
+
+        final JVBoxPanel packetAnalyzerBox = new JVBoxPanel();
+
+        final Box packetAnalyzerControlBox = Box.createHorizontalBox();
+
+        final JButton packetAnalyzerClearBtn = new JButton("Clear");
+        final JToggleButton packetAnalyzerPauseBtn = new JToggleButton("Pause");
+        final JButton packetAnalyzerSearchBtn = new JButton("Search");
+
+        packetAnalyzerSearchBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                final JVBoxPanel optionsPanel = new JVBoxPanel();
+                final JTextField input = new JTextField();
+                final JRadioButton byID = new JRadioButton("By ID");
+                byID.setSelected(true);
+                final JRadioButton byName = new JRadioButton("By Packet Name");
+                final ButtonGroup optionsGroup = new ButtonGroup();
+                optionsGroup.add(byID);
+                optionsGroup.add(byName);
+                final Box hBox = Box.createHorizontalBox();
+                hBox.add(byID);
+                hBox.add(byName);
+
+                optionsPanel.add(new JLabel("Enter search phrase:"));
+                optionsPanel.add(input);
+                optionsPanel.add(hBox);
+                optionsPanel.alignAll();
+
+                final int response = JOptionPane.showOptionDialog(pWin, optionsPanel, "Search...",
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[] { "Ok", "Cancel" },
+                        0);
+
+                String phrase;
+                if (response == 0 && (phrase = input.getText()) != null && !phrase.replace(" ", "").isEmpty()) {
+                    searchModel.setRowCount(0);
+                    final Object[] dataVector = allModel.getDataVector().toArray(new Object[0]);
+                    for (final Object obj : dataVector) {
+                        if (obj instanceof Vector<?>) {
+                            final Vector<Object> nVector = (Vector<Object>) obj;
+                            final String toCompare = byID.isSelected() ? nVector.get(1).toString()
+                                    : nVector.get(3).toString();
+                            if (toCompare.toLowerCase().contains(phrase.toLowerCase())) {
+                                searchModel.addRow(nVector);
+                            }
+                        }
+                    }
+                    packetAnalyzerPane.setSelectedIndex(4);
+                }
+            }
+        });
+
+        packetAnalyzerClearBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inModel.setRowCount(0);
+                outModel.setRowCount(0);
+                allModel.setRowCount(0);
+                unknownModel.setRowCount(0);
+                searchModel.setRowCount(0);
+            }
+        });
+
+        packetAnalyzerControlBox.add(packetAnalyzerClearBtn);
+        packetAnalyzerControlBox.add(packetAnalyzerPauseBtn);
+        packetAnalyzerControlBox.add(packetAnalyzerSearchBtn);
+
+        packetAnalyzerPane.add("In", inAnalyzerPane); // TODO Lang
+        packetAnalyzerPane.add("Out", outAnalyzerPane);
+        packetAnalyzerPane.add("All", allAnalyzerPane);
+        packetAnalyzerPane.add("Unknown", unknownAnalyzerPane);
+        packetAnalyzerPane.add("Search", searchAnalyzerPane);
+
+        packetAnalyzerBox.add(packetAnalyzerControlBox);
+        packetAnalyzerBox.add(packetAnalyzerPane);
+
+        packetsPane.addTab(Messages.getString("Main.packetAnalyzerTab"), packetAnalyzerBox);
+
         final JTabbedPane messagesTabPane = new JTabbedPane(SwingConstants.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
         messagesTabPane.addTab(Messages.getString("Main.intervalMessagesTab"), autoMsgBox);
         messagesTabPane.addTab(Messages.getString("Main.autoResponsesTab"), autoRespBox);
@@ -2793,6 +2975,7 @@ public class Main {
         controlsTabPane.addTab(Messages.getString("Main.inventoryTab"), inventoryBox);
         controlsTabPane.addTab(Messages.getString("Main.worldTab"), worldBox);
         controlsTabPane.addTab(Messages.getString("Main.autoMessagesTab"), messagesTabPane);
+        controlsTabPane.addTab(Messages.getString("Main.packetsTab"), packetsBtnPane);
 
         fPane.add(box);
         fPane.add(controlsTabPane);
@@ -2888,8 +3071,54 @@ public class Main {
                             controlsTabPane.setEnabledAt(2, false);
                         }
                         final MinecraftClient cl = new MinecraftClient(host, port, iprotocol,
-                                forgeMode == ForgeMode.AUTO ? forge : forgeMode == ForgeMode.NEVER ? false : true);
+                                forgeMode == ForgeMode.AUTO ? forge : forgeMode == ForgeMode.NEVER == false);
                         clients.put(fPane, cl);
+
+                        cl.addInputPacketListener(new InternalPacketListener() {
+
+                            @Override
+                            public void packetReceived(final Packet packet, final PacketRegistry registry) {
+                                if (packetAnalyzerPauseBtn.isSelected()) return;
+                                if (packet instanceof UnknownPacket) {
+                                    unknownModel.insertRow(0,
+                                            new Object[] { packet, "0x" + Integer.toHexString(packet.getID()), "C",
+                                                    packet.getClass().getSimpleName(), packet.getSize() });
+                                    if (unknownModel.getRowCount() > up.getMaxPacketsOnList()) {
+                                        unknownModel.setRowCount(up.getMaxPacketsOnList());
+                                    }
+                                } else {
+                                    inModel.insertRow(0,
+                                            new Object[] { packet, "0x" + Integer.toHexString(packet.getID()), "C",
+                                                    packet.getClass().getSimpleName(), packet.getSize() });
+                                    if (inModel.getRowCount() > up.getMaxPacketsOnList()) {
+                                        inModel.setRowCount(up.getMaxPacketsOnList());
+                                    }
+                                }
+                                allModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
+                                        "C", packet.getClass().getSimpleName(), packet.getSize() });
+                                if (allModel.getRowCount() > up.getMaxPacketsOnList()) {
+                                    allModel.setRowCount(up.getMaxPacketsOnList());
+                                }
+
+                            }
+                        });
+                        cl.addOutputPacketListener(new InternalPacketListener() {
+
+                            @Override
+                            public void packetReceived(final Packet packet, final PacketRegistry registry) {
+                                if (packetAnalyzerPauseBtn.isSelected()) return;
+                                outModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
+                                        "S", packet.getClass().getSimpleName(), packet.getSize() });
+                                allModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
+                                        "S", packet.getClass().getSimpleName(), packet.getSize() });
+                                if (outModel.getRowCount() > up.getMaxPacketsOnList()) {
+                                    outModel.setRowCount(up.getMaxPacketsOnList());
+                                }
+                                if (allModel.getRowCount() > up.getMaxPacketsOnList()) {
+                                    allModel.setRowCount(up.getMaxPacketsOnList());
+                                }
+                            }
+                        });
 
                         final Thread autoMessagesThread = new Thread(new Runnable() {
                             @Override
@@ -2905,8 +3134,7 @@ public class Main {
                                             final List<String> msgs = new ArrayList<String>();
                                             Collections.addAll(msgs, autoMessages.getListData());
                                             for (int x = 0; x < msgs.size(); x++) {
-                                                if (!cl.isConnected())
-                                                    return;
+                                                if (!cl.isConnected()) return;
                                                 cl.sendChatMessage(msgs.get(x));
                                                 if (x < msgs.size() - 1) {
                                                     try {
@@ -2935,8 +3163,7 @@ public class Main {
                                 for (final UUID ukey : map.keySet()) {
                                     pl.add(map.get(ukey));
                                 }
-                                if (pl.size() <= 0)
-                                    return;
+                                if (pl.size() <= 0) return;
                                 PlayerInfo[] infs = new PlayerInfo[pl.size()];
                                 infs = pl.toArray(infs);
                                 playerList.setListData(infs);
@@ -2949,8 +3176,7 @@ public class Main {
                                 for (final UUID ukey : map.keySet()) {
                                     pl.add(map.get(ukey));
                                 }
-                                if (pl.size() <= 0)
-                                    return;
+                                if (pl.size() <= 0) return;
                                 PlayerInfo[] infs = new PlayerInfo[pl.size()];
                                 infs = pl.toArray(infs);
                                 playerList.setListData(infs);
@@ -3157,8 +3383,7 @@ public class Main {
 
                             @Override
                             public void statisticsReceived(final Map<String, Integer> values) {
-                                if (values.size() == 0)
-                                    return;
+                                if (values.size() == 0) return;
                                 statisticsContainer.removeAll();
                                 for (final String key : values.keySet()) {
                                     final String tkey = TranslationUtils.translateKey(key);
@@ -3190,8 +3415,7 @@ public class Main {
                                     }
                                     return;
                                 }
-                                if (!up.isShowWindowsInTray() && trayIcon != null)
-                                    return;
+                                if (!up.isShowWindowsInTray() && trayIcon != null) return;
                                 win.openWindow(Main.this.win, up.isSendWindowClosePackets());
                             }
 
@@ -3287,12 +3511,106 @@ public class Main {
                     final IOException e) {
                         SwingUtils.appendColoredText("\u00a7c" + Messages.getString("Main.connectionFailedChatMessage2")
                                 + "\r\n\r\n" + e.toString(), pane);
+                        e.printStackTrace();
                     }
                 }
             }
         }).start();
 
         return fPane;
+    }
+
+    JFrame pWin = null;
+
+    private TablePacketButton initTableColumns(final JTable table, final DefaultTableModel model) {
+        model.addColumn(" ");
+        model.addColumn("ID");
+        model.addColumn("Direction");
+        model.addColumn("Name");
+        model.addColumn("Size");
+
+        table.setDefaultEditor(Object.class, null);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        final TablePacketButton btn = new TablePacketButton();
+        btn.init(table);
+        // TODO Filtering
+        return btn;
+    }
+
+    private void showPacketPanel(final Packet packet) { // TODO Lang
+        final JDialog dialog = new JDialog(pWin, "Packet Information: " + packet.getClass().getSimpleName());
+        dialog.setModal(true);
+
+        final JTabbedPane tabs = new JTabbedPane();
+        final JVBoxPanel infoPanel = new JVBoxPanel();
+        final JVBoxPanel fieldsPanel = new JVBoxPanel();
+        final JVBoxPanel dumpPanel = new JVBoxPanel();
+
+        final JTextPane pane = new JTextPane();
+        pane.setEditable(false);
+
+        final int compressed = packet.getCompressed();
+        final String compressedString = compressed == 1 ? "§cNo (Disabled)"
+                : compressed == 2 ? "§4No" : compressed == 3 ? "§2Yes" : "Unknown";
+
+        pane.setText("Packet Name: " + packet.getClass().getSimpleName() + "\n" + "Packet Class: "
+                + packet.getClass().getName() + "\nPacket ID: 0x" + Integer.toHexString(packet.getID()) + "\nRegistry: "
+                + packet.getReg().getClass().getSimpleName() + "\nPacket Size: " + packet.getSize() + "\nCompressed: ");
+        SwingUtils.appendColoredText(compressedString, pane);
+
+        infoPanel.add(pane);
+
+        final DefaultTableModel fieldsModel = new DefaultTableModel();
+        fieldsModel.addColumn("Name");
+        fieldsModel.addColumn("Type");
+        fieldsModel.addColumn("Value");
+        final JTable fieldsTable = new JTable(fieldsModel);
+
+        try {
+            for (final Field field : packet.getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+                fieldsModel
+                        .addRow(new Object[] { field.getName(), field.getType().getSimpleName(), field.get(packet) });
+                field.setAccessible(false);
+            }
+        } catch (final Exception ex) {
+            ex.printStackTrace();
+        }
+
+        fieldsPanel.add(new JScrollPane(fieldsTable));
+
+        final JTextArea dumpField = new JTextArea(bytesToHex(packet.getData(false)));
+        dumpField.setLineWrap(true);
+        dumpField.setWrapStyleWord(true);
+        dumpField.setEditable(false);
+        dumpField.setFont(dumpField.getFont().deriveFont((float) 15));
+
+        JTextArea sdumpField;
+        try {
+            sdumpField = new JTextArea(new String(packet.getData(false), "Utf-8"));
+        } catch (final UnsupportedEncodingException ex) {
+            sdumpField = new JTextArea(new String(packet.getData(false)));
+        }
+        sdumpField.setLineWrap(true);
+        sdumpField.setWrapStyleWord(true);
+        sdumpField.setEditable(false);
+        sdumpField.setFont(sdumpField.getFont().deriveFont((float) 15));
+
+        final JTabbedPane dumpTabs = new JTabbedPane();
+
+        dumpTabs.add("Hex", new JScrollPane(dumpField));
+        dumpTabs.add("String", new JScrollPane(sdumpField));
+        dumpPanel.add(dumpTabs);
+
+        tabs.addTab("Info", infoPanel);
+        tabs.addTab("Fields", fieldsPanel);
+        tabs.addTab("Dump", dumpPanel);
+        dialog.setContentPane(tabs);
+        dialog.pack();
+        SwingUtils.centerWindow(dialog);
+        dialog.setVisible(true);
     }
 
     public ActionListener getConnectionACL() {
@@ -3303,4 +3621,24 @@ public class Main {
         return win;
     }
 
+    private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
+
+    public static String bytesToHex(final byte[] bytes) {
+        final byte[] hexChars = new byte[bytes.length * 3];
+        for (int j = 0; j < bytes.length; j++) {
+            final int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        final StringBuilder bd = new StringBuilder();
+        for (int x = 0; x < hexChars.length; x += 2) {
+            if (x < hexChars.length - 1) {
+                bd.append(new String(new byte[] { hexChars[x], hexChars[x + 1] }) + " ");
+            } else {
+                bd.append(new String(new byte[] { hexChars[x] }) + " ");
+            }
+
+        }
+        return bd.toString();
+    }
 }

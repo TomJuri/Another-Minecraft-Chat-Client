@@ -10,27 +10,27 @@ package net.defekt.mc.chatclient.protocol.packets;
  */
 public class HandshakePacket extends Packet {
 
-	/**
-	 * Construct new Handshake Packet
-	 * 
-	 * @param reg      packet registry that will be used to determine ID for this
-	 *                 packet. It's unused for {@link HandshakePacket}, but still
-	 *                 can't be null
-	 * @param protocol client's protocol
-	 * @param host     server's host
-	 * @param port     server's port
-	 * @param state    next state:<br>
-	 *                 1 - status<br>
-	 *                 2 - login
-	 */
-	public HandshakePacket(final PacketRegistry reg, final int protocol, final String host, final int port,
-			final int state) {
-		super(reg);
-		this.id = 0x00;
-		putVarInt(protocol);
-		putString(host);
-		putShort(port);
-		putVarInt(state);
-	}
+    /**
+     * Construct new Handshake Packet
+     * 
+     * @param reg      packet registry that will be used to determine ID for this
+     *                 packet. It's unused for {@link HandshakePacket}, but still
+     *                 can't be null
+     * @param protocol client's protocol
+     * @param host     server's host
+     * @param port     server's port
+     * @param state    next state:<br>
+     *                 1 - status<br>
+     *                 2 - login
+     */
+    public HandshakePacket(final PacketRegistry reg, final int protocol, final String host, final int port,
+            final int state) {
+        super(reg);
+        this.id = 0x00;
+        putVarInt(protocol);
+        putString(host);
+        putShort(port);
+        putVarInt(state);
+    }
 
 }

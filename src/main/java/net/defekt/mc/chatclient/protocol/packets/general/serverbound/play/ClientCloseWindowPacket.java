@@ -11,15 +11,15 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientCloseWindowPacket extends Packet {
 
-	/**
-	 * Constructs new {@link ClientCloseWindowPacket}
-	 * 
-	 * @param reg      packet registry used to construct this packet
-	 * @param windowID window ID
-	 */
-	public ClientCloseWindowPacket(final PacketRegistry reg, final Integer windowID) {
-		super(reg);
-		putByte(windowID);
-	}
+    /**
+     * Constructs new {@link ClientCloseWindowPacket}
+     * 
+     * @param reg      packet registry used to construct this packet
+     * @param windowID window ID
+     */
+    public ClientCloseWindowPacket(final PacketRegistry reg, final Integer windowID) {
+        super(reg);
+        putByte(windowID);
+    }
 
 }

@@ -39,7 +39,7 @@ public class MojangAPI {
          * @param code     response code
          * @param response response data
          */
-        public RequestResponse(int code, String response) {
+        public RequestResponse(final int code, final String response) {
             super();
             this.code = code;
             this.response = response;
@@ -78,8 +78,7 @@ public class MojangAPI {
     public static String getUUID(final String username) throws IOException {
         final String js = new String(IOUtils
                 .readFully(new URL(Hosts.MOJANG_APISERVER + "/users/profiles/minecraft/" + username).openStream()));
-        if (js.isEmpty())
-            return null;
+        if (js.isEmpty()) return null;
 
         return new JsonParser().parse(js).getAsJsonObject().get("id").getAsString();
     }
@@ -97,7 +96,7 @@ public class MojangAPI {
      * @throws IOException           thrown when there was ANY error authenticating
      *                               the user
      */
-    public static MojangUser authenticateUser(String username, String password, String endpoint)
+    public static MojangUser authenticateUser(final String username, final String password, final String endpoint)
             throws MalformedURLException, IOException {
         RequestResponse resp;
         try {
@@ -109,33 +108,31 @@ public class MojangAPI {
                     put("requestUser", new JsonPrimitive(false));
                 }
             });
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             throw new IOException(Messages.getString("MojangAPI.authConnectError") + ": " + ex.toString());
         }
         JsonObject json;
         try {
             json = resp.getJson();
-            if (json == null)
-                throw new IllegalStateException();
-        } catch (Exception ex) {
+            if (json == null) throw new IllegalStateException();
+        } catch (final Exception ex) {
             throw new IOException(Messages.getString("MojangAPI.authResponseError"));
         }
 
         if (json.has("error")) {
-            String errorMsg = json.has("errorMessage") ? json.get("errorMessage").getAsString()
+            final String errorMsg = json.has("errorMessage") ? json.get("errorMessage").getAsString()
                     : json.get("error").getAsString();
             throw new IOException(Messages.getString("MojangAPI.authError") + ": " + errorMsg);
         } else if (json.has("accessToken") && json.has("selectedProfile")) {
-            String accessToken = json.get("accessToken").getAsString();
-            JsonObject selected = json.getAsJsonObject("selectedProfile");
-            String id = selected.get("id").getAsString();
-            String name = selected.get("name").getAsString();
-            MojangUser mUser = new MojangUser(accessToken, id, name);
+            final String accessToken = json.get("accessToken").getAsString();
+            final JsonObject selected = json.getAsJsonObject("selectedProfile");
+            final String id = selected.get("id").getAsString();
+            final String name = selected.get("name").getAsString();
+            final MojangUser mUser = new MojangUser(accessToken, id, name);
             cachedAccounts.put(username, mUser);
             return mUser;
-        } else {
+        } else
             throw new IOException(Messages.getString("MojangAPI.mojangResponseError"));
-        }
     }
 
     /**
@@ -147,22 +144,22 @@ public class MojangAPI {
      * @throws MalformedURLException when endpoint is not a valid URL
      * @throws IOException           when there was an error while making request
      */
-    public static RequestResponse makeJSONRequest(String endpoint, Map<String, JsonElement> values)
+    public static RequestResponse makeJSONRequest(final String endpoint, final Map<String, JsonElement> values)
             throws MalformedURLException, IOException {
-        JsonObject jsonData = new JsonObject();
-        for (Map.Entry<String, JsonElement> value : values.entrySet()) {
+        final JsonObject jsonData = new JsonObject();
+        for (final Map.Entry<String, JsonElement> value : values.entrySet()) {
             jsonData.add(value.getKey(), value.getValue());
         }
 
-        HttpURLConnection con = (HttpURLConnection) new URL(endpoint).openConnection();
+        final HttpURLConnection con = (HttpURLConnection) new URL(endpoint).openConnection();
         con.setDoOutput(true);
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
-        OutputStream os = con.getOutputStream();
+        final OutputStream os = con.getOutputStream();
         os.write(jsonData.toString().getBytes());
         os.close();
 
-        String response = new String(IOUtils.readFully(con.getInputStream(), true));
+        final String response = new String(IOUtils.readFully(con.getInputStream(), true));
 
         return new RequestResponse(con.getResponseCode(), response);
     }
@@ -179,13 +176,11 @@ public class MojangAPI {
                 .parse(new String(IOUtils.readFully(
                         new URL(Hosts.MOJANG_SESSIONSERVER + "/session/minecraft/profile/" + uuid).openStream())))
                 .getAsJsonObject();
-        if (el.has("error"))
-            return null;
+        if (el.has("error")) return null;
 
         for (final JsonElement rel : el.get("properties").getAsJsonArray()) {
             final JsonObject obj = rel.getAsJsonObject();
-            if (obj.get("name").getAsString().equals("textures"))
-                return obj.get("value").getAsString();
+            if (obj.get("name").getAsString().equals("textures")) return obj.get("value").getAsString();
         }
 
         return null;

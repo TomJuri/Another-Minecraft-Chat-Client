@@ -13,27 +13,27 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerCloseWindowPacket extends Packet {
 
-	private final int windowID;
+    private final int windowID;
 
-	/**
-	 * Constructs {@link ServerCloseWindowPacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerCloseWindowPacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		this.windowID = getInputStream().readUnsignedByte();
-	}
+    /**
+     * Constructs {@link ServerCloseWindowPacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerCloseWindowPacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        this.windowID = getInputStream().readUnsignedByte();
+    }
 
-	/**
-	 * Get closed window's ID
-	 * 
-	 * @return window Id
-	 */
-	public int getWindowID() {
-		return windowID;
-	}
+    /**
+     * Get closed window's ID
+     * 
+     * @return window Id
+     */
+    public int getWindowID() {
+        return windowID;
+    }
 
 }

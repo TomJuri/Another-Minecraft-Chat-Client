@@ -14,50 +14,50 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerUpdateHealthPacket extends Packet {
 
-	private final float health;
-	private final int food;
-	private final float saturation;
+    private final float health;
+    private final int food;
+    private final float saturation;
 
-	/**
-	 * constructs {@link ServerUpdateHealthPacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerUpdateHealthPacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		final VarInputStream is = getInputStream();
-		health = is.readFloat();
-		food = is.readVarInt();
-		saturation = is.readFloat();
-	}
+    /**
+     * constructs {@link ServerUpdateHealthPacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerUpdateHealthPacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        final VarInputStream is = getInputStream();
+        health = is.readFloat();
+        food = is.readVarInt();
+        saturation = is.readFloat();
+    }
 
-	/**
-	 * Get player's new health
-	 * 
-	 * @return player's health
-	 */
-	public float getHealth() {
-		return health;
-	}
+    /**
+     * Get player's new health
+     * 
+     * @return player's health
+     */
+    public float getHealth() {
+        return health;
+    }
 
-	/**
-	 * Get player's new hunger status
-	 * 
-	 * @return player's hunger
-	 */
-	public int getFood() {
-		return food;
-	}
+    /**
+     * Get player's new hunger status
+     * 
+     * @return player's hunger
+     */
+    public int getFood() {
+        return food;
+    }
 
-	/**
-	 * Get player's saturation
-	 * 
-	 * @return player's saturation
-	 */
-	public float getSaturation() {
-		return saturation;
-	}
+    /**
+     * Get player's saturation
+     * 
+     * @return player's saturation
+     */
+    public float getSaturation() {
+        return saturation;
+    }
 
 }

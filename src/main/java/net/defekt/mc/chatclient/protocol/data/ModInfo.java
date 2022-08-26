@@ -8,31 +8,31 @@ package net.defekt.mc.chatclient.protocol.data;
  */
 public class ModInfo {
 
-	private final String modID;
-	private final String version;
+    private final String modID;
+    private final String version;
 
-	/**
-	 * Constructs new mod info object
-	 * 
-	 * @param modID   mod ID
-	 * @param version mod's version
-	 */
-	public ModInfo(final String modID, final String version) {
-		this.modID = modID;
-		this.version = version;
-	}
+    /**
+     * Constructs new mod info object
+     * 
+     * @param modID   mod ID
+     * @param version mod's version
+     */
+    public ModInfo(final String modID, final String version) {
+        this.modID = modID;
+        this.version = version;
+    }
 
-	/**
-	 * @return get mod's ID
-	 */
-	public String getModID() {
-		return modID;
-	}
+    /**
+     * @return get mod's ID
+     */
+    public String getModID() {
+        return modID;
+    }
 
-	/**
-	 * @return get mod's version
-	 */
-	public String getVersion() {
-		return version;
-	}
+    /**
+     * @return get mod's version
+     */
+    public String getVersion() {
+        return version;
+    }
 }

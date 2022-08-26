@@ -11,13 +11,13 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientUseItemPacket extends Packet {
 
-	/**
-	 * Constructs new {@link ClientUseItemPacket}
-	 * 
-	 * @param reg packet registry used to construct this packet
-	 */
-	public ClientUseItemPacket(final PacketRegistry reg) {
-		super(reg);
-		putVarInt(0);
-	}
+    /**
+     * Constructs new {@link ClientUseItemPacket}
+     * 
+     * @param reg packet registry used to construct this packet
+     */
+    public ClientUseItemPacket(final PacketRegistry reg) {
+        super(reg);
+        putVarInt(0);
+    }
 }

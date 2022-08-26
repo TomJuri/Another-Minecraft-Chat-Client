@@ -15,31 +15,31 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 public abstract class ClientAdapter implements ClientListener {
 
     @Override
-    public void messageReceived(String message, Position position) {
+    public void messageReceived(final String message, final Position position) {
     }
 
     @Override
-    public void disconnected(String reason) {
+    public void disconnected(final String reason) {
     }
 
     @Override
-    public void healthUpdate(float health, int food) {
+    public void healthUpdate(final float health, final int food) {
     }
 
     @Override
-    public void positionChanged(double x, double y, double z) {
+    public void positionChanged(final double x, final double y, final double z) {
     }
 
     @Override
-    public void statisticsReceived(Map<String, Integer> values) {
+    public void statisticsReceived(final Map<String, Integer> values) {
     }
 
     @Override
-    public void windowOpened(int id, ItemsWindow win, PacketRegistry reg) {
+    public void windowOpened(final int id, final ItemsWindow win, final PacketRegistry reg) {
     }
 
     @Override
-    public void timeUpdated(long time, long worldAge) {
+    public void timeUpdated(final long time, final long worldAge) {
     }
 
 }

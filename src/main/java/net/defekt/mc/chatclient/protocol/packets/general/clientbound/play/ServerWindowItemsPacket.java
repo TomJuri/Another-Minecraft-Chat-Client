@@ -18,42 +18,42 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerWindowItemsPacket extends Packet {
 
-	private final int windowID;
-	private final List<ItemStack> items = new ArrayList<ItemStack>();
+    private final int windowID;
+    private final List<ItemStack> items = new ArrayList<ItemStack>();
 
-	/**
-	 * Constructs {@link ServerWindowItemsPacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerWindowItemsPacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		final VarInputStream is = getInputStream();
-		windowID = is.readUnsignedByte();
-		final short count = is.readShort();
-		for (int x = 0; x < count; x++) {
-			items.add(is.readSlotData(PacketFactory.getProtocolFor(reg)));
-		}
-	}
+    /**
+     * Constructs {@link ServerWindowItemsPacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerWindowItemsPacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        final VarInputStream is = getInputStream();
+        windowID = is.readUnsignedByte();
+        final short count = is.readShort();
+        for (int x = 0; x < count; x++) {
+            items.add(is.readSlotData(PacketFactory.getProtocolFor(reg)));
+        }
+    }
 
-	/**
-	 * Get window's ID
-	 * 
-	 * @return window ID
-	 */
-	public int getWindowID() {
-		return windowID;
-	}
+    /**
+     * Get window's ID
+     * 
+     * @return window ID
+     */
+    public int getWindowID() {
+        return windowID;
+    }
 
-	/**
-	 * Get items from this packet
-	 * 
-	 * @return items list
-	 */
-	public List<ItemStack> getItems() {
-		return new ArrayList<ItemStack>(items);
-	}
+    /**
+     * Get items from this packet
+     * 
+     * @return items list
+     */
+    public List<ItemStack> getItems() {
+        return new ArrayList<ItemStack>(items);
+    }
 
 }

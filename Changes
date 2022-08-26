@@ -1,12 +1,10 @@
 AMCC Change Log
-v1.7.0
+v1.7.1
 
 [+] Added:
-- Online mode support! You can now log in using Mojang Account (needs testing).
+- New Protocol Manager Tool
+  A new, poweful utility to debug traffic between client and server!
 
 [+] Fixed:
-- Fixed minor bug in Unicode characters support
-
-[+] To add:
-- Proxy support
-- Attacking nearby entities
+- Updated Gradle build system
+- Completely remade chat messages JSON parser

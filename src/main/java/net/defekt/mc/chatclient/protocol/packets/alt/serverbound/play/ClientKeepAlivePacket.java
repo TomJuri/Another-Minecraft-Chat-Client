@@ -13,15 +13,15 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientKeepAlivePacket extends Packet {
 
-	/**
-	 * Constructs new {@link ClientKeepAlivePacket}
-	 * 
-	 * @param reg packet registry used to construct this packet
-	 * @param id  keep-alive ID as VarInt
-	 */
-	public ClientKeepAlivePacket(final PacketRegistry reg, final Integer id) {
-		super(reg);
-		putVarInt(id);
-	}
+    /**
+     * Constructs new {@link ClientKeepAlivePacket}
+     * 
+     * @param reg packet registry used to construct this packet
+     * @param id  keep-alive ID as VarInt
+     */
+    public ClientKeepAlivePacket(final PacketRegistry reg, final Integer id) {
+        super(reg);
+        putVarInt(id);
+    }
 
 }

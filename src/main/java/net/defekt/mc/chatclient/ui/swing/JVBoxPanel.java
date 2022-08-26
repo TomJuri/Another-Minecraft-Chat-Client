@@ -15,22 +15,22 @@ import javax.swing.JTextPane;
  */
 
 public class JVBoxPanel extends JPanel {
-	/**
-	 * Default constructor
-	 */
-	public JVBoxPanel() {
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-	}
+    /**
+     * Default constructor
+     */
+    public JVBoxPanel() {
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    }
 
-	/**
-	 * Aligns all contained components to the left
-	 */
-	public void alignAll() {
-		for (final Component ct : getComponents())
-			if (ct instanceof JComponent) {
-				final JComponent jct = (JComponent) ct;
-				jct.setAlignmentX(Component.LEFT_ALIGNMENT);
-				jct.setOpaque(!(ct instanceof JTextPane));
-			}
-	}
+    /**
+     * Aligns all contained components to the left
+     */
+    public void alignAll() {
+        for (final Component ct : getComponents())
+            if (ct instanceof JComponent) {
+                final JComponent jct = (JComponent) ct;
+                jct.setAlignmentX(Component.LEFT_ALIGNMENT);
+                jct.setOpaque(!(ct instanceof JTextPane));
+            }
+    }
 }

@@ -11,7 +11,7 @@ public class MojangUser {
     private String userID;
     private String userName;
 
-    protected MojangUser(String accessToken, String userID, String userName) {
+    protected MojangUser(final String accessToken, final String userID, final String userName) {
         super();
         this.accessToken = accessToken;
         this.userID = userID;
@@ -40,17 +40,17 @@ public class MojangUser {
     }
 
     @SuppressWarnings("javadoc")
-    public void setAccessToken(String accessToken) {
+    public void setAccessToken(final String accessToken) {
         this.accessToken = accessToken;
     }
 
     @SuppressWarnings("javadoc")
-    public void setUserID(String userID) {
+    public void setUserID(final String userID) {
         this.userID = userID;
     }
 
     @SuppressWarnings("javadoc")
-    public void setUserName(String userName) {
+    public void setUserName(final String userName) {
         this.userName = userName;
     }
 }

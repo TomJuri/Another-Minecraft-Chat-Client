@@ -11,49 +11,49 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ClientResourcePackStatusPacket extends Packet {
 
-	/**
-	 * Resource pack status
-	 * 
-	 * @author Defective4
-	 *
-	 */
-	public enum Status {
-		/**
-		 * Incoming resource pack will be declined
-		 */
-		DECLINED(1),
-		/**
-		 * Incoming resource pack will be accepted
-		 */
-		ACCEPTED(3),
-		/**
-		 * Incoming resource pack will be loaded
-		 */
-		LOADED(0),
-		/**
-		 * Incoming resource pack will fail to load
-		 */
-		FAILED(2);
+    /**
+     * Resource pack status
+     * 
+     * @author Defective4
+     *
+     */
+    public enum Status {
+        /**
+         * Incoming resource pack will be declined
+         */
+        DECLINED(1),
+        /**
+         * Incoming resource pack will be accepted
+         */
+        ACCEPTED(3),
+        /**
+         * Incoming resource pack will be loaded
+         */
+        LOADED(0),
+        /**
+         * Incoming resource pack will fail to load
+         */
+        FAILED(2);
 
-		/**
-		 * Status number
-		 */
-		public final int num;
+        /**
+         * Status number
+         */
+        public final int num;
 
-		private Status(final int num) {
-			this.num = num;
-		}
-	}
+        private Status(final int num) {
+            this.num = num;
+        }
+    }
 
-	/**
-	 * Constructs new {@link ClientResourcePackStatusPacket}
-	 * 
-	 * @param reg    packet registry used to construct this packet
-	 * @param status resource pack status
-	 */
-	public ClientResourcePackStatusPacket(final PacketRegistry reg, final Status status) {
-		super(reg);
-		putVarInt(status.num);
-	}
+    /**
+     * Constructs new {@link ClientResourcePackStatusPacket}
+     * 
+     * @param reg    packet registry used to construct this packet
+     * @param status resource pack status
+     */
+    public ClientResourcePackStatusPacket(final PacketRegistry reg, final Status status) {
+        super(reg);
+        putVarInt(status.num);
+    }
 
 }

@@ -14,27 +14,27 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  */
 public class ServerLoginSetCompressionPacket extends Packet {
 
-	private final int threshold;
+    private final int threshold;
 
-	/**
-	 * Contructs {@link ServerLoginSetCompressionPacket}
-	 * 
-	 * @param reg  packet registry used to construct this packet
-	 * @param data packet's data
-	 * @throws IOException never thrown
-	 */
-	public ServerLoginSetCompressionPacket(final PacketRegistry reg, final byte[] data) throws IOException {
-		super(reg, data);
-		this.threshold = getInputStream().readVarInt();
-	}
+    /**
+     * Contructs {@link ServerLoginSetCompressionPacket}
+     * 
+     * @param reg  packet registry used to construct this packet
+     * @param data packet's data
+     * @throws IOException never thrown
+     */
+    public ServerLoginSetCompressionPacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+        this.threshold = getInputStream().readVarInt();
+    }
 
-	/**
-	 * Get compression threshold
-	 * 
-	 * @return compression threshol
-	 */
-	public int getThreshold() {
-		return threshold;
-	}
+    /**
+     * Get compression threshold
+     * 
+     * @return compression threshol
+     */
+    public int getThreshold() {
+        return threshold;
+    }
 
 }

@@ -13,17 +13,17 @@ import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.Client
  */
 public class ClientResourcePackStatusPacket extends Packet {
 
-	/**
-	 * Constructs new {@link ClientKeepAlivePacket}
-	 * 
-	 * @param reg    packet registry used to construct this packet
-	 * @param hash   resource pack's hash
-	 * @param status resource pack's hash
-	 */
-	public ClientResourcePackStatusPacket(final PacketRegistry reg, final String hash, final Status status) {
-		super(reg);
-		putString(hash);
-		putVarInt(status.num);
-	}
+    /**
+     * Constructs new {@link ClientKeepAlivePacket}
+     * 
+     * @param reg    packet registry used to construct this packet
+     * @param hash   resource pack's hash
+     * @param status resource pack's hash
+     */
+    public ClientResourcePackStatusPacket(final PacketRegistry reg, final String hash, final Status status) {
+        super(reg);
+        putString(hash);
+        putVarInt(status.num);
+    }
 
 }

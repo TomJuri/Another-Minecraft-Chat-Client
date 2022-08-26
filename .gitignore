@@ -1,7 +1,12 @@
-/.settings/
-/bin/
-/.project
-/build/
-/.gradle/
-/mcc.prefs
-/pmd.html
+.settings/
+bin/
+.project
+build/
+.gradle/
+mcc.prefs
+pmd.html
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build

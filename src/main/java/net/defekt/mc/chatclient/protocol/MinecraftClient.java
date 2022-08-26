@@ -34,6 +34,7 @@ import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
+import net.defekt.mc.chatclient.protocol.packets.UnknownPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerStatisticsPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientEntityActionPacket.EntityAction;
 import net.defekt.mc.chatclient.ui.Messages;
@@ -82,6 +83,7 @@ public class MinecraftClient {
     private final ListenerHashMap<UUID, PlayerInfo> playersTabList = new ListenerHashMap<UUID, PlayerInfo>();
 
     private final List<InternalPacketListener> packetListeners = new ArrayList<InternalPacketListener>();
+    private final List<InternalPacketListener> outPacketListeners = new ArrayList<InternalPacketListener>();
     private final List<ClientListener> clientListeners = new ArrayList<ClientListener>();
     private final boolean forge;
 
@@ -90,6 +92,24 @@ public class MinecraftClient {
 
     private Thread packetReaderThread = null;
     private Thread playerPositionThread = null;
+
+    /**
+     * Add a outbound packet listener to listen for sent packets
+     * 
+     * @param listener a packet listener implementation
+     */
+    public void addOutputPacketListener(final InternalPacketListener listener) {
+        outPacketListeners.add(listener);
+    }
+
+    /**
+     * Add a inbound packet listener to listen for sent packets
+     * 
+     * @param listener a packet listener implementation
+     */
+    public void addInputPacketListener(final InternalPacketListener listener) {
+        packetListeners.add(listener);
+    }
 
     /**
      * Add a client listener to receive client events
@@ -130,7 +150,8 @@ public class MinecraftClient {
      *                     example when could not find a matching packet registry
      *                     implementation for specified protocol)
      */
-    public MinecraftClient(final String host, final int port, final int protocol, boolean forge) throws IOException {
+    public MinecraftClient(final String host, final int port, final int protocol, final boolean forge)
+            throws IOException {
         this.host = host;
         this.port = port;
         this.protocol = protocol;
@@ -194,9 +215,9 @@ public class MinecraftClient {
     private Cipher eCipher = null;
     private Cipher dCipher = null;
 
-    protected void enableEncryption(byte[] secret) throws InvalidKeyException, NoSuchAlgorithmException,
+    protected void enableEncryption(final byte[] secret) throws InvalidKeyException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidAlgorithmParameterException {
-        SecretKey key = new SecretKeySpec(secret, "AES");
+        final SecretKey key = new SecretKeySpec(secret, "AES");
         eCipher = Cipher.getInstance("AES/CFB8/NoPadding");
         eCipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(secret));
         dCipher = Cipher.getInstance("AES/CFB8/NoPadding");
@@ -227,7 +248,7 @@ public class MinecraftClient {
                 break;
             }
             case Mojang: {
-                MojangUser user = MojangAPI.authenticateUser(token, password,
+                final MojangUser user = MojangAPI.authenticateUser(token, password,
                         auth == AuthType.Mojang ? Hosts.MOJANG_AUTHSERVER : Hosts.ALTENING_AUTHSERVER);
                 this.username = user.getUserName();
                 this.authID = user.getUserID();
@@ -256,28 +277,6 @@ public class MinecraftClient {
             final Packet login = PacketFactory.constructPacket(reg, "ClientLoginRequestPacket", username);
             sendPacket(login);
 
-//			int len = is.readVarInt();
-//			if (len < 0)
-//				throw new IOException(
-//						Messages.getString("MinecraftClient.clientErrorInvalidPacketLen") + Integer.toString(len));
-//
-//			int id = is.readVarInt();
-//			switch (id) {
-//				case 0x01: {
-//					throw new IOException(Messages.getString("MinecraftClient.clientErrorDisconnectedNoAuth"));
-//				}
-//				case 0x00: {
-//					String reason = ChatMessages.parse(is.readString());
-//					throw new IOException(Messages.getString("MinecraftClient.clientErrorDisconnected") + reason);
-//				}
-//				case 0x03: {
-//					cThreshold = is.readVarInt();
-//					if (cThreshold > -1)
-//						compression = true;
-//					break;
-//				}
-//			}
-
             packetReaderThread = new Thread(new Runnable() {
 
                 private final Inflater inflater = new Inflater();
@@ -293,6 +292,7 @@ public class MinecraftClient {
                             VarInputStream packetbuf = new VarInputStream(new ByteArrayInputStream(data));
                             final int id;
                             final byte[] packetData;
+                            int compressed = 0;
 
                             if (compression) {
                                 final int dlen = packetbuf.readVarInt();
@@ -300,6 +300,7 @@ public class MinecraftClient {
                                     id = packetbuf.readVarInt();
                                     packetData = new byte[len - VarOutputStream.checkVarIntSize(dlen) - 1];
                                     packetbuf.readFully(packetData);
+                                    compressed = 2;
                                 } else {
                                     final byte[] toProcess = new byte[len - VarOutputStream.checkVarIntSize(dlen)];
                                     packetbuf.readFully(toProcess);
@@ -314,21 +315,25 @@ public class MinecraftClient {
 
                                     packetData = new byte[dlen - 1];
                                     packetbuf.readFully(packetData);
+                                    compressed = 3;
 
                                 }
                             } else {
                                 id = packetbuf.readVarInt();
                                 packetData = new byte[len - 1];
                                 packetbuf.readFully(packetData);
+                                compressed = 1;
                             }
 
                             if (id != -1) {
                                 final Class<? extends Packet> pClass = reg.getByID(id, state);
+                                final Packet packet;
                                 if (pClass == null) {
-                                    continue;
+                                    packet = new UnknownPacket(reg, id, packetData);
+                                } else {
+                                    packet = PacketFactory.constructPacket(reg, pClass.getSimpleName(), packetData);
                                 }
-                                final Packet packet = PacketFactory.constructPacket(reg, pClass.getSimpleName(),
-                                        packetData);
+                                packet.setCompressed(compressed);
                                 for (final InternalPacketListener lis : packetListeners) {
                                     lis.packetReceived(packet, reg);
                                 }
@@ -525,6 +530,9 @@ public class MinecraftClient {
      */
     public void sendPacket(final Packet packet) throws IOException {
         if (connected && soc != null && !soc.isClosed()) {
+            for (final InternalPacketListener listener : outPacketListeners.toArray(new InternalPacketListener[0])) {
+                listener.packetReceived(packet, reg);
+            }
             os.write(packet.getData(compression));
         } else
             throw new IOException(notConnectedError);
@@ -621,6 +629,7 @@ public class MinecraftClient {
      * @return client's output stream
      * @deprecated
      */
+    @Deprecated
     protected OutputStream getOutputStream() {
         return os;
     }
@@ -703,8 +712,7 @@ public class MinecraftClient {
                         } catch (final InterruptedException e1) {
                             e1.printStackTrace();
                         }
-                        if (MinecraftClient.this.x == Integer.MIN_VALUE)
-                            return;
+                        if (MinecraftClient.this.x == Integer.MIN_VALUE) return;
                         double tx = MinecraftClient.this.x;
                         double tz = MinecraftClient.this.z;
                         float nyaw = 0;
@@ -759,8 +767,7 @@ public class MinecraftClient {
                         }
 
                         setLook(nyaw);
-                        if (lockPosition)
-                            return;
+                        if (lockPosition) return;
                         try {
                             setX(tx);
                             setZ(tz);

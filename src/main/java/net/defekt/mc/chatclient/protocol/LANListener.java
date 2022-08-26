@@ -10,12 +10,12 @@ import java.net.InetAddress;
  */
 @FunctionalInterface
 public interface LANListener {
-	/**
-	 * Invoked when a server was discovered
-	 * 
-	 * @param sender address of discovered server
-	 * @param motd   Message Of The Day sent by server
-	 * @param port   port of the server
-	 */
-	public void serverDiscovered(InetAddress sender, String motd, int port);
+    /**
+     * Invoked when a server was discovered
+     * 
+     * @param sender address of discovered server
+     * @param motd   Message Of The Day sent by server
+     * @param port   port of the server
+     */
+    public void serverDiscovered(InetAddress sender, String motd, int port);
 }

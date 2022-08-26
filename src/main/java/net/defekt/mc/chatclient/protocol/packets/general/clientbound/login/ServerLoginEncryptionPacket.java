@@ -33,7 +33,7 @@ public class ServerLoginEncryptionPacket extends Packet {
      */
     public ServerLoginEncryptionPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
-        VarInputStream is = getInputStream();
+        final VarInputStream is = getInputStream();
         serverID = is.readString();
         publicKey = new byte[is.readVarInt()];
         is.read(publicKey);
@@ -54,7 +54,7 @@ public class ServerLoginEncryptionPacket extends Packet {
      * @throws NoSuchAlgorithmException never thrown
      */
     public PublicKey getPublicKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
+        final KeyFactory kf = KeyFactory.getInstance("RSA");
         return kf.generatePublic(new X509EncodedKeySpec(publicKey));
     }
 
