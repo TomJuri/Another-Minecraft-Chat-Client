@@ -13,11 +13,26 @@ import javax.swing.table.TableCellRenderer;
 
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 
+/**
+ * A button to be used in packet analyzer
+ * 
+ * 
+ * @author Defective4
+ *
+ */
 public class TablePacketButton extends JButton implements TableCellEditor, TableCellRenderer, MouseListener {
 
+    /**
+     * Default constructor
+     */
     public TablePacketButton() {
     }
 
+    /**
+     * Initialize this button with provided table
+     * 
+     * @param table table to initialize with
+     */
     public void init(final JTable table) {
         setText("Info");
         table.getColumn(" ").setCellEditor(this);
@@ -96,6 +111,11 @@ public class TablePacketButton extends JButton implements TableCellEditor, Table
         return this;
     }
 
+    /**
+     * Get last selected packet
+     * 
+     * @return the packet
+     */
     public Packet getPacket() {
         return packet;
     }

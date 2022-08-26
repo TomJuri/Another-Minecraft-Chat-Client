@@ -198,6 +198,11 @@ public class ServerDetailsDialog extends JDialog {
                 pane);
     }
 
+    /**
+     * Initialize an empty Minecraft styled text pane
+     * 
+     * @return a new Text Pane
+     */
     public static JTextPane initTextPane() {
         final JTextPane pane = new JTextPane();
         pane.setBackground(new Color(35, 35, 35));

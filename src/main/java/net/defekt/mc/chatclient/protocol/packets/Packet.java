@@ -268,6 +268,11 @@ public class Packet {
         }
     }
 
+    /**
+     * Get packet data size
+     * 
+     * @return data size
+     */
     public long getSize() {
         return rawBuffer.toByteArray().length;
     }
@@ -289,22 +294,47 @@ public class Packet {
         }
     }
 
+    /**
+     * Return packet's compression state
+     * 
+     * @return compression state
+     */
     public int getCompressed() {
         return compressed;
     }
 
+    /**
+     * Set packet's compression state
+     * 
+     * @param compressed new compression state
+     */
     public void setCompressed(final int compressed) {
         this.compressed = compressed;
     }
 
+    /**
+     * Get packet's registry
+     * 
+     * @return packet registry
+     */
     public PacketRegistry getReg() {
         return reg;
     }
 
+    /**
+     * Get packet encrypted state
+     * 
+     * @return packet encrypted state
+     */
     public boolean isEncrypted() {
         return encrypted;
     }
 
+    /**
+     * Set packet encrypted state
+     * 
+     * @param encrypted new encrypted state
+     */
     public void setEncrypted(final boolean encrypted) {
         this.encrypted = encrypted;
     }
