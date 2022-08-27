@@ -160,7 +160,7 @@ public class Main {
 
     private static BufferedImage logoImage = null;
 
-    public static final String VERSION = "1.8.0";
+    public static final String VERSION = "1.8.1";
     private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
 
     public static Font mcFont = Font.decode(null);

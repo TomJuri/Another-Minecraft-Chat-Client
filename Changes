@@ -1,12 +1,11 @@
 AMCC Change Log
-v1.8.0
-This is a pre-release!
+v1.8.1
 
 [+] Added:
-- New Protocol Manager Tool
-  A new, poweful utility to debug traffic between client and server!
-- TheAltening authentication support
-
-[+] Fixed:
-- Updated Gradle build system
-- Completely remade chat messages JSON parser
+- New Entity Radar tool!
+  It allows you to see and interact with nearby entities
+  including players.
+  
+- Entity tracking and auto-tracking.
+  Allows you to look at nearby entities, or
+  at entities you manually target.
