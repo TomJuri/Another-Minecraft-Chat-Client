@@ -39,6 +39,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
 import net.defekt.mc.chatclient.protocol.packets.UnknownPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerStatisticsPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientEntityActionPacket.EntityAction;
+import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPlayerPositionAndLookPacket;
 import net.defekt.mc.chatclient.ui.Messages;
 
 /**
@@ -70,6 +71,7 @@ public class MinecraftClient {
     private UUID uid = null;
 
     private final Map<Integer, Entity> storedEntities = new ConcurrentHashMap<>();
+    private int trackedEntity = -1;
 
     private Socket soc = null;
     private OutputStream os = null;
@@ -350,7 +352,7 @@ public class MinecraftClient {
                             }
                         }
                     } catch (final Exception e) {
-						e.printStackTrace();
+                        e.printStackTrace();
                         for (final ClientListener cl : clientListeners) {
                             cl.disconnected(e.toString());
                         }
@@ -663,6 +665,42 @@ public class MinecraftClient {
         return pitch;
     }
 
+    public boolean isTracked(Entity entity) {
+        Entity tracked = null;
+        if (storedEntities.containsKey(trackedEntity)) tracked = storedEntities.get(trackedEntity);
+        if (tracked != null) return tracked.getUid().equals(entity.getUid());
+        return false;
+    }
+
+    public void trackEntity(Entity entity) {
+        for (int id : storedEntities.keySet().toArray(new Integer[0])) {
+            if (storedEntities.get(id).getUid().equals(entity.getUid())) trackedEntity = id;
+        }
+    }
+
+    protected void lookAt(Entity entity) throws IOException {
+        lookAt(entity.getX(), entity.getY(), entity.getZ());
+    }
+
+    protected void lookAt(double x, double y, double z) throws IOException {
+        double dX = x - this.x;
+        double dY = y - this.y;
+        double dZ = z - this.z;
+
+        double distXZ = Math.sqrt(dX * dX + dZ * dZ);
+        double distY = Math.sqrt(distXZ * distXZ + dY * dY);
+
+        yaw = (float) (Math.acos(dX / distXZ) * 180 / Math.PI);
+        pitch = (float) (Math.acos(dY / distY) * 180 / Math.PI);
+
+        if (dZ < 0) yaw += Math.abs(180 - yaw) * 2;
+
+        this.yaw -= 90;
+        this.pitch -= 90;
+
+        sendPacket(new ClientPlayerPositionAndLookPacket(reg, this.x, this.y, this.z, yaw, pitch, true));
+    }
+
     /**
      * Set client's yaw. This method only sets internal variable, it does NOT change
      * client's position on server.
@@ -909,5 +947,13 @@ public class MinecraftClient {
 
     public void setUid(UUID uid) {
         this.uid = uid;
+    }
+
+    public int getTrackedEntity() {
+        return trackedEntity;
+    }
+
+    public void setTrackedEntity(int trackedEntity) {
+        this.trackedEntity = trackedEntity;
     }
 }

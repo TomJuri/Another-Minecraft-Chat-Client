@@ -80,6 +80,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
@@ -2176,6 +2177,8 @@ public class Main {
                 }
             };
 
+            Entity selectedEntity = null;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (rWin != null) {
@@ -2230,21 +2233,12 @@ public class Main {
 
                     MinecraftClient client = clients.get(fPane);
 
-                    Entity selectedEntity = null;
-
                     {
                         addMouseMotionListener(new MouseMotionAdapter() {
 
                             @Override
                             public void mouseMoved(MouseEvent e) {
                                 selectedEntity = null;
-                            }
-                        });
-                        addMouseListener(new MouseAdapter() {
-
-                            @Override
-                            public void mouseClicked(MouseEvent e) {
-                                // TODO Entity Handling
                             }
                         });
                         addMouseWheelListener(new MouseWheelListener() {
@@ -2346,7 +2340,8 @@ public class Main {
                                                 && selectedEntity == null) {
                                             selectedEntity = entity;
                                         }
-                                        drawMob(x, z, g, Color.red, entity.equals(selectedEntity));
+                                        drawMob(x, z, g, Color.red, entity.equals(selectedEntity),
+                                                client.isTracked(entity));
                                     }
                                 } else {
                                     if (displayPlayers.isSelected()) {
@@ -2354,14 +2349,15 @@ public class Main {
                                                 && selectedEntity == null) {
                                             selectedEntity = entity;
                                         }
-                                        drawPlayer(x, z, entity.getUid(), g, playerColor,
-                                                entity.equals(selectedEntity));
+                                        drawPlayer(x, z, entity.getUid(), g, playerColor, entity.equals(selectedEntity),
+                                                client.isTracked(entity));
                                     }
                                 }
                             }
                         }
 
-                        if (client != null) drawPlayer(centerX, centerZ, client.getUid(), g, mainPlayerColor, false);
+                        if (client != null)
+                            drawPlayer(centerX, centerZ, client.getUid(), g, mainPlayerColor, false, false);
 
                         try {
                             Thread.sleep(1000 / 100);
@@ -2372,11 +2368,20 @@ public class Main {
                         repaint();
                     }
 
-                    private void drawPlayer(int x, int y, UUID uid, Graphics g, Color color, boolean selected) {
+                    private byte frameTimer = 0;
+
+                    private void drawPlayer(int x, int y, UUID uid, Graphics g, Color color, boolean selected,
+                            boolean tracked) {
                         BufferedImage image = PlayerSkinCache.getHead(uid);
                         if (image != null) {
-                            if (selected) {
-                                g.setColor(Color.white);
+                            if (selected || tracked) {
+                                if (selected)
+                                    g.setColor(Color.white);
+                                else if (tracked) {
+                                    g.setColor(frameTimer < 5 ? Color.white : Color.gray);
+                                    frameTimer++;
+                                    if (frameTimer > 10) frameTimer = 0;
+                                }
                                 g.fillRect(x - 14, y - 14, 28, 28);
                             }
                             g.drawImage(image, x - 12, y - 12, 24, 24, null);
@@ -2393,15 +2398,97 @@ public class Main {
                         }
                     }
 
-                    private void drawMob(int x, int y, Graphics g, Color color, boolean selected) {
-                        if (selected) {
-                            g.setColor(Color.white);
+                    private void drawMob(int x, int y, Graphics g, Color color, boolean selected, boolean tracked) {
+
+                        if (selected || tracked) {
+                            if (selected)
+                                g.setColor(Color.white);
+                            else if (tracked) {
+                                g.setColor(frameTimer < 5 ? Color.white : Color.gray);
+                                frameTimer++;
+                                if (frameTimer > 10) frameTimer = 0;
+                            }
                             g.fillRect(x - 6, y - 6, 12, 12);
                         }
                         g.setColor(color);
                         g.fillRect(x - 4, y - 4, 8, 8);
                     }
                 };
+
+                drawingPanel.addMouseListener(new MouseAdapter() {
+
+                    MinecraftClient client = clients.get(fPane);
+                    Entity currentEntity = null;
+
+                    ActionListener lClick = new ActionListener() {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            client.trackEntity(currentEntity);
+                        }
+                    };
+
+                    JMenuItem currentEntityItem = new JMenuItem("") {
+                        {
+                            setEnabled(false);
+                        }
+                    };
+
+                    JPopupMenu entityMenu = new JPopupMenu("") {
+                        {
+                            add(currentEntityItem);
+                            add(new JMenuItem("Track Entity") {
+                                {
+                                    setFont(getFont().deriveFont(Font.BOLD));
+                                    addActionListener(lClick);
+                                }
+                            });
+                        }
+                    };
+
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        // TODO Entity Handling
+                        currentEntity = selectedEntity;
+                        if (currentEntity != null) {
+                            Point scrLoc = e.getPoint();
+                            if (e.getButton() == MouseEvent.BUTTON1) {
+                                lClick.actionPerformed(new ActionEvent(entityMenu, 0, ""));
+                            } else if (e.getButton() == MouseEvent.BUTTON3) {
+
+                                String name;
+                                BufferedImage skin = null;
+                                if (currentEntity instanceof Player) {
+                                    PlayerInfo inf = client.getPlayersTabList().get(currentEntity.getUid());
+                                    if (inf != null) {
+                                        name = inf.getName();
+                                    } else {
+                                        name = currentEntity.getUid().toString();
+                                    }
+
+                                    skin = PlayerSkinCache.getHead(currentEntity.getUid());
+                                    if (skin != null) {
+                                        BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+                                        Graphics g = img.createGraphics();
+                                        g.drawImage(skin, 0, 0, img.getWidth(), img.getHeight(), null);
+                                        skin = img;
+                                    }
+
+                                } else {
+                                    name = Integer.toString(currentEntity.getType());
+                                }
+
+                                currentEntityItem.setText(name);
+                                if (skin != null)
+                                    currentEntityItem.setIcon(new ImageIcon(skin));
+                                else
+                                    currentEntityItem.setIcon(null);
+
+                                entityMenu.show(drawingPanel, (int) scrLoc.getX(), (int) scrLoc.getY());
+                            }
+                        }
+                    }
+                });
 
                 drawingPanel.setPreferredSize(new Dimension(2048, 2048));
                 drawingScroll.setViewportView(drawingPanel);
