@@ -71,4 +71,6 @@ public interface ClientListener {
      * @param worldAge current world's age
      */
     public void timeUpdated(long time, long worldAge);
+
+    public void changedTrackedEntity(int id);
 }

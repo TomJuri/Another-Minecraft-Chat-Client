@@ -9,7 +9,7 @@ public class Entity {
     private double y;
     private double z;
 
-    public Entity(UUID uid, int type, double x, double y, double z) {
+    public Entity(final UUID uid, final int type, final double x, final double y, final double z) {
         super();
         this.uid = uid;
         this.type = type;
@@ -38,15 +38,15 @@ public class Entity {
         return z;
     }
 
-    public void setX(double x) {
+    public void setX(final double x) {
         this.x = x;
     }
 
-    public void setY(double y) {
+    public void setY(final double y) {
         this.y = y;
     }
 
-    public void setZ(double z) {
+    public void setZ(final double z) {
         this.z = z;
     }
 

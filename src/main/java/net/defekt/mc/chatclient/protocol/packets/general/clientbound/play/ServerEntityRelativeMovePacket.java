@@ -13,9 +13,9 @@ public class ServerEntityRelativeMovePacket extends Packet {
     private double deltaY;
     private double deltaZ;
 
-    public ServerEntityRelativeMovePacket(PacketRegistry reg, byte[] data) throws IOException {
+    public ServerEntityRelativeMovePacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
-        VarInputStream is = getInputStream();
+        final VarInputStream is = getInputStream();
         entityID = is.readVarInt();
         deltaX = is.readShort();
         deltaY = is.readShort();

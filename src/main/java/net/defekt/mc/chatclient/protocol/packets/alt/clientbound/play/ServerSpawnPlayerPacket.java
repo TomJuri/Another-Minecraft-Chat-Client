@@ -15,9 +15,9 @@ public class ServerSpawnPlayerPacket extends Packet {
     protected double y;
     protected double z;
 
-    public ServerSpawnPlayerPacket(PacketRegistry reg, byte[] data) throws IOException {
+    public ServerSpawnPlayerPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
-        VarInputStream is = getInputStream();
+        final VarInputStream is = getInputStream();
         id = is.readVarInt();
         uid = is.readUUID();
         x = is.readInt();

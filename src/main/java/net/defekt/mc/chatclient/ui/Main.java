@@ -2148,11 +2148,11 @@ public class Main {
         timeBox.add(timeLabel);
         timeBox.add(timeValueLabel);
 
-        JScrollPane drawingScroll = new JScrollPane();
-        JScrollBar hbar = drawingScroll.getHorizontalScrollBar();
-        JScrollBar vbar = drawingScroll.getVerticalScrollBar();
+        final JScrollPane drawingScroll = new JScrollPane();
+        final JScrollBar hbar = drawingScroll.getHorizontalScrollBar();
+        final JScrollBar vbar = drawingScroll.getVerticalScrollBar();
 
-        JButton openRadarBtn = new JButton("Open Entity Radar"); // TODO Lang
+        final JButton openRadarBtn = new JButton("Open Entity Radar"); // TODO Lang
         openRadarBtn.addActionListener(new ActionListener() {
 
             JFrame rWin;
@@ -2180,25 +2180,25 @@ public class Main {
             Entity selectedEntity = null;
 
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 if (rWin != null) {
                     rWin.dispose();
                     rWin = null;
                 }
                 rWin = new JFrame("Entity Radar: " + username + " (" + selectedServer.getName() + ")");
                 rWin.setAlwaysOnTop(true);
-                rWin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                rWin.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-                ButtonGroup displayNamesGroup = new ButtonGroup();
+                final ButtonGroup displayNamesGroup = new ButtonGroup();
                 displayNamesGroup.add(displayNames);
                 displayNamesGroup.add(realNames);
                 displayNamesGroup.add(noNames);
 
-                JMenuBar radarBar = new JMenuBar();
+                final JMenuBar radarBar = new JMenuBar();
 
-                JMenu radarViewMenu = new JMenu("View");
-                JMenu radarViewDisplayNames = new JMenu("Player Names");
-                JMenu radarViewEntities = new JMenu("Entities");
+                final JMenu radarViewMenu = new JMenu("View");
+                final JMenu radarViewDisplayNames = new JMenu("Player Names");
+                final JMenu radarViewEntities = new JMenu("Entities");
 
                 radarViewDisplayNames.add(displayNames);
                 radarViewDisplayNames.add(realNames);
@@ -2210,8 +2210,11 @@ public class Main {
                 radarViewMenu.add(new JCheckBoxMenuItem("Always on Top") {
                     {
                         setSelected(rWin.isAlwaysOnTop());
-                        addActionListener(e -> {
-                            rWin.setAlwaysOnTop(isSelected());
+                        addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                rWin.setAlwaysOnTop(isSelected());
+                            }
                         });
                     }
                 });
@@ -2219,7 +2222,7 @@ public class Main {
                 radarViewMenu.add(radarViewEntities);
                 radarBar.add(radarViewMenu);
 
-                JPanel drawingPanel = new JPanel() {
+                final JPanel drawingPanel = new JPanel() {
 
                     Toolkit tk = Toolkit.getDefaultToolkit();
 
@@ -2237,14 +2240,14 @@ public class Main {
                         addMouseMotionListener(new MouseMotionAdapter() {
 
                             @Override
-                            public void mouseMoved(MouseEvent e) {
+                            public void mouseMoved(final MouseEvent e) {
                                 selectedEntity = null;
                             }
                         });
                         addMouseWheelListener(new MouseWheelListener() {
 
                             @Override
-                            public void mouseWheelMoved(MouseWheelEvent e) {
+                            public void mouseWheelMoved(final MouseWheelEvent e) {
                                 if (e.getWheelRotation() < 0) {
                                     increaseScale();
                                 } else {
@@ -2258,16 +2261,18 @@ public class Main {
                             private boolean isCtrlDown = false;
 
                             @Override
-                            public void keyTyped(KeyEvent e) {
+                            public void keyTyped(final KeyEvent e) {
                             }
 
                             @Override
-                            public void keyReleased(KeyEvent e) {
-                                if (e.getKeyCode() == KeyEvent.VK_CONTROL) isCtrlDown = false;
+                            public void keyReleased(final KeyEvent e) {
+                                if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+                                    isCtrlDown = false;
+                                }
                             }
 
                             @Override
-                            public void keyPressed(KeyEvent e) {
+                            public void keyPressed(final KeyEvent e) {
                                 switch (e.getKeyCode()) {
                                     case KeyEvent.VK_CONTROL: {
                                         isCtrlDown = true;
@@ -2275,11 +2280,15 @@ public class Main {
                                     }
                                     case KeyEvent.VK_PLUS:
                                     case KeyEvent.VK_EQUALS: {
-                                        if (isCtrlDown) increaseScale();
+                                        if (isCtrlDown) {
+                                            increaseScale();
+                                        }
                                         break;
                                     }
                                     case KeyEvent.VK_MINUS: {
-                                        if (isCtrlDown) decreaseScale();
+                                        if (isCtrlDown) {
+                                            decreaseScale();
+                                        }
                                         break;
                                     }
                                     default:
@@ -2290,25 +2299,29 @@ public class Main {
                     }
 
                     private void increaseScale() {
-                        if (scale < 20) scale++;
+                        if (scale < 20) {
+                            scale++;
+                        }
                         scaleTimer = 30;
                     }
 
                     private void decreaseScale() {
-                        if (scale > 1) scale--;
+                        if (scale > 1) {
+                            scale--;
+                        }
                         scaleTimer = 30;
                     }
 
                     @Override
-                    protected void paintComponent(Graphics g) {
-                        int width = getWidth();
-                        int height = getHeight();
+                    protected void paintComponent(final Graphics g) {
+                        final int width = getWidth();
+                        final int height = getHeight();
                         g.setColor(background);
                         g.fillRect(0, 0, width, height);
                         g.setFont(mcFont.deriveFont((float) 12));
 
-                        int centerX = width / 2;
-                        int centerZ = height / 2;
+                        final int centerX = width / 2;
+                        final int centerZ = height / 2;
 
                         g.setColor(backgroundLines);
                         int i = 0;
@@ -2324,8 +2337,8 @@ public class Main {
                             g.drawString("Scale: x" + scale, 5 + hbar.getValue(), 25 + vbar.getValue());
                         }
 
-                        for (int id : client.getStoredEntities().keySet().toArray(new Integer[0])) {
-                            Entity entity = client.getEntity(id);
+                        for (final int id : client.getStoredEntities().keySet().toArray(new Integer[0])) {
+                            final Entity entity = client.getEntity(id);
                             if (entity != null) {
                                 int x = (int) (client.getX() - entity.getX());
                                 int z = (int) (client.getZ() - entity.getZ());
@@ -2333,7 +2346,7 @@ public class Main {
                                 z *= scale;
                                 x += centerX;
                                 z += centerZ;
-                                Point mouse = getMousePosition();
+                                final Point mouse = getMousePosition();
                                 if (!(entity instanceof Player)) {
                                     if (displayEntities.isSelected()) {
                                         if (mouse != null && new Rectangle(x - 4, z - 4, 8, 8).contains(mouse)
@@ -2343,25 +2356,24 @@ public class Main {
                                         drawMob(x, z, g, Color.red, entity.equals(selectedEntity),
                                                 client.isTracked(entity));
                                     }
-                                } else {
-                                    if (displayPlayers.isSelected()) {
-                                        if (mouse != null && new Rectangle(x - 12, z - 12, 24, 24).contains(mouse)
-                                                && selectedEntity == null) {
-                                            selectedEntity = entity;
-                                        }
-                                        drawPlayer(x, z, entity.getUid(), g, playerColor, entity.equals(selectedEntity),
-                                                client.isTracked(entity));
+                                } else if (displayPlayers.isSelected()) {
+                                    if (mouse != null && new Rectangle(x - 12, z - 12, 24, 24).contains(mouse)
+                                            && selectedEntity == null) {
+                                        selectedEntity = entity;
                                     }
+                                    drawPlayer(x, z, entity.getUid(), g, playerColor, entity.equals(selectedEntity),
+                                            client.isTracked(entity));
                                 }
                             }
                         }
 
-                        if (client != null)
+                        if (client != null) {
                             drawPlayer(centerX, centerZ, client.getUid(), g, mainPlayerColor, false, false);
+                        }
 
                         try {
                             Thread.sleep(1000 / 100);
-                        } catch (InterruptedException ex) {
+                        } catch (final InterruptedException ex) {
                             ex.printStackTrace();
                         }
                         tk.sync();
@@ -2370,27 +2382,30 @@ public class Main {
 
                     private byte frameTimer = 0;
 
-                    private void drawPlayer(int x, int y, UUID uid, Graphics g, Color color, boolean selected,
-                            boolean tracked) {
-                        BufferedImage image = PlayerSkinCache.getHead(uid);
+                    private void drawPlayer(final int x, final int y, final UUID uid, final Graphics g,
+                            final Color color, final boolean selected, final boolean tracked) {
+                        final BufferedImage image = PlayerSkinCache.getHead(uid);
                         if (image != null) {
                             if (selected || tracked) {
-                                if (selected)
+                                if (selected) {
                                     g.setColor(Color.white);
-                                else if (tracked) {
+                                } else if (tracked) {
                                     g.setColor(frameTimer < 5 ? Color.white : Color.gray);
                                     frameTimer++;
-                                    if (frameTimer > 10) frameTimer = 0;
+                                    if (frameTimer > 10) {
+                                        frameTimer = 0;
+                                    }
                                 }
                                 g.fillRect(x - 14, y - 14, 28, 28);
                             }
                             g.drawImage(image, x - 12, y - 12, 24, 24, null);
                         }
 
-                        PlayerInfo info = client.getPlayersTabList().get(uid);
+                        final PlayerInfo info = client.getPlayersTabList().get(uid);
                         if (info != null) {
                             if (!noNames.isSelected()) {
-                                String name = realNames.isSelected() || info.getDisplayName() == null ? info.getName()
+                                final String name = realNames.isSelected() || info.getDisplayName() == null
+                                        ? info.getName()
                                         : ChatMessages.removeColors(info.getDisplayName());
                                 g.setColor(color);
                                 g.drawString(name, x - (g.getFontMetrics().stringWidth(name) / 2), y - 16);
@@ -2398,15 +2413,18 @@ public class Main {
                         }
                     }
 
-                    private void drawMob(int x, int y, Graphics g, Color color, boolean selected, boolean tracked) {
+                    private void drawMob(final int x, final int y, final Graphics g, final Color color,
+                            final boolean selected, final boolean tracked) {
 
                         if (selected || tracked) {
-                            if (selected)
+                            if (selected) {
                                 g.setColor(Color.white);
-                            else if (tracked) {
+                            } else if (tracked) {
                                 g.setColor(frameTimer < 5 ? Color.white : Color.gray);
                                 frameTimer++;
-                                if (frameTimer > 10) frameTimer = 0;
+                                if (frameTimer > 10) {
+                                    frameTimer = 0;
+                                }
                             }
                             g.fillRect(x - 6, y - 6, 12, 12);
                         }
@@ -2423,7 +2441,7 @@ public class Main {
                     ActionListener lClick = new ActionListener() {
 
                         @Override
-                        public void actionPerformed(ActionEvent e) {
+                        public void actionPerformed(final ActionEvent e) {
                             client.trackEntity(currentEntity);
                         }
                     };
@@ -2447,11 +2465,11 @@ public class Main {
                     };
 
                     @Override
-                    public void mouseClicked(MouseEvent e) {
+                    public void mouseClicked(final MouseEvent e) {
                         // TODO Entity Handling
                         currentEntity = selectedEntity;
                         if (currentEntity != null) {
-                            Point scrLoc = e.getPoint();
+                            final Point scrLoc = e.getPoint();
                             if (e.getButton() == MouseEvent.BUTTON1) {
                                 lClick.actionPerformed(new ActionEvent(entityMenu, 0, ""));
                             } else if (e.getButton() == MouseEvent.BUTTON3) {
@@ -2459,7 +2477,7 @@ public class Main {
                                 String name;
                                 BufferedImage skin = null;
                                 if (currentEntity instanceof Player) {
-                                    PlayerInfo inf = client.getPlayersTabList().get(currentEntity.getUid());
+                                    final PlayerInfo inf = client.getPlayersTabList().get(currentEntity.getUid());
                                     if (inf != null) {
                                         name = inf.getName();
                                     } else {
@@ -2468,8 +2486,9 @@ public class Main {
 
                                     skin = PlayerSkinCache.getHead(currentEntity.getUid());
                                     if (skin != null) {
-                                        BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-                                        Graphics g = img.createGraphics();
+                                        final BufferedImage img = new BufferedImage(16, 16,
+                                                BufferedImage.TYPE_INT_ARGB);
+                                        final Graphics g = img.createGraphics();
                                         g.drawImage(skin, 0, 0, img.getWidth(), img.getHeight(), null);
                                         skin = img;
                                     }
@@ -2479,10 +2498,11 @@ public class Main {
                                 }
 
                                 currentEntityItem.setText(name);
-                                if (skin != null)
+                                if (skin != null) {
                                     currentEntityItem.setIcon(new ImageIcon(skin));
-                                else
+                                } else {
                                     currentEntityItem.setIcon(null);
+                                }
 
                                 entityMenu.show(drawingPanel, (int) scrLoc.getX(), (int) scrLoc.getY());
                             }
@@ -2497,10 +2517,13 @@ public class Main {
                 rWin.setJMenuBar(radarBar);
                 rWin.setContentPane(drawingScroll);
                 rWin.pack();
-                SwingUtilities.invokeLater(() -> {
-                    Rectangle bounds = drawingScroll.getViewport().getViewRect();
-                    hbar.setValue((hbar.getMaximum() - bounds.width) / 2);
-                    vbar.setValue((vbar.getMaximum() - bounds.height) / 2);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Rectangle bounds = drawingScroll.getViewport().getViewRect();
+                        hbar.setValue((hbar.getMaximum() - bounds.width) / 2);
+                        vbar.setValue((vbar.getMaximum() - bounds.height) / 2);
+                    }
                 });
 
                 SwingUtils.centerWindow(rWin);
@@ -2508,10 +2531,40 @@ public class Main {
             }
         });
 
+        final Box trackingBox = Box.createHorizontalBox();
+
+        final JTextField trackingField = new JTextField();
+        trackingField.setEditable(false);
+        final JButton stopTrackingBtn = new JButton("Stop tracking");
+        stopTrackingBtn.setEnabled(false);
+        stopTrackingBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clients.get(fPane).setTrackedEntity(-1);
+            }
+        });
+
+        // TODO Lang
+        trackingBox.add(new JLabel("Currently tracking: "));
+        trackingBox.add(trackingField);
+
         worldBox.add(timeBox);
         worldBox.add(new JLabel(" "));
         worldBox.add(openRadarBtn);
+        worldBox.add(new JLabel(" "));
+        worldBox.add(trackingBox);
+        worldBox.add(stopTrackingBtn);
         worldBox.alignAll();
+
+        for (final Component ct : trackingBox.getComponents()) {
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
+                }
+            });
+        }
 
         final JVBoxPanel autoMsgBox = new JVBoxPanel();
 
@@ -3827,6 +3880,29 @@ public class Main {
 
                                 timeValueLabel.setText(timeString);
 
+                            }
+
+                            @Override
+                            public void changedTrackedEntity(final int id) {
+                                // TODO
+                                if (id == -1) {
+                                    trackingField.setText("");
+                                    stopTrackingBtn.setEnabled(false);
+                                    return;
+                                }
+                                final Entity et = cl.getEntity(id);
+                                stopTrackingBtn.setEnabled(true);
+
+                                String customName = null;
+                                if (et != null && et instanceof Player) {
+                                    final PlayerInfo info = cl.getPlayersTabList().get(et.getUid());
+                                    if (info != null) {
+                                        customName = info.getName();
+                                    }
+                                }
+                                trackingField
+                                        .setText(et != null ? customName != null ? customName : et.getUid().toString()
+                                                : Integer.toString(id));
                             }
 
                         });

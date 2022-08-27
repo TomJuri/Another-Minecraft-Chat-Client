@@ -127,82 +127,89 @@ public class ClientPacketListener implements InternalPacketListener {
     public void packetReceived(final Packet packet, final PacketRegistry registry) {
         try {
             if (packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityTeleportPacket) {
-                net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityTeleportPacket tp = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityTeleportPacket) packet;
-                double x = tp.getX();
-                double y = tp.getY();
-                double z = tp.getZ();
-                int id = tp.getId();
-                Entity et = cl.getEntity(id);
+                final net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityTeleportPacket tp = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityTeleportPacket) packet;
+                final double x = tp.getX();
+                final double y = tp.getY();
+                final double z = tp.getZ();
+                final int id = tp.getId();
+                final Entity et = cl.getEntity(id);
                 if (et != null) {
                     et.setX(x);
                     et.setZ(y);
                     et.setZ(z);
-                    if (cl.getTrackedEntity() == tp.getId()) cl.lookAt(et);
+                    if (cl.getTrackedEntity() == tp.getId()) {
+                        cl.lookAt(et);
+                    }
                 }
             } else if (packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket) {
-                net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket move = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket) packet;
-                Entity entity = cl.getEntity(move.getEntityID());
+                final net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket move = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket) packet;
+                final Entity entity = cl.getEntity(move.getEntityID());
                 if (entity == null) return;
-                double x = entity.getX();
-                double y = entity.getY();
-                double z = entity.getZ();
+                final double x = entity.getX();
+                final double y = entity.getY();
+                final double z = entity.getZ();
 
-                double dX = move.getDeltaX();
-                double dY = move.getDeltaY();
-                double dZ = move.getDeltaZ();
+                final double dX = move.getDeltaX();
+                final double dY = move.getDeltaY();
+                final double dZ = move.getDeltaZ();
 
                 entity.setX(x + dX);
                 entity.setY(y + dY);
                 entity.setZ(z + dZ);
-                if (cl.getTrackedEntity() == move.getEntityID()) cl.lookAt(entity);
+                if (cl.getTrackedEntity() == move.getEntityID()) {
+                    cl.lookAt(entity);
+                }
             } else if (packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket) {
-                net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket sp = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket) packet;
+                final net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket sp = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket) packet;
                 if (sp.getId() == cl.getEntityID()) return;
                 cl.getStoredEntities().put(sp.getId(), new Player(sp.getUid(), sp.getX(), sp.getY(), sp.getZ()));
             } else if (packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnEntityPacket) {
-                net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnEntityPacket sp = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnEntityPacket) packet;
+                final net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnEntityPacket sp = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnEntityPacket) packet;
                 cl.getStoredEntities().put(sp.getId(),
                         new Entity(UUID.randomUUID(), sp.getType(), sp.getX(), sp.getY(), sp.getZ()));
             } else if (packet instanceof ServerEntityTeleportPacket) {
-                ServerEntityTeleportPacket tp = (ServerEntityTeleportPacket) packet;
-                double x = tp.getX();
-                double y = tp.getY();
-                double z = tp.getZ();
-                int id = tp.getId();
-                Entity et = cl.getEntity(id);
+                final ServerEntityTeleportPacket tp = (ServerEntityTeleportPacket) packet;
+                final double x = tp.getX();
+                final double y = tp.getY();
+                final double z = tp.getZ();
+                final int id = tp.getId();
+                final Entity et = cl.getEntity(id);
                 if (et != null) {
                     et.setX(x);
                     et.setZ(y);
                     et.setZ(z);
                 }
             } else if (packet instanceof ServerEntityRelativeMovePacket) {
-                ServerEntityRelativeMovePacket move = (ServerEntityRelativeMovePacket) packet;
-                Entity entity = cl.getEntity(move.getEntityID());
+                final ServerEntityRelativeMovePacket move = (ServerEntityRelativeMovePacket) packet;
+                final Entity entity = cl.getEntity(move.getEntityID());
                 if (entity == null) return;
-                double x = entity.getX();
-                double y = entity.getY();
-                double z = entity.getZ();
+                final double x = entity.getX();
+                final double y = entity.getY();
+                final double z = entity.getZ();
 
-                double dX = move.getDeltaX();
-                double dY = move.getDeltaY();
-                double dZ = move.getDeltaZ();
+                final double dX = move.getDeltaX();
+                final double dY = move.getDeltaY();
+                final double dZ = move.getDeltaZ();
 
                 entity.setX(x + dX);
                 entity.setY(y + dY);
                 entity.setZ(z + dZ);
 
-                if (cl.getTrackedEntity() == move.getEntityID()) cl.lookAt(entity);
+                if (cl.getTrackedEntity() == move.getEntityID()) {
+                    cl.lookAt(entity);
+                }
 
             } else if (packet instanceof ServerDestroyEntitiesPacket) {
-                Map<Integer, Entity> ets = cl.getStoredEntities();
-                for (int id : ((ServerDestroyEntitiesPacket) packet).getEntityIDs())
+                final Map<Integer, Entity> ets = cl.getStoredEntities();
+                for (final int id : ((ServerDestroyEntitiesPacket) packet).getEntityIDs()) {
                     ets.remove(id);
+                }
             } else if (packet instanceof ServerSpawnPlayerPacket) {
-                ServerSpawnPlayerPacket sp = (ServerSpawnPlayerPacket) packet;
+                final ServerSpawnPlayerPacket sp = (ServerSpawnPlayerPacket) packet;
                 if (sp.getId() == cl.getEntityID()) return;
                 cl.getStoredEntities().put(sp.getId(), new Player(sp.getUid(), sp.getX(), sp.getY(), sp.getZ()));
             } else if (packet instanceof ServerSpawnEntityPacket) {
-                ServerSpawnEntityPacket sp = (ServerSpawnEntityPacket) packet;
+                final ServerSpawnEntityPacket sp = (ServerSpawnEntityPacket) packet;
                 cl.getStoredEntities().put(sp.getId(),
                         new Entity(sp.getUid(), sp.getType(), sp.getX(), sp.getY(), sp.getZ()));
             } else if (packet instanceof ServerLoginSetCompressionPacket) {
@@ -434,11 +441,12 @@ public class ClientPacketListener implements InternalPacketListener {
                     String uid;
                     if (packet instanceof ServerLoginSuccessPacket) {
                         uid = ((ServerLoginSuccessPacket) packet).getUuid();
-                    } else
+                    } else {
                         uid = ((net.defekt.mc.chatclient.protocol.packets.alt.clientbound.login.ServerLoginSuccessPacket) packet)
                                 .getUuid();
+                    }
                     cl.setUid(UUID.fromString(uid));
-                } catch (Exception ex) {
+                } catch (final Exception ex) {
                     ex.printStackTrace();
                 }
             } else if (packet instanceof ServerKeepAlivePacket

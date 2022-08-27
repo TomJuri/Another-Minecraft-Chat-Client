@@ -10,12 +10,13 @@ public class ServerDestroyEntitiesPacket extends Packet {
 
     private final int[] entityIDs;
 
-    public ServerDestroyEntitiesPacket(PacketRegistry reg, byte[] data) throws IOException {
+    public ServerDestroyEntitiesPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
-        VarInputStream is = getInputStream();
+        final VarInputStream is = getInputStream();
         entityIDs = new int[is.readVarInt()];
-        for (int x = 0; x < entityIDs.length; x++)
+        for (int x = 0; x < entityIDs.length; x++) {
             entityIDs[x] = is.readVarInt();
+        }
     }
 
     public int[] getEntityIDs() {

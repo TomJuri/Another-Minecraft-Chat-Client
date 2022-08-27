@@ -10,9 +10,9 @@ public class ServerDestroyEntityPacket extends Packet {
 
     private final int entityID;
 
-    public ServerDestroyEntityPacket(PacketRegistry reg, byte[] data) throws IOException {
+    public ServerDestroyEntityPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
-        VarInputStream is = getInputStream();
+        final VarInputStream is = getInputStream();
         entityID = is.readVarInt();
     }
 

@@ -665,35 +665,44 @@ public class MinecraftClient {
         return pitch;
     }
 
-    public boolean isTracked(Entity entity) {
+    public boolean isTracked(final Entity entity) {
         Entity tracked = null;
-        if (storedEntities.containsKey(trackedEntity)) tracked = storedEntities.get(trackedEntity);
+        if (storedEntities.containsKey(trackedEntity)) {
+            tracked = storedEntities.get(trackedEntity);
+        }
         if (tracked != null) return tracked.getUid().equals(entity.getUid());
         return false;
     }
 
-    public void trackEntity(Entity entity) {
-        for (int id : storedEntities.keySet().toArray(new Integer[0])) {
-            if (storedEntities.get(id).getUid().equals(entity.getUid())) trackedEntity = id;
+    public void trackEntity(final Entity entity) {
+        for (final int id : storedEntities.keySet().toArray(new Integer[0])) {
+            if (storedEntities.get(id).getUid().equals(entity.getUid())) {
+                trackedEntity = id;
+                for (final ClientListener listener : getClientListeners().toArray(new ClientListener[0])) {
+                    listener.changedTrackedEntity(trackedEntity);
+                }
+            }
         }
     }
 
-    protected void lookAt(Entity entity) throws IOException {
+    protected void lookAt(final Entity entity) throws IOException {
         lookAt(entity.getX(), entity.getY(), entity.getZ());
     }
 
-    protected void lookAt(double x, double y, double z) throws IOException {
-        double dX = x - this.x;
-        double dY = y - this.y;
-        double dZ = z - this.z;
+    protected void lookAt(final double x, final double y, final double z) throws IOException {
+        final double dX = x - this.x;
+        final double dY = y - this.y;
+        final double dZ = z - this.z;
 
-        double distXZ = Math.sqrt(dX * dX + dZ * dZ);
-        double distY = Math.sqrt(distXZ * distXZ + dY * dY);
+        final double distXZ = Math.sqrt(dX * dX + dZ * dZ);
+        final double distY = Math.sqrt(distXZ * distXZ + dY * dY);
 
         yaw = (float) (Math.acos(dX / distXZ) * 180 / Math.PI);
         pitch = (float) (Math.acos(dY / distY) * 180 / Math.PI);
 
-        if (dZ < 0) yaw += Math.abs(180 - yaw) * 2;
+        if (dZ < 0) {
+            yaw += Math.abs(180 - yaw) * 2;
+        }
 
         this.yaw -= 90;
         this.pitch -= 90;
@@ -937,7 +946,7 @@ public class MinecraftClient {
         return storedEntities;
     }
 
-    public Entity getEntity(int id) {
+    public Entity getEntity(final int id) {
         return storedEntities.containsKey(id) ? storedEntities.get(id) : null;
     }
 
@@ -945,7 +954,7 @@ public class MinecraftClient {
         return uid;
     }
 
-    public void setUid(UUID uid) {
+    public void setUid(final UUID uid) {
         this.uid = uid;
     }
 
@@ -953,7 +962,10 @@ public class MinecraftClient {
         return trackedEntity;
     }
 
-    public void setTrackedEntity(int trackedEntity) {
+    public void setTrackedEntity(final int trackedEntity) {
         this.trackedEntity = trackedEntity;
+        for (final ClientListener listener : getClientListeners().toArray(new ClientListener[0])) {
+            listener.changedTrackedEntity(trackedEntity);
+        }
     }
 }

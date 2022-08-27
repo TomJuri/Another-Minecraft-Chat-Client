@@ -14,9 +14,9 @@ public class ServerSpawnEntityPacket extends Packet {
     protected int y;
     protected int z;
 
-    public ServerSpawnEntityPacket(PacketRegistry reg, byte[] data) throws IOException {
+    public ServerSpawnEntityPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
-        VarInputStream is = getInputStream();
+        final VarInputStream is = getInputStream();
         id = is.readVarInt();
         type = is.readUnsignedByte();
         x = is.readInt();

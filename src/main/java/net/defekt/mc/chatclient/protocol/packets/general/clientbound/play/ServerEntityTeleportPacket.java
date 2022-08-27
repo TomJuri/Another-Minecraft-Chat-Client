@@ -13,9 +13,9 @@ public class ServerEntityTeleportPacket extends Packet {
     protected double y;
     protected double z;
 
-    public ServerEntityTeleportPacket(PacketRegistry reg, byte[] data) throws IOException {
+    public ServerEntityTeleportPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
-        VarInputStream is = getInputStream();
+        final VarInputStream is = getInputStream();
         id = is.readVarInt();
         x = is.readDouble();
         y = is.readDouble();
