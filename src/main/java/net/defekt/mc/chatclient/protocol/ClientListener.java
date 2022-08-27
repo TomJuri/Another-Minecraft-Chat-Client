@@ -3,6 +3,7 @@ package net.defekt.mc.chatclient.protocol;
 import java.util.Map;
 
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
+import net.defekt.mc.chatclient.protocol.entity.Entity;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 
@@ -73,4 +74,6 @@ public interface ClientListener {
     public void timeUpdated(long time, long worldAge);
 
     public void changedTrackedEntity(int id);
+
+    public void entityMoved(Entity entity, int id);
 }

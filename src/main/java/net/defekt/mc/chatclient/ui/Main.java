@@ -59,6 +59,7 @@ import java.util.UUID;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -2212,7 +2213,7 @@ public class Main {
                         setSelected(rWin.isAlwaysOnTop());
                         addActionListener(new ActionListener() {
                             @Override
-                            public void actionPerformed(ActionEvent e) {
+                            public void actionPerformed(final ActionEvent e) {
                                 rWin.setAlwaysOnTop(isSelected());
                             }
                         });
@@ -2539,7 +2540,7 @@ public class Main {
         stopTrackingBtn.setEnabled(false);
         stopTrackingBtn.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 clients.get(fPane).setTrackedEntity(-1);
             }
         });
@@ -2548,12 +2549,27 @@ public class Main {
         trackingBox.add(new JLabel("Currently tracking: "));
         trackingBox.add(trackingField);
 
+        final JVBoxPanel autoTrackBox = new JVBoxPanel();
+
+        final JCheckBox autoTrackEnable = new JCheckBox("Enable Auto-Tracking");
+        autoTrackEnable.setFont(autoTrackEnable.getFont().deriveFont(Font.BOLD));
+        final JCheckBox autoTrackPlayers = new JCheckBox("Track Players");
+        final JCheckBox autoTrackEntities = new JCheckBox("Track Entities");
+
+        autoTrackBox.add(autoTrackEnable);
+        autoTrackBox.add(autoTrackPlayers);
+        autoTrackBox.add(autoTrackEntities);
+        autoTrackBox.setBorder(BorderFactory.createTitledBorder("Auto-Tracking"));
+        autoTrackBox.alignAll();
+
         worldBox.add(timeBox);
         worldBox.add(new JLabel(" "));
         worldBox.add(openRadarBtn);
         worldBox.add(new JLabel(" "));
         worldBox.add(trackingBox);
         worldBox.add(stopTrackingBtn);
+        worldBox.add(new JLabel(" "));
+        worldBox.add(autoTrackBox);
         worldBox.alignAll();
 
         for (final Component ct : trackingBox.getComponents()) {
@@ -3903,6 +3919,36 @@ public class Main {
                                 trackingField
                                         .setText(et != null ? customName != null ? customName : et.getUid().toString()
                                                 : Integer.toString(id));
+                            }
+
+                            @Override
+                            public void entityMoved(final Entity entity, final int id) {
+
+                                if (autoTrackEnable.isSelected()) {
+                                    double closestDistance = Double.MAX_VALUE;
+                                    Entity closestEntity = null;
+                                    for (final Entity ent : cl.getStoredEntities().values().toArray(new Entity[0])) {
+                                        final double dist = cl.distanceTo(ent);
+                                        if (dist < closestDistance) {
+                                            if ((ent instanceof Player && autoTrackPlayers.isSelected())
+                                                    || (!(ent instanceof Player) && autoTrackEntities.isSelected())) {
+                                                closestEntity = ent;
+                                                closestDistance = dist;
+                                            }
+                                        }
+                                    }
+                                    if (closestEntity != null) {
+                                        cl.trackEntity(closestEntity);
+                                    }
+                                }
+
+                                if (id == cl.getTrackedEntity()) {
+                                    try {
+                                        cl.lookAt(entity);
+                                    } catch (final IOException ex) {
+                                        ex.printStackTrace();
+                                    }
+                                }
                             }
 
                         });

@@ -28,6 +28,7 @@ import net.defekt.mc.chatclient.protocol.data.Hosts;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
 import net.defekt.mc.chatclient.protocol.entity.Entity;
+import net.defekt.mc.chatclient.protocol.entity.Player;
 import net.defekt.mc.chatclient.protocol.io.ListenerHashMap;
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
@@ -685,13 +686,13 @@ public class MinecraftClient {
         }
     }
 
-    protected void lookAt(final Entity entity) throws IOException {
-        lookAt(entity.getX(), entity.getY(), entity.getZ());
+    public void lookAt(final Entity entity) throws IOException {
+        lookAt(entity.getX(), entity instanceof Player ? entity.getY() + 2 : entity.getY(), entity.getZ());
     }
 
-    protected void lookAt(final double x, final double y, final double z) throws IOException {
+    public void lookAt(final double x, final double y, final double z) throws IOException {
         final double dX = x - this.x;
-        final double dY = y - this.y;
+        final double dY = y - (this.y + 2);
         final double dZ = z - this.z;
 
         final double distXZ = Math.sqrt(dX * dX + dZ * dZ);
@@ -967,5 +968,10 @@ public class MinecraftClient {
         for (final ClientListener listener : getClientListeners().toArray(new ClientListener[0])) {
             listener.changedTrackedEntity(trackedEntity);
         }
+    }
+
+    public double distanceTo(final Entity entity) {
+        return Math
+                .sqrt(Math.pow(x - entity.getX(), 2) + Math.pow(y - entity.getY(), 2) + Math.pow(z - entity.getZ(), 2));
     }
 }

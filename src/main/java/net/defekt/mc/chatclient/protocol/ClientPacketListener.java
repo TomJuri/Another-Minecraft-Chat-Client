@@ -137,9 +137,10 @@ public class ClientPacketListener implements InternalPacketListener {
                     et.setX(x);
                     et.setZ(y);
                     et.setZ(z);
-                    if (cl.getTrackedEntity() == tp.getId()) {
-                        cl.lookAt(et);
+                    for (final ClientListener listener : cl.getClientListeners()) {
+                        listener.entityMoved(et, id);
                     }
+
                 }
             } else if (packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket) {
                 final net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket move = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerEntityRelativeMovePacket) packet;
@@ -156,8 +157,8 @@ public class ClientPacketListener implements InternalPacketListener {
                 entity.setX(x + dX);
                 entity.setY(y + dY);
                 entity.setZ(z + dZ);
-                if (cl.getTrackedEntity() == move.getEntityID()) {
-                    cl.lookAt(entity);
+                for (final ClientListener listener : cl.getClientListeners()) {
+                    listener.entityMoved(entity, move.getEntityID());
                 }
             } else if (packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket) {
                 final net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket sp = (net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerSpawnPlayerPacket) packet;
@@ -178,6 +179,9 @@ public class ClientPacketListener implements InternalPacketListener {
                     et.setX(x);
                     et.setZ(y);
                     et.setZ(z);
+                    for (final ClientListener listener : cl.getClientListeners()) {
+                        listener.entityMoved(et, id);
+                    }
                 }
             } else if (packet instanceof ServerEntityRelativeMovePacket) {
                 final ServerEntityRelativeMovePacket move = (ServerEntityRelativeMovePacket) packet;
@@ -194,9 +198,8 @@ public class ClientPacketListener implements InternalPacketListener {
                 entity.setX(x + dX);
                 entity.setY(y + dY);
                 entity.setZ(z + dZ);
-
-                if (cl.getTrackedEntity() == move.getEntityID()) {
-                    cl.lookAt(entity);
+                for (final ClientListener listener : cl.getClientListeners()) {
+                    listener.entityMoved(entity, move.getEntityID());
                 }
 
             } else if (packet instanceof ServerDestroyEntitiesPacket) {
@@ -472,6 +475,7 @@ public class ClientPacketListener implements InternalPacketListener {
                     }
                 }).start();
             } else if (packet instanceof ServerChatMessagePacket) {
+
                 final String json = (String) packet.accessPacketMethod("getMessage");
 
                 for (final ClientListener ls : cl.getClientListeners()) {
