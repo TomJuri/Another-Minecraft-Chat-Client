@@ -40,6 +40,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
 import net.defekt.mc.chatclient.protocol.packets.UnknownPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerStatisticsPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientEntityActionPacket.EntityAction;
+import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseEntityPacket.UseType;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPlayerPositionAndLookPacket;
 import net.defekt.mc.chatclient.ui.Messages;
 
@@ -684,6 +685,27 @@ public class MinecraftClient {
                 }
             }
         }
+    }
+
+    public void interact(Entity entity, UseType type) throws IOException {
+        interact(getEntityID(entity), type);
+    }
+
+    public void interact(int entityID, UseType type) throws IOException {
+        Entity entity = getEntity(entityID);
+        if ((entity = getEntity(entityID)) != null && distanceTo(entity) <= 4) {
+            lookAt(entity);
+
+            sendPacket(PacketFactory.constructPacket(reg, "ClientUseEntityPacket", entityID, type, isSneaking()));
+        }
+    }
+
+    public int getEntityID(Entity entity) {
+        for (int id : storedEntities.keySet().toArray(new Integer[0])) {
+            Entity ent = storedEntities.get(id);
+            if (ent.equals(entity)) return id;
+        }
+        return -1;
     }
 
     public void lookAt(final Entity entity) throws IOException {

@@ -132,6 +132,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.UnknownPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket.Status;
+import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseEntityPacket.UseType;
 import net.defekt.mc.chatclient.ui.AutoResponseRule.EffectType;
 import net.defekt.mc.chatclient.ui.AutoResponseRule.TriggerType;
 import net.defekt.mc.chatclient.ui.UserPreferences.ColorPreferences;
@@ -2460,6 +2461,28 @@ public class Main {
                                 {
                                     setFont(getFont().deriveFont(Font.BOLD));
                                     addActionListener(lClick);
+                                }
+                            });
+                            add(new JMenuItem("Interact with Entity") {
+                                {
+                                    addActionListener(e -> {
+                                        try {
+                                            client.interact(currentEntity, UseType.INTERACT);
+                                        } catch (IOException ex) {
+                                            ex.printStackTrace();
+                                        }
+                                    });
+                                }
+                            });
+                            add(new JMenuItem("Hit Entity") {
+                                {
+                                    addActionListener(e -> {
+                                        try {
+                                            client.interact(currentEntity, UseType.ATTACK);
+                                        } catch (IOException ex) {
+                                            ex.printStackTrace();
+                                        }
+                                    });
                                 }
                             });
                         }
