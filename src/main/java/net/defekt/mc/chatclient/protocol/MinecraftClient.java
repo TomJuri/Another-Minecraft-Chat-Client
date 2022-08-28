@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.Socket;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -174,6 +175,8 @@ public class MinecraftClient {
         state = State.LOGIN;
     }
 
+    private Proxy proxy = null;
+
     /**
      * Closes this MinecraftClient
      */
@@ -279,7 +282,10 @@ public class MinecraftClient {
             if (connected || this.soc != null)
                 throw new IOException(Messages.getString("MinecraftClient.clientErrorAlreadyConnected"));
 
-            this.soc = new Socket();
+            if (proxy != null) {
+                this.soc = new Socket(proxy);
+            } else
+                this.soc = new Socket();
             soc.connect(new InetSocketAddress(host, port));
             this.connected = true;
 
@@ -1030,5 +1036,13 @@ public class MinecraftClient {
 
     public PacketRegistry getReg() {
         return reg;
+    }
+
+    public Proxy getProxy() {
+        return proxy;
+    }
+
+    public void setProxy(Proxy proxy) {
+        this.proxy = proxy;
     }
 }

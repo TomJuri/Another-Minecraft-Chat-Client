@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.defekt.mc.chatclient.protocol.data.ProxySetting;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket.Status;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
@@ -47,6 +48,8 @@ public class UserPreferences implements Serializable {
         if (maxPacketsOnList <= 0) {
             maxPacketsOnList = 500;
         }
+
+        if (proxies == null) proxies = Collections.synchronizedList(new ArrayList<ProxySetting>());
     }
 
     /**
@@ -108,6 +111,8 @@ public class UserPreferences implements Serializable {
     public static final ColorPreferences defaultColorPreferences = new ColorPreferences();
 
     protected final List<ServerEntry> servers = Collections.synchronizedList(new ArrayList<ServerEntry>());
+
+    protected List<ProxySetting> proxies = null;
 
     public static class ColorPreferences implements Serializable {
 

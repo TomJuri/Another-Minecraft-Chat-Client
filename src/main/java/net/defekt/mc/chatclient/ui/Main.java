@@ -45,6 +45,9 @@ import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -121,6 +124,7 @@ import net.defekt.mc.chatclient.protocol.data.ChatMessages;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
 import net.defekt.mc.chatclient.protocol.data.PlayerSkinCache;
+import net.defekt.mc.chatclient.protocol.data.ProxySetting;
 import net.defekt.mc.chatclient.protocol.data.TranslationUtils;
 import net.defekt.mc.chatclient.protocol.entity.Entity;
 import net.defekt.mc.chatclient.protocol.entity.Player;
@@ -847,6 +851,7 @@ public class Main {
 
                 }
 
+                JTabbedPane userTabs = new JTabbedPane();
                 final JVBoxPanel box = new JVBoxPanel();
 
                 final JComboBox<AuthType> authType = new JComboBox<AuthType>(AuthType.values());
@@ -903,8 +908,129 @@ public class Main {
                 box.add(upassField);
                 box.alignAll();
 
+                JVBoxPanel proxyBox = new JVBoxPanel();
+
+                JComboBox<ProxySetting> savedProxies = new JComboBox<>(
+                        new ProxySetting[] { new ProxySetting("None", "", -1) });
+                for (ProxySetting sett : up.proxies)
+                    savedProxies.addItem(sett);
+
+                JButton pxLoad = new JButton("Load");
+                pxLoad.setEnabled(false);
+                JButton pxSave = new JButton("Save");
+                pxSave.setEnabled(false);
+                JButton pxDelete = new JButton("Delete");
+                pxDelete.setEnabled(false);
+                JTextField pxField = new JTextField();
+
+                Box ctlBox = Box.createHorizontalBox();
+                ctlBox.add(pxLoad);
+                ctlBox.add(pxDelete);
+
+                proxyBox.add(savedProxies);
+                proxyBox.add(ctlBox);
+                proxyBox.add(new JLabel(" "));
+                proxyBox.add(new JLabel("Enter Proxy address (host:port):"));
+                proxyBox.add(pxField);
+                proxyBox.add(pxSave);
+                proxyBox.add(new JLabel(" "));
+                proxyBox.alignAll();
+
+                pxField.addKeyListener(new KeyListener() {
+
+                    @Override
+                    public void keyTyped(KeyEvent e) {
+                    }
+
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                        pxSave.setEnabled(!pxField.getText().replace(" ", "").isEmpty());
+                    }
+
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                    }
+                });
+
+                savedProxies.addActionListener(new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            boolean sel = !((ProxySetting) savedProxies.getSelectedItem()).getName()
+                                    .equalsIgnoreCase("None");
+                            pxDelete.setEnabled(sel);
+                            pxLoad.setEnabled(sel);
+                        } catch (Exception ex) {
+                        }
+                    }
+                });
+
+                pxLoad.addActionListener(new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            ProxySetting set = (ProxySetting) savedProxies.getSelectedItem();
+                            if (set != null && !set.getName().equalsIgnoreCase("None")) {
+                                pxField.setText(set.getHost() + ":" + set.getPort());
+                                pxSave.setEnabled(false);
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                });
+
+                pxDelete.addActionListener(new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            ProxySetting set = (ProxySetting) savedProxies.getSelectedItem();
+                            if (set != null && !set.getName().equalsIgnoreCase("None")) {
+                                up.proxies.remove(set);
+                                savedProxies.removeAllItems();
+                                savedProxies.addItem(new ProxySetting("None", "", -1));
+                                for (ProxySetting sett : up.proxies)
+                                    savedProxies.addItem(sett);
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                });
+
+                pxSave.addActionListener(new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            String addr = pxField.getText().replace(" ", "");
+                            if (!addr.isEmpty() && addr.contains(":") && addr.split(":").length == 2) {
+                                String[] addrSplit = addr.split(":");
+                                String host = addrSplit[0];
+                                int port = Integer.parseInt(addrSplit[1]);
+                                String name = host + ":" + port;
+                                ProxySetting set = new ProxySetting(name, host, port);
+                                if (!up.proxies.contains(set)) {
+                                    up.proxies.add(set);
+                                }
+                                pxField.setText("");
+                                pxSave.setEnabled(false);
+                                savedProxies.removeAllItems();
+                                savedProxies.addItem(new ProxySetting("None", "", -1));
+                                for (ProxySetting sett : up.proxies)
+                                    savedProxies.addItem(sett);
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                });
+                userTabs.addTab("Log-In", box); // TODO Lang
+                userTabs.addTab("Proxy", proxyBox);
+                Proxy proxyObj = null;
+
                 do {
-                    final int response = JOptionPane.showOptionDialog(win, box,
+                    final int response = JOptionPane.showOptionDialog(win, userTabs,
                             Messages.getString("Main.enterUsernameTitle"), JOptionPane.OK_CANCEL_OPTION,
                             JOptionPane.QUESTION_MESSAGE, null, null, null);
                     if (response != JOptionPane.OK_OPTION) return;
@@ -913,6 +1039,16 @@ public class Main {
                     if (uname == null || (((AuthType) authType.getSelectedItem()) == AuthType.Mojang
                             && upassField.getPassword().length == 0)) {
                         continue;
+                    }
+                    String proxy = pxField.getText().replace(" ", "");
+                    if (!proxy.isEmpty() && proxy.contains(":") && proxy.split(":").length == 2) {
+                        try {
+                            String[] pxAddr = proxy.split(":");
+                            String phost = pxAddr[0];
+                            int pport = Integer.parseInt(pxAddr[1]);
+                            proxyObj = new Proxy(Type.SOCKS, new InetSocketAddress(phost, pport));
+                        } catch (Exception ex) {
+                        }
                     }
                     if (!up.isUsernameAlertSeen() && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)
                             && ((AuthType) authType.getSelectedItem()) != AuthType.Mojang
@@ -940,7 +1076,7 @@ public class Main {
 
                 final String uname = (String) unameField.getSelectedItem();
                 final JSplitPane b = createServerPane(et, uname, new String(upassField.getPassword()),
-                        ((AuthType) authType.getSelectedItem()));
+                        ((AuthType) authType.getSelectedItem()), proxyObj);
 
                 tabPane.addTab("", b);
                 tabPane.setSelectedComponent(b);
@@ -1859,7 +1995,7 @@ public class Main {
 
     @SuppressWarnings("unchecked")
     private JSplitPane createServerPane(final ServerEntry entry, final String username, final String password,
-            final AuthType authType) {
+            final AuthType authType, Proxy proxy) {
 
         final JSplitPane fPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
@@ -3606,6 +3742,8 @@ public class Main {
                         final MinecraftClient cl = new MinecraftClient(host, port, iprotocol,
                                 forgeMode == ForgeMode.AUTO ? forge : forgeMode == ForgeMode.NEVER == false);
                         clients.put(fPane, cl);
+
+                        if (proxy != null) cl.setProxy(proxy);
 
                         cl.addInputPacketListener(new InternalPacketListener() {
 

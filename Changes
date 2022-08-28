@@ -19,5 +19,7 @@ v1.8.1
   This option also includes ranged/item attacks!
   Your weapon doesn't auto-switch though.
   
+- SOCKS Proxy Support
+  
 [+] Fixed:
 - Number spinners under Player tab randomly disappearing
