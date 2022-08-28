@@ -6,6 +6,7 @@ import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+@SuppressWarnings("javadoc")
 public class ServerSpawnEntityPacket extends Packet {
 
     protected int id;

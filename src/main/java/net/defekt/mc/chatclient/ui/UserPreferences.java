@@ -49,7 +49,9 @@ public class UserPreferences implements Serializable {
             maxPacketsOnList = 500;
         }
 
-        if (proxies == null) proxies = Collections.synchronizedList(new ArrayList<ProxySetting>());
+        if (proxies == null) {
+            proxies = Collections.synchronizedList(new ArrayList<ProxySetting>());
+        }
     }
 
     /**

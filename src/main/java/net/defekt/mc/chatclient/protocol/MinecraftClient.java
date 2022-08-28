@@ -106,7 +106,7 @@ public class MinecraftClient {
     private Thread packetReaderThread = null;
     private Thread playerPositionThread = null;
 
-    private Timer internalTickTimer = new Timer("tickTimer", true);
+    private final Timer internalTickTimer = new Timer("tickTimer", true);
 
     /**
      * Add a outbound packet listener to listen for sent packets
@@ -233,6 +233,15 @@ public class MinecraftClient {
     private Cipher dCipher = null;
     private boolean isEncrypted = false;
 
+    /**
+     * Used to enable encryption between client and server
+     * 
+     * @param secret secret key to encrypt with
+     * @throws InvalidKeyException
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidAlgorithmParameterException
+     */
     protected void enableEncryption(final byte[] secret) throws InvalidKeyException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidAlgorithmParameterException {
         final SecretKey key = new SecretKeySpec(secret, "AES");
@@ -284,8 +293,9 @@ public class MinecraftClient {
 
             if (proxy != null) {
                 this.soc = new Socket(proxy);
-            } else
+            } else {
                 this.soc = new Socket();
+            }
             soc.connect(new InetSocketAddress(host, port));
             this.connected = true;
 
@@ -419,13 +429,14 @@ public class MinecraftClient {
                         return;
                     }
                     synchronized (clientListeners) {
-                        for (ClientListener listener : clientListeners.toArray(new ClientListener[0]))
+                        for (final ClientListener listener : clientListeners.toArray(new ClientListener[0])) {
                             try {
                                 listener.tick();
-                            } catch (IOException ex) {
+                            } catch (final IOException ex) {
                                 cancel();
                                 return;
                             }
+                        }
                     }
                 }
             }, 0, 1000 / 20);
@@ -463,6 +474,7 @@ public class MinecraftClient {
         return cThreshold;
     }
 
+    @SuppressWarnings("javadoc")
     protected Object getLock() {
         return lock;
     }
@@ -698,6 +710,12 @@ public class MinecraftClient {
         return pitch;
     }
 
+    /**
+     * Check if this entity is tracked
+     * 
+     * @param entity entity to be checked
+     * @return if entity is tracked
+     */
     public boolean isTracked(final Entity entity) {
         Entity tracked = null;
         if (storedEntities.containsKey(trackedEntity)) {
@@ -707,11 +725,22 @@ public class MinecraftClient {
         return false;
     }
 
-    public boolean isAttacked() {
+    /**
+     * Gets the tracked entity attacking status
+     * 
+     * @return current status
+     */
+    public boolean isEntityAttacking() {
         return isTrackedAttacking;
     }
 
-    public void trackEntity(final Entity entity, boolean attack) {
+    /**
+     * Commands the client to track an entity
+     * 
+     * @param entity new tracked entity
+     * @param attack whether to attack this entity when in range or not
+     */
+    public void trackEntity(final Entity entity, final boolean attack) {
         for (final int id : storedEntities.keySet().toArray(new Integer[0])) {
             if (storedEntities.get(id).getUid().equals(entity.getUid())) {
                 trackedEntity = id;
@@ -723,31 +752,67 @@ public class MinecraftClient {
         }
     }
 
-    public void interact(Entity entity, UseType type) throws IOException {
+    /**
+     * Interact with an entity
+     * 
+     * @param entity entity to interact with
+     * @param type   interaction type
+     * @throws IOException when there was an error sending packet
+     */
+    public void interact(final Entity entity, final UseType type) throws IOException {
         interact(getEntityID(entity), type);
     }
 
-    public void interact(int entityID, UseType type) throws IOException {
+    /**
+     * Interact with an entity
+     * 
+     * @param entityID ID of entity to interact with
+     * @param type     interaction type
+     * @throws IOException when there was an error sending packet
+     */
+    public void interact(final int entityID, final UseType type) throws IOException {
         Entity entity = getEntity(entityID);
         if ((entity = getEntity(entityID)) != null && distanceTo(entity) <= 4) {
             lookAt(entity);
             sendPacket(PacketFactory.constructPacket(reg, "ClientUseEntityPacket", entityID, type, isSneaking()));
-            if (type == UseType.ATTACK) sendPacket(PacketFactory.constructPacket(reg, "ClientAnimationPacket"));
+            if (type == UseType.ATTACK) {
+                sendPacket(PacketFactory.constructPacket(reg, "ClientAnimationPacket"));
+            }
         }
     }
 
-    public int getEntityID(Entity entity) {
-        for (int id : storedEntities.keySet().toArray(new Integer[0])) {
-            Entity ent = storedEntities.get(id);
+    /**
+     * Get ID associated with this entity
+     * 
+     * @param entity target entity
+     * @return entity's ID, or -1 if no ID was found
+     */
+    public int getEntityID(final Entity entity) {
+        for (final int id : storedEntities.keySet().toArray(new Integer[0])) {
+            final Entity ent = storedEntities.get(id);
             if (ent.equals(entity)) return id;
         }
         return -1;
     }
 
+    /**
+     * Set client's pitch and yaw to face provided entity
+     * 
+     * @param entity entity to face
+     * @throws IOException when there was an error sending packet
+     */
     public void lookAt(final Entity entity) throws IOException {
         lookAt(entity.getX(), entity instanceof Player ? entity.getY() + 2 : entity.getY(), entity.getZ());
     }
 
+    /**
+     * Set client's pitch and yaw to face a location
+     * 
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @throws IOException when there was an error sending packet
+     */
     public void lookAt(final double x, final double y, final double z) throws IOException {
         final double dX = x - this.x;
         final double dY = y - (this.y + 2);
@@ -1001,27 +1066,61 @@ public class MinecraftClient {
         return authType;
     }
 
+    /**
+     * Get map of all stored and alive entities<br>
+     * It's completely client-side and may get de-synced occasionally
+     * 
+     * @return map of stored entities
+     */
     public Map<Integer, Entity> getStoredEntities() {
         return storedEntities;
     }
 
+    /**
+     * Get entity for provided ID
+     * 
+     * @param id id of the entity
+     * @return Entity associated with this ID or null if none found
+     */
     public Entity getEntity(final int id) {
         return storedEntities.containsKey(id) ? storedEntities.get(id) : null;
     }
 
+    /**
+     * Get this client's Unique ID (UUID)
+     * 
+     * @return Client's UID
+     */
     public UUID getUid() {
         return uid;
     }
 
-    public void setUid(final UUID uid) {
+    /**
+     * Set client's internal UUID<br>
+     * Please note id does not change client's UID on server side
+     * 
+     * @param uid new UID
+     */
+    protected void setUid(final UUID uid) {
         this.uid = uid;
     }
 
+    /**
+     * Get currently tracked entity
+     * 
+     * @return tracked entity ID or -1 if none
+     */
     public int getTrackedEntity() {
         return trackedEntity;
     }
 
-    public void setTrackedEntity(final int trackedEntity, boolean attack) {
+    /**
+     * Set new tracked entity
+     * 
+     * @param trackedEntity new entity to be tracked
+     * @param attack        whether to attack this entity or not
+     */
+    public void setTrackedEntity(final int trackedEntity, final boolean attack) {
         this.trackedEntity = trackedEntity;
         isTrackedAttacking = attack;
         for (final ClientListener listener : getClientListeners().toArray(new ClientListener[0])) {
@@ -1029,20 +1128,43 @@ public class MinecraftClient {
         }
     }
 
+    /**
+     * Calculate distance between client and provided entity
+     * 
+     * @param entity entity to calculate distance to
+     * @return distance between client and entity in blocks
+     */
     public double distanceTo(final Entity entity) {
         return Math
                 .sqrt(Math.pow(x - entity.getX(), 2) + Math.pow(y - entity.getY(), 2) + Math.pow(z - entity.getZ(), 2));
     }
 
+    /**
+     * Get clinet's registry responsible for providing packet IDs
+     * 
+     * @return client's registry
+     */
     public PacketRegistry getReg() {
         return reg;
     }
 
+    /**
+     * Get client's SOCKS proxy
+     * 
+     * @return client's proxy or null if none
+     */
     public Proxy getProxy() {
         return proxy;
     }
 
-    public void setProxy(Proxy proxy) {
+    /**
+     * Set client's SOCKS proxy. <br>
+     * Only has effect when used before {@link #connect(String)} or
+     * {@link #connect(AuthType, String, String)} methods
+     * 
+     * @param proxy new SOCKS proxy
+     */
+    public void setProxy(final Proxy proxy) {
         this.proxy = proxy;
     }
 }

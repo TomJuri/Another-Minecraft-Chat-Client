@@ -74,9 +74,25 @@ public interface ClientListener {
      */
     public void timeUpdated(long time, long worldAge);
 
+    /**
+     * Called when client changes tracked target
+     * 
+     * @param id ID of the new tracked entity
+     */
     public void changedTrackedEntity(int id);
 
+    /**
+     * Called when an entity moves within client's range
+     * 
+     * @param entity moved entity
+     * @param id     ID of the moved entity
+     */
     public void entityMoved(Entity entity, int id);
-    
+
+    /**
+     * Called every in-game tick (approximately)
+     * 
+     * @throws IOException
+     */
     public void tick() throws IOException;
 }

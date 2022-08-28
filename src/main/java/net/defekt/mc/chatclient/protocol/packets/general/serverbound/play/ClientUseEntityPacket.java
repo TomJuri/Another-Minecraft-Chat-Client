@@ -4,6 +4,7 @@ import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+@SuppressWarnings("javadoc")
 public class ClientUseEntityPacket extends Packet {
 
     public enum UseType {
@@ -11,7 +12,7 @@ public class ClientUseEntityPacket extends Packet {
 
         private final int type;
 
-        private UseType(int type) {
+        private UseType(final int type) {
             this.type = type;
         }
 
@@ -20,14 +21,19 @@ public class ClientUseEntityPacket extends Packet {
         }
     }
 
-    public ClientUseEntityPacket(PacketRegistry reg, Integer entityID, UseType type, Boolean sneaking) {
+    public ClientUseEntityPacket(final PacketRegistry reg, final Integer entityID, final UseType type,
+            final Boolean sneaking) {
         super(reg);
         putVarInt(entityID);
         putVarInt(type.getType());
-        int protocol = PacketFactory.getProtocolFor(reg);
+        final int protocol = PacketFactory.getProtocolFor(reg);
         if (protocol > 47) {
-            if (type == UseType.INTERACT) putVarInt(0);
-            if (protocol > 735) putBoolean(sneaking);
+            if (type == UseType.INTERACT) {
+                putVarInt(0);
+            }
+            if (protocol > 735) {
+                putBoolean(sneaking);
+            }
         }
     }
 

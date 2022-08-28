@@ -851,7 +851,7 @@ public class Main {
 
                 }
 
-                JTabbedPane userTabs = new JTabbedPane();
+                final JTabbedPane userTabs = new JTabbedPane();
                 final JVBoxPanel box = new JVBoxPanel();
 
                 final JComboBox<AuthType> authType = new JComboBox<AuthType>(AuthType.values());
@@ -908,22 +908,23 @@ public class Main {
                 box.add(upassField);
                 box.alignAll();
 
-                JVBoxPanel proxyBox = new JVBoxPanel();
+                final JVBoxPanel proxyBox = new JVBoxPanel();
 
-                JComboBox<ProxySetting> savedProxies = new JComboBox<>(
+                final JComboBox<ProxySetting> savedProxies = new JComboBox<>(
                         new ProxySetting[] { new ProxySetting("None", "", -1) });
-                for (ProxySetting sett : up.proxies)
+                for (final ProxySetting sett : up.proxies) {
                     savedProxies.addItem(sett);
+                }
 
-                JButton pxLoad = new JButton("Load");
+                final JButton pxLoad = new JButton("Load");
                 pxLoad.setEnabled(false);
-                JButton pxSave = new JButton("Save");
+                final JButton pxSave = new JButton("Save");
                 pxSave.setEnabled(false);
-                JButton pxDelete = new JButton("Delete");
+                final JButton pxDelete = new JButton("Delete");
                 pxDelete.setEnabled(false);
-                JTextField pxField = new JTextField();
+                final JTextField pxField = new JTextField();
 
-                Box ctlBox = Box.createHorizontalBox();
+                final Box ctlBox = Box.createHorizontalBox();
                 ctlBox.add(pxLoad);
                 ctlBox.add(pxDelete);
 
@@ -939,29 +940,29 @@ public class Main {
                 pxField.addKeyListener(new KeyListener() {
 
                     @Override
-                    public void keyTyped(KeyEvent e) {
+                    public void keyTyped(final KeyEvent e) {
                     }
 
                     @Override
-                    public void keyReleased(KeyEvent e) {
+                    public void keyReleased(final KeyEvent e) {
                         pxSave.setEnabled(!pxField.getText().replace(" ", "").isEmpty());
                     }
 
                     @Override
-                    public void keyPressed(KeyEvent e) {
+                    public void keyPressed(final KeyEvent e) {
                     }
                 });
 
                 savedProxies.addActionListener(new ActionListener() {
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         try {
-                            boolean sel = !((ProxySetting) savedProxies.getSelectedItem()).getName()
+                            final boolean sel = !((ProxySetting) savedProxies.getSelectedItem()).getName()
                                     .equalsIgnoreCase("None");
                             pxDelete.setEnabled(sel);
                             pxLoad.setEnabled(sel);
-                        } catch (Exception ex) {
+                        } catch (final Exception ex) {
                         }
                     }
                 });
@@ -969,14 +970,14 @@ public class Main {
                 pxLoad.addActionListener(new ActionListener() {
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         try {
-                            ProxySetting set = (ProxySetting) savedProxies.getSelectedItem();
+                            final ProxySetting set = (ProxySetting) savedProxies.getSelectedItem();
                             if (set != null && !set.getName().equalsIgnoreCase("None")) {
                                 pxField.setText(set.getHost() + ":" + set.getPort());
                                 pxSave.setEnabled(false);
                             }
-                        } catch (Exception ex) {
+                        } catch (final Exception ex) {
                         }
                     }
                 });
@@ -984,17 +985,18 @@ public class Main {
                 pxDelete.addActionListener(new ActionListener() {
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         try {
-                            ProxySetting set = (ProxySetting) savedProxies.getSelectedItem();
+                            final ProxySetting set = (ProxySetting) savedProxies.getSelectedItem();
                             if (set != null && !set.getName().equalsIgnoreCase("None")) {
                                 up.proxies.remove(set);
                                 savedProxies.removeAllItems();
                                 savedProxies.addItem(new ProxySetting("None", "", -1));
-                                for (ProxySetting sett : up.proxies)
+                                for (final ProxySetting sett : up.proxies) {
                                     savedProxies.addItem(sett);
+                                }
                             }
-                        } catch (Exception ex) {
+                        } catch (final Exception ex) {
                         }
                     }
                 });
@@ -1002,15 +1004,15 @@ public class Main {
                 pxSave.addActionListener(new ActionListener() {
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         try {
-                            String addr = pxField.getText().replace(" ", "");
+                            final String addr = pxField.getText().replace(" ", "");
                             if (!addr.isEmpty() && addr.contains(":") && addr.split(":").length == 2) {
-                                String[] addrSplit = addr.split(":");
-                                String host = addrSplit[0];
-                                int port = Integer.parseInt(addrSplit[1]);
-                                String name = host + ":" + port;
-                                ProxySetting set = new ProxySetting(name, host, port);
+                                final String[] addrSplit = addr.split(":");
+                                final String host = addrSplit[0];
+                                final int port = Integer.parseInt(addrSplit[1]);
+                                final String name = host + ":" + port;
+                                final ProxySetting set = new ProxySetting(name, host, port);
                                 if (!up.proxies.contains(set)) {
                                     up.proxies.add(set);
                                 }
@@ -1018,10 +1020,11 @@ public class Main {
                                 pxSave.setEnabled(false);
                                 savedProxies.removeAllItems();
                                 savedProxies.addItem(new ProxySetting("None", "", -1));
-                                for (ProxySetting sett : up.proxies)
+                                for (final ProxySetting sett : up.proxies) {
                                     savedProxies.addItem(sett);
+                                }
                             }
-                        } catch (Exception ex) {
+                        } catch (final Exception ex) {
                         }
                     }
                 });
@@ -1040,14 +1043,14 @@ public class Main {
                             && upassField.getPassword().length == 0)) {
                         continue;
                     }
-                    String proxy = pxField.getText().replace(" ", "");
+                    final String proxy = pxField.getText().replace(" ", "");
                     if (!proxy.isEmpty() && proxy.contains(":") && proxy.split(":").length == 2) {
                         try {
-                            String[] pxAddr = proxy.split(":");
-                            String phost = pxAddr[0];
-                            int pport = Integer.parseInt(pxAddr[1]);
+                            final String[] pxAddr = proxy.split(":");
+                            final String phost = pxAddr[0];
+                            final int pport = Integer.parseInt(pxAddr[1]);
                             proxyObj = new Proxy(Type.SOCKS, new InetSocketAddress(phost, pport));
-                        } catch (Exception ex) {
+                        } catch (final Exception ex) {
                         }
                     }
                     if (!up.isUsernameAlertSeen() && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)
@@ -1995,7 +1998,7 @@ public class Main {
 
     @SuppressWarnings("unchecked")
     private JSplitPane createServerPane(final ServerEntry entry, final String username, final String password,
-            final AuthType authType, Proxy proxy) {
+            final AuthType authType, final Proxy proxy) {
 
         final JSplitPane fPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
@@ -2518,10 +2521,11 @@ public class Main {
                                 if (selected) {
                                     g.setColor(Color.white);
                                 } else if (tracked) {
-                                    if (client.isAttacked()) {
+                                    if (client.isEntityAttacking()) {
                                         g.setColor(frameTimer < 5 ? red : darkRed);
-                                    } else
+                                    } else {
                                         g.setColor(frameTimer < 5 ? Color.white : Color.gray);
+                                    }
                                     frameTimer++;
                                     if (frameTimer > 10) {
                                         frameTimer = 0;
@@ -2551,10 +2555,11 @@ public class Main {
                             if (selected) {
                                 g.setColor(Color.white);
                             } else if (tracked) {
-                                if (client.isAttacked()) {
+                                if (client.isEntityAttacking()) {
                                     g.setColor(frameTimer < 5 ? red : darkRed);
-                                } else
+                                } else {
                                     g.setColor(frameTimer < 5 ? Color.white : Color.gray);
+                                }
                                 frameTimer++;
                                 if (frameTimer > 10) {
                                     frameTimer = 0;
@@ -2597,29 +2602,38 @@ public class Main {
                             });
                             add(new JMenuItem("Attack Entity") {
                                 {
-                                    addActionListener(e -> {
-                                        client.trackEntity(currentEntity, true);
+                                    addActionListener(new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(ActionEvent e) {
+                                            client.trackEntity(currentEntity, true);
+                                        }
                                     });
                                 }
                             });
                             add(new JMenuItem("Interact with Entity") {
                                 {
-                                    addActionListener(e -> {
-                                        try {
-                                            client.interact(currentEntity, UseType.INTERACT);
-                                        } catch (IOException ex) {
-                                            ex.printStackTrace();
+                                    addActionListener(new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(ActionEvent e) {
+                                            try {
+                                                client.interact(currentEntity, UseType.INTERACT);
+                                            } catch (final IOException ex) {
+                                                ex.printStackTrace();
+                                            }
                                         }
                                     });
                                 }
                             });
                             add(new JMenuItem("Hit Entity") {
                                 {
-                                    addActionListener(e -> {
-                                        try {
-                                            client.interact(currentEntity, UseType.ATTACK);
-                                        } catch (IOException ex) {
-                                            ex.printStackTrace();
+                                    addActionListener(new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(ActionEvent e) {
+                                            try {
+                                                client.interact(currentEntity, UseType.ATTACK);
+                                            } catch (final IOException ex) {
+                                                ex.printStackTrace();
+                                            }
                                         }
                                     });
                                 }
@@ -2718,32 +2732,34 @@ public class Main {
         final JCheckBox autoTrackPlayers = new JCheckBox("Track Players");
         final JCheckBox autoTrackEntities = new JCheckBox("Track Entities");
 
-        JVBoxPanel autoAttackPanel = new JVBoxPanel();
-        JVBoxPanel attackPanel = new JVBoxPanel();
+        final JVBoxPanel autoAttackPanel = new JVBoxPanel();
+        final JVBoxPanel attackPanel = new JVBoxPanel();
 
-        JRadioButton attackHit = new JRadioButton("Hit");
+        final JRadioButton attackHit = new JRadioButton("Hit");
         attackHit.setSelected(true);
-        JRadioButton attackUse = new JRadioButton("Use Item");
+        final JRadioButton attackUse = new JRadioButton("Use Item");
 
-        ButtonGroup attackGroup = new ButtonGroup();
+        final ButtonGroup attackGroup = new ButtonGroup();
         attackGroup.add(attackHit);
         attackGroup.add(attackUse);
 
-        JCheckBox autoAttackEnable = new JCheckBox("Enable Auto-Attacking");
+        final JCheckBox autoAttackEnable = new JCheckBox("Enable Auto-Attacking");
         autoAttackEnable.addActionListener(new ActionListener() {
 
             @Override
-            public void actionPerformed(ActionEvent e) {
-                if (autoAttackEnable.isSelected()) autoTrackEnable.setSelected(true);
+            public void actionPerformed(final ActionEvent e) {
+                if (autoAttackEnable.isSelected()) {
+                    autoTrackEnable.setSelected(true);
+                }
             }
         });
         autoAttackEnable.setFont(autoAttackEnable.getFont().deriveFont(Font.BOLD));
-        JSpinner autoAttackRate = new JSpinner(new SpinnerNumberModel(25, 0, 1000, 1));
+        final JSpinner autoAttackRate = new JSpinner(new SpinnerNumberModel(25, 0, 1000, 1));
         SwingUtils.alignSpinner(autoAttackRate);
 
-        JSpinner attackUseDuration = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
+        final JSpinner attackUseDuration = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
         SwingUtils.alignSpinner(attackUseDuration);
-        JSpinner attackUseRange = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
+        final JSpinner attackUseRange = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
         SwingUtils.alignSpinner(attackUseRange);
 
         autoAttackPanel.add(autoAttackEnable);
@@ -2768,7 +2784,10 @@ public class Main {
         autoTrackBox.setBorder(BorderFactory.createTitledBorder("Auto-Tracking"));
         autoTrackBox.alignAll();
 
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+            }
         });
         worldBox.add(timeBox);
         worldBox.add(new JLabel(" "));
@@ -3743,7 +3762,9 @@ public class Main {
                                 forgeMode == ForgeMode.AUTO ? forge : forgeMode == ForgeMode.NEVER == false);
                         clients.put(fPane, cl);
 
-                        if (proxy != null) cl.setProxy(proxy);
+                        if (proxy != null) {
+                            cl.setProxy(proxy);
+                        }
 
                         cl.addInputPacketListener(new InternalPacketListener() {
 
@@ -4177,11 +4198,11 @@ public class Main {
 
                             @Override
                             public void tick() throws IOException {
-                                if (cl.isAttacked()) {
+                                if (cl.isEntityAttacking()) {
                                     attackTicks++;
                                     if (attackTicks > (int) autoAttackRate.getValue()) {
                                         attackTicks = 0;
-                                        Entity entity = cl.getEntity(cl.getTrackedEntity());
+                                        final Entity entity = cl.getEntity(cl.getTrackedEntity());
                                         if (entity != null) {
                                             if (attackHit.isSelected() && cl.distanceTo(entity) <= 4) {
                                                 cl.interact(entity, UseType.ATTACK);
@@ -4201,7 +4222,7 @@ public class Main {
                                                                         "ClientPlayerDiggingPacket",
                                                                         net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPlayerDiggingPacket.Status.FINISH_ACTION,
                                                                         0, 0, 0, (byte) 0));
-                                                            } catch (IOException ex) {
+                                                            } catch (final IOException ex) {
                                                                 ex.printStackTrace();
                                                             }
                                                         }

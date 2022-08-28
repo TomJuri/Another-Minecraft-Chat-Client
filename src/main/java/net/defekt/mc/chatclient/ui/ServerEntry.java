@@ -45,10 +45,11 @@ public class ServerEntry implements Serializable {
     /**
      * Creates new server entry
      * 
-     * @param host    server's hostname
-     * @param port    server's port
-     * @param name    server name
-     * @param version human-readable server version
+     * @param host      server's hostname
+     * @param port      server's port
+     * @param name      server name
+     * @param version   human-readable server version
+     * @param forgeMode server's forge handling mode
      */
     protected ServerEntry(final String host, final int port, final String name, final String version,
             final ForgeMode forgeMode) {

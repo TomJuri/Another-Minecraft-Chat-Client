@@ -11,6 +11,7 @@ public class MojangUser {
     private String userID;
     private String userName;
 
+    @SuppressWarnings("javadoc")
     protected MojangUser(final String accessToken, final String userID, final String userName) {
         super();
         this.accessToken = accessToken;
