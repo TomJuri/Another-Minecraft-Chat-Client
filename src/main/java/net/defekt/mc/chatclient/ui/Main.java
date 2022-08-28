@@ -916,11 +916,12 @@ public class Main {
                     savedProxies.addItem(sett);
                 }
 
-                final JButton pxLoad = new JButton("Load");
+                // TODO Lang
+                final JButton pxLoad = new JButton(Messages.getString("Main.load"));
                 pxLoad.setEnabled(false);
-                final JButton pxSave = new JButton("Save");
+                final JButton pxSave = new JButton(Messages.getString("Main.save"));
                 pxSave.setEnabled(false);
-                final JButton pxDelete = new JButton("Delete");
+                final JButton pxDelete = new JButton(Messages.getString("Main.delete"));
                 pxDelete.setEnabled(false);
                 final JTextField pxField = new JTextField();
 
@@ -931,7 +932,7 @@ public class Main {
                 proxyBox.add(savedProxies);
                 proxyBox.add(ctlBox);
                 proxyBox.add(new JLabel(" "));
-                proxyBox.add(new JLabel("Enter Proxy address (host:port):"));
+                proxyBox.add(new JLabel(Messages.getString("Main.enterProxyLabel") + ":"));
                 proxyBox.add(pxField);
                 proxyBox.add(pxSave);
                 proxyBox.add(new JLabel(" "));
@@ -1028,8 +1029,8 @@ public class Main {
                         }
                     }
                 });
-                userTabs.addTab("Log-In", box); // TODO Lang
-                userTabs.addTab("Proxy", proxyBox);
+                userTabs.addTab(Messages.getString("Main.logInTab"), box); // TODO Lang
+                userTabs.addTab(Messages.getString("Main.proxyTab"), proxyBox);
                 Proxy proxyObj = null;
 
                 do {
@@ -1410,8 +1411,8 @@ public class Main {
         maxPacketsOnListField.setValue(up.getMaxPacketsOnList());
         SwingUtils.alignSpinner(maxPacketsOnListField);
 
-        final JCheckBox disablePacketAnalyzer = new JCheckBox("Disable packet analyzer");
-        disablePacketAnalyzer.setToolTipText("Completely disables packet analyzer");
+        final JCheckBox disablePacketAnalyzer = new JCheckBox(Messages.getString("Main.optionsDisablePacketAnalyzer"));
+        disablePacketAnalyzer.setToolTipText(Messages.getString("Main.optionsDisablePacketAnalyzerTooltip"));
         disablePacketAnalyzer.setSelected(up.isDisablePacketAnalyzer());
 
         pkBox.add(ignoreKAPackets);
@@ -1420,7 +1421,7 @@ public class Main {
         pkBox.add(forceLegacySLP);
         pkBox.add(new JSeparator());
         pkBox.add(new JLabel(" "));
-        pkBox.add(new JLabel("Max packets on packet analyzer list"));
+        pkBox.add(new JLabel(Messages.getString("Main.optionsAnalyzerMax")));
         pkBox.add(maxPacketsOnListField);
         pkBox.add(disablePacketAnalyzer);
         pkBox.add(new JLabel(" "));
@@ -2280,25 +2281,25 @@ public class Main {
         final JScrollBar hbar = drawingScroll.getHorizontalScrollBar();
         final JScrollBar vbar = drawingScroll.getVerticalScrollBar();
 
-        final JButton openRadarBtn = new JButton("Open Entity Radar"); // TODO Lang
+        final JButton openRadarBtn = new JButton(Messages.getString("Main.openEntityRadar"));
         openRadarBtn.addActionListener(new ActionListener() {
 
             JFrame rWin;
 
-            JRadioButtonMenuItem displayNames = new JRadioButtonMenuItem("Display Names");
-            JRadioButtonMenuItem realNames = new JRadioButtonMenuItem("Real Names") {
+            JRadioButtonMenuItem displayNames = new JRadioButtonMenuItem(Messages.getString("Main.erDisplayNames"));
+            JRadioButtonMenuItem realNames = new JRadioButtonMenuItem(Messages.getString("Main.erRealNames")) {
                 {
                     setSelected(true);
                 }
             };
-            JRadioButtonMenuItem noNames = new JRadioButtonMenuItem("No Names");
+            JRadioButtonMenuItem noNames = new JRadioButtonMenuItem(Messages.getString("Main.erNoNames"));
 
-            JCheckBoxMenuItem displayPlayers = new JCheckBoxMenuItem("Show Players") {
+            JCheckBoxMenuItem displayPlayers = new JCheckBoxMenuItem(Messages.getString("Main.erShowPlayers")) {
                 {
                     setSelected(true);
                 }
             };
-            JCheckBoxMenuItem displayEntities = new JCheckBoxMenuItem("Show Entities") {
+            JCheckBoxMenuItem displayEntities = new JCheckBoxMenuItem(Messages.getString("Main.erShowEntities")) {
                 {
 
                     setSelected(true);
@@ -2324,9 +2325,9 @@ public class Main {
 
                 final JMenuBar radarBar = new JMenuBar();
 
-                final JMenu radarViewMenu = new JMenu("View");
-                final JMenu radarViewDisplayNames = new JMenu("Player Names");
-                final JMenu radarViewEntities = new JMenu("Entities");
+                final JMenu radarViewMenu = new JMenu(Messages.getString("Main.erMenuView"));
+                final JMenu radarViewDisplayNames = new JMenu(Messages.getString("Main.erOpPlayerNames"));
+                final JMenu radarViewEntities = new JMenu(Messages.getString("Main.erOpEntities"));
 
                 radarViewDisplayNames.add(displayNames);
                 radarViewDisplayNames.add(realNames);
@@ -2335,7 +2336,7 @@ public class Main {
                 radarViewEntities.add(displayPlayers);
                 radarViewEntities.add(displayEntities);
 
-                radarViewMenu.add(new JCheckBoxMenuItem("Always on Top") {
+                radarViewMenu.add(new JCheckBoxMenuItem(Messages.getString("Main.erOpAlwaysOnTop")) {
                     {
                         setSelected(rWin.isAlwaysOnTop());
                         addActionListener(new ActionListener() {
@@ -2643,7 +2644,6 @@ public class Main {
 
                     @Override
                     public void mouseClicked(final MouseEvent e) {
-                        // TODO Entity Handling
                         currentEntity = selectedEntity;
                         if (currentEntity != null) {
                             final Point scrLoc = e.getPoint();
@@ -2722,28 +2722,28 @@ public class Main {
         });
 
         // TODO Lang
-        trackingBox.add(new JLabel("Currently tracking: "));
+        trackingBox.add(new JLabel(Messages.getString("Main.trackingCurrent") + ": "));
         trackingBox.add(trackingField);
 
         final JVBoxPanel autoTrackBox = new JVBoxPanel();
 
-        final JCheckBox autoTrackEnable = new JCheckBox("Enable Auto-Tracking");
+        final JCheckBox autoTrackEnable = new JCheckBox(Messages.getString("Main.trackingEnable"));
         autoTrackEnable.setFont(autoTrackEnable.getFont().deriveFont(Font.BOLD));
-        final JCheckBox autoTrackPlayers = new JCheckBox("Track Players");
-        final JCheckBox autoTrackEntities = new JCheckBox("Track Entities");
+        final JCheckBox autoTrackPlayers = new JCheckBox(Messages.getString("Main.trackingPlayers"));
+        final JCheckBox autoTrackEntities = new JCheckBox(Messages.getString("Main.trackingEntities"));
 
         final JVBoxPanel autoAttackPanel = new JVBoxPanel();
         final JVBoxPanel attackPanel = new JVBoxPanel();
 
-        final JRadioButton attackHit = new JRadioButton("Hit");
+        final JRadioButton attackHit = new JRadioButton(Messages.getString("Main.attackHit"));
         attackHit.setSelected(true);
-        final JRadioButton attackUse = new JRadioButton("Use Item");
+        final JRadioButton attackUse = new JRadioButton(Messages.getString("Main.attackItem"));
 
         final ButtonGroup attackGroup = new ButtonGroup();
         attackGroup.add(attackHit);
         attackGroup.add(attackUse);
 
-        final JCheckBox autoAttackEnable = new JCheckBox("Enable Auto-Attacking");
+        final JCheckBox autoAttackEnable = new JCheckBox(Messages.getString("Main.attackingEnable"));
         autoAttackEnable.addActionListener(new ActionListener() {
 
             @Override
@@ -2765,23 +2765,23 @@ public class Main {
         autoAttackPanel.add(autoAttackEnable);
         attackPanel.add(attackHit);
         attackPanel.add(attackUse);
-        attackPanel.add(new JLabel("Item use duration (ticks):"));
+        attackPanel.add(new JLabel(Messages.getString("Main.attackItemDuration") + ":"));
         attackPanel.add(attackUseDuration);
-        attackPanel.add(new JLabel("Item use range:"));
+        attackPanel.add(new JLabel(Messages.getString("Main.attackItemRange") + ":"));
         attackPanel.add(attackUseRange);
-        attackPanel.add(new JLabel("Attack rate (ticks):"));
+        attackPanel.add(new JLabel(Messages.getString("Main.attackRate") + ":"));
         attackPanel.add(autoAttackRate);
 
-        attackPanel.setBorder(BorderFactory.createTitledBorder("Attacking Settings"));
+        attackPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("Main.attackSettings")));
         attackPanel.alignAll();
-        autoAttackPanel.setBorder(BorderFactory.createTitledBorder("Auto-Attacking"));
+        autoAttackPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("Main.autoAttack")));
         autoAttackPanel.alignAll();
 
         autoTrackBox.add(autoTrackEnable);
         autoTrackBox.add(autoTrackPlayers);
         autoTrackBox.add(autoTrackEntities);
         autoTrackBox.add(autoAttackPanel);
-        autoTrackBox.setBorder(BorderFactory.createTitledBorder("Auto-Tracking"));
+        autoTrackBox.setBorder(BorderFactory.createTitledBorder(Messages.getString("Main.autoTracking")));
         autoTrackBox.alignAll();
 
         SwingUtilities.invokeLater(new Runnable() {
@@ -3632,11 +3632,11 @@ public class Main {
         packetAnalyzerControlBox.add(packetAnalyzerPauseBtn);
         packetAnalyzerControlBox.add(packetAnalyzerSearchBtn);
 
-        packetAnalyzerPane.add("In", inAnalyzerPane); // TODO Lang
-        packetAnalyzerPane.add("Out", outAnalyzerPane);
-        packetAnalyzerPane.add("All", allAnalyzerPane);
-        packetAnalyzerPane.add("Unknown", unknownAnalyzerPane);
-        packetAnalyzerPane.add("Search", searchAnalyzerPane);
+        packetAnalyzerPane.add(Messages.getString("Main.packetAnalyzerIn"), inAnalyzerPane);
+        packetAnalyzerPane.add(Messages.getString("Main.packetAnalyzerOut"), outAnalyzerPane);
+        packetAnalyzerPane.add(Messages.getString("Main.packetAnalyzerAll"), allAnalyzerPane);
+        packetAnalyzerPane.add(Messages.getString("Main.packetAnalyzerUnknown"), unknownAnalyzerPane);
+        packetAnalyzerPane.add(Messages.getString("Main.packetAnalyzerSearch"), searchAnalyzerPane);
 
         packetAnalyzerBox.add(packetAnalyzerControlBox);
         packetAnalyzerBox.add(packetAnalyzerPane);
@@ -4142,7 +4142,6 @@ public class Main {
 
                             @Override
                             public void changedTrackedEntity(final int id) {
-                                // TODO
                                 if (id == -1) {
                                     trackingField.setText("");
                                     stopTrackingBtn.setEnabled(false);
@@ -4323,11 +4322,10 @@ public class Main {
 
         final TablePacketButton btn = new TablePacketButton();
         btn.init(table);
-        // TODO Filtering
         return btn;
     }
 
-    private void showPacketPanel(final Packet packet) { // TODO Lang
+    private void showPacketPanel(final Packet packet) {
         final JDialog dialog = new JDialog(pWin, "Packet Information: " + packet.getClass().getSimpleName());
         dialog.setModal(true);
 

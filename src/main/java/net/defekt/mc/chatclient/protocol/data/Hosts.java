@@ -30,5 +30,5 @@ public class Hosts {
     /**
      * http://sessionserver.thealtening.com
      */
-    public static final String ALTENING_SESSIONSERVER = "http://sessionserver.thealtening.com"; // TODO TheAltening Auth
+    public static final String ALTENING_SESSIONSERVER = "http://sessionserver.thealtening.com";
 }
