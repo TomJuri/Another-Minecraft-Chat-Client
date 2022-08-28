@@ -118,19 +118,3 @@ If you done everything correctly, your translation will probably be added in nex
 
 ## ⬇️ Downloads
 You can download latest executable version [Here](https://github.com/Defective4/Minecraft-Chat-Client/releases)
-
-## ✔️ List to do
-- [x] Player list support
-  - [x] Player skins
-  - [ ] Exporting player skins
-- [x] LAN games
-- [x] Basic player actions (sneaking, sprinting)
-- [x] Health updates and automatic respawning
-- [x] Appearance settings
-- [x] Movement
-- [x] Statistics (1.8 - 1.12.2)
-- [x] Inventory handling (experimental)
-- [ ] Tab completion
-- [ ] Usage statistics
-- [ ] Graphical map with entity rendering
-- [ ] Plugins
