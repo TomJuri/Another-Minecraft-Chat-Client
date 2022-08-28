@@ -6,6 +6,9 @@ v1.8.1
   It allows you to see and interact with nearby entities
   including players.
   
+- Ability to simulate right click on an entity.
+  You can now interact with NPCs!
+  
 - Entity tracking and auto-tracking.
   Allows you to look at nearby entities, or
   at entities you manually target.
