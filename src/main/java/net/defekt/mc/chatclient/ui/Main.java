@@ -2594,6 +2594,13 @@ public class Main {
         attackGroup.add(attackUse);
 
         JCheckBox autoAttackEnable = new JCheckBox("Enable Auto-Attacking");
+        autoAttackEnable.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (autoAttackEnable.isSelected()) autoTrackEnable.setSelected(true);
+            }
+        });
         autoAttackEnable.setFont(autoAttackEnable.getFont().deriveFont(Font.BOLD));
         JSpinner autoAttackRate = new JSpinner(new SpinnerNumberModel(25, 0, 1000, 1));
         SwingUtils.alignSpinner(autoAttackRate);

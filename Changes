@@ -13,6 +13,7 @@ v1.8.1
 - Entity attacking and auto-attacking!
   You can now select an entity, or automatically
   attack anything that comes near your player.
+  This option also includes ranged/item attacks!
   Your weapon doesn't auto-switch though.
   
 [+] Fixed:
