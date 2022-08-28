@@ -2461,7 +2461,6 @@ public class Main {
                             });
                             add(new JMenuItem("Attack Entity") {
                                 {
-                                    setFont(getFont().deriveFont(Font.BOLD));
                                     addActionListener(e -> {
                                         client.trackEntity(currentEntity, true);
                                     });

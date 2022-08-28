@@ -44,7 +44,6 @@ import net.defekt.mc.chatclient.protocol.packets.UnknownPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerStatisticsPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientEntityActionPacket.EntityAction;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseEntityPacket.UseType;
-import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPlayerPositionAndLookPacket;
 import net.defekt.mc.chatclient.ui.Messages;
 
 /**
@@ -726,8 +725,8 @@ public class MinecraftClient {
         Entity entity = getEntity(entityID);
         if ((entity = getEntity(entityID)) != null && distanceTo(entity) <= 4) {
             lookAt(entity);
-            // TODO Animations
             sendPacket(PacketFactory.constructPacket(reg, "ClientUseEntityPacket", entityID, type, isSneaking()));
+            if (type == UseType.ATTACK) sendPacket(PacketFactory.constructPacket(reg, "ClientAnimationPacket"));
         }
     }
 
@@ -760,8 +759,8 @@ public class MinecraftClient {
 
         this.yaw -= 90;
         this.pitch -= 90;
-
-        sendPacket(new ClientPlayerPositionAndLookPacket(reg, this.x, this.y, this.z, yaw, pitch, true));
+        sendPacket(PacketFactory.constructPacket(reg, "ClientPlayerPositionAndLookPacket", this.x, this.y, this.z, yaw,
+                pitch, true));
     }
 
     /**

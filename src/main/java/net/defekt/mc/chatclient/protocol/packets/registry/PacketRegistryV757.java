@@ -29,6 +29,7 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerUpdateHealthPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerWindowItemsPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.login.ClientLoginRequestPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientAnimationPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientChatMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientCloseWindowPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientEntityActionPacket;
@@ -85,6 +86,7 @@ public class PacketRegistryV757 extends PacketRegistry {
                 put(0x2F, ClientUseItemPacket.class);
 //				put(0x07, ClientConfirmTransactionPacket.class); <- No window confirmation packet in 1.17 ???
                 put(0x0D, ClientUseEntityPacket.class);
+                put(0x2C, ClientAnimationPacket.class);
             }
         };
     }
