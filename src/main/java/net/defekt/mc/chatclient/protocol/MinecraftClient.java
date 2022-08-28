@@ -435,7 +435,7 @@ public class MinecraftClient {
      * 
      * @return protocol used by this client
      */
-    protected int getProtocol() {
+    public int getProtocol() {
         return protocol;
     }
 
@@ -1026,5 +1026,9 @@ public class MinecraftClient {
     public double distanceTo(final Entity entity) {
         return Math
                 .sqrt(Math.pow(x - entity.getX(), 2) + Math.pow(y - entity.getY(), 2) + Math.pow(z - entity.getZ(), 2));
+    }
+
+    public PacketRegistry getReg() {
+        return reg;
     }
 }

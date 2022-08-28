@@ -2583,15 +2583,38 @@ public class Main {
         final JCheckBox autoTrackEntities = new JCheckBox("Track Entities");
 
         JVBoxPanel autoAttackPanel = new JVBoxPanel();
+        JVBoxPanel attackPanel = new JVBoxPanel();
+
+        JRadioButton attackHit = new JRadioButton("Hit");
+        attackHit.setSelected(true);
+        JRadioButton attackUse = new JRadioButton("Use Item");
+
+        ButtonGroup attackGroup = new ButtonGroup();
+        attackGroup.add(attackHit);
+        attackGroup.add(attackUse);
 
         JCheckBox autoAttackEnable = new JCheckBox("Enable Auto-Attacking");
         autoAttackEnable.setFont(autoAttackEnable.getFont().deriveFont(Font.BOLD));
-        JSpinner autoAttackRate = new JSpinner(new SpinnerNumberModel(25, 1, 60, 1));
+        JSpinner autoAttackRate = new JSpinner(new SpinnerNumberModel(25, 0, 1000, 1));
         SwingUtils.alignSpinner(autoAttackRate);
 
+        JSpinner attackUseDuration = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
+        SwingUtils.alignSpinner(attackUseDuration);
+        JSpinner attackUseRange = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
+        SwingUtils.alignSpinner(attackUseRange);
+
         autoAttackPanel.add(autoAttackEnable);
-        autoAttackPanel.add(new JLabel("Attack rate (ticks):"));
-        autoAttackPanel.add(autoAttackRate);
+        attackPanel.add(attackHit);
+        attackPanel.add(attackUse);
+        attackPanel.add(new JLabel("Item use duration (ticks):"));
+        attackPanel.add(attackUseDuration);
+        attackPanel.add(new JLabel("Item use range:"));
+        attackPanel.add(attackUseRange);
+        attackPanel.add(new JLabel("Attack rate (ticks):"));
+        attackPanel.add(autoAttackRate);
+
+        attackPanel.setBorder(BorderFactory.createTitledBorder("Attacking Settings"));
+        attackPanel.alignAll();
         autoAttackPanel.setBorder(BorderFactory.createTitledBorder("Auto-Attacking"));
         autoAttackPanel.alignAll();
 
@@ -2612,6 +2635,7 @@ public class Main {
         worldBox.add(stopTrackingBtn);
         worldBox.add(new JLabel(" "));
         worldBox.add(autoTrackBox);
+        worldBox.add(attackPanel);
         worldBox.add(new JLabel("") {
             {
                 setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
@@ -4004,6 +4028,7 @@ public class Main {
                             }
 
                             private int attackTicks = 0;
+                            private boolean isUsing = false;
 
                             @Override
                             public void tick() throws IOException {
@@ -4012,8 +4037,32 @@ public class Main {
                                     if (attackTicks > (int) autoAttackRate.getValue()) {
                                         attackTicks = 0;
                                         Entity entity = cl.getEntity(cl.getTrackedEntity());
-                                        if (entity != null && cl.distanceTo(entity) <= 4) {
-                                            cl.interact(entity, UseType.ATTACK);
+                                        if (entity != null) {
+                                            if (attackHit.isSelected() && cl.distanceTo(entity) <= 4) {
+                                                cl.interact(entity, UseType.ATTACK);
+                                            } else if (attackUse.isSelected() && !isUsing
+                                                    && cl.distanceTo(entity) <= (int) attackUseRange.getValue()) {
+                                                if (cl.getProtocol() > 47) {
+                                                    cl.sendPacket(PacketFactory.constructPacket(cl.getReg(),
+                                                            "ClientUseItemPacket"));
+                                                    isUsing = true;
+                                                    new Timer(true).schedule(new TimerTask() {
+
+                                                        @Override
+                                                        public void run() {
+                                                            try {
+                                                                isUsing = false;
+                                                                cl.sendPacket(PacketFactory.constructPacket(cl.getReg(),
+                                                                        "ClientPlayerDiggingPacket",
+                                                                        net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPlayerDiggingPacket.Status.FINISH_ACTION,
+                                                                        0, 0, 0, (byte) 0));
+                                                            } catch (IOException ex) {
+                                                                ex.printStackTrace();
+                                                            }
+                                                        }
+                                                    }, ((int) attackUseDuration.getValue()) * 1000 / 20);
+                                                }
+                                            }
                                         }
                                     }
                                 }
