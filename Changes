@@ -9,3 +9,11 @@ v1.8.1
 - Entity tracking and auto-tracking.
   Allows you to look at nearby entities, or
   at entities you manually target.
+
+- Entity attacking and auto-attacking!
+  You can now select an entity, or automatically
+  attack anything that comes near your player.
+  Your weapon doesn't auto-switch though.
+  
+[+] Fixed:
+- Number spinners under Player tab randomly disappearing

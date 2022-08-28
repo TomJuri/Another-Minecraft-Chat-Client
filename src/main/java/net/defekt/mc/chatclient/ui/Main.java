@@ -1982,25 +1982,6 @@ public class Main {
         speedBox.add(speed);
         blocksBox.add(blocks);
 
-        for (final Component ct : speedBox.getComponents()) {
-            SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
-                }
-            });
-        }
-        for (final Component ct : blocksBox.getComponents()) {
-            SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
-                }
-            });
-        }
-
         for (int x = 0; x < movementButtons.length; x++) {
             final int direction = x;
             movementButtons[x].addActionListener(new ActionListener() {
@@ -2031,6 +2012,7 @@ public class Main {
         movementPanel.add(movementButtons[5]);
 
         movementPanel.setMaximumSize(new Dimension(180, 180));
+        movementPanel.setPreferredSize(new Dimension(180, 180));
 
         final JLabel xLabel = new JLabel("X: 0");
         final JLabel yLabel = new JLabel("Y: 0");
@@ -2053,6 +2035,11 @@ public class Main {
         playerBox.add(blocksBox);
         playerBox.add(new JLabel(" "));
         playerBox.add(movementPanel);
+//        playerBox.add(new JLabel("") {
+//            {
+//                setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
+//            }
+//        });
         playerBox.alignAll();
 
         final Box playerListBox = Box.createVerticalBox();
@@ -2384,6 +2371,9 @@ public class Main {
 
                     private byte frameTimer = 0;
 
+                    private final Color darkRed = new Color(55, 0, 0);
+                    private final Color red = new Color(255, 0, 0);
+
                     private void drawPlayer(final int x, final int y, final UUID uid, final Graphics g,
                             final Color color, final boolean selected, final boolean tracked) {
                         final BufferedImage image = PlayerSkinCache.getHead(uid);
@@ -2392,7 +2382,10 @@ public class Main {
                                 if (selected) {
                                     g.setColor(Color.white);
                                 } else if (tracked) {
-                                    g.setColor(frameTimer < 5 ? Color.white : Color.gray);
+                                    if (client.isAttacked()) {
+                                        g.setColor(frameTimer < 5 ? red : darkRed);
+                                    } else
+                                        g.setColor(frameTimer < 5 ? Color.white : Color.gray);
                                     frameTimer++;
                                     if (frameTimer > 10) {
                                         frameTimer = 0;
@@ -2422,7 +2415,10 @@ public class Main {
                             if (selected) {
                                 g.setColor(Color.white);
                             } else if (tracked) {
-                                g.setColor(frameTimer < 5 ? Color.white : Color.gray);
+                                if (client.isAttacked()) {
+                                    g.setColor(frameTimer < 5 ? red : darkRed);
+                                } else
+                                    g.setColor(frameTimer < 5 ? Color.white : Color.gray);
                                 frameTimer++;
                                 if (frameTimer > 10) {
                                     frameTimer = 0;
@@ -2444,7 +2440,7 @@ public class Main {
 
                         @Override
                         public void actionPerformed(final ActionEvent e) {
-                            client.trackEntity(currentEntity);
+                            client.trackEntity(currentEntity, false);
                         }
                     };
 
@@ -2461,6 +2457,14 @@ public class Main {
                                 {
                                     setFont(getFont().deriveFont(Font.BOLD));
                                     addActionListener(lClick);
+                                }
+                            });
+                            add(new JMenuItem("Attack Entity") {
+                                {
+                                    setFont(getFont().deriveFont(Font.BOLD));
+                                    addActionListener(e -> {
+                                        client.trackEntity(currentEntity, true);
+                                    });
                                 }
                             });
                             add(new JMenuItem("Interact with Entity") {
@@ -2564,7 +2568,7 @@ public class Main {
         stopTrackingBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                clients.get(fPane).setTrackedEntity(-1);
+                clients.get(fPane).setTrackedEntity(-1, false);
             }
         });
 
@@ -2579,12 +2583,28 @@ public class Main {
         final JCheckBox autoTrackPlayers = new JCheckBox("Track Players");
         final JCheckBox autoTrackEntities = new JCheckBox("Track Entities");
 
+        JVBoxPanel autoAttackPanel = new JVBoxPanel();
+
+        JCheckBox autoAttackEnable = new JCheckBox("Enable Auto-Attacking");
+        autoAttackEnable.setFont(autoAttackEnable.getFont().deriveFont(Font.BOLD));
+        JSpinner autoAttackRate = new JSpinner(new SpinnerNumberModel(25, 1, 60, 1));
+        SwingUtils.alignSpinner(autoAttackRate);
+
+        autoAttackPanel.add(autoAttackEnable);
+        autoAttackPanel.add(new JLabel("Attack rate (ticks):"));
+        autoAttackPanel.add(autoAttackRate);
+        autoAttackPanel.setBorder(BorderFactory.createTitledBorder("Auto-Attacking"));
+        autoAttackPanel.alignAll();
+
         autoTrackBox.add(autoTrackEnable);
         autoTrackBox.add(autoTrackPlayers);
         autoTrackBox.add(autoTrackEntities);
+        autoTrackBox.add(autoAttackPanel);
         autoTrackBox.setBorder(BorderFactory.createTitledBorder("Auto-Tracking"));
         autoTrackBox.alignAll();
 
+        SwingUtilities.invokeLater(() -> {
+        });
         worldBox.add(timeBox);
         worldBox.add(new JLabel(" "));
         worldBox.add(openRadarBtn);
@@ -2593,17 +2613,12 @@ public class Main {
         worldBox.add(stopTrackingBtn);
         worldBox.add(new JLabel(" "));
         worldBox.add(autoTrackBox);
+        worldBox.add(new JLabel("") {
+            {
+                setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
+            }
+        });
         worldBox.alignAll();
-
-        for (final Component ct : trackingBox.getComponents()) {
-            SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
-                }
-            });
-        }
 
         final JVBoxPanel autoMsgBox = new JVBoxPanel();
 
@@ -2851,6 +2866,11 @@ public class Main {
         autoMsgBox.add(msgCtlBox);
         autoMsgBox.add(autoMsgPane);
         autoMsgBox.add(autoMsgSvCtl);
+        autoMsgBox.add(new JLabel("") {
+            {
+                setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
+            }
+        });
 
         autoMsgBox.alignAll();
 
@@ -3443,7 +3463,7 @@ public class Main {
         messagesTabPane.addTab(Messages.getString("Main.autoResponsesTab"), autoRespBox);
 
         controlsTabPane.addTab(Messages.getString("Main.playerListTab"), playerListBox);
-        controlsTabPane.addTab(Messages.getString("Main.playerTab"), new JScrollPane(playerBox));
+        controlsTabPane.addTab(Messages.getString("Main.playerTab"), playerBox);
         controlsTabPane.addTab(Messages.getString("Main.statisticsTab"), statisticsPane);
         controlsTabPane.addTab(Messages.getString("Main.inventoryTab"), inventoryBox);
         controlsTabPane.addTab(Messages.getString("Main.worldTab"), worldBox);
@@ -3456,8 +3476,18 @@ public class Main {
         final Runnable rn = new Runnable() {
             @Override
             public void run() {
-                autoMsgInterval.setMaximumSize(new Dimension(win.getWidth(), 20));
-                autoMsgDelay.setMaximumSize(new Dimension(win.getWidth(), 20));
+//                autoMsgInterval.setMaximumSize(new Dimension(win.getWidth(), 20));
+//                autoMsgDelay.setMaximumSize(new Dimension(win.getWidth(), 20));
+//                autoAttackRate.setMaximumSize(new Dimension(autoAttackRate.getWidth(), 20));
+//                for (final Component ct : speedBox.getComponents()) {
+//                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
+//                }
+//                for (final Component ct : blocksBox.getComponents()) {
+//                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
+//                }
+//                for (final Component ct : trackingBox.getComponents()) {
+//                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
+//                }
                 ac.actionPerformed(null);
             }
         };
@@ -3466,8 +3496,8 @@ public class Main {
 
             @Override
             public void run() {
-                fPane.setDividerLocation(0.8);
                 rn.run();
+                fPane.setDividerLocation(0.8);
             }
         });
 
@@ -3961,7 +3991,7 @@ public class Main {
                                         }
                                     }
                                     if (closestEntity != null) {
-                                        cl.trackEntity(closestEntity);
+                                        cl.trackEntity(closestEntity, autoAttackEnable.isSelected());
                                     }
                                 }
 
@@ -3970,6 +4000,22 @@ public class Main {
                                         cl.lookAt(entity);
                                     } catch (final IOException ex) {
                                         ex.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            private int attackTicks = 0;
+
+                            @Override
+                            public void tick() throws IOException {
+                                if (cl.isAttacked()) {
+                                    attackTicks++;
+                                    if (attackTicks > (int) autoAttackRate.getValue()) {
+                                        attackTicks = 0;
+                                        Entity entity = cl.getEntity(cl.getTrackedEntity());
+                                        if (entity != null && cl.distanceTo(entity) <= 4) {
+                                            cl.interact(entity, UseType.ATTACK);
+                                        }
                                     }
                                 }
                             }

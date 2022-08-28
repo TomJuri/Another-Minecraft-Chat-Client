@@ -1,5 +1,6 @@
 package net.defekt.mc.chatclient.protocol;
 
+import java.io.IOException;
 import java.util.Map;
 
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
@@ -76,4 +77,6 @@ public interface ClientListener {
     public void changedTrackedEntity(int id);
 
     public void entityMoved(Entity entity, int id);
+    
+    public void tick() throws IOException;
 }

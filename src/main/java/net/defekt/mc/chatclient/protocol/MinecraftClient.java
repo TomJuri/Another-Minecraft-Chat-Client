@@ -9,9 +9,12 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.Inflater;
@@ -74,6 +77,7 @@ public class MinecraftClient {
 
     private final Map<Integer, Entity> storedEntities = new ConcurrentHashMap<>();
     private int trackedEntity = -1;
+    private boolean isTrackedAttacking = false;
 
     private Socket soc = null;
     private OutputStream os = null;
@@ -93,7 +97,7 @@ public class MinecraftClient {
 
     private final List<InternalPacketListener> packetListeners = new ArrayList<InternalPacketListener>();
     private final List<InternalPacketListener> outPacketListeners = new ArrayList<InternalPacketListener>();
-    private final List<ClientListener> clientListeners = new ArrayList<ClientListener>();
+    private final List<ClientListener> clientListeners = Collections.synchronizedList(new ArrayList<ClientListener>());
     private final boolean forge;
 
     private final Map<Integer, ItemsWindow> openWindows = new HashMap<Integer, ItemsWindow>();
@@ -101,6 +105,8 @@ public class MinecraftClient {
 
     private Thread packetReaderThread = null;
     private Thread playerPositionThread = null;
+
+    private Timer internalTickTimer = new Timer("tickTimer", true);
 
     /**
      * Add a outbound packet listener to listen for sent packets
@@ -399,6 +405,26 @@ public class MinecraftClient {
             });
             playerPositionThread.start();
 
+            internalTickTimer.scheduleAtFixedRate(new TimerTask() {
+
+                @Override
+                public void run() {
+                    if (!isConnected()) {
+                        cancel();
+                        return;
+                    }
+                    synchronized (clientListeners) {
+                        for (ClientListener listener : clientListeners.toArray(new ClientListener[0]))
+                            try {
+                                listener.tick();
+                            } catch (IOException ex) {
+                                cancel();
+                                return;
+                            }
+                    }
+                }
+            }, 0, 1000 / 20);
+
         } catch (final IOException ex) {
             close();
             throw ex;
@@ -676,10 +702,15 @@ public class MinecraftClient {
         return false;
     }
 
-    public void trackEntity(final Entity entity) {
+    public boolean isAttacked() {
+        return isTrackedAttacking;
+    }
+
+    public void trackEntity(final Entity entity, boolean attack) {
         for (final int id : storedEntities.keySet().toArray(new Integer[0])) {
             if (storedEntities.get(id).getUid().equals(entity.getUid())) {
                 trackedEntity = id;
+                isTrackedAttacking = attack;
                 for (final ClientListener listener : getClientListeners().toArray(new ClientListener[0])) {
                     listener.changedTrackedEntity(trackedEntity);
                 }
@@ -695,7 +726,7 @@ public class MinecraftClient {
         Entity entity = getEntity(entityID);
         if ((entity = getEntity(entityID)) != null && distanceTo(entity) <= 4) {
             lookAt(entity);
-
+            // TODO Animations
             sendPacket(PacketFactory.constructPacket(reg, "ClientUseEntityPacket", entityID, type, isSneaking()));
         }
     }
@@ -985,8 +1016,9 @@ public class MinecraftClient {
         return trackedEntity;
     }
 
-    public void setTrackedEntity(final int trackedEntity) {
+    public void setTrackedEntity(final int trackedEntity, boolean attack) {
         this.trackedEntity = trackedEntity;
+        isTrackedAttacking = attack;
         for (final ClientListener listener : getClientListeners().toArray(new ClientListener[0])) {
             listener.changedTrackedEntity(trackedEntity);
         }
