@@ -21,7 +21,7 @@ import net.defekt.mc.chatclient.protocol.ClientListener;
  */
 public class ChatMessages {
 
-    private static final String pChar = "§";
+    private static final String pChar = "\u00a7";
 
     private ChatMessages() {
     }

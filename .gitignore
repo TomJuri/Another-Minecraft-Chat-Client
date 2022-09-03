@@ -1,8 +1,6 @@
-.settings/
-bin/
+bin
 .project
 build/
-.gradle/
 mcc.prefs
 pmd.html
 # Ignore Gradle project-specific cache directory

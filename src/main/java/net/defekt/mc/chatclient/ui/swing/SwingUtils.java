@@ -97,7 +97,7 @@ public class SwingUtils {
      * 
      * @param text text to append.<br>
      *             It follows the same rules defined in Minecraft, for example,
-     *             §4Hello §9World would be
+     *             \u00a74Hello \u00a79World would be
      *             "<font style="color: aa0000;">Hello</font>
      *             <font style="color: 5555ff;">World</font>""
      * @param pane pane to append text to
@@ -107,7 +107,7 @@ public class SwingUtils {
         final StyleContext ctx = new StyleContext();
         final Style style = ctx.addStyle("style", null);
 
-        final String[] split = text.split("�");
+        final String[] split = text.split("\u00a7");
         boolean lineSupported = true;
         final int ctxIndex = doc.getLength();
         for (final String part : split) {

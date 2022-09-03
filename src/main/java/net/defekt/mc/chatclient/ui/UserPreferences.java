@@ -26,6 +26,7 @@ public class UserPreferences implements Serializable {
     private static final long serialVersionUID = 5064975536053236721L;
 
     private UserPreferences() {
+        initDefaults();
     }
 
     private void initDefaults() {

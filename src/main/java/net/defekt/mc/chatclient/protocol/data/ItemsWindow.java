@@ -490,18 +490,18 @@ public class ItemsWindow {
                 btn.removeMouseListener(ml);
             }
         if (item.getId() == 0) return;
-        String label = "§f" + itemInfo.getName();
+        String label = "\u00a7f" + itemInfo.getName();
         try {
             if (item.getNbt() != null) {
                 CompoundMap map = (CompoundMap) item.getNbt().getValue();
                 if (map.containsKey("display")) {
                     map = (CompoundMap) map.get("display").getValue();
                     if (map.containsKey("Name")) {
-                        label = "§f" + ChatMessages.parse((String) map.get("Name").getValue());
+                        label = "\u00a7f" + ChatMessages.parse((String) map.get("Name").getValue());
                     }
                     if (map.containsKey("Lore")) {
                         for (final StringTag lore : (List<StringTag>) map.get("Lore").getValue()) {
-                            label += "\r\n§5" + ChatMessages.parse(lore.getValue());
+                            label += "\r\n\u00a75" + ChatMessages.parse(lore.getValue());
                         }
                     }
                 }

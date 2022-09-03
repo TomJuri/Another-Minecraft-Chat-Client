@@ -90,11 +90,11 @@ public class ServerEntry implements Serializable {
                             }
                         }
                     } catch (final UnknownHostException e) {
-                        info = new StatusInfo("§4" + Messages.getString("ServerEntry.serverEntryUnknownHost"), -1,
+                        info = new StatusInfo("\u00a74" + Messages.getString("ServerEntry.serverEntryUnknownHost"), -1,
                                 -1, "", -1, null, null, null);
                         error = true;
                     } catch (final Exception e) {
-                        info = new StatusInfo("§4" + Messages.getString("ServerEntry.serverEntryCantConnect"), -1,
+                        info = new StatusInfo("\u00a74" + Messages.getString("ServerEntry.serverEntryCantConnect"), -1,
                                 -1, "", -1,
 
                                 null, null, null);

@@ -1,7 +1,9 @@
 AMCC Change Log
-v1.8.2
+v1.8.3
 
-A minor maintenance update
+An update containing some bug-fixes
 
+[+] Added:
+ - Support for more Unicode characters
 [+] Fixed:
-  - Minor code improvements
+ - Inability to connect to a server during first application run

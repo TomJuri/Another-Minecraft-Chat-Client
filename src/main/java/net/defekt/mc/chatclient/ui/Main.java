@@ -165,7 +165,7 @@ public class Main {
 
     private static BufferedImage logoImage = null;
 
-    public static final String VERSION = "1.8.2";
+    public static final String VERSION = "1.8.3";
     private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
 
     public static Font mcFont = Font.decode(null);
@@ -1874,7 +1874,7 @@ public class Main {
                 up.setDisablePacketAnalyzer(disablePacketAnalyzer.isSelected());
                 up.setResourcePackBehavior(rsBehavior);
                 up.setShowResourcePackMessages(showResourcePackMessages);
-                up.setResourcePackMessage(resourcePackMessage.replace("&", "§"));
+                up.setResourcePackMessage(resourcePackMessage.replace("&", "\u00a7"));
                 up.setResourcePackMessagePosition(resourcePackMessagePosition);
 
                 up.setSkinFetchRule(skinFetchRule);
@@ -3715,7 +3715,7 @@ public class Main {
                             }
                         } catch (final Exception e) {
                             SwingUtils.appendColoredText(
-                                    "§c" + Messages.getString("Main.connectionFailedChatMessage") + e.toString(), pane);
+                                    "\u00a7c" + Messages.getString("Main.connectionFailedChatMessage") + e.toString(), pane);
                             e.printStackTrace();
                         }
                         break;
@@ -3979,7 +3979,7 @@ public class Main {
                             @Override
                             public void disconnected(final String reason) {
                                 autoMessagesThread.interrupt();
-                                SwingUtils.appendColoredText("§c" + Messages.getString("Main.connectionLostChatMessage")
+                                SwingUtils.appendColoredText("\u00a7c" + Messages.getString("Main.connectionLostChatMessage")
                                         + ": \r\n" + reason + "\r\n", jtp);
 
                                 if (trayIcon != null && up.isTrayShowDisconnectMessages()
@@ -4275,7 +4275,7 @@ public class Main {
                                         cl.sendChatMessage(message);
                                     } catch (final IOException e1) {
                                         SwingUtils.appendColoredText(
-                                                "§c" + Messages.getString("Main.connectionLostChatMessage2") + ": \r\n"
+                                                "\u00a7c" + Messages.getString("Main.connectionLostChatMessage2") + ": \r\n"
                                                         + e1.toString(),
                                                 pane);
                                         e1.printStackTrace();
@@ -4295,7 +4295,7 @@ public class Main {
                     } catch (
 
                     final IOException e) {
-                        SwingUtils.appendColoredText("§c" + Messages.getString("Main.connectionFailedChatMessage2")
+                        SwingUtils.appendColoredText("\u00a7c" + Messages.getString("Main.connectionFailedChatMessage2")
                                 + "\r\n\r\n" + e.toString(), pane);
                         e.printStackTrace();
                     }
@@ -4337,14 +4337,14 @@ public class Main {
         pane.setEditable(false);
 
         final int compressed = packet.getCompressed();
-        final String compressedString = compressed == 1 ? "§4No (Disabled)"
-                : compressed == 2 ? "§4No" : compressed == 3 ? "§2Yes" : "Unknown";
-        final String encryptedString = packet.isEncrypted() ? "§2Yes" : "§4No";
+        final String compressedString = compressed == 1 ? "\u00a74No (Disabled)"
+                : compressed == 2 ? "\u00a74No" : compressed == 3 ? "\u00a72Yes" : "Unknown";
+        final String encryptedString = packet.isEncrypted() ? "\u00a72Yes" : "\u00a74No";
 
         pane.setText("Packet Name: " + packet.getClass().getSimpleName() + "\n" + "Packet Class: "
                 + packet.getClass().getName() + "\nPacket ID: 0x" + Integer.toHexString(packet.getID()) + "\nRegistry: "
                 + packet.getReg().getClass().getSimpleName() + "\nPacket Size: " + packet.getSize() + "\nCompressed: ");
-        SwingUtils.appendColoredText(compressedString + "§0\nEncrypted: " + encryptedString, pane);
+        SwingUtils.appendColoredText(compressedString + "\u00a70\nEncrypted: " + encryptedString, pane);
 
         infoPanel.add(pane);
 
