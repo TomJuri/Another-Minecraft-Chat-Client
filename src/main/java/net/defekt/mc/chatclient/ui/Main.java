@@ -560,7 +560,7 @@ public class Main {
                                     labels.get(srvLabel).add(cl);
                                 }
 
-                                final MenuItem options = new MenuItem(Messages.getString("Main.optionsMenu") + "Info");
+                                final MenuItem options = new MenuItem(Messages.getString("Main.optionsMenu"));
                                 options.addActionListener(new ActionListener() {
                                     @Override
                                     public void actionPerformed(final ActionEvent ev2) {
@@ -916,7 +916,6 @@ public class Main {
                     savedProxies.addItem(sett);
                 }
 
-                // TODO Lang
                 final JButton pxLoad = new JButton(Messages.getString("Main.load"));
                 pxLoad.setEnabled(false);
                 final JButton pxSave = new JButton(Messages.getString("Main.save"));
@@ -964,6 +963,7 @@ public class Main {
                             pxDelete.setEnabled(sel);
                             pxLoad.setEnabled(sel);
                         } catch (final Exception ex) {
+                            ex.printStackTrace();
                         }
                     }
                 });
@@ -979,6 +979,7 @@ public class Main {
                                 pxSave.setEnabled(false);
                             }
                         } catch (final Exception ex) {
+                            ex.printStackTrace();
                         }
                     }
                 });
@@ -998,6 +999,7 @@ public class Main {
                                 }
                             }
                         } catch (final Exception ex) {
+                            ex.printStackTrace();
                         }
                     }
                 });
@@ -1026,10 +1028,11 @@ public class Main {
                                 }
                             }
                         } catch (final Exception ex) {
+                            ex.printStackTrace();
                         }
                     }
                 });
-                userTabs.addTab(Messages.getString("Main.logInTab"), box); // TODO Lang
+                userTabs.addTab(Messages.getString("Main.logInTab"), box);
                 userTabs.addTab(Messages.getString("Main.proxyTab"), proxyBox);
                 Proxy proxyObj = null;
 
@@ -1052,6 +1055,7 @@ public class Main {
                             final int pport = Integer.parseInt(pxAddr[1]);
                             proxyObj = new Proxy(Type.SOCKS, new InetSocketAddress(phost, pport));
                         } catch (final Exception ex) {
+                            ex.printStackTrace();
                         }
                     }
                     if (!up.isUsernameAlertSeen() && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)
@@ -1406,8 +1410,7 @@ public class Main {
         pingField.setValue(up.getAdditionalPing());
         SwingUtils.alignSpinner(pingField);
 
-        final JSpinner maxPacketsOnListField = new JSpinner(new SpinnerNumberModel(1, 1, 50000, 1)); // TODO Lang
-        maxPacketsOnListField.setToolTipText("TODO");
+        final JSpinner maxPacketsOnListField = new JSpinner(new SpinnerNumberModel(1, 1, 50000, 1));
         maxPacketsOnListField.setValue(up.getMaxPacketsOnList());
         SwingUtils.alignSpinner(maxPacketsOnListField);
 
@@ -1871,7 +1874,7 @@ public class Main {
                 up.setDisablePacketAnalyzer(disablePacketAnalyzer.isSelected());
                 up.setResourcePackBehavior(rsBehavior);
                 up.setShowResourcePackMessages(showResourcePackMessages);
-                up.setResourcePackMessage(resourcePackMessage.replace("&", "\u00A7"));
+                up.setResourcePackMessage(resourcePackMessage.replace("&", "§"));
                 up.setResourcePackMessagePosition(resourcePackMessagePosition);
 
                 up.setSkinFetchRule(skinFetchRule);
@@ -2721,7 +2724,6 @@ public class Main {
             }
         });
 
-        // TODO Lang
         trackingBox.add(new JLabel(Messages.getString("Main.trackingCurrent") + ": "));
         trackingBox.add(trackingField);
 
@@ -3713,8 +3715,7 @@ public class Main {
                             }
                         } catch (final Exception e) {
                             SwingUtils.appendColoredText(
-                                    "\u00a7c" + Messages.getString("Main.connectionFailedChatMessage") + e.toString(),
-                                    pane);
+                                    "§c" + Messages.getString("Main.connectionFailedChatMessage") + e.toString(), pane);
                             e.printStackTrace();
                         }
                         break;
@@ -3843,7 +3844,7 @@ public class Main {
                                             }
                                         }
                                     } catch (final Exception e2) {
-//										e2.printStackTrace();
+                                        e2.printStackTrace();
                                     }
                                 }
                             }
@@ -3978,10 +3979,8 @@ public class Main {
                             @Override
                             public void disconnected(final String reason) {
                                 autoMessagesThread.interrupt();
-                                SwingUtils.appendColoredText(
-                                        "\u00a7c" + Messages.getString("Main.connectionLostChatMessage") + ": \r\n"
-                                                + reason + "\r\n",
-                                        jtp);
+                                SwingUtils.appendColoredText("§c" + Messages.getString("Main.connectionLostChatMessage")
+                                        + ": \r\n" + reason + "\r\n", jtp);
 
                                 if (trayIcon != null && up.isTrayShowDisconnectMessages()
                                         && !reason.equals(Messages.getString("Main.trayClosedReason"))) {
@@ -4276,8 +4275,8 @@ public class Main {
                                         cl.sendChatMessage(message);
                                     } catch (final IOException e1) {
                                         SwingUtils.appendColoredText(
-                                                "\u00a7c" + Messages.getString("Main.connectionLostChatMessage2")
-                                                        + ": \r\n" + e1.toString(),
+                                                "§c" + Messages.getString("Main.connectionLostChatMessage2") + ": \r\n"
+                                                        + e1.toString(),
                                                 pane);
                                         e1.printStackTrace();
                                         for (final Component ct : chatControls.getComponents()) {
@@ -4296,7 +4295,7 @@ public class Main {
                     } catch (
 
                     final IOException e) {
-                        SwingUtils.appendColoredText("\u00a7c" + Messages.getString("Main.connectionFailedChatMessage2")
+                        SwingUtils.appendColoredText("§c" + Messages.getString("Main.connectionFailedChatMessage2")
                                 + "\r\n\r\n" + e.toString(), pane);
                         e.printStackTrace();
                     }

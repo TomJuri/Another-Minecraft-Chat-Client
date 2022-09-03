@@ -219,16 +219,6 @@ public class MinecraftClient {
         this.state = state;
     }
 
-    /**
-     * Connect to server specified in constructor
-     * 
-     * @param username username of connecting client
-     * @throws IOException thrown when client was unable to connect to target server
-     */
-    public void connect(final String username) throws IOException {
-        connect(AuthType.Offline, username, null);
-    }
-
     private Cipher eCipher = null;
     private Cipher dCipher = null;
     private boolean isEncrypted = false;
@@ -261,6 +251,16 @@ public class MinecraftClient {
     private AuthType authType = AuthType.Offline;
 
     /**
+     * Connect to server specified in constructor
+     * 
+     * @param username username of connecting client
+     * @throws IOException thrown when client was unable to connect to target server
+     */
+    public void connect(final String username) throws IOException {
+        connect(AuthType.Offline, username, null);
+    }
+
+    /**
      * Connect this client to the server
      * 
      * @param auth     authentication type to use
@@ -271,11 +271,6 @@ public class MinecraftClient {
     public void connect(final AuthType auth, final String token, final String password) throws IOException {
         this.authType = auth;
         switch (auth) {
-            default:
-            case Offline: {
-                this.username = token;
-                break;
-            }
             case TheAltening:
             case Mojang: {
                 final MojangUser user = MojangAPI.authenticateUser(token, auth == AuthType.Mojang ? password : "none",
@@ -283,6 +278,14 @@ public class MinecraftClient {
                 this.username = user.getUserName();
                 this.authID = user.getUserID();
                 this.authToken = user.getAccessToken();
+                break;
+            }
+            case Offline: {
+                this.username = token;
+                break;
+            }
+            default: {
+                this.username = token;
                 break;
             }
         }
@@ -415,6 +418,7 @@ public class MinecraftClient {
                             }
                         }
                     } catch (final InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             });
@@ -608,15 +612,6 @@ public class MinecraftClient {
     }
 
     /**
-     * Get entity ID of this client on server
-     * 
-     * @return client's entity ID
-     */
-    public int getEntityID() {
-        return entityID;
-    }
-
-    /**
      * Used internally by {@link ClientPacketListener} to set client's entity ID
      * 
      * @param entityID new entity ID
@@ -796,6 +791,15 @@ public class MinecraftClient {
     }
 
     /**
+     * Get entity ID of this client on server
+     * 
+     * @return client's entity ID
+     */
+    public int getEntityID() {
+        return entityID;
+    }
+
+    /**
      * Set client's pitch and yaw to face provided entity
      * 
      * @param entity entity to face
@@ -956,7 +960,7 @@ public class MinecraftClient {
                             sendPacket(PacketFactory.constructPacket(reg, "ClientPlayerPositionAndLookPacket", tx,
                                     MinecraftClient.this.y, tz, MinecraftClient.this.yaw, 0f, true));
                         } catch (final Exception e) {
-
+                            e.printStackTrace();
                         }
 
                     }

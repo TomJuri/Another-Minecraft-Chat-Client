@@ -220,7 +220,6 @@ public class ClientPacketListener implements InternalPacketListener {
             } else if (packet instanceof ServerLoginEncryptionPacket) {
                 final ServerLoginEncryptionPacket sPacket = (ServerLoginEncryptionPacket) packet;
                 switch (cl.getAuthType()) {
-                    default:
                     case Offline: {
                         for (final ClientListener ls : cl.getClientListeners()) {
                             ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnectedNoAuth"));
@@ -268,10 +267,18 @@ public class ClientPacketListener implements InternalPacketListener {
                                 break;
                             }
                         } catch (final Exception ex) {
+                            ex.printStackTrace();
                         }
 
                         cl.sendPacket(new ClientLoginEncryptionPacket(registry, encryptedSecret, encryptedToken));
                         cl.enableEncryption(clientSecret);
+                        break;
+                    }
+                    default: {
+                        for (final ClientListener ls : cl.getClientListeners()) {
+                            ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnectedNoAuth"));
+                        }
+                        cl.close();
                         break;
                     }
                 }
@@ -513,8 +520,9 @@ public class ClientPacketListener implements InternalPacketListener {
 
                 for (final ClientListener ls : cl.getClientListeners())
                     if (dsIgnore) {
-                        ls.messageReceived("\u00A7cPacket " + Integer.toHexString(packet.getID()) + ": "
-                                + ChatMessages.parse(json), Position.CHAT);
+                        ls.messageReceived(
+                                "§cPacket " + Integer.toHexString(packet.getID()) + ": " + ChatMessages.parse(json),
+                                Position.CHAT);
                     } else {
                         ls.disconnected(ChatMessages.parse(json));
                     }

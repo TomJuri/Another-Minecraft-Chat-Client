@@ -217,7 +217,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                 jtp.setEditable(false);
                 jtp.setOpaque(false);
                 SwingUtils.appendColoredText(
-                        dname.replace("\u00A77", "\u00A78").replace("\u00A7f", "\u00A70").replace("\u00A7r", "\u00A70"),
+                        dname.replace("§7", "§8").replace("§f", "§0").replace("§r", "§0"),
                         jtp);
                 add(jtp);
             }

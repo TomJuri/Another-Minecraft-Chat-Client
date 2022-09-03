@@ -112,11 +112,11 @@ public class ServerDetailsDialog extends JDialog {
         modsPane.alignAll();
 
         final JTextPane infoPane = initTextPane();
-        SwingUtils.appendColoredText(Messages.getString("ServerDetailsDialog.address") + ":\u00a77 " + server.getHost(),
+        SwingUtils.appendColoredText(Messages.getString("ServerDetailsDialog.address") + ":§7 " + server.getHost(),
                 infoPane);
         SwingUtils.appendColoredText(
-                "\n" + Messages.getString("ServerDetailsDialog.port") + ":\u00a77 " + server.getPort(), infoPane);
-        SwingUtils.appendColoredText("\nForge: \u00a77" + server.getForgeMode(), infoPane);
+                "\n" + Messages.getString("ServerDetailsDialog.port") + ":§7 " + server.getPort(), infoPane);
+        SwingUtils.appendColoredText("\nForge: §7" + server.getForgeMode(), infoPane);
 
         final JTextPane playersPane = initTextPane();
         if (info != null && info.getPlayersList().length > 0) {
@@ -124,7 +124,7 @@ public class ServerDetailsDialog extends JDialog {
                 SwingUtils.appendColoredText(player + "\n", playersPane);
             }
         } else {
-            SwingUtils.appendColoredText("\u00a77" + Messages.getString("ServerDetailsDialog.none"), playersPane);
+            SwingUtils.appendColoredText("§7" + Messages.getString("ServerDetailsDialog.none"), playersPane);
         }
 
         final JTextPane queryPane = initTextPane();
@@ -188,13 +188,13 @@ public class ServerDetailsDialog extends JDialog {
         }
 
         pane.setText("");
-        SwingUtils.appendColoredText(Messages.getString("ServerDetailsDialog.motd") + ":\u00a77 " + motd, pane);
-        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.gamemode") + ":\u00a77 " + gamemode,
+        SwingUtils.appendColoredText(Messages.getString("ServerDetailsDialog.motd") + ":§7 " + motd, pane);
+        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.gamemode") + ":§7 " + gamemode,
                 pane);
-        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.map") + ":\u00a77 " + map, pane);
-        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.online") + ":\u00a77 " + online,
+        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.map") + ":§7 " + map, pane);
+        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.online") + ":§7 " + online,
                 pane);
-        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.maxPlayers") + ":\u00a77 " + max,
+        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.maxPlayers") + ":§7 " + max,
                 pane);
     }
 

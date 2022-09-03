@@ -107,7 +107,7 @@ public class SwingUtils {
         final StyleContext ctx = new StyleContext();
         final Style style = ctx.addStyle("style", null);
 
-        final String[] split = text.split("\u00A7");
+        final String[] split = text.split("§");
         boolean lineSupported = true;
         final int ctxIndex = doc.getLength();
         for (final String part : split) {

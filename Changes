@@ -1,36 +1,7 @@
 AMCC Change Log
-v1.8.1
+v1.8.2
 
-Here's a huge update, adding tons of new stuff!
+A minor maintenance update
 
-[+] Added:
-- New Entity Radar tool.
-  It allows you to see and interact with nearby entities
-  including players.
-  
-- Ability to simulate right click on an entity.
-  You can now interact with NPCs!
-  
-- Entity tracking and auto-tracking.
-  Allows you to look at nearby entities, or
-  at entities you manually target.
-
-- Entity attacking and auto-attacking!
-  You can now select an entity, or automatically
-  attack anything that comes near your player.
-  This option also includes ranged/item attacks!
-  Your weapon doesn't auto-switch though.
-  
-- SOCKS Proxy Support
-  
 [+] Fixed:
-- Number spinners under Player tab randomly disappearing
-
-[+] Added (from v1.8.0-pre):
-- New Protocol Manager Tool
-  A new, poweful utility to debug traffic between client and server!
-- TheAltening authentication support
-
-[+] Fixed (from v1.8.0-pre):
-- Updated Gradle build system
-- Completely remade chat messages JSON parser
+  - Minor code improvements

@@ -151,10 +151,10 @@ public class MinecraftStat {
             String data = new String(stringBytes, "UTF-16LE");
             data = data.substring(1, data.length() - 1);
 
-            final int paraCount = data.length() - data.replace("\u00a7", "").length();
+            final int paraCount = data.length() - data.replace("§", "").length();
             String playersString = data;
             for (int x = 0; x < paraCount - 1; x++) {
-                playersString = playersString.substring(playersString.indexOf("\u00a7") + 1);
+                playersString = playersString.substring(playersString.indexOf("§") + 1);
             }
 
             final String motd = data.substring(0, data.lastIndexOf(playersString) - 1);
@@ -162,10 +162,10 @@ public class MinecraftStat {
             int online = 0;
             int max = 0;
 
-            final String[] players = playersString.split("\u00a7");
+            final String[] players = playersString.split("§");
             online = Integer.parseInt(players[0]);
             max = Integer.parseInt(players[1]);
-            return new StatusInfo(motd, online, max, "\u00a7cLegacy", -1, null, null, new ArrayList<ModInfo>());
+            return new StatusInfo(motd, online, max, "§cLegacy", -1, null, null, new ArrayList<ModInfo>());
         }
     }
 

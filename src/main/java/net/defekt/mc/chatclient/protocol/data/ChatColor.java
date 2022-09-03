@@ -88,7 +88,7 @@ public class ChatColor {
     public static String translateColorName(String name) {
         name = name.toLowerCase();
 
-        if (name.contains("#") && name.length() > 1) return "\u00A7" + name;
+        if (name.contains("#") && name.length() > 1) return "§" + name;
 
         return colorCodes.containsKey(name) ? colorCodes.get(name) : colorCodes.get("white");
     }
