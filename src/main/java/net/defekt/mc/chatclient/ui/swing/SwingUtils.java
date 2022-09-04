@@ -56,20 +56,28 @@ import net.defekt.mc.chatclient.ui.UserPreferences.Constants;
 
 public class SwingUtils {
 
+    /**
+     * Get installed looks and feels
+     * 
+     * @return list of installed LaFs
+     */
     public static String[] getInstalledLookAndFeels() {
-        List<String> installed = new ArrayList<String>();
+        final List<String> installed = new ArrayList<String>();
         installed.add("System");
         installed.add("Flat Light");
         installed.add("Flat Dark");
-        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
+        for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
             installed.add(info.getName());
+        }
         return installed.toArray(new String[0]);
     }
 
     /**
      * Set system look and feel.<br>
+     * 
+     * @param up User Preferences
      */
-    public static void setNativeLook(UserPreferences up) {
+    public static void setNativeLook(final UserPreferences up) {
         try {
             switch (up.getUiTheme()) {
                 case "System": {
@@ -87,13 +95,15 @@ public class SwingUtils {
                     break;
                 }
                 default: {
-                    String name = up.getUiTheme();
-                    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
-                        if (info.getName().equalsIgnoreCase(name)) UIManager.setLookAndFeel(info.getClassName());
+                    final String name = up.getUiTheme();
+                    for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
+                        if (info.getName().equalsIgnoreCase(name)) {
+                            UIManager.setLookAndFeel(info.getClassName());
+                        }
                     break;
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

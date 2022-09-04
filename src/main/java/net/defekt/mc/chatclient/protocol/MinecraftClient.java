@@ -1176,11 +1176,12 @@ public class MinecraftClient {
         this.proxy = proxy;
     }
 
+    /**
+     * Get first connection date
+     * 
+     * @return connection time
+     */
     public long getStartDate() {
         return startDate;
-    }
-
-    public void setStartDate(long startDate) {
-        this.startDate = startDate;
     }
 }

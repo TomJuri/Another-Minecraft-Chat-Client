@@ -520,9 +520,8 @@ public class ClientPacketListener implements InternalPacketListener {
 
                 for (final ClientListener ls : cl.getClientListeners())
                     if (dsIgnore) {
-                        ls.messageReceived(
-                                "\u00a7cPacket " + Integer.toHexString(packet.getID()) + ": " + ChatMessages.parse(json),
-                                Position.CHAT);
+                        ls.messageReceived("\u00a7cPacket " + Integer.toHexString(packet.getID()) + ": "
+                                + ChatMessages.parse(json), Position.CHAT);
                     } else {
                         ls.disconnected(ChatMessages.parse(json));
                     }

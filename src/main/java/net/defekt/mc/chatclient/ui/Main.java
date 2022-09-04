@@ -1668,14 +1668,14 @@ public class Main {
 
         apButtonSettings.alignAll();
 
-        JVBoxPanel themeBox = new JVBoxPanel();
+        final JVBoxPanel themeBox = new JVBoxPanel();
 
         themeBox.add(new JLabel("Look and Feel"));
 
-        JComboBox<String> lafBox = new JComboBox<String>(SwingUtils.getInstalledLookAndFeels());
+        final JComboBox<String> lafBox = new JComboBox<String>(SwingUtils.getInstalledLookAndFeels());
         lafBox.setSelectedItem(up.getUiTheme());
 
-        JCheckBox customBtnsBox = new JCheckBox(Messages.getString("Main.disableCustomButtons"));
+        final JCheckBox customBtnsBox = new JCheckBox(Messages.getString("Main.disableCustomButtons"));
         customBtnsBox.setSelected(up.isDisableCustomButtons());
 
         themeBox.add(lafBox);
@@ -1692,7 +1692,9 @@ public class Main {
         apPane.addTab(Messages.getString("Main.appearancePaneTheme"), themeBox);
         apPane.addTab(Messages.getString("Main.appearancePaneButtons"), apButtonSettingsFull);
 
-        if (up.isDisableCustomButtons()) apPane.setEnabledAt(1, false);
+        if (up.isDisableCustomButtons()) {
+            apPane.setEnabledAt(1, false);
+        }
 
         final JVBoxPanel ivBox = new JVBoxPanel();
 
@@ -1826,10 +1828,10 @@ public class Main {
 
         gnBox.alignAll();
 
-        JVBoxPanel dscBox = new JVBoxPanel();
-        JCheckBox disablePresence = new JCheckBox("Disable Discord Presence");
-        JCheckBox hideSrv = new JCheckBox("Hide server address");
-        JCheckBox hideNick = new JCheckBox("Hide your Nickname");
+        final JVBoxPanel dscBox = new JVBoxPanel();
+        final JCheckBox disablePresence = new JCheckBox(Messages.getString("Main.disablePresenceCheckbox"));
+        final JCheckBox hideSrv = new JCheckBox(Messages.getString("Main.hideAddressCheckbox"));
+        final JCheckBox hideNick = new JCheckBox(Messages.getString("Main.hideNicknameCheckbox"));
 
         disablePresence.setSelected(up.isDisableDiscordPresence());
         hideSrv.setSelected(up.isHideDiscordServer());
@@ -1891,7 +1893,7 @@ public class Main {
                 final String brand = brandField.getText();
                 final boolean sendMCBrand = !brand.isEmpty();
 
-                boolean themeChanged = !lafBox.getSelectedItem().equals(up.getUiTheme())
+                final boolean themeChanged = !lafBox.getSelectedItem().equals(up.getUiTheme())
                         || (customBtnsBox.isSelected() != up.isDisableCustomButtons());
 
                 up.setDisableDiscordPresence(disablePresence.isSelected());
@@ -2646,7 +2648,7 @@ public class Main {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
-                                        public void actionPerformed(ActionEvent e) {
+                                        public void actionPerformed(final ActionEvent e) {
                                             client.trackEntity(currentEntity, true);
                                         }
                                     });
@@ -2656,7 +2658,7 @@ public class Main {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
-                                        public void actionPerformed(ActionEvent e) {
+                                        public void actionPerformed(final ActionEvent e) {
                                             try {
                                                 client.interact(currentEntity, UseType.INTERACT);
                                             } catch (final IOException ex) {
@@ -2670,7 +2672,7 @@ public class Main {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
-                                        public void actionPerformed(ActionEvent e) {
+                                        public void actionPerformed(final ActionEvent e) {
                                             try {
                                                 client.interact(currentEntity, UseType.ATTACK);
                                             } catch (final IOException ex) {

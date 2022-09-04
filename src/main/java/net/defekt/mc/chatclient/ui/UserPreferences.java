@@ -54,7 +54,9 @@ public class UserPreferences implements Serializable {
             proxies = Collections.synchronizedList(new ArrayList<ProxySetting>());
         }
 
-        if (uiTheme == null || uiTheme.isEmpty()) uiTheme = "System";
+        if (uiTheme == null || uiTheme.isEmpty()) {
+            uiTheme = "System";
+        }
     }
 
     /**
@@ -495,7 +497,7 @@ public class UserPreferences implements Serializable {
         return uiTheme;
     }
 
-    public void setUiTheme(String uiTheme) {
+    public void setUiTheme(final String uiTheme) {
         this.uiTheme = uiTheme;
     }
 
@@ -503,7 +505,7 @@ public class UserPreferences implements Serializable {
         return disableCustomButtons;
     }
 
-    public void setDisableCustomButtons(boolean disableCustomButtons) {
+    public void setDisableCustomButtons(final boolean disableCustomButtons) {
         this.disableCustomButtons = disableCustomButtons;
     }
 
@@ -519,15 +521,15 @@ public class UserPreferences implements Serializable {
         return hideDiscordServer;
     }
 
-    public void setDisableDiscordPresence(boolean disableDiscordPresence) {
+    public void setDisableDiscordPresence(final boolean disableDiscordPresence) {
         this.disableDiscordPresence = disableDiscordPresence;
     }
 
-    public void setHideDiscordNickname(boolean hideDiscordNickname) {
+    public void setHideDiscordNickname(final boolean hideDiscordNickname) {
         this.hideDiscordNickname = hideDiscordNickname;
     }
 
-    public void setHideDiscordServer(boolean hideDiscordServer) {
+    public void setHideDiscordServer(final boolean hideDiscordServer) {
         this.hideDiscordServer = hideDiscordServer;
     }
 }

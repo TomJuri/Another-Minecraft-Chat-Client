@@ -29,7 +29,7 @@ public class JMinecraftButton extends JButton {
     private static final long serialVersionUID = 1L;
     private boolean hover = false;
     private boolean unicodeFont = false;
-    private UserPreferences up = Main.up;
+    private final UserPreferences up = Main.up;
     private ColorPreferences cp = up.getColorPreferences();
 
     /**

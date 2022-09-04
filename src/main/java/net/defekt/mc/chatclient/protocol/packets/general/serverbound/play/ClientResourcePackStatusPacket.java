@@ -46,7 +46,7 @@ public class ClientResourcePackStatusPacket extends Packet {
          */
         public final String key;
 
-        private Status(final int num, String key) {
+        private Status(final int num, final String key) {
             this.num = num;
             this.key = key;
         }
