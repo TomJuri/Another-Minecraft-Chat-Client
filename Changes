@@ -1,9 +1,9 @@
 AMCC Change Log
-v1.8.3
-
-An update containing some bug-fixes
+v1.8.4
 
 [+] Added:
- - Support for more Unicode characters
+ - New tab in Appearance settings allowing you to choose an UI theme!
+ - Option to disable custom, minecraft-like buttons
+
 [+] Fixed:
- - Inability to connect to a server during first application run
+ - Display of some combo boxes and lists

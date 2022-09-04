@@ -18,10 +18,11 @@ repositories {
 dependencies {
 	implementation "com.google.code.gson:gson:2.3.1"
 	implementation "com.flowpowered:flow-nbt:1.0.0"
+	implementation fileTree(dir: "lib", include: "*.jar")
 }
 
 jar {
-	archiveName "AMC-1.7.1.jar"
+	archiveName "AMC-1.8.4.jar"
 	manifest {
 		attributes "Main-Class": "net.defekt.mc.chatclient.ui.Main"
 	}

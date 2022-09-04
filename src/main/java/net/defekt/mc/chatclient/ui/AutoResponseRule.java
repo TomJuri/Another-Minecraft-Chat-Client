@@ -18,6 +18,11 @@ public class AutoResponseRule implements Serializable {
         AND, OR
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
+
     private transient Random rand = new Random();
 
     private String name;

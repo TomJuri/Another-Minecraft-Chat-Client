@@ -53,6 +53,8 @@ public class UserPreferences implements Serializable {
         if (proxies == null) {
             proxies = Collections.synchronizedList(new ArrayList<ProxySetting>());
         }
+
+        if (uiTheme == null || uiTheme.isEmpty()) uiTheme = "System";
     }
 
     /**
@@ -169,6 +171,9 @@ public class UserPreferences implements Serializable {
             this.disabledColorText = disabledColorText;
         }
     }
+
+    private String uiTheme = "System";
+    private boolean disableCustomButtons = false;
 
     private Language appLanguage = Language.English;
     private boolean wasLangSet = false;
@@ -480,5 +485,21 @@ public class UserPreferences implements Serializable {
 
     public void setDisablePacketAnalyzer(final boolean disablePacketAnalyzer) {
         this.disablePacketAnalyzer = disablePacketAnalyzer;
+    }
+
+    public String getUiTheme() {
+        return uiTheme;
+    }
+
+    public void setUiTheme(String uiTheme) {
+        this.uiTheme = uiTheme;
+    }
+
+    public boolean isDisableCustomButtons() {
+        return disableCustomButtons;
+    }
+
+    public void setDisableCustomButtons(boolean disableCustomButtons) {
+        this.disableCustomButtons = disableCustomButtons;
     }
 }

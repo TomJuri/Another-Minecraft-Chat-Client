@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -29,12 +30,15 @@ import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 
 import net.defekt.mc.chatclient.protocol.data.ChatColor;
 import net.defekt.mc.chatclient.ui.Main;
@@ -51,15 +55,45 @@ import net.defekt.mc.chatclient.ui.UserPreferences.Constants;
  */
 
 public class SwingUtils {
+
+    public static String[] getInstalledLookAndFeels() {
+        List<String> installed = new ArrayList<String>();
+        installed.add("System");
+        installed.add("Flat Light");
+        installed.add("Flat Dark");
+        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
+            installed.add(info.getName());
+        return installed.toArray(new String[0]);
+    }
+
     /**
      * Set system look and feel.<br>
-     * It does work fine on Windows, but as far as I know it does NOT work with GTK.
      */
-    public static void setNativeLook() {
+    public static void setNativeLook(UserPreferences up) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-                | UnsupportedLookAndFeelException e) {
+            switch (up.getUiTheme()) {
+                case "System": {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    break;
+                }
+                case "Flat Light": {
+                    FlatLightLaf.setup();
+                    UIManager.setLookAndFeel(new FlatLightLaf());
+                    break;
+                }
+                case "Flat Dark": {
+                    FlatDarkLaf.setup();
+                    UIManager.setLookAndFeel(new FlatDarkLaf());
+                    break;
+                }
+                default: {
+                    String name = up.getUiTheme();
+                    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
+                        if (info.getName().equalsIgnoreCase(name)) UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

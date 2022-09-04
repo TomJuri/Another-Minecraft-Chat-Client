@@ -2,6 +2,7 @@ package net.defekt.mc.chatclient.protocol.packets.general.serverbound.play;
 
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.ui.Messages;
 
 /**
  * Sent by client as response to server's resource pack
@@ -21,27 +22,38 @@ public class ClientResourcePackStatusPacket extends Packet {
         /**
          * Incoming resource pack will be declined
          */
-        DECLINED(1),
+        DECLINED(1, "Main.rsBehaviorDecline"),
         /**
          * Incoming resource pack will be accepted
          */
-        ACCEPTED(3),
+        ACCEPTED(3, "Main.rsBehaviorAccept"),
         /**
          * Incoming resource pack will be loaded
          */
-        LOADED(0),
+        LOADED(0, "Main.rsBehaviorAcceptLoad"),
         /**
          * Incoming resource pack will fail to load
          */
-        FAILED(2);
+        FAILED(2, "Main.rsBehaviorFail");
 
         /**
          * Status number
          */
         public final int num;
 
-        private Status(final int num) {
+        /**
+         * Translation key
+         */
+        public final String key;
+
+        private Status(final int num, String key) {
             this.num = num;
+            this.key = key;
+        }
+
+        @Override
+        public String toString() {
+            return Messages.getString(key);
         }
     }
 

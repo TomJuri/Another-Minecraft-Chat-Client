@@ -29,7 +29,8 @@ public class JMinecraftButton extends JButton {
     private static final long serialVersionUID = 1L;
     private boolean hover = false;
     private boolean unicodeFont = false;
-    private ColorPreferences cp = Main.up.getColorPreferences();
+    private UserPreferences up = Main.up;
+    private ColorPreferences cp = up.getColorPreferences();
 
     /**
      * Default constructor
@@ -54,72 +55,80 @@ public class JMinecraftButton extends JButton {
         l = is.left + 3;
         r = is.right + 3;
         setMargin(new Insets(u, l, b, r));
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(final MouseEvent e) {
-                hover = false;
-            }
+        if (!up.isDisableCustomButtons()) {
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseExited(final MouseEvent e) {
+                    hover = false;
+                }
 
-            @Override
-            public void mouseEntered(final MouseEvent e) {
-                hover = true;
-            }
-        });
+                @Override
+                public void mouseEntered(final MouseEvent e) {
+                    hover = true;
+                }
+            });
+        }
     }
 
     @Override
     public void paintComponent(final Graphics g) {
-        final Graphics2D g2 = (Graphics2D) g;
-        g2.setFont(getFont());
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g2.setColor(Color.black);
+        if (!up.isDisableCustomButtons()) {
+            final Graphics2D g2 = (Graphics2D) g;
+            g2.setFont(getFont());
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2.setColor(Color.black);
 
-        g2.fillRect(0, 0, 2, getHeight());
-        g2.fillRect(getWidth() - 2, 0, 2, getHeight());
-        g2.fillRect(0, 0, getWidth(), 2);
-        g2.fillRect(0, getHeight() - 2, getWidth(), 2);
+            g2.fillRect(0, 0, 2, getHeight());
+            g2.fillRect(getWidth() - 2, 0, 2, getHeight());
+            g2.fillRect(0, 0, getWidth(), 2);
+            g2.fillRect(0, getHeight() - 2, getWidth(), 2);
 
-        final Color baseEnabledColor = new Color(Integer.parseInt(cp.getColorEnabledButton(), 16));
-        final Color baseEnabledHoverColor = new Color(Integer.parseInt(cp.getColorEnabledHoverButton(), 16));
+            final Color baseEnabledColor = new Color(Integer.parseInt(cp.getColorEnabledButton(), 16));
+            final Color baseEnabledHoverColor = new Color(Integer.parseInt(cp.getColorEnabledHoverButton(), 16));
 
-        g2.setColor(
-                new Color(
-                        Integer.parseInt(
-                                !isEnabled() ? cp.getColorDisabledButton()
-                                        : hover ? SwingUtils.getHexRGB(SwingUtils.brighten(baseEnabledHoverColor, 66))
-                                                : SwingUtils.getHexRGB(SwingUtils.brighten(baseEnabledColor, 60)),
-                                16)));
-        g2.fillRect(2, 2, getWidth() - 4, 2);
-        g2.fillRect(2, 2, 2, getHeight() - 4);
+            g2.setColor(
+                    new Color(
+                            Integer.parseInt(
+                                    !isEnabled() ? cp.getColorDisabledButton()
+                                            : hover ? SwingUtils
+                                                    .getHexRGB(SwingUtils.brighten(baseEnabledHoverColor, 66))
+                                                    : SwingUtils.getHexRGB(SwingUtils.brighten(baseEnabledColor, 60)),
+                                    16)));
+            g2.fillRect(2, 2, getWidth() - 4, 2);
+            g2.fillRect(2, 2, 2, getHeight() - 4);
 
-        g2.setColor(
-                new Color(
-                        Integer.parseInt(
-                                !isEnabled() ? cp.getColorDisabledButton()
-                                        : hover ? SwingUtils.getHexRGB(SwingUtils.brighten(baseEnabledHoverColor, -29))
-                                                : SwingUtils.getHexRGB(SwingUtils.brighten(baseEnabledColor, -25)),
-                                16)));
-        g2.fillRect(2, getHeight() - 4, getWidth() - 4, 2);
-        g2.fillRect(getWidth() - 4, 2, 2, getHeight() - 4);
+            g2.setColor(
+                    new Color(
+                            Integer.parseInt(
+                                    !isEnabled() ? cp.getColorDisabledButton()
+                                            : hover ? SwingUtils
+                                                    .getHexRGB(SwingUtils.brighten(baseEnabledHoverColor, -29))
+                                                    : SwingUtils.getHexRGB(SwingUtils.brighten(baseEnabledColor, -25)),
+                                    16)));
+            g2.fillRect(2, getHeight() - 4, getWidth() - 4, 2);
+            g2.fillRect(getWidth() - 4, 2, 2, getHeight() - 4);
 
-        g2.setColor(new Color(Integer.parseInt(!isEnabled() ? cp.getColorDisabledButton()
-                : hover ? cp.getColorEnabledHoverButton() : cp.getColorEnabledButton(), 16)));
-        g2.fillRect(4, 4, getWidth() - 8, getHeight() - 8);
+            g2.setColor(new Color(Integer.parseInt(!isEnabled() ? cp.getColorDisabledButton()
+                    : hover ? cp.getColorEnabledHoverButton() : cp.getColorEnabledButton(), 16)));
+            g2.fillRect(4, 4, getWidth() - 8, getHeight() - 8);
 
-        final GlyphVector glyph = getFont().createGlyphVector(g2.getFontRenderContext(), getText());
-        final Shape bText = glyph.getOutline();
-        final float y = (float) ((getHeight() + (bText.getBounds2D().getHeight() * (unicodeFont ? 1 : 2))) / 2);
-        final float x = (float) ((getWidth() - (bText.getBounds2D().getWidth())) / 2);
+            final GlyphVector glyph = getFont().createGlyphVector(g2.getFontRenderContext(), getText());
+            final Shape bText = glyph.getOutline();
+            final float y = (float) ((getHeight() + (bText.getBounds2D().getHeight() * (unicodeFont ? 1 : 2))) / 2);
+            final float x = (float) ((getWidth() - (bText.getBounds2D().getWidth())) / 2);
 
-        final Color tx = new Color(Integer.parseInt(cp.getColorText(), 16));
-        if (isEnabled()) {
-            g2.setColor(SwingUtils.brighten(tx, -190));
-            g2.fill(glyph.getOutline(x + 2, y + 2));
+            final Color tx = new Color(Integer.parseInt(cp.getColorText(), 16));
+            if (isEnabled()) {
+                g2.setColor(SwingUtils.brighten(tx, -190));
+                g2.fill(glyph.getOutline(x + 2, y + 2));
+            }
+
+            g2.setColor(isEnabled() ? tx : new Color(Integer.parseInt(cp.getDisabledColorText(), 16)));
+            g2.fill(glyph.getOutline(x, y));
+        } else {
+            super.paintComponent(g);
         }
-
-        g2.setColor(isEnabled() ? tx : new Color(Integer.parseInt(cp.getDisabledColorText(), 16)));
-        g2.fill(glyph.getOutline(x, y));
     }
 
     /**

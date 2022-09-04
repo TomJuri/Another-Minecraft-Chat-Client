@@ -66,7 +66,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -165,7 +164,7 @@ public class Main {
 
     private static BufferedImage logoImage = null;
 
-    public static final String VERSION = "1.8.3";
+    public static final String VERSION = "1.8.4";
     private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
 
     public static Font mcFont = Font.decode(null);
@@ -240,7 +239,7 @@ public class Main {
     }
 
     public static void main() {
-        SwingUtils.setNativeLook();
+        SwingUtils.setNativeLook(up);
 
         if (!up.isWasLangSet()) {
 
@@ -958,10 +957,12 @@ public class Main {
                     @Override
                     public void actionPerformed(final ActionEvent e) {
                         try {
-                            final boolean sel = !((ProxySetting) savedProxies.getSelectedItem()).getName()
-                                    .equalsIgnoreCase("None");
-                            pxDelete.setEnabled(sel);
-                            pxLoad.setEnabled(sel);
+                            if (savedProxies != null && savedProxies.getSelectedItem() != null) {
+                                final boolean sel = !((ProxySetting) savedProxies.getSelectedItem()).getName()
+                                        .equalsIgnoreCase("None");
+                                pxDelete.setEnabled(sel);
+                                pxLoad.setEnabled(sel);
+                            }
                         } catch (final Exception ex) {
                             ex.printStackTrace();
                         }
@@ -1302,39 +1303,6 @@ public class Main {
         final JComboBox<Status> rPackBehaviorBox = new JComboBox<>(Status.values());
         rPackBehaviorBox.setToolTipText(Messages.getString("Main.rsBehaviorToolTip"));
         rPackBehaviorBox.setSelectedItem(up.getResourcePackBehavior());
-        rPackBehaviorBox.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(final JList<? extends Object> list, final Object value,
-                    final int index, final boolean isSelected, final boolean cellHasFocus) {
-                final JLabel lbl = new JLabel();
-                String txt;
-                switch ((Status) value) {
-                    case ACCEPTED: {
-                        txt = Messages.getString("Main.rsBehaviorAccept");
-                        break;
-                    }
-                    case DECLINED: {
-                        txt = Messages.getString("Main.rsBehaviorDecline");
-                        break;
-                    }
-                    case LOADED: {
-                        txt = Messages.getString("Main.rsBehaviorAcceptLoad");
-                        break;
-                    }
-                    default: {
-                        txt = Messages.getString("Main.rsBehaviorFail");
-                        break;
-                    }
-                }
-                lbl.setText(txt);
-                lbl.setOpaque(true);
-                if (isSelected) {
-                    lbl.setBackground(Color.blue);
-                    lbl.setForeground(Color.white);
-                }
-                return lbl;
-            }
-        });
 
         final JCheckBox rsPackShowCheck = new JCheckBox(Messages.getString("Main.rsPackShowCheck"),
                 up.isShowResourcePackMessages());
@@ -1696,7 +1664,31 @@ public class Main {
 
         apButtonSettings.alignAll();
 
+        JVBoxPanel themeBox = new JVBoxPanel();
+
+        themeBox.add(new JLabel("Look and Feel"));
+
+        JComboBox<String> lafBox = new JComboBox<String>(SwingUtils.getInstalledLookAndFeels());
+        lafBox.setSelectedItem(up.getUiTheme());
+
+        JCheckBox customBtnsBox = new JCheckBox(Messages.getString("Main.disableCustomButtons"));
+        customBtnsBox.setSelected(up.isDisableCustomButtons());
+
+        themeBox.add(lafBox);
+        themeBox.add(new JLabel(" "));
+        themeBox.add(new JSeparator());
+        themeBox.add(customBtnsBox);
+        themeBox.add(new JLabel(" ") {
+            {
+                setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
+            }
+        });
+        themeBox.alignAll();
+
+        apPane.addTab(Messages.getString("Main.appearancePaneTheme"), themeBox);
         apPane.addTab(Messages.getString("Main.appearancePaneButtons"), apButtonSettingsFull);
+
+        if (up.isDisableCustomButtons()) apPane.setEnabledAt(1, false);
 
         final JVBoxPanel ivBox = new JVBoxPanel();
 
@@ -1870,6 +1862,11 @@ public class Main {
                 final String brand = brandField.getText();
                 final boolean sendMCBrand = !brand.isEmpty();
 
+                boolean themeChanged = !lafBox.getSelectedItem().equals(up.getUiTheme())
+                        || (customBtnsBox.isSelected() != up.isDisableCustomButtons());
+
+                up.setDisableCustomButtons(customBtnsBox.isSelected());
+                up.setUiTheme((String) lafBox.getSelectedItem());
                 up.setMaxPacketsOnList((int) maxPacketsOnListField.getValue());
                 up.setDisablePacketAnalyzer(disablePacketAnalyzer.isSelected());
                 up.setResourcePackBehavior(rsBehavior);
@@ -1963,6 +1960,14 @@ public class Main {
 
                 upSaveRunnable.run();
                 PlayerSkinCache.getSkincache().clear();
+
+                if (themeChanged) {
+                    JOptionPane.showOptionDialog(od, Messages.getString("Main.themeChangedLabel"),
+                            Messages.getString("Main.themeChangedDialogTitle"), JOptionPane.OK_OPTION,
+                            JOptionPane.INFORMATION_MESSAGE, null,
+                            new Object[] { Messages.getString("Main.langChangedLabelDialogOptionRestart") }, 0);
+                    System.exit(0);
+                }
 
                 if (langChanged) {
                     final int response = JOptionPane.showOptionDialog(od, Messages.getString("Main.langChangedLabel"),
@@ -3715,7 +3720,8 @@ public class Main {
                             }
                         } catch (final Exception e) {
                             SwingUtils.appendColoredText(
-                                    "\u00a7c" + Messages.getString("Main.connectionFailedChatMessage") + e.toString(), pane);
+                                    "\u00a7c" + Messages.getString("Main.connectionFailedChatMessage") + e.toString(),
+                                    pane);
                             e.printStackTrace();
                         }
                         break;
@@ -3979,8 +3985,10 @@ public class Main {
                             @Override
                             public void disconnected(final String reason) {
                                 autoMessagesThread.interrupt();
-                                SwingUtils.appendColoredText("\u00a7c" + Messages.getString("Main.connectionLostChatMessage")
-                                        + ": \r\n" + reason + "\r\n", jtp);
+                                SwingUtils.appendColoredText(
+                                        "\u00a7c" + Messages.getString("Main.connectionLostChatMessage") + ": \r\n"
+                                                + reason + "\r\n",
+                                        jtp);
 
                                 if (trayIcon != null && up.isTrayShowDisconnectMessages()
                                         && !reason.equals(Messages.getString("Main.trayClosedReason"))) {
@@ -4275,8 +4283,8 @@ public class Main {
                                         cl.sendChatMessage(message);
                                     } catch (final IOException e1) {
                                         SwingUtils.appendColoredText(
-                                                "\u00a7c" + Messages.getString("Main.connectionLostChatMessage2") + ": \r\n"
-                                                        + e1.toString(),
+                                                "\u00a7c" + Messages.getString("Main.connectionLostChatMessage2")
+                                                        + ": \r\n" + e1.toString(),
                                                 pane);
                                         e1.printStackTrace();
                                         for (final Component ct : chatControls.getComponents()) {
