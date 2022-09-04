@@ -4,6 +4,7 @@ v1.8.4
 [+] Added:
  - New tab in Appearance settings allowing you to choose an UI theme!
  - Option to disable custom, minecraft-like buttons
+ - Discord Rich Presence integration
 
 [+] Fixed:
  - Display of some combo boxes and lists

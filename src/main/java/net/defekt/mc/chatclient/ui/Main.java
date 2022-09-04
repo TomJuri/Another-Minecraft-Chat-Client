@@ -112,6 +112,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.table.DefaultTableModel;
 
+import net.defekt.mc.chatclient.integrations.discord.DiscordPresence;
 import net.defekt.mc.chatclient.protocol.AuthType;
 import net.defekt.mc.chatclient.protocol.ClientListener;
 import net.defekt.mc.chatclient.protocol.InternalPacketListener;
@@ -313,6 +314,7 @@ public class Main {
     private final Map<JSplitPane, MinecraftClient> clients = new HashMap<JSplitPane, MinecraftClient>();
     private final JFrame win = new JFrame();
     private TrayIcon trayIcon = null;
+    private final DiscordPresence discordIntegr = new DiscordPresence("1015565248364826694", this, tabPane, clients);
 
     private MinecraftClient trayLastMessageSender = null;
     private int trayLastMessageType = 0;
@@ -417,6 +419,7 @@ public class Main {
     }
 
     private void init() {
+        discordIntegr.start();
 
         synchronized (up.getServers()) {
             for (final ServerEntry ent : up.getServers()) {
@@ -1135,6 +1138,7 @@ public class Main {
                                 }
                                 tabPane.removeTabAt(x);
                                 clients.remove(b);
+                                discordIntegr.update();
                                 break;
                             }
                     }
@@ -1822,6 +1826,30 @@ public class Main {
 
         gnBox.alignAll();
 
+        JVBoxPanel dscBox = new JVBoxPanel();
+        JCheckBox disablePresence = new JCheckBox("Disable Discord Presence");
+        JCheckBox hideSrv = new JCheckBox("Hide server address");
+        JCheckBox hideNick = new JCheckBox("Hide your Nickname");
+
+        disablePresence.setSelected(up.isDisableDiscordPresence());
+        hideSrv.setSelected(up.isHideDiscordServer());
+        hideNick.setSelected(up.isHideDiscordNickname());
+
+        dscBox.add(disablePresence);
+        dscBox.add(new JSeparator() {
+            {
+                setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+            }
+        });
+        dscBox.add(hideSrv);
+        dscBox.add(hideNick);
+        dscBox.add(new JLabel(" "));
+        dscBox.add(new JLabel(" ") {
+            {
+            }
+        });
+        dscBox.alignAll();
+
         jtp.add(Messages.getString("Main.settingsTabGeneral"), gnBox);
         jtp.add(Messages.getString("Main.settingsTabAppearance"), apPane);
         jtp.add(Messages.getString("Main.settingsTabTray"), trBox);
@@ -1829,6 +1857,7 @@ public class Main {
         jtp.add(Messages.getString("Main.settingsTabSkins"), skBox);
         jtp.add(Messages.getString("Main.settingsTabProtocol"), pkBox);
         jtp.add(Messages.getString("Main.settingsTabInventory"), ivBox);
+        jtp.add(Messages.getString("Main.settingsTabDiscord"), dscBox);
         jtp.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
@@ -1865,6 +1894,11 @@ public class Main {
                 boolean themeChanged = !lafBox.getSelectedItem().equals(up.getUiTheme())
                         || (customBtnsBox.isSelected() != up.isDisableCustomButtons());
 
+                up.setDisableDiscordPresence(disablePresence.isSelected());
+                up.setHideDiscordNickname(hideNick.isSelected());
+                up.setHideDiscordServer(hideSrv.isSelected());
+                discordIntegr.update();
+                discordIntegr.start();
                 up.setDisableCustomButtons(customBtnsBox.isSelected());
                 up.setUiTheme((String) lafBox.getSelectedItem());
                 up.setMaxPacketsOnList((int) maxPacketsOnListField.getValue());
@@ -2008,7 +2042,6 @@ public class Main {
     @SuppressWarnings("unchecked")
     private JSplitPane createServerPane(final ServerEntry entry, final String username, final String password,
             final AuthType authType, final Proxy proxy) {
-
         final JSplitPane fPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
         final Box box = Box.createVerticalBox();
@@ -4039,6 +4072,7 @@ public class Main {
                                 }
                                 cl.close();
                                 clients.remove(fPane);
+                                discordIntegr.update();
                             }
 
                             @Override
@@ -4242,6 +4276,7 @@ public class Main {
 
                         });
                         cl.connect(authType, username, password);
+                        discordIntegr.update();
                         try {
                             Thread.sleep(1000);
                         } catch (final InterruptedException e2) {
@@ -4413,6 +4448,10 @@ public class Main {
 
     public JFrame getMainWindow() {
         return win;
+    }
+
+    public MinecraftClient[] getClients() {
+        return clients.values().toArray(new MinecraftClient[0]);
     }
 
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);

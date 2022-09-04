@@ -91,6 +91,8 @@ public class MinecraftClient {
 
     private final Object lock = new Object();
 
+    private long startDate = System.currentTimeMillis();
+
     private static final String notConnectedError = Messages.getString("MinecraftClient.clientErrorNotConnected");
 
     private final ListenerHashMap<UUID, PlayerInfo> playersTabList = new ListenerHashMap<UUID, PlayerInfo>();
@@ -444,6 +446,8 @@ public class MinecraftClient {
                     }
                 }
             }, 0, 1000 / 20);
+
+            startDate = System.currentTimeMillis();
 
         } catch (final IOException ex) {
             close();
@@ -1170,5 +1174,13 @@ public class MinecraftClient {
      */
     public void setProxy(final Proxy proxy) {
         this.proxy = proxy;
+    }
+
+    public long getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(long startDate) {
+        this.startDate = startDate;
     }
 }

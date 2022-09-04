@@ -172,6 +172,10 @@ public class UserPreferences implements Serializable {
         }
     }
 
+    private boolean disableDiscordPresence = false;
+    private boolean hideDiscordNickname = false;
+    private boolean hideDiscordServer = false;
+
     private String uiTheme = "System";
     private boolean disableCustomButtons = false;
 
@@ -501,5 +505,29 @@ public class UserPreferences implements Serializable {
 
     public void setDisableCustomButtons(boolean disableCustomButtons) {
         this.disableCustomButtons = disableCustomButtons;
+    }
+
+    public boolean isDisableDiscordPresence() {
+        return disableDiscordPresence;
+    }
+
+    public boolean isHideDiscordNickname() {
+        return hideDiscordNickname;
+    }
+
+    public boolean isHideDiscordServer() {
+        return hideDiscordServer;
+    }
+
+    public void setDisableDiscordPresence(boolean disableDiscordPresence) {
+        this.disableDiscordPresence = disableDiscordPresence;
+    }
+
+    public void setHideDiscordNickname(boolean hideDiscordNickname) {
+        this.hideDiscordNickname = hideDiscordNickname;
+    }
+
+    public void setHideDiscordServer(boolean hideDiscordServer) {
+        this.hideDiscordServer = hideDiscordServer;
     }
 }
