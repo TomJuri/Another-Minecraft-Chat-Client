@@ -1,10 +1,5 @@
 AMCC Change Log
-v1.8.4
+v1.8.5
 
 [+] Added:
- - New tab in Appearance settings allowing you to choose an UI theme!
- - Option to disable custom, minecraft-like buttons
- - Discord Rich Presence integration
-
-[+] Fixed:
- - Display of some combo boxes and lists
+ - Usage statistics
