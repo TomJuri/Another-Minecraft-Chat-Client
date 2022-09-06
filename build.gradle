@@ -22,7 +22,7 @@ dependencies {
 }
 
 jar {
-	archiveName "AMC-1.8.4.jar"
+	archiveName "AMC-1.8.5.jar"
 	manifest {
 		attributes "Main-Class": "net.defekt.mc.chatclient.ui.Main"
 	}
