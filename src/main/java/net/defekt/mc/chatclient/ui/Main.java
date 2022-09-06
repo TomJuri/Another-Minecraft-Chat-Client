@@ -1467,6 +1467,26 @@ public class Main {
         JCheckBox enableStats = new JCheckBox("Enable usage statistics");
         enableStats.setSelected(!up.isDisallowStats());
 
+        JTextField idField = new JTextField(collector.getUserID());
+        JTextField tokenField = new JTextField(collector.getToken());
+        idField.setEditable(false);
+        tokenField.setEditable(false);
+
+        Box dataBox = Box.createHorizontalBox();
+        JVBoxPanel idBox = new JVBoxPanel();
+        JVBoxPanel tokenBox = new JVBoxPanel();
+
+        idBox.add(new JLabel("Your ID:"));
+        idBox.add(idField);
+        idBox.alignAll();
+        tokenBox.add(new JLabel("Your session token:"));
+        tokenBox.add(tokenField);
+        tokenBox.alignAll();
+
+        dataBox.add(idBox);
+        dataBox.add(new JLabel("   "));
+        dataBox.add(tokenBox);
+
         left.alignAll();
         right.alignAll();
         horiz.add(left);
@@ -1481,6 +1501,7 @@ public class Main {
         box.add(horiz);
         box.add(new JLabel(" "));
         box.add(enableStats);
+        box.add(dataBox);
         box.alignAll();
 
         JOptionPane pane = new JOptionPane(box, JOptionPane.INFORMATION_MESSAGE, JOptionPane.OK_OPTION, null,
@@ -4018,7 +4039,7 @@ public class Main {
                         }
                         final MinecraftClient cl = new MinecraftClient(host, port, iprotocol,
                                 forgeMode == ForgeMode.AUTO ? forge : forgeMode == ForgeMode.NEVER == false);
-                        if(forge) {
+                        if (forge) {
                             collector.incrementNumber("feature.type.forgeConnect");
                         }
                         clients.put(fPane, cl);
@@ -4501,6 +4522,8 @@ public class Main {
                         collector.incrementNumber("feature.type." + authType.name());
                         cl.connect(authType, username, password);
                         discordIntegr.update();
+                        collector.incrementNumber("feature.type.serversJoined");
+
                         try {
                             Thread.sleep(1000);
                         } catch (final InterruptedException e2) {
