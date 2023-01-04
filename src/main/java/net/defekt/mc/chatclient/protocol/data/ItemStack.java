@@ -1,6 +1,6 @@
 package net.defekt.mc.chatclient.protocol.data;
 
-import com.flowpowered.nbt.Tag;
+import dev.dewy.nbt.api.Tag;
 
 /**
  * Class encapsulating information about item stack
@@ -13,7 +13,7 @@ public class ItemStack {
     private final int id;
     private final int count;
     private final short damage;
-    private final Tag<?> nbt;
+    private final Tag nbt;
 
     /**
      * Constructs a new item stack
@@ -23,7 +23,7 @@ public class ItemStack {
      * @param damage item damage
      * @param nbt    item's NBT data
      */
-    public ItemStack(final int id, final int count, final short damage, final Tag<?> nbt) {
+    public ItemStack(final int id, final int count, final short damage, final Tag nbt) {
         this.id = id;
         this.count = count;
         this.damage = damage;
@@ -62,7 +62,7 @@ public class ItemStack {
      * 
      * @return item's NBT data
      */
-    public Tag<?> getNbt() {
+    public Tag getNbt() {
         return nbt;
     }
 }

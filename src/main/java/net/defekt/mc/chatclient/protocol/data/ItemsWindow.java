@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -35,9 +36,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 
-import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.StringTag;
-
+import dev.dewy.nbt.api.Tag;
+import dev.dewy.nbt.tags.primitive.StringTag;
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
@@ -493,14 +493,15 @@ public class ItemsWindow {
         String label = "\u00a7f" + itemInfo.getName();
         try {
             if (item.getNbt() != null) {
-                CompoundMap map = (CompoundMap) item.getNbt().getValue();
+
+                LinkedHashMap<String, Tag> map = (LinkedHashMap<String, Tag>) item.getNbt().getValue();
                 if (map.containsKey("display")) {
-                    map = (CompoundMap) map.get("display").getValue();
-                    if (map.containsKey("Name")) {
-                        label = "\u00a7f" + ChatMessages.parse((String) map.get("Name").getValue());
+                    LinkedHashMap<String, Tag> map2 = (LinkedHashMap<String, Tag>) map.get("display").getValue();
+                    if (map2.containsKey("Name")) {
+                        label = "\u00a7f" + ChatMessages.parse((String) map2.get("Name").getValue());
                     }
-                    if (map.containsKey("Lore")) {
-                        for (final StringTag lore : (List<StringTag>) map.get("Lore").getValue()) {
+                    if (map2.containsKey("Lore")) {
+                        for (final StringTag lore : (List<StringTag>) map2.get("Lore").getValue()) {
                             label += "\r\n\u00a75" + ChatMessages.parse(lore.getValue());
                         }
                     }

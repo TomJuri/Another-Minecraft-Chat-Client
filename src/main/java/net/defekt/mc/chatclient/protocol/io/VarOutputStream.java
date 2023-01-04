@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-import com.flowpowered.nbt.stream.NBTOutputStream;
-
+import dev.dewy.nbt.Nbt;
+import dev.dewy.nbt.api.Tag;
+import dev.dewy.nbt.tags.collection.CompoundTag;
 import net.defekt.mc.chatclient.protocol.data.ItemStack;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 
@@ -62,6 +63,8 @@ public class VarOutputStream extends DataOutputStream {
         return bos.size();
     }
 
+    private final Nbt nbt = new Nbt();
+
     /**
      * Writes item data to stream
      * 
@@ -69,7 +72,6 @@ public class VarOutputStream extends DataOutputStream {
      * @param protocol protocol determining slot data used
      * @throws IOException thrown when there was an error writing to stream
      */
-    @SuppressWarnings("resource")
     public void writeSlotData(final ItemStack is, final int protocol) throws IOException {
         if (protocol >= 477) {
             writeBoolean(is.getId() != 0);
@@ -85,7 +87,8 @@ public class VarOutputStream extends DataOutputStream {
         if (is.getNbt() == null) {
             writeByte(0);
         } else {
-            new NBTOutputStream(this).writeTag(is.getNbt());
+            Tag tg = is.getNbt();
+            if (tg instanceof CompoundTag) nbt.toStream((CompoundTag) tg, this);
         }
     }
 

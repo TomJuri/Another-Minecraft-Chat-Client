@@ -6,9 +6,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-import com.flowpowered.nbt.Tag;
-import com.flowpowered.nbt.stream.NBTInputStream;
-
+import dev.dewy.nbt.Nbt;
+import dev.dewy.nbt.api.Tag;
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.data.ItemStack;
 
@@ -85,6 +84,8 @@ public class VarInputStream extends DataInputStream {
         return result;
     }
 
+    private final Nbt nbt = new Nbt();
+
     /**
      * Read item data from stream
      * 
@@ -92,20 +93,18 @@ public class VarInputStream extends DataInputStream {
      * @return read item stack
      * @throws IOException thrown when there was an error reading from stream
      */
-    @SuppressWarnings("resource")
     public ItemStack readSlotData(final int protocol) throws IOException {
         if (protocol >= 755) return null;
         if (protocol >= 477 && !readBoolean()) return new ItemStack((short) 0, 0, (short) 0, null);
         final int id = protocol >= 477 ? readVarInt() : readShort();
         int count = 0;
         short damage = 0;
-        Tag<?> tag = null;
+        Tag tag = null;
         if (id != -1) {
             count = readByte();
             damage = protocol <= 340 ? readShort() : 0;
             try {
-                final NBTInputStream is = new NBTInputStream(this, false);
-                tag = is.readTag();
+                tag = nbt.fromStream(this);
             } catch (final Exception e) {
                 tag = null;
             }
