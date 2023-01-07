@@ -364,13 +364,16 @@ public class MinecraftClient {
                                 compressed = 1;
                             }
 
+                            
                             if (id != -1) {
                                 final Class<? extends Packet> pClass = reg.getByID(id, state);
                                 final Packet packet;
+                                if(id==0x30) {
+                                    System.out.println(pClass);
+                                }
                                 if (pClass == null) {
                                     packet = new UnknownPacket(reg, id, packetData);
                                 } else {
-                                    System.out.println(pClass);
                                     packet = PacketFactory.constructPacket(reg, pClass.getSimpleName(), packetData);
                                 }
                                 packet.setCompressed(compressed);

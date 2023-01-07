@@ -72,6 +72,7 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.login.ClientLoginEncryptionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPluginMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientTeleportConfirmPacket;
+import net.defekt.mc.chatclient.protocol.packets.v1_19.clientbound.play.ServerPlayerChatMessagePacket;
 import net.defekt.mc.chatclient.ui.Main;
 import net.defekt.mc.chatclient.ui.Messages;
 import net.defekt.mc.chatclient.ui.UserPreferences;
@@ -375,7 +376,8 @@ public class ClientPacketListener implements InternalPacketListener {
                 for (final ClientListener l : cl.getClientListeners()) {
                     l.statisticsReceived(values);
                 }
-            } else if (packet instanceof ServerPlayerListItemPacket) {
+            } else if (packet instanceof ServerPlayerListItemPacket
+                    || packet instanceof net.defekt.mc.chatclient.protocol.packets.v1_19.clientbound.play.ServerPlayerListItemPacket) {
                 final HashMap<UUID, PlayerInfo> playersTabList = cl.getPlayersTabList();
                 final Action action = (Action) packet.accessPacketMethod("getAction");
                 final List<PlayerListItem> playerList = (List<PlayerListItem>) packet
@@ -482,6 +484,13 @@ public class ClientPacketListener implements InternalPacketListener {
                     }
                 }).start();
             } else if (packet instanceof ServerChatMessagePacket) {
+
+                final String json = (String) packet.accessPacketMethod("getMessage");
+
+                for (final ClientListener ls : cl.getClientListeners()) {
+                    ls.messageReceived(ChatMessages.parse(json), (Position) packet.accessPacketMethod("getPosition"));
+                }
+            } else if (packet instanceof ServerPlayerChatMessagePacket) {
 
                 final String json = (String) packet.accessPacketMethod("getMessage");
 

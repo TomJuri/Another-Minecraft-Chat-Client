@@ -17,7 +17,6 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerEntityRelativeMovePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerJoinGamePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerKeepAlivePacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPlayerListItemPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPlayerPositionAndLookPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPluginMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerSetSlotPacket;
@@ -40,6 +39,8 @@ import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.Client
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseEntityPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseItemPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientWindowClickPacket;
+import net.defekt.mc.chatclient.protocol.packets.v1_19.clientbound.play.ServerPlayerChatMessagePacket;
+import net.defekt.mc.chatclient.protocol.packets.v1_19.clientbound.play.ServerPlayerListItemPacket;
 import net.defekt.mc.chatclient.protocol.packets.v1_19.serverbound.login.ClientLoginRequestPacket;
 import net.defekt.mc.chatclient.protocol.packets.v1_19.serverbound.play.ClientChatCommandPacket;
 import net.defekt.mc.chatclient.protocol.packets.v1_19.serverbound.play.ClientChatMessagePacket;
@@ -98,6 +99,7 @@ public class PacketRegistryV759 extends PacketRegistry {
             {
                 put(0x1E, ServerKeepAlivePacket.class);
                 put(0x5F, ServerChatMessagePacket.class);
+                put(0x30, ServerPlayerChatMessagePacket.class);
                 put(0x36, ServerPlayerPositionAndLookPacket.class);
                 put(0x17, ServerDisconnectPacket.class);
                 put(0x3A, ServerResourcePackSendPacket.class);
