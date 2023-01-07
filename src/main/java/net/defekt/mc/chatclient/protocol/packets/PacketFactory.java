@@ -20,6 +20,7 @@ import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV753;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV755;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV756;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV757;
+import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV759;
 import net.defekt.mc.chatclient.ui.Messages;
 
 /**
@@ -71,6 +72,7 @@ public class PacketFactory {
                 put(755, new PacketRegistryV755());
                 put(756, new PacketRegistryV756());
                 put(757, new PacketRegistryV757());
+                put(759, new PacketRegistryV759());
             } catch (final NoClassDefFoundError e) {
                 e.printStackTrace();
             }

@@ -370,6 +370,7 @@ public class MinecraftClient {
                                 if (pClass == null) {
                                     packet = new UnknownPacket(reg, id, packetData);
                                 } else {
+                                    System.out.println(pClass);
                                     packet = PacketFactory.constructPacket(reg, pClass.getSimpleName(), packetData);
                                 }
                                 packet.setCompressed(compressed);
@@ -612,7 +613,15 @@ public class MinecraftClient {
      *                     error sending packet to server
      */
     public void sendChatMessage(final String message) throws IOException {
-        sendPacket(PacketFactory.constructPacket(reg, "ClientChatMessagePacket", message));
+        int protocol = PacketFactory.getProtocolFor(reg);
+        if (protocol >= 759) {
+            if (message.startsWith("/")) {
+                sendPacket(PacketFactory.constructPacket(reg, "ClientChatCommandPacket", message));
+            } else
+                sendPacket(PacketFactory.constructPacket(reg, "ClientChatMessagePacket", message));
+        } else {
+            sendPacket(PacketFactory.constructPacket(reg, "ClientChatMessagePacket", message));
+        }
     }
 
     /**
