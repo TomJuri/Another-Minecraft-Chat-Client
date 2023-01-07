@@ -46,10 +46,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.Proxy.Type;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -62,7 +60,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -149,8 +146,6 @@ import net.defekt.mc.chatclient.ui.UserPreferences.SkinRule;
 import net.defekt.mc.chatclient.ui.swing.JAutoResponseList;
 import net.defekt.mc.chatclient.ui.swing.JColorChooserButton;
 import net.defekt.mc.chatclient.ui.swing.JColorChooserButton.ColorChangeListener;
-import net.defekt.stats.api.StatsCollector;
-import net.defekt.stats.api.StatsUpdateCallback;
 import net.defekt.mc.chatclient.ui.swing.JMemList;
 import net.defekt.mc.chatclient.ui.swing.JMinecraftButton;
 import net.defekt.mc.chatclient.ui.swing.JMinecraftField;
@@ -328,8 +323,6 @@ public class Main {
 
     private ActionListener alis;
 
-    private StatsCollector collector = null;
-
     public void moveServer(final int index, final int direction) {
         int targetIndex = -1;
         if (index > 0 && direction == 0) {
@@ -426,96 +419,6 @@ public class Main {
     }
 
     private void init() {
-        try {
-            collector = new StatsCollector(new URL("https://defekt4.tk/stat/index.php"), up.getUserID());
-//            collector.pause();
-            collector.addCallback(new StatsUpdateCallback() {
-
-                @Override
-                public boolean updating(StatsCollector st) {
-                    if (up.isDisallowStats()) return false;
-                    ServerEntry[] srv = up.servers.toArray(new ServerEntry[0]);
-                    MinecraftClient[] clients = Main.this.clients.values().toArray(new MinecraftClient[0]);
-
-                    Map<String, Integer> versions = new HashMap<String, Integer>();
-                    int forgeNumber = 0;
-
-                    for (MinecraftClient client : clients) {
-                        String name = ProtocolNumber.getForNumber(client.getProtocol()).getName();
-                        versions.put(name, versions.getOrDefault(name, 0) + 1);
-                        if (client.isForge()) forgeNumber++;
-                    }
-
-                    String leastVer = "";
-                    String mostVer = "";
-
-                    int num = Integer.MAX_VALUE;
-                    for (Entry<String, Integer> entry : versions.entrySet()) {
-                        if (entry.getValue() < num) {
-                            num = entry.getValue();
-                            leastVer = entry.getKey();
-                        }
-                    }
-                    num = Integer.MIN_VALUE;
-                    for (Entry<String, Integer> entry : versions.entrySet()) {
-                        if (entry.getValue() > num) {
-                            num = entry.getValue();
-                            mostVer = entry.getKey();
-                        }
-                    }
-
-                    try {
-                        st.putStat("system.fileName",
-                                new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
-                                        .getName());
-                    } catch (URISyntaxException ex) {
-                        ex.printStackTrace();
-                    }
-
-                    Runtime runt = Runtime.getRuntime();
-
-                    st.putStat("system.fileVersion", VERSION);
-                    st.putStat("system.osName", System.getProperty("os.name"));
-                    st.putStat("system.freeMem", runt.freeMemory());
-                    st.putStat("system.maxMem", runt.maxMemory());
-                    st.putStat("system.totalMem", runt.totalMemory());
-                    st.putStat("system.java.version", System.getProperty("java.version"));
-                    st.putStat("system.java.vendor", System.getProperty("java.vendor"));
-                    st.putStat("system.java.vm.version", System.getProperty("java.vm.version"));
-                    st.putStat("system.java.vm.vendor", System.getProperty("java.vm.vendor"));
-                    st.putStat("system.os.arch", System.getProperty("os.arch"));
-                    st.putStat("system.os.ver", System.getProperty("os.version"));
-                    st.putStat("options.lang", up.getAppLanguage().name());
-                    st.putStat("options.theme", up.getUiTheme());
-                    st.putStat("options.customButtonsDisabled", up.isDisableCustomButtons());
-                    st.putStat("options.protocol.maxPackets", up.getMaxPacketsOnList());
-                    st.putStat("options.protocol.analyzerDisabled", up.isDisablePacketAnalyzer());
-                    st.putStat("options.protocol.additionalPing", up.getAdditionalPing());
-                    st.putStat("options.protocol.brand", up.getBrand());
-                    st.putStat("options.inventory.enabled", up.isEnableInventoryHandling());
-                    st.putStat("options.inventory.textures", up.isLoadInventoryTextures());
-                    st.putStat("options.discord.disable", up.isDisableDiscordPresence());
-                    st.putStat("options.discord.hideNames", up.isHideDiscordNickname());
-                    st.putStat("options.discord.hideServers", up.isHideDiscordServer());
-                    st.putStat("options.respacks", up.getResourcePackBehavior().name());
-                    st.putStat("servers.number", srv.length);
-                    st.putStat("session.currentSessions", clients.length);
-                    st.putStat("session.mostUsedVersion", mostVer);
-                    st.putStat("session.leastUsedVersion", leastVer);
-                    st.putStat("session.usingForge", forgeNumber);
-                    st.putStat("misc.openCounts", up.getOpenCounts());
-
-                    return true;
-                }
-            });
-        } catch (MalformedURLException ex1) {
-            try {
-                collector = new StatsCollector(new URL("http://localhost"), "");
-                collector.pause();
-            } catch (MalformedURLException ex) {
-                ex.printStackTrace();
-            }
-        }
         discordIntegr.start();
 
         synchronized (up.getServers()) {
@@ -884,7 +787,6 @@ public class Main {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
-                collector.incrementNumber("feature.uses.statsRefresh");
                 if (serverListComponent.getListData() != null) {
                     serverListComponent.setListData(serverListComponent.getListData());
                 }
@@ -1381,13 +1283,7 @@ public class Main {
                 setMnemonic(getText().charAt(0));
                 add(new JMenuItem(Messages.getString("Main.helpMenuAboutStats")) {
                     {
-                        addActionListener(new ActionListener() {
-
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                showStatsDialog();
-                            }
-                        });
+                        setEnabled(false);
                     }
                 });
             }
@@ -1406,122 +1302,6 @@ public class Main {
         SwingUtils.centerWindow(win);
         win.setVisible(true);
 
-    }
-
-    private void showStatsDialog() {
-        JDialog d = new JDialog(win);
-        d.setModal(true);
-        d.setResizable(false);
-        d.setTitle(Messages.getString("Main.helpMenuAboutStats"));
-
-        JVBoxPanel box = new JVBoxPanel();
-        JVBoxPanel left = new JVBoxPanel();
-        JVBoxPanel right = new JVBoxPanel();
-        Box horiz = Box.createHorizontalBox();
-
-        JLabel about = new JLabel("Usage statistics is a feature that collects data about user habits and preferences");
-        JLabel about2 = new JLabel("and sends them anonymously directly to my server, where they are securely stored");
-        JLabel about3 = new JLabel("and analyzed.");
-        JLabel about4 = new JLabel("They help me understand what features are needed and they give me");
-        JLabel about5 = new JLabel("an overall idea on how useful AMCC is for an average user.");
-        JLabel about6 = new JLabel("All user data is encrypted and sent via HTTPS to my personal server.");
-
-        left.add(new JLabel("What data do I collect?") {
-            {
-                setFont(getFont().deriveFont(Font.BOLD));
-            }
-        });
-        left.add(new JLabel("- OS name, version and architecture     "));
-        left.add(new JLabel("- System memory size"));
-        left.add(new JLabel("- JRE version and vendor"));
-        left.add(new JLabel("- Application language"));
-        left.add(new JLabel("- Application theme"));
-        left.add(new JLabel("- Most relevant user options"));
-        left.add(new JLabel("- Number of saved servers"));
-        left.add(new JLabel("- Number of current open sessions"));
-        left.add(new JLabel("- Most and least used MC version"));
-        left.add(new JLabel("- Forge status"));
-        left.add(new JLabel("- AMCC version"));
-        left.add(new JLabel("- AMCC file type"));
-        left.add(new JLabel("- Commonly used app features"));
-
-        right.add(new JLabel("What data do I NOT collect?") {
-            {
-                setFont(getFont().deriveFont(Font.BOLD));
-            }
-        });
-        right.add(new JLabel("- Saved nicknames"));
-        right.add(new JLabel("- Your passwords"));
-        right.add(new JLabel("- Saved e-mails"));
-        right.add(new JLabel("- Details about saved servers"));
-        right.add(new JLabel("- Any logs and activity between you and a server"));
-        right.add(new JLabel("- Any files and data that are not related to AMCC"));
-        right.add(new JLabel(" "));
-        right.add(new JLabel(" "));
-        right.add(new JLabel(" "));
-        right.add(new JLabel(" "));
-        right.add(new JLabel(" "));
-        right.add(new JLabel(" "));
-        right.add(new JLabel(" "));
-
-        JCheckBox enableStats = new JCheckBox("Enable usage statistics");
-        enableStats.setSelected(!up.isDisallowStats());
-
-        JTextField idField = new JTextField(collector.getUserID());
-        JTextField tokenField = new JTextField(collector.getToken());
-        idField.setEditable(false);
-        tokenField.setEditable(false);
-
-        Box dataBox = Box.createHorizontalBox();
-        JVBoxPanel idBox = new JVBoxPanel();
-        JVBoxPanel tokenBox = new JVBoxPanel();
-
-        idBox.add(new JLabel("Your ID:"));
-        idBox.add(idField);
-        idBox.alignAll();
-        tokenBox.add(new JLabel("Your session token:"));
-        tokenBox.add(tokenField);
-        tokenBox.alignAll();
-
-        dataBox.add(idBox);
-        dataBox.add(new JLabel("   "));
-        dataBox.add(tokenBox);
-
-        left.alignAll();
-        right.alignAll();
-        horiz.add(left);
-        horiz.add(right);
-        box.add(about);
-        box.add(about2);
-        box.add(about3);
-        box.add(about4);
-        box.add(about5);
-        box.add(about6);
-        box.add(new JLabel(" "));
-        box.add(horiz);
-        box.add(new JLabel(" "));
-        box.add(enableStats);
-        box.add(dataBox);
-        box.alignAll();
-
-        JOptionPane pane = new JOptionPane(box, JOptionPane.INFORMATION_MESSAGE, JOptionPane.OK_OPTION, null,
-                new Object[] { new JButton("Ok") {
-                    {
-                        addActionListener(new ActionListener() {
-
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                d.dispose();
-                                up.setDisallowStats(!enableStats.isSelected());
-                            }
-                        });
-                    }
-                } }, 0);
-
-        d.setContentPane(pane);
-        d.pack();
-        SwingUtils.centerWindow(d);
-        d.setVisible(true);
     }
 
     private void showOptionsDialog() {
@@ -2534,7 +2314,6 @@ public class Main {
             public void actionPerformed(final ActionEvent e) {
                 if (!up.isEnableInventoryHandling()) return;
 
-                collector.incrementNumber("feature.uses.openInventory");
                 final MinecraftClient cl = clients.get(fPane);
                 cl.getInventory().openWindow(win, up.isSendWindowClosePackets());
             }
@@ -2588,8 +2367,6 @@ public class Main {
                 if (rWin != null) {
                     rWin.dispose();
                     rWin = null;
-                } else {
-                    collector.incrementNumber("feature.uses.entityRadar");
                 }
                 rWin = new JFrame("Entity Radar: " + username + " (" + selectedServer.getName() + ")");
                 rWin.setAlwaysOnTop(true);
@@ -3239,7 +3016,6 @@ public class Main {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
-                if (e != null) collector.incrementNumber("feature.uses.autoMessages");
                 final boolean eb = autoMsgEnable.isSelected();
                 for (final Component ct : autoMsgBox.getComponents()) {
                     if (ct instanceof JRadioButton || ct instanceof JSpinner) {
@@ -3766,8 +3542,6 @@ public class Main {
                         if (pWin != null) {
                             pWin.dispose();
                             pWin = null;
-                        } else {
-                            collector.incrementNumber("feature.uses.protocolManager");
                         }
                         pWin = new JFrame("Packet Manager");
                         if (logoImage != null) {
@@ -4039,13 +3813,9 @@ public class Main {
                         }
                         final MinecraftClient cl = new MinecraftClient(host, port, iprotocol,
                                 forgeMode == ForgeMode.AUTO ? forge : forgeMode == ForgeMode.NEVER == false);
-                        if (forge) {
-                            collector.incrementNumber("feature.type.forgeConnect");
-                        }
                         clients.put(fPane, cl);
 
                         if (proxy != null) {
-                            collector.incrementNumber("feature.type.proxy");
                             cl.setProxy(proxy);
                         }
 
@@ -4519,10 +4289,8 @@ public class Main {
 
                         });
 
-                        collector.incrementNumber("feature.type." + authType.name());
                         cl.connect(authType, username, password);
                         discordIntegr.update();
-                        collector.incrementNumber("feature.type.serversJoined");
 
                         try {
                             Thread.sleep(1000);

@@ -4,17 +4,14 @@ import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import net.defekt.mc.chatclient.protocol.data.ProxySetting;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket.Status;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
-import net.defekt.stats.api.StatsCollector;
 
 /**
  * Class containing user's preferences.<br>
@@ -63,31 +60,7 @@ public class UserPreferences implements Serializable {
 
         if (configVersion < 100) configVersion = DEFAULT_CONFIG_VERSION;
 
-        if (userID == null) {
-            userID = generateHWID();
-        }
-
         if (openCounts < 0) openCounts = 1;
-    }
-
-    private static String generateHWID() {
-        try {
-            long seed = 0;
-            Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
-            while (ifaces.hasMoreElements()) {
-                NetworkInterface iface = ifaces.nextElement();
-                if (!iface.isLoopback() && iface.getHardwareAddress() != null) {
-                    byte[] addr = iface.getHardwareAddress();
-                    for (int x = 0; x < addr.length; x++) {
-                        seed += (addr[x] * Math.pow(100, x + 1));
-                    }
-                }
-            }
-            return StatsCollector.generateUserID(seed);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return StatsCollector.generateUserID();
-        }
     }
 
     /**
@@ -208,9 +181,6 @@ public class UserPreferences implements Serializable {
 
     private static final transient int DEFAULT_CONFIG_VERSION = 100;
     private int configVersion = DEFAULT_CONFIG_VERSION;
-
-    private boolean disallowStats = false;
-    private String userID = null;
 
     private int openCounts = 0;
 
@@ -571,18 +541,6 @@ public class UserPreferences implements Serializable {
 
     public void setHideDiscordServer(final boolean hideDiscordServer) {
         this.hideDiscordServer = hideDiscordServer;
-    }
-
-    public boolean isDisallowStats() {
-        return disallowStats;
-    }
-
-    public void setDisallowStats(boolean disallowStats) {
-        this.disallowStats = disallowStats;
-    }
-
-    public String getUserID() {
-        return userID == null ? generateHWID() : userID;
     }
 
     public int getOpenCounts() {
