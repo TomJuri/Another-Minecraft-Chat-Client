@@ -483,19 +483,13 @@ public class ClientPacketListener implements InternalPacketListener {
                         }
                     }
                 }).start();
-            } else if (packet instanceof ServerChatMessagePacket) {
+            } else if (packet instanceof ServerChatMessagePacket || packet instanceof ServerPlayerChatMessagePacket
+                    || packet instanceof net.defekt.mc.chatclient.protocol.packets.v1_19_2.clientbound.play.ServerPlayerChatMessagePacket) {
 
                 final String json = (String) packet.accessPacketMethod("getMessage");
 
                 for (final ClientListener ls : cl.getClientListeners()) {
-                    ls.messageReceived(ChatMessages.parse(json), (Position) packet.accessPacketMethod("getPosition"));
-                }
-            } else if (packet instanceof ServerPlayerChatMessagePacket) {
-
-                final String json = (String) packet.accessPacketMethod("getMessage");
-
-                for (final ClientListener ls : cl.getClientListeners()) {
-                    ls.messageReceived(ChatMessages.parse(json), (Position) packet.accessPacketMethod("getPosition"));
+                    ls.messageReceived(ChatMessages.parse(json, cl), (Position) packet.accessPacketMethod("getPosition"));
                 }
             } else if (packet instanceof ServerPlayerPositionAndLookPacket
                     || packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerPlayerPositionAndLookPacket) {

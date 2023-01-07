@@ -2,6 +2,7 @@ package net.defekt.mc.chatclient.protocol.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -10,6 +11,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import net.defekt.mc.chatclient.protocol.ClientListener;
+import net.defekt.mc.chatclient.protocol.MinecraftClient;
 
 /**
  * Class containing methods to make parsing chat messages easier
@@ -33,6 +35,10 @@ public class ChatMessages {
      * @return parsed text
      */
     public static String parse(String json) {
+        return parse(json, null);
+    }
+
+    public static String parse(String json, MinecraftClient client) {
         json = json.replace(pChar + "k", "").replace(pChar + "l", "").replace(pChar + "m", "").replace(pChar + "n", "");
         try {
             final JsonElement element = new JsonParser().parse(json);
@@ -49,11 +55,24 @@ public class ChatMessages {
                     if (obj.has("with")) {
                         final JsonArray withArray = obj.getAsJsonArray("with");
                         for (final JsonElement el : withArray) {
-                            with.add(parse(el.toString()));
+                            with.add(parse(el.toString(), client));
                         }
                     }
 
                     text = String.format(translated, (Object[]) with.toArray(new String[0]));
+                }
+
+                if (client != null) {
+                    if (obj.has("amcPlayer")) {
+                        try {
+                            UUID uid = UUID.fromString(obj.get("amcPlayer").getAsString());
+                            PlayerInfo inf = client.getPlayersTabList().get(uid);
+                            if (inf != null) {
+                                text = inf.getName();
+                            }
+                        } catch (Exception e) {
+                        }
+                    }
                 }
 
                 if (obj.has("color")) {
@@ -61,12 +80,12 @@ public class ChatMessages {
                 }
 
                 if (obj.has("extra")) {
-                    text += parse(obj.get("extra").toString());
+                    text += parse(obj.get("extra").toString(), client);
                 }
 
             } else if (element instanceof JsonArray) {
                 for (final JsonElement el : element.getAsJsonArray()) {
-                    text += parse(el.toString());
+                    text += parse(el.toString(), client);
                 }
             } else if (element instanceof JsonPrimitive) return element.getAsString();
 
