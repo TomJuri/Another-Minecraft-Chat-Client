@@ -2,7 +2,7 @@
 ![license](https://img.shields.io/github/license/Defective4/Minecraft-Chat-Client)
 ![version](https://img.shields.io/github/v/release/Defective4/Minecraft-Chat-Client)
 ![lastCommit](https://img.shields.io/github/last-commit/Defective4/Minecraft-Chat-Client)
-![version](https://img.shields.io/badge/latest_mc_version-1.18.2-success)
+![version](https://img.shields.io/badge/latest_mc_version-1.19.2-success)
 [![Java CI with Gradle](https://github.com/Defective4/Another-Minecraft-Chat-Client/actions/workflows/gradle.yml/badge.svg)](https://github.com/Defective4/Another-Minecraft-Chat-Client/actions/workflows/gradle.yml)
 
 AMCC is a GUI application that lets you join a Minecraft server and chat freely without opening your game.
@@ -11,10 +11,10 @@ AMCC is a GUI application that lets you join a Minecraft server and chat freely 
 * 📖 Complete GUI with Minecraft styled server list, in-game player list with skins and a tabbed pane allowing you to chat on multiple clients.
 * 🎨 Minecraft style UI elements, such as chat font (Minecraftia), configurable buttons and text fields.
 * 📋 Tray support.
-* ⚙️ My own lightweight implementation of Minecraft protocol, supporting versions 1.8 to 1.18.2.
+* ⚙️ My own lightweight implementation of Minecraft protocol, supporting versions 1.8 to 1.19.2.
 * 📦 Basic inventory handling and item using.
 * ⏰ Automatic messages and responses, perfect for AFKing.
-* � Support for Mojang authentication
+* ~� Support for Mojang authentication~
 
 ## 📙 My goals
 This project is my take on implementing Minecraft's protocol from scratch.<br>
