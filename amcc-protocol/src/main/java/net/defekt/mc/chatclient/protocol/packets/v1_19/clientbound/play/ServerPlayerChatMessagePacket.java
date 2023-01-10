@@ -3,14 +3,10 @@ package net.defekt.mc.chatclient.protocol.packets.v1_19.clientbound.play;
 import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerChatMessagePacket;
 
-public class ServerPlayerChatMessagePacket extends Packet {
-
-    private final String message;
-    private final byte position;
+public class ServerPlayerChatMessagePacket extends AbstractServerChatMessagePacket {
 
     /**
      * Constructs {@link ServerPlayerChatMessagePacket}
@@ -24,39 +20,8 @@ public class ServerPlayerChatMessagePacket extends Packet {
         final VarInputStream is = getInputStream();
         String message = is.readString();
         if (is.readBoolean()) message = is.readString();
-        this.message = message;
-        this.position = is.readByte();
-    }
-
-    /**
-     * Get JSON message
-     * 
-     * @return raw JSON message
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * Get message's position
-     * 
-     * @return message's position
-     */
-    public Position getPosition() {
-        switch (position) {
-            case 0: {
-                return Position.CHAT;
-            }
-            case 1: {
-                return Position.SYSTEM;
-            }
-            case 2: {
-                return Position.HOTBAR;
-            }
-            default: {
-                return Position.CHAT;
-            }
-        }
+        super.message = message;
+        super.position = is.readByte();
     }
 
 }

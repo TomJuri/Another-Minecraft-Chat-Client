@@ -3,8 +3,8 @@ package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerChatMessagePacket;
 
 /**
  * Sent by server when client received a chat message
@@ -12,14 +12,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  * @author Defective4
  *
  */
-public class ServerChatMessagePacket extends Packet {
-
-    /**
-     * Chat message position
-     * 
-     * @author Defective4
-     *
-     */
+public class ServerChatMessagePacket extends AbstractServerChatMessagePacket {
     public enum Position {
         /**
          * Message position is in chat box
@@ -35,9 +28,6 @@ public class ServerChatMessagePacket extends Packet {
         HOTBAR
     }
 
-    private final String message;
-    private final byte position;
-
     /**
      * Constructs {@link ServerChatMessagePacket}
      * 
@@ -50,37 +40,6 @@ public class ServerChatMessagePacket extends Packet {
         final VarInputStream is = getInputStream();
         this.message = is.readString();
         this.position = is.readByte();
-    }
-
-    /**
-     * Get JSON message
-     * 
-     * @return raw JSON message
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * Get message's position
-     * 
-     * @return message's position
-     */
-    public Position getPosition() {
-        switch (position) {
-            case 0: {
-                return Position.CHAT;
-            }
-            case 1: {
-                return Position.SYSTEM;
-            }
-            case 2: {
-                return Position.HOTBAR;
-            }
-            default: {
-                return Position.CHAT;
-            }
-        }
     }
 
 }

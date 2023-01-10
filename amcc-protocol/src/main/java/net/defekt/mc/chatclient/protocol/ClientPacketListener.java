@@ -44,11 +44,11 @@ import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerChatMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginEncryptionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginResponsePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginSetCompressionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginSuccessPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerCloseWindowPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerConfirmTransactionPacket;
@@ -75,7 +75,6 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.login.ClientLoginEncryptionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPluginMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientTeleportConfirmPacket;
-import net.defekt.mc.chatclient.protocol.packets.v1_19.clientbound.play.ServerPlayerChatMessagePacket;
 
 /**
  * An implementation of {@link InternalPacketListener} responsible for handling
@@ -484,14 +483,14 @@ public class ClientPacketListener implements InternalPacketListener {
                         }
                     }
                 }).start();
-            } else if (packet instanceof ServerChatMessagePacket || packet instanceof ServerPlayerChatMessagePacket
-                    || packet instanceof net.defekt.mc.chatclient.protocol.packets.v1_19_2.clientbound.play.ServerPlayerChatMessagePacket) {
+            } else if (packet instanceof AbstractServerChatMessagePacket) {
 
-                final String json = (String) packet.accessPacketMethod("getMessage");
+                AbstractServerChatMessagePacket cp = (AbstractServerChatMessagePacket) packet;
+
+                final String json = cp.getMessage();
 
                 for (final ClientListener ls : cl.getClientListeners()) {
-                    ls.messageReceived(ChatMessages.parse(json, cl),
-                            (Position) packet.accessPacketMethod("getPosition"));
+                    ls.messageReceived(ChatMessages.parse(json, cl), cp.getPosition());
                 }
             } else if (packet instanceof ServerPlayerPositionAndLookPacket
                     || packet instanceof net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerPlayerPositionAndLookPacket) {
