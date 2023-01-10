@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerChatMessagePacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerChatMessagePacket;
 
-public class ServerPlayerChatMessagePacket extends AbstractServerChatMessagePacket {
+public class ServerPlayerChatMessagePacket extends BaseServerChatMessagePacket {
 
     /**
      * Constructs {@link ServerPlayerChatMessagePacket}

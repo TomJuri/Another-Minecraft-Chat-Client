@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerPlayerPositionAndLookPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerPositionAndLookPacket;
 
 /**
  * An older version of
@@ -14,7 +14,7 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerPlayerPosit
  * @author Defective4
  *
  */
-public class ServerPlayerPositionAndLookPacket extends AbstractServerPlayerPositionAndLookPacket {
+public class ServerPlayerPositionAndLookPacket extends BaseServerPlayerPositionAndLookPacket {
 
     /**
      * Constructs new {@link ServerPlayerPositionAndLookPacket}

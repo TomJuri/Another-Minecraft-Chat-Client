@@ -5,12 +5,12 @@ import java.io.IOException;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
-public class AbstractServerKeepAlivePacket extends Packet {
+public class BaseServerKeepAlivePacket extends Packet {
 
     protected long pid;
     protected boolean legacy = false;
     
-    protected AbstractServerKeepAlivePacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerKeepAlivePacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }
 

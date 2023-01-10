@@ -32,19 +32,19 @@ import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerChatMessagePacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerEntityRelativeMovePacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerEntityTeleportPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerKeepAlivePacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerLoginSuccessPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerOpenWindowPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerPlayerListItemPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerPlayerListItemPacket.Action;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerPlayerListItemPacket.PlayerListItem;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerPlayerPositionAndLookPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerResourcePackSendPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerSpawnEntityPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractSpawnPlayerPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerChatMessagePacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerEntityRelativeMovePacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerEntityTeleportPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerKeepAlivePacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerLoginSuccessPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerOpenWindowPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerListItemPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerListItemPacket.Action;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerListItemPacket.PlayerListItem;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerPositionAndLookPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerResourcePackSendPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerSpawnEntityPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseSpawnPlayerPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginEncryptionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginResponsePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginSetCompressionPacket;
@@ -74,7 +74,7 @@ public class MainPacketListener extends AnnotatedPacketListener {
     }
 
     @PacketHandler
-    protected void spawnEntity(AbstractServerSpawnEntityPacket sp) {
+    protected void spawnEntity(BaseServerSpawnEntityPacket sp) {
         cl.getStoredEntities().put(sp.getId(), new Entity(sp.getUid(), sp.getType(), sp.getX(), sp.getY(), sp.getZ()));
     }
 
@@ -215,7 +215,7 @@ public class MainPacketListener extends AnnotatedPacketListener {
     }
 
     @PacketHandler
-    protected void windowOpened(AbstractServerOpenWindowPacket packet) { // TODO
+    protected void windowOpened(BaseServerOpenWindowPacket packet) { // TODO
         if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
         final int windowID = packet.getWindowID();
@@ -247,7 +247,7 @@ public class MainPacketListener extends AnnotatedPacketListener {
     }
 
     @PacketHandler
-    protected void playeListUpdated(AbstractServerPlayerListItemPacket packet) {
+    protected void playeListUpdated(BaseServerPlayerListItemPacket packet) {
         final HashMap<UUID, PlayerInfo> playersTabList = cl.getPlayersTabList();
         final Action action = packet.getAction();
         final List<PlayerListItem> playerList = packet.getPlayersList();
@@ -323,7 +323,7 @@ public class MainPacketListener extends AnnotatedPacketListener {
     }
 
     @PacketHandler
-    protected void onKeepAliveReceived(AbstractServerKeepAlivePacket ka) {
+    protected void onKeepAliveReceived(BaseServerKeepAlivePacket ka) {
         lastKeepAlivePacket = System.currentTimeMillis();
         if (up.isIgnoreKeepAlive()) return;
         new Thread(new Runnable() {
@@ -347,7 +347,7 @@ public class MainPacketListener extends AnnotatedPacketListener {
     }
 
     @PacketHandler
-    protected void onChatReceived(AbstractServerChatMessagePacket msg) {
+    protected void onChatReceived(BaseServerChatMessagePacket msg) {
 
         final String json = msg.getMessage();
 
@@ -357,7 +357,7 @@ public class MainPacketListener extends AnnotatedPacketListener {
     }
 
     @PacketHandler
-    protected void playerPositionAndLook(AbstractServerPlayerPositionAndLookPacket p) throws IOException {
+    protected void playerPositionAndLook(BaseServerPlayerPositionAndLookPacket p) throws IOException {
         final double x = p.getX();
         final double y = p.getY();
         final double z = p.getZ();
@@ -460,7 +460,7 @@ public class MainPacketListener extends AnnotatedPacketListener {
     }
 
     @PacketHandler
-    protected void resPackReceived(AbstractServerResourcePackSendPacket packet) throws IOException {
+    protected void resPackReceived(BaseServerResourcePackSendPacket packet) throws IOException {
         if (up.isShowResourcePackMessages()) {
             for (final ClientListener ls : cl.getClientListeners()) {
                 ls.messageReceived(up.getResourcePackMessage().replace("%res", packet.getUrl()),
@@ -484,7 +484,7 @@ public class MainPacketListener extends AnnotatedPacketListener {
     }
 
     @PacketHandler
-    protected void spawnPlaye(AbstractSpawnPlayerPacket sp) {
+    protected void spawnPlaye(BaseSpawnPlayerPacket sp) {
         if (sp.getId() == cl.getEntityID()) return;
         cl.getStoredEntities().put(sp.getId(), new Player(sp.getUid(), sp.getX(), sp.getY(), sp.getZ()));
     }
@@ -498,7 +498,7 @@ public class MainPacketListener extends AnnotatedPacketListener {
     }
 
     @PacketHandler
-    protected void entityRelativeMove(AbstractServerEntityRelativeMovePacket move) {
+    protected void entityRelativeMove(BaseServerEntityRelativeMovePacket move) {
         final Entity entity = cl.getEntity(move.getEntityID());
         if (entity == null) return;
         final double x = entity.getX();
@@ -518,7 +518,7 @@ public class MainPacketListener extends AnnotatedPacketListener {
     }
 
     @PacketHandler
-    protected void entityTeleport(AbstractServerEntityTeleportPacket tp) {
+    protected void entityTeleport(BaseServerEntityTeleportPacket tp) {
         final double x = tp.getX();
         final double y = tp.getY();
         final double z = tp.getZ();
@@ -548,7 +548,7 @@ public class MainPacketListener extends AnnotatedPacketListener {
     }
 
     @PacketHandler
-    protected void loginSuccess(AbstractServerLoginSuccessPacket e) {
+    protected void loginSuccess(BaseServerLoginSuccessPacket e) {
         cl.setCurrentState(State.IN);
         try {
             String uid = e.getUuid();

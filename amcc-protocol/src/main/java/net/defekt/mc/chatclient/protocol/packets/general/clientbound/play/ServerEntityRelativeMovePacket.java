@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerEntityRelativeMovePacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerEntityRelativeMovePacket;
 
 @SuppressWarnings("javadoc")
-public class ServerEntityRelativeMovePacket extends AbstractServerEntityRelativeMovePacket {
+public class ServerEntityRelativeMovePacket extends BaseServerEntityRelativeMovePacket {
 
     public ServerEntityRelativeMovePacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);

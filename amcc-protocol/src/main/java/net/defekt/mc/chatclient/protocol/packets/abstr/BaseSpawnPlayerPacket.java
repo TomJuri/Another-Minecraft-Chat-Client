@@ -6,7 +6,7 @@ import java.util.UUID;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
-public class AbstractSpawnPlayerPacket extends Packet {
+public class BaseSpawnPlayerPacket extends Packet {
 
     protected int id;
     protected UUID uid;
@@ -14,7 +14,7 @@ public class AbstractSpawnPlayerPacket extends Packet {
     protected double y;
     protected double z;
 
-    protected AbstractSpawnPlayerPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseSpawnPlayerPacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }
 

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerResourcePackSendPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerResourcePackSendPacket;
 
 /**
  * Newer version of
@@ -15,7 +15,7 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerResourcePac
  * @author Defective4
  *
  */
-public class ServerResourcePackSendPacket extends AbstractServerResourcePackSendPacket {
+public class ServerResourcePackSendPacket extends BaseServerResourcePackSendPacket {
 
     /**
      * constructs {@link ServerResourcePackSendPacket}

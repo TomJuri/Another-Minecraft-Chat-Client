@@ -5,11 +5,11 @@ import java.io.IOException;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
-public class AbstractServerLoginSuccessPacket extends Packet {
+public class BaseServerLoginSuccessPacket extends Packet {
     protected String uuid;
     protected String username;
 
-    protected AbstractServerLoginSuccessPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerLoginSuccessPacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }
 

@@ -6,7 +6,7 @@ import java.util.UUID;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
-public class AbstractServerSpawnEntityPacket extends Packet {
+public class BaseServerSpawnEntityPacket extends Packet {
 
     protected int id;
     protected UUID uid;
@@ -15,7 +15,7 @@ public class AbstractServerSpawnEntityPacket extends Packet {
     protected double y;
     protected double z;
 
-    protected AbstractServerSpawnEntityPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerSpawnEntityPacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }
 

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerChatMessagePacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerChatMessagePacket;
 
 /**
  * Sent by server when client received a chat message
@@ -12,7 +12,7 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerChatMessage
  * @author Defective4
  *
  */
-public class ServerChatMessagePacket extends AbstractServerChatMessagePacket {
+public class ServerChatMessagePacket extends BaseServerChatMessagePacket {
     public enum Position {
         /**
          * Message position is in chat box

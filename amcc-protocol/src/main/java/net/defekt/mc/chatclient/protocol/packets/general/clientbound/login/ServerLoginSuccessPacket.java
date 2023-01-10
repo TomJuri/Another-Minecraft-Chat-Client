@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerLoginSuccessPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerLoginSuccessPacket;
 
 /**
  * Packet sent by server when client finished logging in
@@ -12,7 +12,7 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerLoginSucces
  * @author Defective4
  *
  */
-public class ServerLoginSuccessPacket extends AbstractServerLoginSuccessPacket {
+public class ServerLoginSuccessPacket extends BaseServerLoginSuccessPacket {
 
     /**
      * Contructs {@link ServerLoginSuccessPacket}

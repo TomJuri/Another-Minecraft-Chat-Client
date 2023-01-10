@@ -5,14 +5,14 @@ import java.io.IOException;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
-public class AbstractServerResourcePackSendPacket extends Packet {
+public class BaseServerResourcePackSendPacket extends Packet {
     protected String url;
     protected String hash;
     protected boolean forced;
     protected boolean hasPrompt;
     protected String prompt;
 
-    protected AbstractServerResourcePackSendPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerResourcePackSendPacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }
 

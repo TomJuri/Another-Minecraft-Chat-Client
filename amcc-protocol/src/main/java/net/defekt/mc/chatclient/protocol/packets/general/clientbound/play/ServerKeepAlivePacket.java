@@ -3,7 +3,7 @@ package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerKeepAlivePacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerKeepAlivePacket;
 
 /**
  * Sent by server to ensure that client is still alive.<br>
@@ -12,7 +12,7 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerKeepAlivePa
  * @author Defective4
  *
  */
-public class ServerKeepAlivePacket extends AbstractServerKeepAlivePacket {
+public class ServerKeepAlivePacket extends BaseServerKeepAlivePacket {
 
     /**
      * constructs {@link ServerKeepAlivePacket}

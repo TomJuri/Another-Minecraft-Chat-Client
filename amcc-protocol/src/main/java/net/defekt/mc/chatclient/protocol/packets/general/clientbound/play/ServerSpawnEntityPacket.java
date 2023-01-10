@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerSpawnEntityPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerSpawnEntityPacket;
 
 @SuppressWarnings("javadoc")
-public class ServerSpawnEntityPacket extends AbstractServerSpawnEntityPacket {
+public class ServerSpawnEntityPacket extends BaseServerSpawnEntityPacket {
 
     public ServerSpawnEntityPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerEntityRelativeMovePacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerEntityRelativeMovePacket;
 
 /**
  * An alternative version of
@@ -14,7 +14,7 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerEntityRelat
  * @author Defective4
  *
  */
-public class ServerEntityRelativeMovePacket extends AbstractServerEntityRelativeMovePacket {
+public class ServerEntityRelativeMovePacket extends BaseServerEntityRelativeMovePacket {
 
     /**
      * Constructs new {@link ServerEntityRelativeMovePacket}

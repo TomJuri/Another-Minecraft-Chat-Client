@@ -7,14 +7,14 @@ import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerOpenWindowPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerOpenWindowPacket;
 
 /**
  * Sent by server when a window is opened
  * 
  * @author Defective4
  */
-public class ServerOpenWindowPacket extends AbstractServerOpenWindowPacket {
+public class ServerOpenWindowPacket extends BaseServerOpenWindowPacket {
 
     /**
      * Constructs {@link ServerOpenWindowPacket}

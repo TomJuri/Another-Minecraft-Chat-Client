@@ -5,7 +5,7 @@ import java.io.IOException;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
-public class AbstractServerPlayerPositionAndLookPacket extends Packet {
+public class BaseServerPlayerPositionAndLookPacket extends Packet {
 
     protected double x;
     protected double y;
@@ -15,7 +15,7 @@ public class AbstractServerPlayerPositionAndLookPacket extends Packet {
     protected byte flags;
     protected int teleportID;
 
-    protected AbstractServerPlayerPositionAndLookPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerPlayerPositionAndLookPacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }
 

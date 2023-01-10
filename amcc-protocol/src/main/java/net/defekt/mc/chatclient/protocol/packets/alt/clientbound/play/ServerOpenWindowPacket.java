@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerOpenWindowPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerOpenWindowPacket;
 
 /**
  * Old version of
@@ -13,7 +13,7 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerOpenWindowP
  * @author Defective4
  *
  */
-public class ServerOpenWindowPacket extends AbstractServerOpenWindowPacket {
+public class ServerOpenWindowPacket extends BaseServerOpenWindowPacket {
 
     /**
      * Constructs {@link ServerOpenWindowPacket}

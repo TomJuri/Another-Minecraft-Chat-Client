@@ -8,7 +8,7 @@ import java.util.UUID;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
-public class AbstractServerPlayerListItemPacket extends Packet {
+public class BaseServerPlayerListItemPacket extends Packet {
 
     /**
      * A container for player information on player list
@@ -143,7 +143,7 @@ public class AbstractServerPlayerListItemPacket extends Packet {
 
     protected List<PlayerListItem> playersList = new ArrayList<PlayerListItem>();
 
-    protected AbstractServerPlayerListItemPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerPlayerListItemPacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }
 

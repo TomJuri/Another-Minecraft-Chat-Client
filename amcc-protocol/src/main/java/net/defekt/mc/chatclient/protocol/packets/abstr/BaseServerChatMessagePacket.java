@@ -6,12 +6,12 @@ import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 
-public class AbstractServerChatMessagePacket extends Packet {
+public class BaseServerChatMessagePacket extends Packet {
     
     protected String message;
     protected byte position;
 
-    public AbstractServerChatMessagePacket(PacketRegistry reg, byte[] data) throws IOException {
+    public BaseServerChatMessagePacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }
 

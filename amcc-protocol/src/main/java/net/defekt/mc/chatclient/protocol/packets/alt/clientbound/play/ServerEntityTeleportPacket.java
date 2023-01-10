@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerEntityTeleportPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerEntityTeleportPacket;
 
 /**
  * An alternative version of
@@ -15,7 +15,7 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerEntityTelep
  *
  */
 @SuppressWarnings("javadoc")
-public class ServerEntityTeleportPacket extends AbstractServerEntityTeleportPacket {
+public class ServerEntityTeleportPacket extends BaseServerEntityTeleportPacket {
 
     /**
      * Constructs new {@link ServerEntityTeleportPacket}
