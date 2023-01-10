@@ -3,8 +3,8 @@ package net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play;
 import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerOpenWindowPacket;
 
 /**
  * Old version of
@@ -13,11 +13,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  * @author Defective4
  *
  */
-public class ServerOpenWindowPacket extends Packet {
-
-    private final int windowID;
-    private final int windowType;
-    private final String windowTitle;
+public class ServerOpenWindowPacket extends AbstractServerOpenWindowPacket {
 
     /**
      * Constructs {@link ServerOpenWindowPacket}
@@ -30,35 +26,8 @@ public class ServerOpenWindowPacket extends Packet {
         super(reg, data);
         final VarInputStream is = getInputStream();
         windowID = is.readUnsignedByte();
-        windowType = is.readVarInt();
+        windowInt = is.readVarInt();
         windowTitle = is.readString();
-    }
-
-    /**
-     * Get opened window's ID
-     * 
-     * @return window ID
-     */
-    public int getWindowID() {
-        return windowID;
-    }
-
-    /**
-     * Get opened window type
-     * 
-     * @return window type
-     */
-    public int getWindowType() {
-        return windowType;
-    }
-
-    /**
-     * Get opened window title
-     * 
-     * @return window title
-     */
-    public String getWindowTitle() {
-        return windowTitle;
     }
 
 }

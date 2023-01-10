@@ -3,8 +3,8 @@ package net.defekt.mc.chatclient.protocol.packets.general.clientbound.login;
 import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerLoginSuccessPacket;
 
 /**
  * Packet sent by server when client finished logging in
@@ -12,10 +12,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  * @author Defective4
  *
  */
-public class ServerLoginSuccessPacket extends Packet {
-
-    private final String uuid;
-    private final String username;
+public class ServerLoginSuccessPacket extends AbstractServerLoginSuccessPacket {
 
     /**
      * Contructs {@link ServerLoginSuccessPacket}
@@ -29,24 +26,6 @@ public class ServerLoginSuccessPacket extends Packet {
         final VarInputStream is = getInputStream();
         uuid = is.readString();
         username = is.readString();
-    }
-
-    /**
-     * Get player's UUID
-     * 
-     * @return players's UUID
-     */
-    public String getUuid() {
-        return uuid;
-    }
-
-    /**
-     * Get player's username
-     * 
-     * @return player's username
-     */
-    public String getUsername() {
-        return username;
     }
 
 }

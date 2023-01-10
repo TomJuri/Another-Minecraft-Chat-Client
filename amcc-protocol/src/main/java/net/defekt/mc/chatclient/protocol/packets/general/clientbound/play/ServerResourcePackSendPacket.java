@@ -3,8 +3,8 @@ package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerResourcePackSendPacket;
 
 /**
  * Sent by server to update resource pack used by client
@@ -12,10 +12,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  * @author Defective4
  *
  */
-public class ServerResourcePackSendPacket extends Packet {
-
-    private final String url;
-    private final String hash;
+public class ServerResourcePackSendPacket extends AbstractServerResourcePackSendPacket {
 
     /**
      * constructs {@link ServerResourcePackSendPacket}
@@ -29,24 +26,8 @@ public class ServerResourcePackSendPacket extends Packet {
         final VarInputStream in = getInputStream();
         url = in.readString();
         hash = in.readString();
+        forced = false;
+        hasPrompt = false;
+        prompt = "";
     }
-
-    /**
-     * Get resource pack URL
-     * 
-     * @return resource pack URL
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * Get resource pack's hash
-     * 
-     * @return resource pack's hash
-     */
-    public String getHash() {
-        return hash;
-    }
-
 }

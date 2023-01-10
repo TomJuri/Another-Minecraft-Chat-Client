@@ -202,7 +202,6 @@ public class MinecraftClient {
                     playerPositionThread.interrupt();
                 }
             } catch (final IOException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -307,7 +306,7 @@ public class MinecraftClient {
             this.os = soc.getOutputStream();
             this.is = new VarInputStream(soc.getInputStream());
             inventory = new DummyItemsWindow(Messages.getString("MinecraftClient.clientInventoryName"), 46, 0);
-            packetListeners.add(new ClientPacketListener(this));
+            packetListeners.add(new MainPacketListener(this));
 
             final Packet handshake = new HandshakePacket(reg, protocol,
                     host + (forge ? (protocol <= 340 ? "\0FML\0" : "") : ""), port, 2);
@@ -367,6 +366,7 @@ public class MinecraftClient {
                             if (id != -1) {
                                 final Class<? extends Packet> pClass = reg.getByID(id, state);
                                 final Packet packet;
+
                                 if (pClass == null) {
                                     packet = new UnknownPacket(reg, id, packetData);
                                 } else {
@@ -420,7 +420,6 @@ public class MinecraftClient {
                             }
                         }
                     } catch (final InterruptedException e) {
-                        e.printStackTrace();
                     }
                 }
             });

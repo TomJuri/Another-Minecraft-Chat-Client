@@ -3,8 +3,8 @@ package net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play;
 import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerEntityRelativeMovePacket;
 
 /**
  * An alternative version of
@@ -14,12 +14,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  * @author Defective4
  *
  */
-public class ServerEntityRelativeMovePacket extends Packet {
-
-    private final int entityID;
-    private double deltaX;
-    private double deltaY;
-    private double deltaZ;
+public class ServerEntityRelativeMovePacket extends AbstractServerEntityRelativeMovePacket {
 
     /**
      * Constructs new {@link ServerEntityRelativeMovePacket}
@@ -39,42 +34,6 @@ public class ServerEntityRelativeMovePacket extends Packet {
         deltaX /= 32;
         deltaY /= 32;
         deltaZ /= 32;
-    }
-
-    /**
-     * Get moved entity's ID
-     * 
-     * @return entity ID
-     */
-    public int getEntityID() {
-        return entityID;
-    }
-
-    /**
-     * Get delta X of moved entity
-     * 
-     * @return delta X
-     */
-    public double getDeltaX() {
-        return deltaX;
-    }
-
-    /**
-     * Get delta Y of moved entity
-     * 
-     * @return delta Y
-     */
-    public double getDeltaY() {
-        return deltaY;
-    }
-
-    /**
-     * Get delta Z of moved entity
-     * 
-     * @return delta Z
-     */
-    public double getDeltaZ() {
-        return deltaZ;
     }
 
 }

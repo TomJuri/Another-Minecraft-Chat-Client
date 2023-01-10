@@ -2,8 +2,8 @@ package net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play;
 
 import java.io.IOException;
 
-import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerKeepAlivePacket;
 
 /**
  * An older version of
@@ -14,10 +14,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  * @author Defective4
  *
  */
-public class ServerKeepAlivePacket extends Packet {
-
-    private final int id;
-
+public class ServerKeepAlivePacket extends AbstractServerKeepAlivePacket {
     /**
      * Constructs new {@link ServerKeepAlivePacket}
      * 
@@ -27,16 +24,8 @@ public class ServerKeepAlivePacket extends Packet {
      */
     public ServerKeepAlivePacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
-        this.id = getInputStream().readVarInt();
-    }
-
-    /**
-     * Get keep-alive ID
-     * 
-     * @return keep-alive ID as VarInt
-     */
-    public int getId() {
-        return id;
+        this.pid = getInputStream().readVarInt();
+        legacy = true;
     }
 
 }

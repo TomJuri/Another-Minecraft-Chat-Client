@@ -3,8 +3,8 @@ package net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play;
 import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerResourcePackSendPacket;
 
 /**
  * Newer version of
@@ -15,12 +15,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  * @author Defective4
  *
  */
-public class ServerResourcePackSendPacket extends Packet {
-    private final String url;
-    private final String hash;
-    private final boolean forced;
-    private final boolean hasPrompt;
-    private final String prompt;
+public class ServerResourcePackSendPacket extends AbstractServerResourcePackSendPacket {
 
     /**
      * constructs {@link ServerResourcePackSendPacket}
@@ -37,50 +32,5 @@ public class ServerResourcePackSendPacket extends Packet {
         forced = is.readBoolean();
         hasPrompt = is.readBoolean();
         prompt = hasPrompt ? is.readString() : "";
-    }
-
-    /**
-     * Get resource pack URL
-     * 
-     * @return URL to resource pack
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * Get resoruce pack's hash
-     * 
-     * @return resource pack hash
-     */
-    public String getHash() {
-        return hash;
-    }
-
-    /**
-     * If this resource pack must be accepted or not
-     * 
-     * @return true if pack must be accepted by client
-     */
-    public boolean isForced() {
-        return forced;
-    }
-
-    /**
-     * If this resource pack has custom prompt
-     * 
-     * @return true if pack has custom prompt
-     */
-    public boolean isHasPrompt() {
-        return hasPrompt;
-    }
-
-    /**
-     * Get resource pack's custom chat prompt
-     * 
-     * @return pack's prompt message
-     */
-    public String getPrompt() {
-        return prompt;
     }
 }

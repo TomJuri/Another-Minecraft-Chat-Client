@@ -1,16 +1,12 @@
 package net.defekt.mc.chatclient.protocol.packets.v1_19.clientbound.play;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import net.defekt.mc.chatclient.protocol.data.ChatMessages;
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPlayerListItemPacket.Action;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPlayerListItemPacket.PlayerListItem;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerPlayerListItemPacket;
 
 /**
  * Sent by server when player's TAB list is updatet
@@ -18,18 +14,7 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
  * @author Defective4
  *
  */
-public class ServerPlayerListItemPacket extends Packet {
-    /**
-     * Player List action type
-     * 
-     * @author Defective4
-     *
-     */
-
-    private final Action action;
-    private final int players;
-
-    private final List<PlayerListItem> playersList = new ArrayList<PlayerListItem>();
+public class ServerPlayerListItemPacket extends AbstractServerPlayerListItemPacket {
 
     /**
      * constructs {@link ServerPlayerListItemPacket}
@@ -107,91 +92,6 @@ public class ServerPlayerListItemPacket extends Packet {
             }
             playersList.add(new PlayerListItem(uid, playerName, textures, displayName, ping));
         }
-    }
-
-    /**
-     * Get Player List action
-     * 
-     * @return player list action
-     */
-    public Action getAction() {
-        return action;
-    }
-
-    /**
-     * Get player list max players count
-     * 
-     * @return max players
-     */
-    public int getPlayers() {
-        return players;
-    }
-
-    /**
-     * Get UUID of player involved in this packet
-     * 
-     * @deprecated as multiple players can now be stored in this packet, this method
-     *             will only return value of first player stored in packet.
-     * @return player's UUID
-     */
-    @Deprecated
-    public UUID getUUID() {
-        return playersList.get(0).getUuid();
-    }
-
-    /**
-     * Get name of player
-     * 
-     * @return player's name
-     */
-    @Deprecated
-    public String getPlayerName() {
-        return playersList.get(0).getPlayerName();
-    }
-
-    /**
-     * Get player's skin data
-     * 
-     * @deprecated as multiple players can now be stored in this packet, this method
-     *             will only return value of first player stored in packet.
-     * @return player's skin data, or null if none
-     */
-    @Deprecated
-    public String getTextures() {
-        return playersList.get(0).getTextures();
-    }
-
-    /**
-     * Get player's display name
-     * 
-     * @deprecated as multiple players can now be stored in this packet, this method
-     *             will only return value of first player stored in packet.
-     * @return player's display name, or null if none
-     */
-    @Deprecated
-    public String getDisplayName() {
-        return playersList.get(0).getDisplayName();
-    }
-
-    /**
-     * Get player's latency
-     * 
-     * @deprecated as multiple players can now be stored in this packet, this method
-     *             will only return value of first player stored in packet.
-     * @return player's latency, or -1 if unknown
-     */
-    @Deprecated
-    public int getPing() {
-        return playersList.get(0).getPing();
-    }
-
-    /**
-     * Get list of players stored in this packet
-     * 
-     * @return player list
-     */
-    public List<PlayerListItem> getPlayersList() {
-        return new ArrayList<PlayerListItem>(playersList);
     }
 
 }

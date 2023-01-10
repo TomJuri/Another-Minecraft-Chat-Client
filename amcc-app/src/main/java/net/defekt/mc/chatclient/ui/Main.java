@@ -3906,7 +3906,6 @@ public class Main {
                                             }
                                         }
                                     } catch (final Exception e2) {
-                                        e2.printStackTrace();
                                     }
                                 }
                             }

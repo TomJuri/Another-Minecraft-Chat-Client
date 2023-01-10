@@ -3,16 +3,11 @@ package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerEntityRelativeMovePacket;
 
 @SuppressWarnings("javadoc")
-public class ServerEntityRelativeMovePacket extends Packet {
-
-    private final int entityID;
-    private double deltaX;
-    private double deltaY;
-    private double deltaZ;
+public class ServerEntityRelativeMovePacket extends AbstractServerEntityRelativeMovePacket {
 
     public ServerEntityRelativeMovePacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
@@ -29,22 +24,6 @@ public class ServerEntityRelativeMovePacket extends Packet {
         deltaX /= 128;
         deltaY /= 128;
         deltaZ /= 128;
-    }
-
-    public int getEntityID() {
-        return entityID;
-    }
-
-    public double getDeltaX() {
-        return deltaX;
-    }
-
-    public double getDeltaY() {
-        return deltaY;
-    }
-
-    public double getDeltaZ() {
-        return deltaZ;
     }
 
 }

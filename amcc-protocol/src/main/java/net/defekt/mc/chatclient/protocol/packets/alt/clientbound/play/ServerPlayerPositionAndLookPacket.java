@@ -3,8 +3,8 @@ package net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play;
 import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.abstr.AbstractServerPlayerPositionAndLookPacket;
 
 /**
  * An older version of
@@ -14,14 +14,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  * @author Defective4
  *
  */
-public class ServerPlayerPositionAndLookPacket extends Packet {
-
-    private final double x;
-    private final double y;
-    private final double z;
-    private final float yaw;
-    private final float pitch;
-    private final byte flags;
+public class ServerPlayerPositionAndLookPacket extends AbstractServerPlayerPositionAndLookPacket {
 
     /**
      * Constructs new {@link ServerPlayerPositionAndLookPacket}
@@ -41,60 +34,6 @@ public class ServerPlayerPositionAndLookPacket extends Packet {
         pitch = is.readFloat();
 
         flags = is.readByte();
-    }
-
-    /**
-     * Get client X
-     * 
-     * @return client's X position
-     */
-    public double getX() {
-        return x;
-    }
-
-    /**
-     * Get client Y
-     * 
-     * @return client's Y position
-     */
-    public double getY() {
-        return y;
-    }
-
-    /**
-     * Get client Z
-     * 
-     * @return client's Z position
-     */
-    public double getZ() {
-        return z;
-    }
-
-    /**
-     * Get client yaw
-     * 
-     * @return client's yaw
-     */
-    public float getYaw() {
-        return yaw;
-    }
-
-    /**
-     * Get client pitch
-     * 
-     * @return client's pitch position
-     */
-    public float getPitch() {
-        return pitch;
-    }
-
-    /**
-     * Get flags
-     * 
-     * @return flags
-     */
-    public byte getFlags() {
-        return flags;
     }
 
 }
