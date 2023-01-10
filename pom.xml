@@ -6,8 +6,8 @@
 	<packaging>pom</packaging>
 	<name>Another Minecraft Chat Client</name>
 	<modules>
-		<module>protocol</module>
-		<module>core</module>
+		<module>amcc-protocol</module>
+		<module>amcc-app</module>
 	</modules>
 	<build>
 		<plugins>

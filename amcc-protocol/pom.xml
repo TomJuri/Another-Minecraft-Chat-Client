@@ -5,7 +5,7 @@
     <artifactId>amcc</artifactId>
     <version>1.8.7</version>
   </parent>
-  <artifactId>protocol</artifactId>
+  <artifactId>amcc-protocol</artifactId>
   <name>Another Minecraft Chat Client Protocol</name>
   <dependencies>
   	<dependency>
