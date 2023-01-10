@@ -46,7 +46,7 @@ class AnnotatedServerPacketListener implements InternalPacketListener {
     @Override
     public void packetReceived(Packet packet, PacketRegistry registry) {
         for (Method method : getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(PacketHandler.class)) {
+            if (method.isAnnotationPresent(ServerPacketHandler.class)) {
                 if (method.getParameterCount() >= 1) {
                     Parameter param = method.getParameters()[0];
                     Class<?> paramClass = param.getType();

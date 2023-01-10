@@ -74,12 +74,12 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         super(client);
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void spawnEntity(BaseServerSpawnEntityPacket sp) {
         cl.getStoredEntities().put(sp.getId(), new Entity(sp.getUid(), sp.getType(), sp.getX(), sp.getY(), sp.getZ()));
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void encryptionRequest(ServerLoginEncryptionPacket sPacket) throws Exception {
         switch (cl.getAuthType()) {
             case Offline: {
@@ -145,14 +145,14 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void timeUpdate(ServerTimeUpdatePacket packet) {
         for (final ClientListener cls : cl.getClientListeners()) {
             cls.timeUpdated(packet.getTime(), packet.getWorldAge());
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void confirmTransaction(ServerConfirmTransactionPacket packet) throws IOException {
         if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
@@ -175,7 +175,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void windowSlot(ServerSetSlotPacket packet) {
         if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
@@ -189,7 +189,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void windowClose(ServerCloseWindowPacket packet) {
         if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
@@ -201,7 +201,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void windowItems(ServerWindowItemsPacket packet) {
         if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
@@ -215,7 +215,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void windowOpened(BaseServerOpenWindowPacket packet) { // TODO
         if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
@@ -239,7 +239,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void statsReceived(ServerStatisticsPacket packet) {
         final Map<String, Integer> values = packet.getValues();
         for (final ClientListener l : cl.getClientListeners()) {
@@ -247,7 +247,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void playeListUpdated(BaseServerPlayerListItemPacket packet) {
         final HashMap<UUID, PlayerInfo> playersTabList = cl.getPlayersTabList();
         final Action action = packet.getAction();
@@ -289,7 +289,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void onJoinGame(ServerJoinGamePacket packet) throws IOException {
         final int entityID = packet.getEntityID();
         cl.setEntityID(entityID);
@@ -311,7 +311,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void updateHealth(ServerUpdateHealthPacket packet) throws IOException {
         if (packet.getHealth() <= 0) {
             cl.sendPacket(PacketFactory.constructPacket(registry, "ClientStatusPacket", 0));
@@ -323,7 +323,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void onKeepAliveReceived(BaseServerKeepAlivePacket ka) {
         lastKeepAlivePacket = System.currentTimeMillis();
         if (up.isIgnoreKeepAlive()) return;
@@ -347,7 +347,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }).start();
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void onChatReceived(BaseServerChatMessagePacket msg) {
 
         final String json = msg.getMessage();
@@ -357,7 +357,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void playerPositionAndLook(BaseServerPlayerPositionAndLookPacket p) throws IOException {
         final double x = p.getX();
         final double y = p.getY();
@@ -381,7 +381,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void playDisconnect(ServerDisconnectPacket packet) {
         final String json = packet.getReason();
         final boolean dsIgnore = up.isIgnoreDisconnect();
@@ -399,7 +399,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void pluginMessageReceived(ServerPluginMessagePacket packet) throws IOException {
         final String channel = packet.getChannel();
         final byte[] data = packet.getDataF();
@@ -460,7 +460,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void resPackReceived(BaseServerResourcePackSendPacket packet) throws IOException {
         if (up.isShowResourcePackMessages()) {
             for (final ClientListener ls : cl.getClientListeners()) {
@@ -484,13 +484,13 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         cl.sendPacket(PacketFactory.constructPacket(registry, "ClientResourcePackStatusPacket", rsPackArgsArray));
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void spawnPlaye(BaseSpawnPlayerPacket sp) {
         if (sp.getId() == cl.getEntityID()) return;
         cl.getStoredEntities().put(sp.getId(), new Player(sp.getUid(), sp.getX(), sp.getY(), sp.getZ()));
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void removeEntities(ServerDestroyEntitiesPacket packet) {
         final Map<Integer, Entity> ets = cl.getStoredEntities();
         for (final int id : packet.getEntityIDs()) {
@@ -498,7 +498,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void entityRelativeMove(BaseServerEntityRelativeMovePacket move) {
         final Entity entity = cl.getEntity(move.getEntityID());
         if (entity == null) return;
@@ -518,7 +518,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void entityTeleport(BaseServerEntityTeleportPacket tp) {
         final double x = tp.getX();
         final double y = tp.getY();
@@ -535,12 +535,12 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void setCompression(ServerLoginSetCompressionPacket cp) {
         cl.setCompression(true);
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void loginDisconnect(ServerLoginResponsePacket e) {
         for (final ClientListener ls : cl.getClientListeners()) {
             ls.disconnected(ChatMessages.parse(e.getResponse()));
@@ -548,7 +548,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         cl.close();
     }
 
-    @PacketHandler
+    @ServerPacketHandler
     protected void loginSuccess(BaseServerLoginSuccessPacket e) {
         cl.setCurrentState(State.IN);
         try {
