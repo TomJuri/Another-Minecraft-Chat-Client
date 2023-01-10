@@ -35,6 +35,8 @@ import net.defekt.mc.chatclient.protocol.data.Messages;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
 import net.defekt.mc.chatclient.protocol.entity.Entity;
 import net.defekt.mc.chatclient.protocol.entity.Player;
+import net.defekt.mc.chatclient.protocol.event.ClientListener;
+import net.defekt.mc.chatclient.protocol.event.MinecraftPacketListener;
 import net.defekt.mc.chatclient.protocol.io.ListenerHashMap;
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
@@ -365,7 +367,7 @@ public class MinecraftClient {
 
                             if (id != -1) {
                                 final Class<? extends Packet> pClass = reg.getByID(id, state);
-                                final Packet packet;
+                                Packet packet;
 
                                 if (pClass == null) {
                                     packet = new UnknownPacket(reg, id, packetData);
@@ -374,13 +376,24 @@ public class MinecraftClient {
                                 }
                                 packet.setCompressed(compressed);
                                 packet.setEncrypted(isEncrypted);
-                                for (final InternalPacketListener lis : packetListeners) {
-                                    lis.packetReceived(packet, reg);
+                                for (MinecraftPacketListener listener : GlobalListeners.getListeners()) {
+                                    Packet nPacket = listener.packetReceiving(packet, MinecraftClient.this);
+                                    if (nPacket != null) packet = nPacket;
+                                    if (packet.isCanceled()) break;
                                 }
+                                if (!packet.isCanceled()) {
+                                    for (final InternalPacketListener lis : packetListeners) {
+                                        lis.packetReceived(packet, reg);
+                                    }
+                                    for (MinecraftPacketListener listener : GlobalListeners.getListeners()) {
+                                        listener.packetReceived(packet, MinecraftClient.this);
+                                    }
+                                }
+
                             }
                         }
                     } catch (final Exception e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
                         for (final ClientListener cl : clientListeners) {
                             cl.disconnected(e.toString());
                         }
@@ -592,13 +605,22 @@ public class MinecraftClient {
      * @param packet packet to send
      * @throws IOException thrown when there was an error sending packet
      */
-    public void sendPacket(final Packet packet) throws IOException {
+    public void sendPacket(Packet packet) throws IOException {
         if (connected && soc != null && !soc.isClosed()) {
             packet.setEncrypted(isEncrypted);
             for (final InternalPacketListener listener : outPacketListeners.toArray(new InternalPacketListener[0])) {
                 listener.packetReceived(packet, reg);
+                if (packet.isCanceled()) return;
+            }
+            for (MinecraftPacketListener listener : GlobalListeners.getListeners()) {
+                Packet nPacket = listener.packetSending(packet, this);
+                if (nPacket != null) packet = nPacket;
+                if (packet.isCanceled()) return;
             }
             os.write(packet.getData(compression));
+            for (MinecraftPacketListener listener : GlobalListeners.getListeners()) {
+                listener.packetSent(packet, this);
+            }
         } else
             throw new IOException(notConnectedError);
     }

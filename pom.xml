@@ -8,6 +8,7 @@
 	<modules>
 		<module>amcc-protocol</module>
 		<module>amcc-app</module>
+		<module>amcc-api</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -1,6 +1,5 @@
 package net.defekt.mc.chatclient.ui;
 
-
 import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
@@ -115,7 +114,6 @@ import javax.swing.table.DefaultTableModel;
 
 import net.defekt.mc.chatclient.integrations.discord.DiscordPresence;
 import net.defekt.mc.chatclient.protocol.AuthType;
-import net.defekt.mc.chatclient.protocol.ClientListener;
 import net.defekt.mc.chatclient.protocol.InternalPacketListener;
 import net.defekt.mc.chatclient.protocol.LANListener;
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
@@ -140,6 +138,7 @@ import net.defekt.mc.chatclient.protocol.data.UserPreferences.Language;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences.SkinRule;
 import net.defekt.mc.chatclient.protocol.entity.Entity;
 import net.defekt.mc.chatclient.protocol.entity.Player;
+import net.defekt.mc.chatclient.protocol.event.ClientListener;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.protocol.io.ListenerHashMap.MapChangeListener;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
@@ -241,7 +240,9 @@ public class Main {
         }
     }
 
-    public static void main(final String[] args) {
+    public static void main(final String[] args) { // TODO
+//        PluginDescription desc = Plugins.listPlugins()[0];
+//        Plugins.loadPlugin(desc);
         Main.main();
     }
 

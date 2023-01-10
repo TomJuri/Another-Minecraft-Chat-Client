@@ -28,6 +28,7 @@ import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
 import net.defekt.mc.chatclient.protocol.data.StatusInfo;
 import net.defekt.mc.chatclient.protocol.entity.Entity;
 import net.defekt.mc.chatclient.protocol.entity.Player;
+import net.defekt.mc.chatclient.protocol.event.ClientListener;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
@@ -67,7 +68,7 @@ import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.Client
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPluginMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientTeleportConfirmPacket;
 
-public class MainPacketListener extends AnnotatedPacketListener {
+public class MainPacketListener extends AnnotatedServerPacketListener {
 
     protected MainPacketListener(MinecraftClient client) {
         super(client);

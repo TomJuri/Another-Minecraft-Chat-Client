@@ -1,4 +1,4 @@
-package net.defekt.mc.chatclient.protocol;
+package net.defekt.mc.chatclient.protocol.event;
 
 import java.io.IOException;
 import java.util.Map;

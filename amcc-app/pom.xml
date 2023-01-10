@@ -6,7 +6,7 @@
 		<version>1.8.7</version>
 	</parent>
 	<artifactId>amcc-app</artifactId>
-	<name>Another Minecraft Chat Client Core</name>
+	<name>Another Minecraft Chat Client App</name>
 	<repositories>
 		<repository>
 			<id>internal</id>
@@ -22,12 +22,17 @@
 		<dependency>
 			<groupId>io.github.defective4.amcc</groupId>
 			<artifactId>amcc-protocol</artifactId>
-			<version>1.8.7</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.formdev</groupId>
 			<artifactId>flatlaf</artifactId>
 			<version>3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.defective4.amcc</groupId>
+			<artifactId>amcc-api</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>

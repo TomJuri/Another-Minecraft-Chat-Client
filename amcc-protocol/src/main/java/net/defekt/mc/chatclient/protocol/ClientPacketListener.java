@@ -4,6 +4,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
+import net.defekt.mc.chatclient.protocol.event.ClientListener;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
@@ -19,7 +20,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  *
  */
 @Deprecated
-public class ClientPacketListener implements InternalPacketListener {
+class ClientPacketListener implements InternalPacketListener {
 
     private final int protocol;
     private final MinecraftClient cl;

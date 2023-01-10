@@ -6,10 +6,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
+import net.defekt.mc.chatclient.protocol.event.ClientListener;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
-public class AnnotatedPacketListener implements InternalPacketListener {
+class AnnotatedServerPacketListener implements InternalPacketListener {
 
     protected MinecraftClient cl;
     protected PacketRegistry registry;
@@ -18,7 +19,7 @@ public class AnnotatedPacketListener implements InternalPacketListener {
     protected Timer keepAliveTimer = new Timer("keepAliveTimer", true);
     protected long lastKeepAlivePacket = System.currentTimeMillis();
 
-    protected AnnotatedPacketListener(final MinecraftClient client) {
+    protected AnnotatedServerPacketListener(final MinecraftClient client) {
         this.cl = client;
         this.protocol = cl.getProtocol();
         this.up = UserPreferences.load();
