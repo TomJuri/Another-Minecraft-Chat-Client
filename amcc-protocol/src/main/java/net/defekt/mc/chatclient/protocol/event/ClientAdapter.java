@@ -1,8 +1,11 @@
 package net.defekt.mc.chatclient.protocol.event;
 
+import java.io.IOException;
 import java.util.Map;
 
+import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
+import net.defekt.mc.chatclient.protocol.entity.Entity;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 
@@ -15,31 +18,44 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 public abstract class ClientAdapter implements ClientListener {
 
     @Override
-    public void messageReceived(final String message, final Position position) {
+    public boolean messageReceived(String message, Position position, MinecraftClient client) {
+        return false;
     }
 
     @Override
-    public void disconnected(final String reason) {
+    public void disconnected(String reason, MinecraftClient client) {
     }
 
     @Override
-    public void healthUpdate(final float health, final int food) {
+    public void healthUpdate(float health, int food, MinecraftClient client) {
     }
 
     @Override
-    public void positionChanged(final double x, final double y, final double z) {
+    public void positionChanged(double x, double y, double z, MinecraftClient client) {
     }
 
     @Override
-    public void statisticsReceived(final Map<String, Integer> values) {
+    public void statisticsReceived(Map<String, Integer> values, MinecraftClient client) {
     }
 
     @Override
-    public void windowOpened(final int id, final ItemsWindow win, final PacketRegistry reg) {
+    public void windowOpened(int id, ItemsWindow win, PacketRegistry reg, MinecraftClient client) {
     }
 
     @Override
-    public void timeUpdated(final long time, final long worldAge) {
+    public void timeUpdated(long time, long worldAge, MinecraftClient client) {
+    }
+
+    @Override
+    public void changedTrackedEntity(int id, MinecraftClient client) {
+    }
+
+    @Override
+    public void entityMoved(Entity entity, int id, MinecraftClient client) {
+    }
+
+    @Override
+    public void tick(MinecraftClient client) throws IOException {
     }
 
 }

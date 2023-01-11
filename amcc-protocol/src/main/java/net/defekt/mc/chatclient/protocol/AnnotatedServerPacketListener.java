@@ -34,8 +34,8 @@ class AnnotatedServerPacketListener implements InternalPacketListener {
                 }
 
                 if (System.currentTimeMillis() - lastKeepAlivePacket > 60000) {
-                    for (final ClientListener cls : cl.getClientListeners()) {
-                        cls.disconnected("Timed Out");
+                    for (final ClientListener cls : cl.getClientListeners(true)) {
+                        cls.disconnected("Timed Out", client);
                     }
                     cl.close();
                 }

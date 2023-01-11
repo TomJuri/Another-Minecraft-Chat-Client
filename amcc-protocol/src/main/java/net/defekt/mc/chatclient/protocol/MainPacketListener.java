@@ -83,8 +83,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
     protected void encryptionRequest(ServerLoginEncryptionPacket sPacket) throws Exception {
         switch (cl.getAuthType()) {
             case Offline: {
-                for (final ClientListener ls : cl.getClientListeners()) {
-                    ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnectedNoAuth"));
+                for (final ClientListener ls : cl.getClientListeners(true)) {
+                    ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnectedNoAuth"), cl);
                 }
                 cl.close();
                 break;
@@ -121,8 +121,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                     if (json.has("error")) {
                         final String errMsg = json.has("errorMessage") ? json.get("errorMessage").getAsString()
                                 : json.get("error").getAsString();
-                        for (final ClientListener ls : cl.getClientListeners()) {
-                            ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnected") + errMsg);
+                        for (final ClientListener ls : cl.getClientListeners(true)) {
+                            ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnected") + errMsg, cl);
                         }
                         cl.close();
                         break;
@@ -136,8 +136,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                 break;
             }
             default: {
-                for (final ClientListener ls : cl.getClientListeners()) {
-                    ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnectedNoAuth"));
+                for (final ClientListener ls : cl.getClientListeners(true)) {
+                    ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnectedNoAuth"), cl);
                 }
                 cl.close();
                 break;
@@ -147,8 +147,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
 
     @ServerPacketHandler
     protected void timeUpdate(ServerTimeUpdatePacket packet) {
-        for (final ClientListener cls : cl.getClientListeners()) {
-            cls.timeUpdated(packet.getTime(), packet.getWorldAge());
+        for (final ClientListener cls : cl.getClientListeners(true)) {
+            cls.timeUpdated(packet.getTime(), packet.getWorldAge(), cl);
         }
     }
 
@@ -234,16 +234,16 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
 
         final ItemsWindow win = new DummyItemsWindow(windowTitle, slots, windowID);
         cl.setOpenWindow(windowID, win);
-        for (final ClientListener l : cl.getClientListeners()) {
-            l.windowOpened(windowID, win, registry);
+        for (final ClientListener l : cl.getClientListeners(true)) {
+            l.windowOpened(windowID, win, registry, cl);
         }
     }
 
     @ServerPacketHandler
     protected void statsReceived(ServerStatisticsPacket packet) {
         final Map<String, Integer> values = packet.getValues();
-        for (final ClientListener l : cl.getClientListeners()) {
-            l.statisticsReceived(values);
+        for (final ClientListener l : cl.getClientListeners(true)) {
+            l.statisticsReceived(values, cl);
         }
     }
 
@@ -318,8 +318,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
         final float hp = packet.getHealth();
         final int food = packet.getFood();
-        for (final ClientListener ls : cl.getClientListeners()) {
-            ls.healthUpdate(hp, food);
+        for (final ClientListener ls : cl.getClientListeners(true)) {
+            ls.healthUpdate(hp, food, cl);
         }
     }
 
@@ -348,12 +348,13 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
     }
 
     @ServerPacketHandler
-    protected void onChatReceived(BaseServerChatMessagePacket msg) {
+    protected void onChatReceived(BaseServerChatMessagePacket msgPacket) {
 
-        final String json = msg.getMessage();
-
-        for (final ClientListener ls : cl.getClientListeners()) {
-            ls.messageReceived(ChatMessages.parse(json, cl), msg.getPosition());
+        final String json = msgPacket.getMessage();
+        String msg = ChatMessages.parse(json, cl);
+        for (final ClientListener ls : cl.getClientListeners(true)) {
+            boolean cancel = ls.messageReceived(msg, msgPacket.getPosition(), cl);
+            if (cancel) return;
         }
     }
 
@@ -386,13 +387,13 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         final String json = packet.getReason();
         final boolean dsIgnore = up.isIgnoreDisconnect();
 
-        for (final ClientListener ls : cl.getClientListeners())
+        for (final ClientListener ls : cl.getClientListeners(true))
             if (dsIgnore) {
                 ls.messageReceived(
                         "\u00a7cPacket " + Integer.toHexString(packet.getID()) + ": " + ChatMessages.parse(json),
-                        Position.CHAT);
+                        Position.CHAT, cl);
             } else {
-                ls.disconnected(ChatMessages.parse(json));
+                ls.disconnected(ChatMessages.parse(json), cl);
             }
         if (!dsIgnore) {
             cl.close();
@@ -463,9 +464,9 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
     @ServerPacketHandler
     protected void resPackReceived(BaseServerResourcePackSendPacket packet) throws IOException {
         if (up.isShowResourcePackMessages()) {
-            for (final ClientListener ls : cl.getClientListeners()) {
+            for (final ClientListener ls : cl.getClientListeners(true)) {
                 ls.messageReceived(up.getResourcePackMessage().replace("%res", packet.getUrl()),
-                        up.getResourcePackMessagePosition());
+                        up.getResourcePackMessagePosition(), cl);
             }
         }
 
@@ -513,8 +514,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         entity.setX(x + dX);
         entity.setY(y + dY);
         entity.setZ(z + dZ);
-        for (final ClientListener listener : cl.getClientListeners()) {
-            listener.entityMoved(entity, move.getEntityID());
+        for (final ClientListener listener : cl.getClientListeners(true)) {
+            listener.entityMoved(entity, move.getEntityID(), cl);
         }
     }
 
@@ -529,8 +530,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
             et.setX(x);
             et.setZ(y);
             et.setZ(z);
-            for (final ClientListener listener : cl.getClientListeners()) {
-                listener.entityMoved(et, id);
+            for (final ClientListener listener : cl.getClientListeners(true)) {
+                listener.entityMoved(et, id, cl);
             }
         }
     }
@@ -542,8 +543,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
 
     @ServerPacketHandler
     protected void loginDisconnect(ServerLoginResponsePacket e) {
-        for (final ClientListener ls : cl.getClientListeners()) {
-            ls.disconnected(ChatMessages.parse(e.getResponse()));
+        for (final ClientListener ls : cl.getClientListeners(true)) {
+            ls.disconnected(ChatMessages.parse(e.getResponse()), cl);
         }
         cl.close();
     }

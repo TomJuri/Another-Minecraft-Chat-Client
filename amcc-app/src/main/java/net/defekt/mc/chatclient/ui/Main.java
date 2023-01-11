@@ -112,7 +112,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.table.DefaultTableModel;
 
+import net.defekt.mc.chatclient.api.PluginDescription;
 import net.defekt.mc.chatclient.integrations.discord.DiscordPresence;
+import net.defekt.mc.chatclient.plugins.Plugins;
 import net.defekt.mc.chatclient.protocol.AuthType;
 import net.defekt.mc.chatclient.protocol.InternalPacketListener;
 import net.defekt.mc.chatclient.protocol.LANListener;
@@ -417,8 +419,8 @@ public class Main {
             try {
                 cl.sendChatMessage(msg);
             } catch (final IOException e) {
-                for (final ClientListener ls : cl.getClientListeners()) {
-                    ls.disconnected(e.toString());
+                for (final ClientListener ls : cl.getClientListeners(true)) {
+                    ls.disconnected(e.toString(), cl);
                 }
             }
         }
@@ -601,9 +603,10 @@ public class Main {
                                                         if (srvMenu.getItemCount() == 0) {
                                                             menu.remove(srvMenu);
                                                         }
-                                                        for (final ClientListener ls : client.getClientListeners()) {
-                                                            ls.disconnected(
-                                                                    Messages.getString("Main.trayClosedReason"));
+                                                        for (final ClientListener ls : client
+                                                                .getClientListeners(true)) {
+                                                            ls.disconnected(Messages.getString("Main.trayClosedReason"),
+                                                                    client);
                                                         }
                                                     }
                                                 });
@@ -3951,7 +3954,8 @@ public class Main {
                             final JTextPane hjtp = hotbar;
 
                             @Override
-                            public void messageReceived(final String message, final Position pos) {
+                            public boolean messageReceived(final String message, final Position pos,
+                                    MinecraftClient cl) {
                                 if (pos == Position.HOTBAR) {
                                     hjtp.setText("");
                                     SwingUtils.appendColoredText(message, hjtp);
@@ -4009,8 +4013,9 @@ public class Main {
                                                             }
                                                         } catch (final Exception e) {
                                                             e.printStackTrace();
-                                                            for (final ClientListener cll : cl.getClientListeners()) {
-                                                                cll.disconnected(e.toString());
+                                                            for (final ClientListener cll : cl
+                                                                    .getClientListeners(true)) {
+                                                                cll.disconnected(e.toString(), cl);
                                                             }
                                                             cl.close();
                                                         }
@@ -4036,10 +4041,11 @@ public class Main {
                                                 .setValue(jsc.getVerticalScrollBar().getMaximum() * 2);
                                     }
                                 }
+                                return false;
                             }
 
                             @Override
-                            public void disconnected(final String reason) {
+                            public void disconnected(final String reason, MinecraftClient cl) {
                                 autoMessagesThread.interrupt();
                                 SwingUtils.appendColoredText(
                                         "\u00a7c" + Messages.getString("Main.connectionLostChatMessage") + ": \r\n"
@@ -4099,7 +4105,7 @@ public class Main {
                             }
 
                             @Override
-                            public void healthUpdate(final float health, final int food) {
+                            public void healthUpdate(final float health, final int food, MinecraftClient cl) {
                                 if (health > healthBar.getMaximum()) {
                                     healthBar.setMaximum((int) health);
                                 }
@@ -4118,7 +4124,8 @@ public class Main {
                             }
 
                             @Override
-                            public void positionChanged(final double x, final double y, final double z) {
+                            public void positionChanged(final double x, final double y, final double z,
+                                    MinecraftClient cl) {
                                 String sx = Double.toString(x);
                                 String sy = Double.toString(y);
                                 String sz = Double.toString(z);
@@ -4140,7 +4147,7 @@ public class Main {
                             Map<String, Integer> trueValues = new HashMap<String, Integer>();
 
                             @Override
-                            public void statisticsReceived(final Map<String, Integer> values) {
+                            public void statisticsReceived(final Map<String, Integer> values, MinecraftClient cl) {
                                 if (values.size() == 0) return;
                                 statisticsContainer.removeAll();
                                 for (final String key : values.keySet()) {
@@ -4161,7 +4168,8 @@ public class Main {
                             }
 
                             @Override
-                            public void windowOpened(final int id, final ItemsWindow win, final PacketRegistry reg) {
+                            public void windowOpened(final int id, final ItemsWindow win, final PacketRegistry reg,
+                                    MinecraftClient cl) {
                                 if (up.isHideIncomingWindows()) {
                                     if (up.isHiddenWindowsResponse()) {
                                         try {
@@ -4179,7 +4187,7 @@ public class Main {
                             }
 
                             @Override
-                            public void timeUpdated(long time, final long worldAge) {
+                            public void timeUpdated(long time, final long worldAge, MinecraftClient cl) {
                                 if (time < 0) {
                                     time = time * -1;
                                 }
@@ -4206,7 +4214,7 @@ public class Main {
                             }
 
                             @Override
-                            public void changedTrackedEntity(final int id) {
+                            public void changedTrackedEntity(final int id, MinecraftClient cl) {
                                 if (id == -1) {
                                     trackingField.setText("");
                                     stopTrackingBtn.setEnabled(false);
@@ -4228,7 +4236,7 @@ public class Main {
                             }
 
                             @Override
-                            public void entityMoved(final Entity entity, final int id) {
+                            public void entityMoved(final Entity entity, final int id, MinecraftClient cl) {
 
                                 if (autoTrackEnable.isSelected()) {
                                     double closestDistance = Double.MAX_VALUE;
@@ -4261,7 +4269,7 @@ public class Main {
                             private boolean isUsing = false;
 
                             @Override
-                            public void tick() throws IOException {
+                            public void tick(MinecraftClient cl) throws IOException {
                                 if (cl.isEntityAttacking()) {
                                     attackTicks++;
                                     if (attackTicks > (int) autoAttackRate.getValue()) {

@@ -46,6 +46,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
 import net.defekt.mc.chatclient.protocol.packets.UnknownPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientEntityActionPacket.EntityAction;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseEntityPacket.UseType;
 
@@ -153,8 +154,12 @@ public class MinecraftClient {
      * 
      * @return list of client listeners added to this client
      */
-    public List<ClientListener> getClientListeners() {
-        return new ArrayList<ClientListener>(clientListeners);
+    public List<ClientListener> getClientListeners(boolean includeGlobal) {
+        List<ClientListener> ls = new ArrayList<ClientListener>();
+        if (includeGlobal) Collections.addAll(ls, GlobalListeners.getClientListeners());
+        ls.addAll(clientListeners);
+        return ls;
+
     }
 
     /**
@@ -394,8 +399,8 @@ public class MinecraftClient {
                         }
                     } catch (final Exception e) {
 //                        e.printStackTrace();
-                        for (final ClientListener cl : clientListeners) {
-                            cl.disconnected(e.toString());
+                        for (final ClientListener cl : getClientListeners(true)) {
+                            cl.disconnected(e.toString(), MinecraftClient.this);
                         }
                         close();
                     }
@@ -447,9 +452,9 @@ public class MinecraftClient {
                         return;
                     }
                     synchronized (clientListeners) {
-                        for (final ClientListener listener : clientListeners.toArray(new ClientListener[0])) {
+                        for (final ClientListener listener : getClientListeners(true).toArray(new ClientListener[0])) {
                             try {
-                                listener.tick();
+                                listener.tick(MinecraftClient.this);
                             } catch (final IOException ex) {
                                 cancel();
                                 return;
@@ -534,8 +539,8 @@ public class MinecraftClient {
      */
     protected void setX(final double x) {
         this.x = x;
-        for (final ClientListener cl : clientListeners) {
-            cl.positionChanged(this.x, this.y, this.z);
+        for (final ClientListener cl : getClientListeners(true)) {
+            cl.positionChanged(this.x, this.y, this.z, this);
         }
     }
 
@@ -547,8 +552,8 @@ public class MinecraftClient {
      */
     protected void setY(final double y) {
         this.y = y;
-        for (final ClientListener cl : clientListeners) {
-            cl.positionChanged(this.x, this.y, this.z);
+        for (final ClientListener cl : getClientListeners(true)) {
+            cl.positionChanged(this.x, this.y, this.z, this);
         }
     }
 
@@ -560,8 +565,8 @@ public class MinecraftClient {
      */
     protected void setZ(final double z) {
         this.z = z;
-        for (final ClientListener cl : clientListeners) {
-            cl.positionChanged(this.x, this.y, this.z);
+        for (final ClientListener cl : getClientListeners(true)) {
+            cl.positionChanged(this.x, this.y, this.z, this);
         }
     }
 
@@ -642,6 +647,21 @@ public class MinecraftClient {
         } else {
             sendPacket(PacketFactory.constructPacket(reg, "ClientChatMessagePacket", message));
         }
+    }
+
+    /**
+     * Simulates receiving of a chat message in client. This basically results in
+     * displaying the message in the chat box. <br>
+     * Messages support coloring with '§' character. <br>
+     * Messages can be easily colored with
+     * {@link Messages#translateColorCodes(char, String)}
+     * 
+     * @param message  message to display
+     * @param position position in which the message should be displayed
+     */
+    public void receiveMessage(String message, Position position) {
+        for (ClientListener ls : getClientListeners(false))
+            ls.messageReceived(message, position, this);
     }
 
     /**
@@ -773,8 +793,8 @@ public class MinecraftClient {
             if (storedEntities.get(id).getUid().equals(entity.getUid())) {
                 trackedEntity = id;
                 isTrackedAttacking = attack;
-                for (final ClientListener listener : getClientListeners().toArray(new ClientListener[0])) {
-                    listener.changedTrackedEntity(trackedEntity);
+                for (final ClientListener listener : getClientListeners(true).toArray(new ClientListener[0])) {
+                    listener.changedTrackedEntity(trackedEntity, this);
                 }
             }
         }
@@ -1160,8 +1180,8 @@ public class MinecraftClient {
     public void setTrackedEntity(final int trackedEntity, final boolean attack) {
         this.trackedEntity = trackedEntity;
         isTrackedAttacking = attack;
-        for (final ClientListener listener : getClientListeners().toArray(new ClientListener[0])) {
-            listener.changedTrackedEntity(trackedEntity);
+        for (final ClientListener listener : getClientListeners(true).toArray(new ClientListener[0])) {
+            listener.changedTrackedEntity(trackedEntity, this);
         }
     }
 
