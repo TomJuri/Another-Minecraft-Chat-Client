@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -30,7 +31,7 @@ public class Plugins {
 
     private static final Map<String, Boolean> cache = new ConcurrentHashMap<>();
 
-    public static void verify(PluginDescription... plugins) {
+    public static void verify(Consumer<Exception> errorConsumer, PluginDescription... plugins) {
         JsonArray root = new JsonArray();
         String hash;
         for (PluginDescription desc : plugins) {
@@ -50,6 +51,7 @@ public class Plugins {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            errorConsumer.accept(e);
         }
     }
 
@@ -80,7 +82,7 @@ public class Plugins {
         return listPlugins(false);
     }
 
-    public static PluginDescription[] listRemotePlugins() {
+    public static PluginDescription[] listRemotePlugins(Consumer<Exception> errorConsumer) {
         List<PluginDescription> list = new ArrayList<PluginDescription>();
 
         try (Reader reader = new InputStreamReader(new URL(pluginRepoURL).openStream())) {
@@ -99,6 +101,7 @@ public class Plugins {
             reader.close();
         } catch (Exception e) {
             e.printStackTrace();
+            errorConsumer.accept(e);
         }
 
         return list.toArray(new PluginDescription[0]);

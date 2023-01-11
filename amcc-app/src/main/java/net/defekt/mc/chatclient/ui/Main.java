@@ -1370,7 +1370,10 @@ public class Main {
             int initial = tabs.getSelectedIndex();
 
             PluginDescription[] descs = Plugins.listPlugins();
-            Plugins.verify(descs);
+            Plugins.verify(ex -> {
+                SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), ex,
+                        "An error occured while verifying installed plugins");
+            }, descs);
             for (PluginDescription desc : descs)
                 installedDisplay.add(new PluginDisplayPanel(desc, false, null));
 
@@ -1389,7 +1392,10 @@ public class Main {
 
                     availableDisplay.removeAll();
                     availableDisplay.add(installedLoadingCpt);
-                    for (PluginDescription plugin : Plugins.listRemotePlugins()) {
+                    for (PluginDescription plugin : Plugins.listRemotePlugins(ex -> {
+                        SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), ex,
+                                "An error occured while fetching remote plugins list");
+                    })) {
                         availableDisplay.add(new PluginDisplayPanel(plugin, true, desc -> {
                             Component downloadingCpt = createLoadingCpt("Downloading " + desc.getName() + "...");
                             availableDisplay.removeAll();
