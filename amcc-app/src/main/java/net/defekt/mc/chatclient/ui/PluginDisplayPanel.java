@@ -2,6 +2,7 @@ package net.defekt.mc.chatclient.ui;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.List;
@@ -14,6 +15,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
@@ -21,23 +23,32 @@ import net.defekt.mc.chatclient.api.PluginDescription;
 import net.defekt.mc.chatclient.plugins.Plugins;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
+import net.defekt.mc.chatclient.ui.swing.SwingUtils;
 
 public class PluginDisplayPanel extends JPanel {
 
     private static final Icon check;
+    private static final Icon exc;
 
     static {
         BufferedImage checkI = null;
+        BufferedImage excI = null;
         try (InputStream in = PluginDisplayPanel.class.getResourceAsStream("/resources/icons/check.png")) {
             checkI = ImageIO.read(in);
             checkI = IOUtils.resizeImageProp(checkI, 16);
         } catch (Exception e) {
-
+        }
+        try (InputStream in = PluginDisplayPanel.class.getResourceAsStream("/resources/icons/x.png")) {
+            excI = ImageIO.read(in);
+            excI = IOUtils.resizeImageProp(excI, 16);
+        } catch (Exception e) {
         }
         check = new ImageIcon(checkI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : checkI);
+        exc = new ImageIcon(excI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : excI);
     }
 
-    public PluginDisplayPanel(PluginDescription plugin, boolean remote, Consumer<PluginDescription> downloader) {
+    public PluginDisplayPanel(PluginDescription plugin, boolean remote, Consumer<PluginDescription> downloader,
+            Window parent) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         Box title = Box.createHorizontalBox();
         JLabel nameLabel = new JLabel(plugin.getName() + " (v" + plugin.getVersion() + ")");
@@ -65,6 +76,14 @@ public class PluginDisplayPanel extends JPanel {
             initBtnStates(load, del, enabled.contains(id), halted.contains(id), deleted.contains(id));
 
             del.addActionListener(e -> {
+                SwingUtils.playAsterisk();
+                int resp = JOptionPane.showOptionDialog(parent,
+                        "Are you sure you want to delete plugin " + plugin.getName() + "?\n"
+                                + "If you press \"Yes\" the plugin will be deleted on the next startup.\n"
+                                + "This action is irreversible.",
+                        "title", JOptionPane.CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                        new String[] { "Yes", "No" }, 0);
+                if (resp == 1) return;
                 deleted.add(id);
                 enabled.remove(id);
                 initBtnStates(load, del, false, true, true);
@@ -74,12 +93,35 @@ public class PluginDisplayPanel extends JPanel {
                 boolean enable = !enabled.contains(id);
                 boolean halt = false;
                 if (enable) {
+
+                    if (!plugin.getApi().equals(Main.VERSION)) {
+                        SwingUtils.playAsterisk();
+                        int resp = JOptionPane.showOptionDialog(parent,
+                                "You are trying to load a plugin written\n" + "for an older version of AMCC.\n"
+                                        + "Unexpected behavior may happen.\n\n" + "Do you want to continue?",
+                                "title", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                                new String[] { "Yes", "No" }, 0);
+                        if (resp == 1) return;
+                    }
+
+                    if (!Plugins.isVerified(plugin)) {
+                        SwingUtils.playExclamation();
+                        int resp = JOptionPane.showOptionDialog(parent, "You are trying to load an unverified plugin.\n"
+                                + "Plugins can access all data sent between client and sever,\n"
+                                + "as well as any information outside of AMCC (such as private files and documents)\n"
+                                + "Please make sure to download plugins only from trusted sources.\n\n"
+                                + "Do you wish to continue?", "title", JOptionPane.OK_CANCEL_OPTION,
+                                JOptionPane.WARNING_MESSAGE, null,
+                                new String[] { "Yes, I understand the risk", "Take me back" }, 0);
+                        if (resp == 1) return;
+                    }
+
                     try {
                         Plugins.loadPlugin(plugin);
                         enabled.add(id);
                     } catch (Exception e2) {
                         e2.printStackTrace();
-                        // TODO handle error
+                        SwingUtils.showErrorDialog(parent, "Error", e2, "There was an error loading the plugin!");
                         return;
                     }
                 } else {
@@ -116,8 +158,18 @@ public class PluginDisplayPanel extends JPanel {
                 download.setText("Update");
             }
 
+            boolean localHasUpdates = hasUpdates;
+
             download.addActionListener(e -> {
-                if (downloader != null) {
+
+                if (localHasUpdates) {
+                    SwingUtils.playAsterisk();
+                    JOptionPane.showOptionDialog(parent,
+                            "Sorry, but automatic updates are not yet supported.\n"
+                                    + "Please delete the plugin manually and then try to download.",
+                            "Sorry", JOptionPane.CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
+                            new String[] { "Cancel" }, 0);
+                } else if (downloader != null) {
                     download.setEnabled(false);
                     new Thread(() -> {
                         downloader.accept(plugin);
@@ -138,6 +190,16 @@ public class PluginDisplayPanel extends JPanel {
 
             add(verificationLabel);
         }
+
+        if (!plugin.getApi().equals(Main.VERSION)) {
+            JLabel deprecationLabel = new JLabel(
+                    "Incompatible version! This plugin is made for AMCC v" + plugin.getApi());
+            deprecationLabel.setForeground(new Color(100, 0, 0));
+            deprecationLabel.setIcon(exc);
+
+            add(deprecationLabel);
+        }
+
         add(new JLabel(" "));
         for (String desc : plugin.getDescription())
             add(new JLabel(desc));

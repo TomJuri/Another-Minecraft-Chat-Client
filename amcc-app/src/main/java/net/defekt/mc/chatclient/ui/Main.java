@@ -245,6 +245,7 @@ public class Main {
     }
 
     public static void main(final String[] args) {
+        List<Exception> preErrors = new ArrayList<>();
         PluginDescription[] descs = Plugins.listPlugins(true);
         List<String> deleted = up.getDeletedPlugins();
         List<String> en = up.getEnabledPlugins();
@@ -256,6 +257,7 @@ public class Main {
                     en.remove(id);
                 } catch (Exception e) {
                     e.printStackTrace(); // TODO error handling
+                    preErrors.add(e);
                 }
             }
         }
@@ -266,11 +268,12 @@ public class Main {
                 Plugins.loadPlugin(desc);
             } catch (Exception e) {
                 e.printStackTrace();
+                preErrors.add(e);
             }
-        Main.main();
+        Main.main(preErrors.toArray(new Exception[0]));
     }
 
-    public static void main() {
+    public static void main(Exception... preErrors) {
         SwingUtils.setNativeLook(up);
 
         if (!up.isWasLangSet()) {
@@ -311,6 +314,7 @@ public class Main {
 
             win.dispose();
             up.setAppLanguage((Language) languages.getSelectedItem());
+
         }
 
         checkForUpdates();
@@ -333,7 +337,7 @@ public class Main {
         if (up.isEnableInventoryHandling() && up.isLoadInventoryTextures()) {
             SwingItemsWindow.initTextures(new Main(), true);
         }
-        new Main().init();
+        new Main().init(preErrors);
     }
 
     public static final UserPreferences up = UserPreferences.load();
@@ -448,7 +452,7 @@ public class Main {
         }
     }
 
-    private void init() {
+    private void init(Exception... preErrors) {
         discordIntegr.start();
 
         synchronized (up.getServers()) {
@@ -1349,6 +1353,8 @@ public class Main {
         SwingUtils.centerWindow(win);
         win.setVisible(true);
 
+        if (preErrors.length > 0) SwingUtils.showErrorDialog(win, Messages.getString("ServerDetailsDialog.error"),
+                preErrors[0], "An error occured while enabling some of plugins!");
     }
 
     // TODO
@@ -1375,7 +1381,7 @@ public class Main {
                         "An error occured while verifying installed plugins");
             }, descs);
             for (PluginDescription desc : descs)
-                installedDisplay.add(new PluginDisplayPanel(desc, false, null));
+                installedDisplay.add(new PluginDisplayPanel(desc, false, null, od));
 
             installedDisplay.remove(installedLoadingCpt);
             setAllTabs(tabs, true, initial);
@@ -1428,7 +1434,7 @@ public class Main {
                             setAllTabs(tabs, true, initial2);
                             tabs.repaint();
                             new Thread(sync).start();
-                        }));
+                        }, od));
                     }
 
                     availableDisplay.remove(installedLoadingCpt);

@@ -56,6 +56,16 @@ import net.defekt.mc.chatclient.ui.Main;
 
 public class SwingUtils {
 
+    public static void playAsterisk() {
+        Object obj = Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.asterisk");
+        if (obj instanceof Runnable) ((Runnable) obj).run();
+    }
+
+    public static void playExclamation() {
+        Object obj = Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.exclamation");
+        if (obj instanceof Runnable) ((Runnable) obj).run();
+    }
+
     /**
      * Get installed looks and feels
      * 
@@ -238,6 +248,7 @@ public class SwingUtils {
         errDial.setContentPane(jop);
         errDial.pack();
         SwingUtils.centerWindow(errDial);
+        playExclamation();
         errDial.setVisible(true);
     }
 
