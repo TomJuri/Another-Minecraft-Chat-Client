@@ -1,6 +1,7 @@
 package net.defekt.mc.chatclient.api;
 
 import java.io.File;
+import java.util.UUID;
 
 public class PluginDescription {
     private final String name;
@@ -22,6 +23,10 @@ public class PluginDescription {
         this.author = author;
         this.api = api;
         this.website = website;
+    }
+
+    public String getUID() {
+        return UUID.nameUUIDFromBytes((version + ":" + main + ":" + author + ":" + name).getBytes()).toString();
     }
 
     public String getName() {

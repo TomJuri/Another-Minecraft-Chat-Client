@@ -24,6 +24,7 @@ public class Plugins {
         try (URLClassLoader ucl = new URLClassLoader(
                 new URL[] { new URL("file:///" + desc.getOrigin().getAbsolutePath()) },
                 Plugins.class.getClassLoader())) {
+
             AMCPlugin instance = (AMCPlugin) ucl.loadClass(desc.getMain()).newInstance();
             instance.onEnable();
         } catch (Exception e) {
@@ -33,6 +34,10 @@ public class Plugins {
     }
 
     public static PluginDescription[] listPlugins() {
+        return listPlugins(false);
+    }
+
+    public static PluginDescription[] listPlugins(boolean allowDuplicates) {
         List<PluginDescription> list = new ArrayList<PluginDescription>();
 
         if (!PLUGIN_DIR.exists()) PLUGIN_DIR.mkdirs();
@@ -50,7 +55,13 @@ public class Plugins {
                     if (desc.getVersion() == null) throw new IOException("Plugin version can't be null!");
                     if (desc.getMain() == null) throw new IOException("Plugin main can't be null!");
                     desc.setOrigin(file);
-                    list.add(desc);
+                    boolean canAdd = true;
+                    if (!allowDuplicates) for (PluginDescription cur : list)
+                        if (cur.getUID().equals(desc.getUID())) {
+                            canAdd = false;
+                            break;
+                        }
+                    if (canAdd) list.add(desc);
                 } catch (Exception e) {
                     System.err.println("Failed to load " + name + "!");
                     e.printStackTrace();

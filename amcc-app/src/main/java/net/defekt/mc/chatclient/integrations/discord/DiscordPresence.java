@@ -17,7 +17,6 @@ import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.data.Messages;
-import net.defekt.mc.chatclient.protocol.data.UserPreferences;
 import net.defekt.mc.chatclient.ui.Main;
 
 /**
@@ -71,7 +70,7 @@ public class DiscordPresence {
      * Start Discord Rich Presence
      */
     public void start() {
-        if (!UserPreferences.prefs().isDisableDiscordPresence()) {
+        if (!Main.up.isDisableDiscordPresence()) {
             DiscordRPC.discordInitialize(id, new DiscordEventHandlers(), true);
 
             update();

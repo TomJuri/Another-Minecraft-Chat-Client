@@ -26,6 +26,29 @@ public class UserPreferences implements Serializable {
 
     private static UserPreferences instance;
 
+    private List<String> enabledPlugins;
+    private transient List<String> haltedPlugins;
+    private List<String> deletedPlugins;
+
+    public List<String> getEnabledPlugins() {
+        if (enabledPlugins == null) enabledPlugins = new ArrayList<>();
+        return enabledPlugins;
+    }
+
+    public List<String> getHaltedPlugins() {
+        if (haltedPlugins == null) haltedPlugins = new ArrayList<>();
+        return haltedPlugins;
+    }
+
+    public List<String> getDeletedPlugins() {
+        if (deletedPlugins == null) deletedPlugins = new ArrayList<>();
+        return deletedPlugins;
+    }
+
+    public boolean isEnabled(String name) {
+        return enabledPlugins.contains(name);
+    }
+
     public static UserPreferences prefs() {
         if (instance == null) instance = UserPreferences.load();
         return instance;

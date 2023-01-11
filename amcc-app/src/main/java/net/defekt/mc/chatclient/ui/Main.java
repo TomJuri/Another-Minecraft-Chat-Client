@@ -112,7 +112,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.table.DefaultTableModel;
 
+import net.defekt.mc.chatclient.api.PluginDescription;
 import net.defekt.mc.chatclient.integrations.discord.DiscordPresence;
+import net.defekt.mc.chatclient.plugins.Plugins;
 import net.defekt.mc.chatclient.protocol.AuthType;
 import net.defekt.mc.chatclient.protocol.InternalPacketListener;
 import net.defekt.mc.chatclient.protocol.LANListener;
@@ -240,9 +242,29 @@ public class Main {
         }
     }
 
-    public static void main(final String[] args) { // TODO
-//        PluginDescription desc = Plugins.listPlugins()[0];
-//        Plugins.loadPlugin(desc);
+    public static void main(final String[] args) {
+        PluginDescription[] descs = Plugins.listPlugins(true);
+        List<String> deleted = up.getDeletedPlugins();
+        List<String> en = up.getEnabledPlugins();
+        for (PluginDescription desc : descs) {
+            String id = desc.getUID();
+            if (deleted.contains(id)) {
+                try {
+                    desc.getOrigin().delete();
+                    en.remove(id);
+                } catch (Exception e) {
+                    e.printStackTrace(); // TODO error handling
+                }
+            }
+        }
+        deleted.clear();
+        descs = Plugins.listPlugins();
+        for (PluginDescription desc : descs)
+            if (up.getEnabledPlugins().contains(desc.getUID())) try {
+                Plugins.loadPlugin(desc);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         Main.main();
     }
 
@@ -1299,11 +1321,24 @@ public class Main {
             }
         };
 
+        JMenu pluginsMenu = new JMenu("Plugins") {
+            {
+                add(new JMenuItem("Plugin Manager") {
+                    {
+                        addActionListener(e -> {
+                            showPluginManager();
+                        });
+                    }
+                });
+            }
+        };
+
         win.setJMenuBar(new JMenuBar() {
             {
                 add(fileMenu);
                 add(optionMenu);
                 add(helpMenu);
+                add(pluginsMenu);
             }
 
         });
@@ -1312,6 +1347,28 @@ public class Main {
         SwingUtils.centerWindow(win);
         win.setVisible(true);
 
+    }
+
+    // TODO
+    private void showPluginManager() {
+        JDialog od = new JDialog(win);
+        od.setModal(true);
+        od.setResizable(false);
+        od.setTitle("Plugin Manager");
+
+        JTabbedPane tabs = new JTabbedPane();
+
+        JPanel installedDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
+        for (PluginDescription plugin : Plugins.listPlugins()) {
+            installedDisplay.add(new PluginDisplayPanel(plugin));
+        }
+
+        tabs.addTab("Installed", new JScrollPane(installedDisplay));
+        tabs.setPreferredSize(new Dimension(SwingUtils.sSize.width / 3, (int) (SwingUtils.sSize.getHeight() / 3)));
+        od.setContentPane(tabs);
+        od.pack();
+        SwingUtils.centerWindow(od);
+        od.setVisible(true);
     }
 
     private void showOptionsDialog() {
