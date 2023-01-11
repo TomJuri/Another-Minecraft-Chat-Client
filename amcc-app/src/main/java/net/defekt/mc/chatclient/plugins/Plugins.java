@@ -85,8 +85,8 @@ public class Plugins {
 
         try (Reader reader = new InputStreamReader(new URL(pluginRepoURL).openStream())) {
             JsonArray plugins = JsonParser.parseReader(reader).getAsJsonArray();
-            
-            for(JsonElement el : plugins) {
+
+            for (JsonElement el : plugins) {
                 try {
                     PluginDescription desc = new Gson().fromJson(el, PluginDescription.class);
                     parseDesc(desc);
@@ -95,7 +95,7 @@ public class Plugins {
                     e.printStackTrace();
                 }
             }
-            
+
             reader.close();
         } catch (Exception e) {
             e.printStackTrace();

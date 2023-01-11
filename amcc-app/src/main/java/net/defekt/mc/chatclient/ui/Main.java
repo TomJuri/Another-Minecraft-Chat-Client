@@ -1367,6 +1367,7 @@ public class Main {
             Component installedLoadingCpt = createLoadingCpt("Verifying installed plugins...");
             setAllTabs(tabs, false);
             installedDisplay.add(installedLoadingCpt);
+            int initial = tabs.getSelectedIndex();
 
             PluginDescription[] descs = Plugins.listPlugins();
             Plugins.verify(descs);
@@ -1374,7 +1375,7 @@ public class Main {
                 installedDisplay.add(new PluginDisplayPanel(desc, false, null));
 
             installedDisplay.remove(installedLoadingCpt);
-            setAllTabs(tabs, true);
+            setAllTabs(tabs, true, initial);
             tabs.repaint();
         };
         new Thread(sync).start();
@@ -1384,6 +1385,7 @@ public class Main {
                 new Thread(() -> {
                     Component installedLoadingCpt = createLoadingCpt("Fetching available plugins list...");
                     setAllTabs(tabs, false);
+                    int initial = tabs.getSelectedIndex();
 
                     availableDisplay.removeAll();
                     availableDisplay.add(installedLoadingCpt);
@@ -1393,6 +1395,7 @@ public class Main {
                             availableDisplay.removeAll();
                             availableDisplay.add(downloadingCpt);
                             setAllTabs(tabs, false);
+                            int initial2 = tabs.getSelectedIndex();
 
                             if (desc.getRemote() != null)
                                 try (InputStream is = new URL(desc.getRemote()).openStream()) {
@@ -1410,19 +1413,20 @@ public class Main {
                                     }
                                     is.close();
                                 } catch (Exception e2) {
-                                    e2.printStackTrace();
+                                    SwingUtils.showErrorDialog(od, "Error!", e2,
+                                            "There was an error while downloading the plugin!");
                                 }
 
                             tabs.setSelectedIndex(0);
                             availableDisplay.remove(downloadingCpt);
-                            setAllTabs(tabs, true);
+                            setAllTabs(tabs, true, initial2);
                             tabs.repaint();
                             new Thread(sync).start();
                         }));
                     }
 
                     availableDisplay.remove(installedLoadingCpt);
-                    setAllTabs(tabs, true);
+                    setAllTabs(tabs, true, initial);
                     tabs.repaint();
                 }).start();
             }
@@ -1438,7 +1442,11 @@ public class Main {
     }
 
     private static void setAllTabs(JTabbedPane pane, boolean state) {
-        for (int x = 0; x < pane.getTabCount(); x++)
+        setAllTabs(pane, state, 0);
+    }
+
+    private static void setAllTabs(JTabbedPane pane, boolean state, int initial) {
+        if (!state || pane.getSelectedIndex() == initial) for (int x = 0; x < pane.getTabCount(); x++)
             pane.setEnabledAt(x, state);
     }
 
