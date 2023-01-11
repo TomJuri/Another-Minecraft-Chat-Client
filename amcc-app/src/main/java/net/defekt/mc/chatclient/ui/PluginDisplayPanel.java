@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -31,12 +32,12 @@ public class PluginDisplayPanel extends JPanel {
             checkI = ImageIO.read(in);
             checkI = IOUtils.resizeImageProp(checkI, 16);
         } catch (Exception e) {
-            
+
         }
         check = new ImageIcon(checkI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : checkI);
     }
 
-    public PluginDisplayPanel(PluginDescription plugin) {
+    public PluginDisplayPanel(PluginDescription plugin, boolean remote, Consumer<PluginDescription> downloader) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         Box title = Box.createHorizontalBox();
         JLabel nameLabel = new JLabel(plugin.getName() + " (v" + plugin.getVersion() + ")");
@@ -49,45 +50,86 @@ public class PluginDisplayPanel extends JPanel {
         title.add(new JLabel(" "));
         title.add(authorLabel);
         title.setAlignmentX(LEFT_ALIGNMENT);
+
+        Box ctls = Box.createHorizontalBox();
         JButton load = new JButton();
         JButton del = new JButton("Delete");
 
-        UserPreferences prefs = Main.up;
-        List<String> enabled = prefs.getEnabledPlugins();
-        List<String> halted = prefs.getHaltedPlugins();
-        List<String> deleted = prefs.getDeletedPlugins();
-        String id = plugin.getUID();
+        if (!remote) {
+            UserPreferences prefs = Main.up;
+            List<String> enabled = prefs.getEnabledPlugins();
+            List<String> halted = prefs.getHaltedPlugins();
+            List<String> deleted = prefs.getDeletedPlugins();
+            String id = plugin.getUID();
 
-        initBtnStates(load, del, enabled.contains(id), halted.contains(id), deleted.contains(id));
+            initBtnStates(load, del, enabled.contains(id), halted.contains(id), deleted.contains(id));
 
-        del.addActionListener(e -> {
-            deleted.add(id);
-            enabled.remove(id);
-            initBtnStates(load, del, false, true, true);
-        });
-
-        load.addActionListener(e -> {
-            boolean enable = !enabled.contains(id);
-            boolean halt = false;
-            if (enable) {
-                try {
-                    Plugins.loadPlugin(plugin);
-                    enabled.add(id);
-                } catch (Exception e2) {
-                    e2.printStackTrace();
-                    // TODO handle error
-                    return;
-                }
-            } else {
+            del.addActionListener(e -> {
+                deleted.add(id);
                 enabled.remove(id);
-                halted.add(id);
-                halt = true;
+                initBtnStates(load, del, false, true, true);
+            });
+
+            load.addActionListener(e -> {
+                boolean enable = !enabled.contains(id);
+                boolean halt = false;
+                if (enable) {
+                    try {
+                        Plugins.loadPlugin(plugin);
+                        enabled.add(id);
+                    } catch (Exception e2) {
+                        e2.printStackTrace();
+                        // TODO handle error
+                        return;
+                    }
+                } else {
+                    enabled.remove(id);
+                    halted.add(id);
+                    halt = true;
+                }
+                initBtnStates(load, del, enable, halt, false);
+            });
+            ctls.add(load);
+            ctls.add(del);
+        } else {
+            JButton download = new JButton("Download");
+            boolean isInstalled = false;
+            boolean hasUpdates = false;
+
+            for (PluginDescription localPlugin : Plugins.listPlugins()) {
+                if ((localPlugin.getMain().equals(plugin.getMain())) || (localPlugin.getName().equals(plugin.getName())
+                        && localPlugin.getAuthor().equals(plugin.getName()))) {
+                    isInstalled = true;
+                }
+
+                if (isInstalled) {
+                    if (!localPlugin.getVersion().equals(plugin.getVersion())
+                            || !localPlugin.getApi().equals(plugin.getApi()))
+                        hasUpdates = true;
+                    break;
+                }
             }
-            initBtnStates(load, del, enable, halt, false);
-        });
+
+            download.setEnabled(!(isInstalled ^ hasUpdates));
+
+            if (hasUpdates) {
+                download.setText("Update");
+            }
+
+            download.addActionListener(e -> {
+                if (downloader != null) {
+                    download.setEnabled(false);
+                    new Thread(() -> {
+                        downloader.accept(plugin);
+                    }).start();
+                }
+            });
+
+            ctls.add(download);
+        }
 
         add(title);
-        boolean verified = Plugins.isVerified(plugin);
+        boolean verified = remote || Plugins.isVerified(plugin);
 
         if (verified) {
             JLabel verificationLabel = new JLabel("Verified!");
@@ -100,9 +142,6 @@ public class PluginDisplayPanel extends JPanel {
         for (String desc : plugin.getDescription())
             add(new JLabel(desc));
 
-        Box ctls = Box.createHorizontalBox();
-        ctls.add(load);
-        ctls.add(del);
         ctls.setAlignmentX(LEFT_ALIGNMENT);
         add(ctls);
         add(new JLabel(" "));

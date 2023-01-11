@@ -25,7 +25,8 @@ import net.defekt.mc.chatclient.ui.MultipartRequest;
 
 public class Plugins {
 
-    private static final String pluginVerifyURL = "http://127.0.0.1/verify.php"; // TODO
+    private static final String pluginVerifyURL = "http://127.0.0.1/verify.php";
+    private static final String pluginRepoURL = "http://127.0.0.1/repo.json"; // TODO
 
     private static final Map<String, Boolean> cache = new ConcurrentHashMap<>();
 
@@ -82,6 +83,24 @@ public class Plugins {
     public static PluginDescription[] listRemotePlugins() {
         List<PluginDescription> list = new ArrayList<PluginDescription>();
 
+        try (Reader reader = new InputStreamReader(new URL(pluginRepoURL).openStream())) {
+            JsonArray plugins = JsonParser.parseReader(reader).getAsJsonArray();
+            
+            for(JsonElement el : plugins) {
+                try {
+                    PluginDescription desc = new Gson().fromJson(el, PluginDescription.class);
+                    parseDesc(desc);
+                    list.add(desc);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return list.toArray(new PluginDescription[0]);
     }
 
@@ -98,7 +117,8 @@ public class Plugins {
                     if (entry == null) throw new IOException("No plugin.json found in the archive!");
                     Reader reader = new InputStreamReader(zFile.getInputStream(entry));
 
-                    PluginDescription desc = createDesc(reader);
+                    PluginDescription desc = new Gson().fromJson(reader, PluginDescription.class);
+                    parseDesc(desc);
                     desc.setOrigin(file);
                     boolean canAdd = true;
                     if (!allowDuplicates) for (PluginDescription cur : list)
@@ -117,12 +137,10 @@ public class Plugins {
         return list.toArray(new PluginDescription[0]);
     }
 
-    private static PluginDescription createDesc(Reader reader) throws IOException {
-        PluginDescription desc = new Gson().fromJson(reader, PluginDescription.class);
+    private static void parseDesc(PluginDescription desc) throws IOException {
         if (desc.getName() == null) throw new IOException("Plugin name can't be null!");
         if (desc.getApi() == null) throw new IOException("Plugin api can't be null!");
         if (desc.getVersion() == null) throw new IOException("Plugin version can't be null!");
         if (desc.getMain() == null) throw new IOException("Plugin main can't be null!");
-        return desc;
     }
 }

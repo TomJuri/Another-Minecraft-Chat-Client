@@ -15,9 +15,10 @@ public class PluginDescription {
     private final String api;
     private final String website;
     private transient File origin;
+    private final String remote;
 
     public PluginDescription(String name, String version, String main, String[] description, String author, String api,
-            String website) {
+            String website, String remote) {
         super();
         this.name = name;
         this.version = version;
@@ -26,6 +27,7 @@ public class PluginDescription {
         this.author = author;
         this.api = api;
         this.website = website;
+        this.remote = remote;
 
     }
 
@@ -34,7 +36,7 @@ public class PluginDescription {
             MessageDigest sha = MessageDigest.getInstance("sha-256");
             byte[] buffer = new byte[1024];
             int read;
-            while ((read = is.read(buffer)) > 0) {  
+            while ((read = is.read(buffer)) > 0) {
                 sha.update(buffer, 0, read);
             }
             byte[] digest = sha.digest();
@@ -86,5 +88,9 @@ public class PluginDescription {
 
     public void setOrigin(File origin) {
         this.origin = origin;
+    }
+
+    public String getRemote() {
+        return remote;
     }
 }

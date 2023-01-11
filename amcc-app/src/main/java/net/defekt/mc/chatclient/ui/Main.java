@@ -40,8 +40,10 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -1361,7 +1363,7 @@ public class Main {
         JPanel installedDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
         JPanel availableDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
 
-        new Thread(() -> {
+        Runnable sync = () -> {
             Component installedLoadingCpt = createLoadingCpt("Verifying installed plugins...");
             setAllTabs(tabs, false);
             installedDisplay.add(installedLoadingCpt);
@@ -1369,12 +1371,13 @@ public class Main {
             PluginDescription[] descs = Plugins.listPlugins();
             Plugins.verify(descs);
             for (PluginDescription desc : descs)
-                installedDisplay.add(new PluginDisplayPanel(desc));
+                installedDisplay.add(new PluginDisplayPanel(desc, false, null));
 
             installedDisplay.remove(installedLoadingCpt);
             setAllTabs(tabs, true);
             tabs.repaint();
-        }).start();
+        };
+        new Thread(sync).start();
 
         tabs.addChangeListener(e -> {
             if (tabs.getSelectedIndex() == 1) {
@@ -1383,12 +1386,42 @@ public class Main {
                     setAllTabs(tabs, false);
 
                     availableDisplay.removeAll();
-                    installedDisplay.add(installedLoadingCpt);
+                    availableDisplay.add(installedLoadingCpt);
                     for (PluginDescription plugin : Plugins.listRemotePlugins()) {
-                        availableDisplay.add(new PluginDisplayPanel(plugin));
+                        availableDisplay.add(new PluginDisplayPanel(plugin, true, desc -> {
+                            Component downloadingCpt = createLoadingCpt("Downloading " + desc.getName() + "...");
+                            availableDisplay.removeAll();
+                            availableDisplay.add(downloadingCpt);
+                            setAllTabs(tabs, false);
+
+                            if (desc.getRemote() != null)
+                                try (InputStream is = new URL(desc.getRemote()).openStream()) {
+                                    File out = new File(Plugins.PLUGIN_DIR,
+                                            desc.getName().replace(" ", "-") + "-" + desc.getVersion() + ".jar");
+                                    while (out.exists()) {
+                                        out = new File(Plugins.PLUGIN_DIR, "_" + out.getName());
+                                    }
+                                    try (OutputStream os = new FileOutputStream(out)) {
+                                        byte[] buffer = new byte[1024];
+                                        int read;
+                                        while ((read = is.read(buffer)) > 0)
+                                            os.write(buffer, 0, read);
+                                        os.close();
+                                    }
+                                    is.close();
+                                } catch (Exception e2) {
+                                    e2.printStackTrace();
+                                }
+
+                            tabs.setSelectedIndex(0);
+                            availableDisplay.remove(downloadingCpt);
+                            setAllTabs(tabs, true);
+                            tabs.repaint();
+                            new Thread(sync).start();
+                        }));
                     }
 
-                    installedDisplay.remove(installedLoadingCpt);
+                    availableDisplay.remove(installedLoadingCpt);
                     setAllTabs(tabs, true);
                     tabs.repaint();
                 }).start();
