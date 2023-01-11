@@ -1352,16 +1352,21 @@ public class Main {
     // TODO
     private void showPluginManager() {
         JDialog od = new JDialog(win);
+        od.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         od.setModal(true);
         od.setResizable(false);
         od.setTitle("Plugin Manager");
 
         JTabbedPane tabs = new JTabbedPane();
-
         JPanel installedDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
-        for (PluginDescription plugin : Plugins.listPlugins()) {
-            installedDisplay.add(new PluginDisplayPanel(plugin));
-        }
+
+        new Thread(() -> {
+            for (PluginDescription plugin : Plugins.listPlugins()) {
+                installedDisplay.add(new PluginDisplayPanel(plugin));
+            }
+
+            tabs.repaint();
+        }).start();
 
         tabs.addTab("Installed", new JScrollPane(installedDisplay));
         tabs.setPreferredSize(new Dimension(SwingUtils.sSize.width / 3, (int) (SwingUtils.sSize.getHeight() / 3)));

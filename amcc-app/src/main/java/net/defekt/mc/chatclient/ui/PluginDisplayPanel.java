@@ -1,10 +1,16 @@
 package net.defekt.mc.chatclient.ui;
 
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -13,8 +19,29 @@ import javax.swing.JSeparator;
 import net.defekt.mc.chatclient.api.PluginDescription;
 import net.defekt.mc.chatclient.plugins.Plugins;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
+import net.defekt.mc.chatclient.protocol.io.IOUtils;
 
 public class PluginDisplayPanel extends JPanel {
+
+    private static final Icon check;
+    private static final Icon x;
+
+    static {
+        BufferedImage checkI = null;
+        BufferedImage xI = null;
+        try (InputStream in = PluginDisplayPanel.class.getResourceAsStream("/resources/icons/check.png")) {
+            checkI = ImageIO.read(in);
+            checkI = IOUtils.resizeImageProp(checkI, 16);
+        } catch (Exception e) {
+        }
+        try (InputStream in = PluginDisplayPanel.class.getResourceAsStream("/resources/icons/x.png")) {
+            xI = ImageIO.read(in);
+            xI = IOUtils.resizeImageProp(xI, 16);
+        } catch (Exception e) {
+        }
+        check = new ImageIcon(checkI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : checkI);
+        x = new ImageIcon(xI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : xI);
+    }
 
     public PluginDisplayPanel(PluginDescription plugin) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -67,6 +94,14 @@ public class PluginDisplayPanel extends JPanel {
         });
 
         add(title);
+        JLabel verificationLabel = new JLabel("");
+        boolean verified = Plugins.verify(plugin);
+
+        verificationLabel.setForeground(verified ? new Color(0, 100, 0) : Color.red);
+        verificationLabel.setText(verified ? "Verified!" : "Unverified");
+        verificationLabel.setIcon(verified ? check : x);
+
+        add(verificationLabel);
         add(new JLabel(" "));
         for (String desc : plugin.getDescription())
             add(new JLabel(desc));

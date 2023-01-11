@@ -1,5 +1,6 @@
 package net.defekt.mc.chatclient.plugins;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,6 +18,24 @@ import net.defekt.mc.chatclient.api.AMCPlugin;
 import net.defekt.mc.chatclient.api.PluginDescription;
 
 public class Plugins {
+
+    private static final String pluginVerifyURL = "http://127.0.0.1/verify.php"; // TODO
+
+    public static boolean verify(PluginDescription plugin) {
+        String hash = plugin.sha256();
+        if (hash != null) {
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(new URL(pluginVerifyURL + "?hash=" + hash).openStream()))) {
+                String resp = br.readLine();
+                br.close();
+                if (resp == null) return false;
+                return resp.equalsIgnoreCase("OK");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
 
     public static File PLUGIN_DIR = new File("plugins");
 
