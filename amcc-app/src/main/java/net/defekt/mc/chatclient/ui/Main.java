@@ -1365,9 +1365,9 @@ public class Main {
 
         Runnable sync = () -> {
             Component installedLoadingCpt = createLoadingCpt("Verifying installed plugins...");
-            setAllTabs(tabs, false);
             installedDisplay.add(installedLoadingCpt);
             int initial = tabs.getSelectedIndex();
+            setAllTabs(tabs, false);
 
             PluginDescription[] descs = Plugins.listPlugins();
             Plugins.verify(ex -> {
@@ -1452,8 +1452,15 @@ public class Main {
     }
 
     private static void setAllTabs(JTabbedPane pane, boolean state, int initial) {
-        if (!state || pane.getSelectedIndex() == initial) for (int x = 0; x < pane.getTabCount(); x++)
-            pane.setEnabledAt(x, state);
+        if (!state)
+            SwingUtilities.invokeLater(() -> {
+                if (!state || pane.getSelectedIndex() == initial) for (int x = 0; x < pane.getTabCount(); x++)
+                    pane.setEnabledAt(x, state);
+            });
+        else
+            for (int x = 0; x < pane.getTabCount(); x++)
+                pane.setEnabledAt(x, state);
+
     }
 
     private static Component createLoadingCpt(String text) {
