@@ -112,9 +112,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.table.DefaultTableModel;
 
-import net.defekt.mc.chatclient.api.PluginDescription;
 import net.defekt.mc.chatclient.integrations.discord.DiscordPresence;
-import net.defekt.mc.chatclient.plugins.Plugins;
 import net.defekt.mc.chatclient.protocol.AuthType;
 import net.defekt.mc.chatclient.protocol.InternalPacketListener;
 import net.defekt.mc.chatclient.protocol.LANListener;

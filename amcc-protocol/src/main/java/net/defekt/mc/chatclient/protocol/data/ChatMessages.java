@@ -24,6 +24,10 @@ public class ChatMessages {
 
     private static final String pChar = "\u00a7";
 
+    public static String translateColorCodes(char code, String message) {
+        return message.replace(code, '§');
+    }
+
     private ChatMessages() {
     }
 

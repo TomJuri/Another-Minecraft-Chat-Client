@@ -12,10 +12,6 @@ public class Messages {
 
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
-    public static String translateColorCodes(char code, String message) {
-        return message.replace(code, '§');
-    }
-
     private Messages() {
     }
 

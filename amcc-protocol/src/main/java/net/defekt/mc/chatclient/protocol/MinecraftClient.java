@@ -654,7 +654,7 @@ public class MinecraftClient {
      * displaying the message in the chat box. <br>
      * Messages support coloring with '§' character. <br>
      * Messages can be easily colored with
-     * {@link Messages#translateColorCodes(char, String)}
+     * {@link ChatMessages#translateColorCodes(char, String)}
      * 
      * @param message  message to display
      * @param position position in which the message should be displayed
