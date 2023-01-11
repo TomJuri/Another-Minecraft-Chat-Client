@@ -1359,21 +1359,70 @@ public class Main {
 
         JTabbedPane tabs = new JTabbedPane();
         JPanel installedDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
+        JPanel availableDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
 
         new Thread(() -> {
-            for (PluginDescription plugin : Plugins.listPlugins()) {
-                installedDisplay.add(new PluginDisplayPanel(plugin));
-            }
+            Component installedLoadingCpt = createLoadingCpt("Verifying installed plugins...");
+            setAllTabs(tabs, false);
+            installedDisplay.add(installedLoadingCpt);
 
+            PluginDescription[] descs = Plugins.listPlugins();
+            Plugins.verify(descs);
+            for (PluginDescription desc : descs)
+                installedDisplay.add(new PluginDisplayPanel(desc));
+
+            installedDisplay.remove(installedLoadingCpt);
+            setAllTabs(tabs, true);
             tabs.repaint();
         }).start();
 
+        tabs.addChangeListener(e -> {
+            if (tabs.getSelectedIndex() == 1) {
+                new Thread(() -> {
+                    Component installedLoadingCpt = createLoadingCpt("Fetching available plugins list...");
+                    setAllTabs(tabs, false);
+
+                    availableDisplay.removeAll();
+                    installedDisplay.add(installedLoadingCpt);
+                    for (PluginDescription plugin : Plugins.listRemotePlugins()) {
+                        availableDisplay.add(new PluginDisplayPanel(plugin));
+                    }
+
+                    installedDisplay.remove(installedLoadingCpt);
+                    setAllTabs(tabs, true);
+                    tabs.repaint();
+                }).start();
+            }
+        });
+
         tabs.addTab("Installed", new JScrollPane(installedDisplay));
+        tabs.addTab("Available", new JScrollPane(availableDisplay));
         tabs.setPreferredSize(new Dimension(SwingUtils.sSize.width / 3, (int) (SwingUtils.sSize.getHeight() / 3)));
         od.setContentPane(tabs);
         od.pack();
         SwingUtils.centerWindow(od);
         od.setVisible(true);
+    }
+
+    private static void setAllTabs(JTabbedPane pane, boolean state) {
+        for (int x = 0; x < pane.getTabCount(); x++)
+            pane.setEnabledAt(x, state);
+    }
+
+    private static Component createLoadingCpt(String text) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        panel.add(new JLabel(text));
+        panel.add(new JLabel(" "));
+        panel.add(new JProgressBar() {
+            {
+                setAlignmentX(JPanel.LEFT_ALIGNMENT);
+                setIndeterminate(true);
+            }
+        });
+
+        return panel;
     }
 
     private void showOptionsDialog() {
