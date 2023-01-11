@@ -29,10 +29,12 @@ public class PluginDisplayPanel extends JPanel {
 
     private static final Icon check;
     private static final Icon exc;
+    private static final Icon star;
 
     static {
         BufferedImage checkI = null;
         BufferedImage excI = null;
+        BufferedImage starI = null;
         try (InputStream in = PluginDisplayPanel.class.getResourceAsStream("/resources/icons/check.png")) {
             checkI = ImageIO.read(in);
             checkI = IOUtils.resizeImageProp(checkI, 16);
@@ -43,8 +45,14 @@ public class PluginDisplayPanel extends JPanel {
             excI = IOUtils.resizeImageProp(excI, 16);
         } catch (Exception e) {
         }
+        try (InputStream in = PluginDisplayPanel.class.getResourceAsStream("/resources/icons/star.png")) {
+            starI = ImageIO.read(in);
+            starI = IOUtils.resizeImageProp(starI, 14);
+        } catch (Exception e) {
+        }
         check = new ImageIcon(checkI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : checkI);
         exc = new ImageIcon(excI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : excI);
+        star = new ImageIcon(starI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : starI);
     }
 
     public PluginDisplayPanel(PluginDescription plugin, boolean remote, Consumer<PluginDescription> downloader,
@@ -135,6 +143,7 @@ public class PluginDisplayPanel extends JPanel {
             ctls.add(del);
         } else {
             JButton download = new JButton("Download");
+            JButton starBtn = new JButton("0", star);
             boolean isInstalled = false;
             boolean hasUpdates = false;
 
@@ -160,6 +169,17 @@ public class PluginDisplayPanel extends JPanel {
 
             boolean localHasUpdates = hasUpdates;
 
+            starBtn.addActionListener(e -> {
+                starBtn.setEnabled(false);
+
+                try {
+                    int i = Integer.parseInt(starBtn.getText());
+                    starBtn.setText(Integer.toString(i + 1));
+                } catch (Exception e2) {
+                    e2.printStackTrace();
+                }
+            });
+
             download.addActionListener(e -> {
 
                 if (localHasUpdates) {
@@ -178,6 +198,7 @@ public class PluginDisplayPanel extends JPanel {
             });
 
             ctls.add(download);
+            ctls.add(starBtn);
         }
 
         add(title);

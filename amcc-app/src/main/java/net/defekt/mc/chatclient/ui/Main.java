@@ -1458,14 +1458,9 @@ public class Main {
     }
 
     private static void setAllTabs(JTabbedPane pane, boolean state, int initial) {
-        if (!state)
-            SwingUtilities.invokeLater(() -> {
-                if (!state || pane.getSelectedIndex() == initial) for (int x = 0; x < pane.getTabCount(); x++)
-                    pane.setEnabledAt(x, state);
-            });
-        else
-            for (int x = 0; x < pane.getTabCount(); x++)
-                pane.setEnabledAt(x, state);
+        if (!state || pane.getSelectedIndex() == initial) for (int x = 0; x < pane.getTabCount(); x++) {
+            pane.setEnabledAt(x, state);
+        }
 
     }
 
