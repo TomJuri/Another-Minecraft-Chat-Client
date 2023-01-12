@@ -3,6 +3,7 @@ package net.defekt.mc.chatclient.api;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.util.UUID;
 
@@ -97,8 +98,17 @@ public class PluginDescription {
         return api;
     }
 
-    public String getWebsite() {
-        return website;
+    public URL getWebsite() {
+        try {
+            return new URL(website);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String getWebsiteString() {
+        URL site = getWebsite();
+        return site == null ? null : site.toString();
     }
 
     public File getOrigin() {

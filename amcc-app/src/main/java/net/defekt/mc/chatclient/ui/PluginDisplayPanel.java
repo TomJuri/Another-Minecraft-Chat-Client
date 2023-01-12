@@ -30,6 +30,7 @@ import net.defekt.mc.chatclient.api.PluginDescription;
 import net.defekt.mc.chatclient.plugins.Plugins;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
+import net.defekt.mc.chatclient.ui.swing.JLinkLabel;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
 
 public class PluginDisplayPanel extends JPanel {
@@ -254,6 +255,13 @@ public class PluginDisplayPanel extends JPanel {
         boolean verified = flag == Plugins.PLUGIN_VERIFIED;
         boolean malicious = flag == Plugins.PLUGIN_MALICIOUS;
         boolean trusted = !remote && Main.up.getTrustedAuthors().contains(plugin.getAuthor());
+
+        String website = plugin.getWebsiteString();
+        if (website != null) {
+            JLabel linkLabel = new JLinkLabel(website);
+
+            add(linkLabel);
+        }
 
         if (malicious) {
             verified = false;

@@ -1451,7 +1451,7 @@ public class Main {
                                     break;
                                 }
                                 case WEBSITE: {
-                                    subject = plugin.getWebsite();
+                                    subject = plugin.getWebsiteString();
                                     break;
                                 }
                             }
