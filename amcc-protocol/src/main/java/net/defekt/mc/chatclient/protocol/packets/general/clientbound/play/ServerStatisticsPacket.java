@@ -7,6 +7,7 @@ import java.util.Map;
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientStatusPacket;
 
 /**
  * Sent by server as response to client status packet

@@ -4,7 +4,7 @@ import java.util.UUID;
 
 /**
  * This class is an extension of {@link Entity}.<br>
- * It's used to store information about players.
+ * It's used to store information about a player.
  * 
  * @author Defective4
  *

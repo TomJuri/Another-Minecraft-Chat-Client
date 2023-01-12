@@ -8,6 +8,13 @@ import java.util.UUID;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+/**
+ * Base class for all clientbound player info packets
+ * 
+ * @author Defective4
+ *
+ */
+@SuppressWarnings("javadoc")
 public class BaseServerPlayerListItemPacket extends Packet {
 
     /**
@@ -138,11 +145,28 @@ public class BaseServerPlayerListItemPacket extends Packet {
         }
     }
 
+    /**
+     * Player list action
+     */
     protected Action action;
+
+    /**
+     * Total entries
+     */
     protected int players;
 
+    /**
+     * List of player infos
+     */
     protected List<PlayerListItem> playersList = new ArrayList<PlayerListItem>();
 
+    /**
+     * Default constructor
+     * 
+     * @param reg
+     * @param data
+     * @throws IOException
+     */
     protected BaseServerPlayerListItemPacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }

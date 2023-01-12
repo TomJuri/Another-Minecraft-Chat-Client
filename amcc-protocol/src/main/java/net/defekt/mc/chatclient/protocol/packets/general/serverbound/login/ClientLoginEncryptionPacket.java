@@ -2,6 +2,7 @@ package net.defekt.mc.chatclient.protocol.packets.general.serverbound.login;
 
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginEncryptionPacket;
 
 /**
  * Sent by client as a response to {@link ServerLoginEncryptionPacket}

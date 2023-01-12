@@ -256,7 +256,7 @@ public class Main {
                     desc.getOrigin().delete();
                     en.remove(id);
                 } catch (Exception e) {
-                    e.printStackTrace(); // TODO error handling
+                    e.printStackTrace();
                     preErrors.add(e);
                 }
             }

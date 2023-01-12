@@ -6,15 +6,40 @@ import java.util.UUID;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+/**
+ * Base class for all clientbound entity spawn packets
+ * 
+ * @author Defective4
+ *
+ */
+@SuppressWarnings("javadoc")
 public class BaseServerSpawnEntityPacket extends Packet {
 
+    /**
+     * ID of the entity
+     */
     protected int id;
+
+    /**
+     * Unique ID of the entity
+     */
     protected UUID uid;
+
+    /**
+     * Entity type
+     */
     protected int type;
     protected double x;
     protected double y;
     protected double z;
 
+    /**
+     * Default constructor
+     * 
+     * @param reg
+     * @param data
+     * @throws IOException
+     */
     protected BaseServerSpawnEntityPacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }

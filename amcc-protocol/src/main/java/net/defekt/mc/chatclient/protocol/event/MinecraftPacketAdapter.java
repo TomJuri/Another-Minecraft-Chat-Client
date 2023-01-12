@@ -3,7 +3,17 @@ package net.defekt.mc.chatclient.protocol.event;
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 
-public class MinecraftPacketAdapter implements MinecraftPacketListener {
+/**
+ * An abstract adapter class for {@link MinecraftPacketListener}<br>
+ * All methods of this class are empty by default.<br>
+ * For easier packet type checking and overall easier usage, please see
+ * {@link AnnotatedMinecraftPacketListener}
+ * 
+ * @see AnnotatedMinecraftPacketListener
+ * @author Defective4
+ *
+ */
+public abstract class MinecraftPacketAdapter implements MinecraftPacketListener {
 
     @Override
     public Packet packetReceiving(Packet inPacket, MinecraftClient client) {

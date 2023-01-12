@@ -5,6 +5,12 @@ import java.io.IOException;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+/**
+ * Base class for clientbound player position and rotation packets
+ * @author Defective4
+ *
+ */
+@SuppressWarnings("javadoc")
 public class BaseServerPlayerPositionAndLookPacket extends Packet {
 
     protected double x;
@@ -15,6 +21,12 @@ public class BaseServerPlayerPositionAndLookPacket extends Packet {
     protected byte flags;
     protected int teleportID;
 
+    /**
+     * Default constructor
+     * @param reg
+     * @param data
+     * @throws IOException
+     */
     protected BaseServerPlayerPositionAndLookPacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }

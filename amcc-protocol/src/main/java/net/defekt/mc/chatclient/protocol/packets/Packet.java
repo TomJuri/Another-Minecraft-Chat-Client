@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import net.defekt.mc.chatclient.protocol.data.ItemStack;
-import net.defekt.mc.chatclient.protocol.event.Cancelable;
+import net.defekt.mc.chatclient.protocol.event.Cancellable;
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
 
@@ -18,7 +18,7 @@ import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
  * @author Defective4
  *
  */
-public class Packet implements Cancelable {
+public class Packet implements Cancellable {
 
     /**
      * Packet's current ID determined by its entry in provide {@link PacketRegistry}
@@ -343,12 +343,12 @@ public class Packet implements Cancelable {
     private boolean canceled = false;
 
     @Override
-    public boolean isCanceled() {
+    public boolean isCancelled() {
         return canceled;
     }
 
     @Override
-    public void setCanceled(boolean canceled) {
+    public void setCancelled(boolean canceled) {
         this.canceled = canceled;
     }
 }

@@ -13,6 +13,12 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerChatMessagePack
  *
  */
 public class ServerChatMessagePacket extends BaseServerChatMessagePacket {
+    /**
+     * Position of the chat message
+     * 
+     * @author Defective4
+     *
+     */
     public enum Position {
         /**
          * Message position is in chat box

@@ -28,6 +28,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import net.defekt.mc.chatclient.protocol.data.ChatMessages;
 import net.defekt.mc.chatclient.protocol.data.DummyItemsWindow;
 import net.defekt.mc.chatclient.protocol.data.Hosts;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
@@ -47,6 +48,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
 import net.defekt.mc.chatclient.protocol.packets.UnknownPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerStatisticsPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientEntityActionPacket.EntityAction;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseEntityPacket.UseType;
 
@@ -151,6 +153,8 @@ public class MinecraftClient {
 
     /**
      * Get a copy of client listener list
+     * 
+     * @param includeGlobal include listeners defined in {@link GlobalListeners}
      * 
      * @return list of client listeners added to this client
      */
@@ -384,9 +388,9 @@ public class MinecraftClient {
                                 for (MinecraftPacketListener listener : GlobalListeners.getListeners()) {
                                     Packet nPacket = listener.packetReceiving(packet, MinecraftClient.this);
                                     if (nPacket != null) packet = nPacket;
-                                    if (packet.isCanceled()) break;
+                                    if (packet.isCancelled()) break;
                                 }
-                                if (!packet.isCanceled()) {
+                                if (!packet.isCancelled()) {
                                     for (final InternalPacketListener lis : packetListeners) {
                                         lis.packetReceived(packet, reg);
                                     }
@@ -615,12 +619,12 @@ public class MinecraftClient {
             packet.setEncrypted(isEncrypted);
             for (final InternalPacketListener listener : outPacketListeners.toArray(new InternalPacketListener[0])) {
                 listener.packetReceived(packet, reg);
-                if (packet.isCanceled()) return;
+                if (packet.isCancelled()) return;
             }
             for (MinecraftPacketListener listener : GlobalListeners.getListeners()) {
                 Packet nPacket = listener.packetSending(packet, this);
                 if (nPacket != null) packet = nPacket;
-                if (packet.isCanceled()) return;
+                if (packet.isCancelled()) return;
             }
             os.write(packet.getData(compression));
             for (MinecraftPacketListener listener : GlobalListeners.getListeners()) {

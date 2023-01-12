@@ -35,7 +35,7 @@ public class CommandListener extends AnnotatedMinecraftPacketListener {
 
                 for (Entry<String, CommandHandler> entry : commands.entrySet()) {
                     if (entry.getKey().equalsIgnoreCase(cmd)) {
-                        packet.setCanceled(true);
+                        packet.setCancelled(true);
                         entry.getValue().userCommand(cmd, args, cl);
                     }
                 }

@@ -1,16 +1,26 @@
 package net.defekt.mc.chatclient.protocol.data;
 
+/**
+ * An implementation of {@link ItemsWindow} acting as a void for items.<br>
+ * It does not perform any item handling.
+ * 
+ * @author Defective4
+ *
+ */
 public class DummyItemsWindow implements ItemsWindow {
 
-    private final String title;
     private final int slots;
-    private final int id;
 
+    /**
+     * Default constructor
+     * 
+     * @param title
+     * @param slots
+     * @param id
+     */
     public DummyItemsWindow(String title, int slots, int id) {
         super();
-        this.title = title;
         this.slots = slots;
-        this.id = id;
     }
 
     @Override
@@ -36,18 +46,6 @@ public class DummyItemsWindow implements ItemsWindow {
     @Override
     public int getSize() {
         return slots;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public int getSlots() {
-        return slots;
-    }
-
-    public int getId() {
-        return id;
     }
 
 }

@@ -5,6 +5,13 @@ import java.io.IOException;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+/**
+ * Base class for all clientbound resource pack send packets
+ * 
+ * @author Defective4
+ *
+ */
+@SuppressWarnings("javadoc")
 public class BaseServerResourcePackSendPacket extends Packet {
     protected String url;
     protected String hash;
@@ -12,6 +19,13 @@ public class BaseServerResourcePackSendPacket extends Packet {
     protected boolean hasPrompt;
     protected String prompt;
 
+    /**
+     * Default constructor
+     * 
+     * @param reg
+     * @param data
+     * @throws IOException
+     */
     protected BaseServerResourcePackSendPacket(PacketRegistry reg, byte[] data) throws IOException {
         super(reg, data);
     }

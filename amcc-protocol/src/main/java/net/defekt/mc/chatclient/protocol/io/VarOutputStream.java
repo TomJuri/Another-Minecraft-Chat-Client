@@ -10,6 +10,7 @@ import dev.dewy.nbt.Nbt;
 import dev.dewy.nbt.api.Tag;
 import dev.dewy.nbt.tags.collection.CompoundTag;
 import net.defekt.mc.chatclient.protocol.data.ItemStack;
+import net.defekt.mc.chatclient.protocol.packets.Packet;
 
 /**
  * An extension of {@link DataOutputStream} with methods to write out Minecraft'

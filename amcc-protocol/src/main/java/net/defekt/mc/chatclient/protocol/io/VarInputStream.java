@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import dev.dewy.nbt.Nbt;
 import dev.dewy.nbt.api.Tag;
+import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.data.ItemStack;
 
 /**

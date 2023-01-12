@@ -2,6 +2,7 @@ package net.defekt.mc.chatclient.protocol.packets.general.serverbound.play;
 
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerKeepAlivePacket;
 
 /**
  * Sent by client as response to server's {@link ServerKeepAlivePacket}

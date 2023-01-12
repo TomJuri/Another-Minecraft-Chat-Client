@@ -11,6 +11,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
+import net.defekt.mc.chatclient.protocol.event.ClientListener;
 
 /**
  * Class containing methods to make parsing chat messages easier
@@ -24,6 +25,14 @@ public class ChatMessages {
 
     private static final String pChar = "\u00a7";
 
+    /**
+     * Replace specified code character in the message with '§'
+     * 
+     * 
+     * @param code
+     * @param message message to translate
+     * @return translated message
+     */
     public static String translateColorCodes(char code, String message) {
         return message.replace(code, '§');
     }
@@ -41,6 +50,15 @@ public class ChatMessages {
         return parse(json, null);
     }
 
+    /**
+     * Parse JSON chat message. <br>
+     * Specifying a {@link MinecraftClient} instance allows the parser<br>
+     * to translate player-specific elements.
+     * 
+     * @param json
+     * @param client
+     * @return parsed, human-readable chat message
+     */
     public static String parse(String json, MinecraftClient client) {
         json = json.replace(pChar + "k", "").replace(pChar + "l", "").replace(pChar + "m", "").replace(pChar + "n", "");
         try {

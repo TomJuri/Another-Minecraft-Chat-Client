@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule;
+import net.defekt.mc.chatclient.protocol.data.PlayerSkinCache;
 
 /**
  * Class containing some IO and image manipulation utilities
@@ -258,7 +259,7 @@ public class IOUtils {
      * Save automatic messages to file
      * 
      * @param out          output file
-     * @param autoMessages messages list
+     * @param data 
      * @throws IOException thrown when there was an error while saving automatic
      *                     messages
      */

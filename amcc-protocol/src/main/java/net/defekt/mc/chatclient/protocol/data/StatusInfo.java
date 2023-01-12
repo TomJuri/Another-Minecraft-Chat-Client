@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.defekt.mc.chatclient.protocol.MinecraftStat;
+
 /**
  * Stores information about server's status
  * 
@@ -32,9 +34,9 @@ public class StatusInfo implements Serializable {
      * @param version     server's version name
      * @param protocol    protocol used by server
      * @param icon        server's icon, or null if none
-     * @param modType     server's mod loader type if present, else it should be
+     * @param modType     server's mod loader type if present, otherwise it should be
      *                    null.
-     * @param modList     server's mods list if present, else it should be null, or
+     * @param modList     server's mods list if present, otherwise it should be null, or
      *                    empty.
      * @param players     list of players playing on this server
      */

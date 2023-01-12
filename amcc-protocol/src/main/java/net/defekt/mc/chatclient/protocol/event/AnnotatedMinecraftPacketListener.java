@@ -6,6 +6,16 @@ import java.lang.reflect.Parameter;
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 
+/**
+ * An implementation of the {@link MinecraftPacketListener}.<br>
+ * It allows to create new methods that act as handlers<br>
+ * instead of implementing only 4 predefined methods o
+ * {@link MinecraftPacketListener}.<br>
+ * New methods should be marked with {@link PacketHandler}
+ * 
+ * @author Defective4
+ *
+ */
 public abstract class AnnotatedMinecraftPacketListener implements MinecraftPacketListener {
 
     @Override

@@ -3,7 +3,7 @@ package net.defekt.mc.chatclient.protocol.entity;
 import java.util.UUID;
 
 /**
- * This class is used to store information about entity sent to client by server
+ * This class is used to store information about an entity sent to client by server
  * 
  * @author Defective4
  *

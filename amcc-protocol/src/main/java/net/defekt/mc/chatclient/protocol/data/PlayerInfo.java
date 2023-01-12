@@ -3,10 +3,15 @@ package net.defekt.mc.chatclient.protocol.data;
 import java.io.Serializable;
 import java.util.UUID;
 
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerListItemPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPlayerListItemPacket;
+
 /**
  * A container used to store information about a player
  * 
+ * @see BaseServerPlayerListItemPacket
  * @see ServerPlayerListItemPacket
+ * @see net.defekt.mc.chatclient.protocol.packets.v1_19.clientbound.play.ServerPlayerListItemPacket
  * @author Defective4
  *
  */

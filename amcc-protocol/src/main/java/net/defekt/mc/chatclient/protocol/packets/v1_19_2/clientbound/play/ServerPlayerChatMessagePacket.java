@@ -11,6 +11,12 @@ import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerChatMessagePacket;
 
+/**
+ * 1.19.2 version of the {@link BaseServerChatMessagePacket}
+ * 
+ * @author Defective4
+ *
+ */
 public class ServerPlayerChatMessagePacket extends BaseServerChatMessagePacket {
 
     /**

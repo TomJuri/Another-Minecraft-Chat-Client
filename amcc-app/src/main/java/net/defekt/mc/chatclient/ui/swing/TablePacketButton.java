@@ -40,7 +40,6 @@ public class TablePacketButton extends JButton implements TableCellEditor, Table
         table.addMouseListener(this);
     }
 
-    @SuppressWarnings("javadoc")
     JButton editor = new JButton("Info");
 
     private Packet packet = null;

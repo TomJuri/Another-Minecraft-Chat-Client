@@ -14,7 +14,6 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerEntityTeleportP
  * @author Defective4
  *
  */
-@SuppressWarnings("javadoc")
 public class ServerEntityTeleportPacket extends BaseServerEntityTeleportPacket {
 
     /**

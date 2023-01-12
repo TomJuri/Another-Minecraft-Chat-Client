@@ -45,7 +45,7 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerListItemP
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerPositionAndLookPacket;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerResourcePackSendPacket;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerSpawnEntityPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseSpawnPlayerPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerSpawnPlayerPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginEncryptionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginResponsePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginSetCompressionPacket;
@@ -68,8 +68,21 @@ import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.Client
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPluginMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientTeleportConfirmPacket;
 
+/**
+ * A new replacement for the old {@link ClientPacketListener}.<Br>
+ * Its function is the same, except it uses annotated methods<br>
+ * to listen for incoming packets.
+ * 
+ * @author Defective4
+ *
+ */
+@SuppressWarnings("javadoc")
 public class MainPacketListener extends AnnotatedServerPacketListener {
 
+    /**
+     * Default constrictor
+     * @param client
+     */
     protected MainPacketListener(MinecraftClient client) {
         super(client);
     }
@@ -486,7 +499,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
     }
 
     @ServerPacketHandler
-    protected void spawnPlaye(BaseSpawnPlayerPacket sp) {
+    protected void spawnPlaye(BaseServerSpawnPlayerPacket sp) {
         if (sp.getId() == cl.getEntityID()) return;
         cl.getStoredEntities().put(sp.getId(), new Player(sp.getUid(), sp.getX(), sp.getY(), sp.getZ()));
     }
