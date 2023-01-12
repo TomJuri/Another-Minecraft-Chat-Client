@@ -62,6 +62,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -154,6 +155,7 @@ import net.defekt.mc.chatclient.protocol.packets.UnknownPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket.Status;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseEntityPacket.UseType;
+import net.defekt.mc.chatclient.ui.SearchQuery.SearchType;
 import net.defekt.mc.chatclient.ui.swing.JAutoResponseList;
 import net.defekt.mc.chatclient.ui.swing.JColorChooserButton;
 import net.defekt.mc.chatclient.ui.swing.JColorChooserButton.ColorChangeListener;
@@ -1407,11 +1409,16 @@ public class Main {
             tabs.repaint();
         };
 
-        tabs.addChangeListener(e -> {
+        JPanel searchCtls = new JPanel();
+        JButton resetSearch = new JButton("Reset");
+
+        Consumer<SearchQuery> searchConsumer = query -> {
             if (tabs.getSelectedIndex() == 1) {
                 new Thread(() -> {
                     Component installedLoadingCpt = createLoadingCpt("Fetching available plugins list...");
                     setAllTabs(tabs, false);
+                    for (Component cpt : searchCtls.getComponents())
+                        cpt.setEnabled(false);
                     int initial = tabs.getSelectedIndex();
 
                     availableDisplay.removeAll();
@@ -1423,6 +1430,36 @@ public class Main {
                         SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), ex,
                                 "An error occured while fetching remote plugins list");
                     })) {
+                        if (query != null) {
+                            String subject;
+                            switch (query.getType()) {
+                                default:
+                                case NAME: {
+                                    subject = plugin.getName();
+                                    break;
+                                }
+                                case AUTHOR: {
+                                    subject = plugin.getAuthor();
+                                    break;
+                                }
+                                case DESCRIPTION: {
+                                    StringBuilder bd = new StringBuilder();
+                                    for (String line : plugin.getDescription() == null ? new String[0]
+                                            : plugin.getDescription())
+                                        bd.append(line);
+                                    subject = bd.toString();
+                                    break;
+                                }
+                                case WEBSITE: {
+                                    subject = plugin.getWebsite();
+                                    break;
+                                }
+                            }
+
+                            if (subject == null) continue;
+
+                            if (!subject.toLowerCase().contains(query.getQuery().toLowerCase())) continue;
+                        }
                         availableDisplay.add(new PluginDisplayPanel(plugin, true, desc -> {
                             Component downloadingCpt = createLoadingCpt("Downloading " + desc.getName() + "...");
                             availableDisplay.removeAll();
@@ -1460,15 +1497,76 @@ public class Main {
 
                     availableDisplay.remove(installedLoadingCpt);
                     setAllTabs(tabs, true, initial);
+                    for (Component cpt : searchCtls.getComponents())
+                        cpt.setEnabled(true);
+                    resetSearch.setEnabled(query != null);
                     tabs.repaint();
                 }).start();
             }
+        };
+
+        tabs.addChangeListener(e -> {
+            searchConsumer.accept(null);
+        });
+
+        JPanel availableMain = new JPanel();
+        availableMain.setLayout(new BoxLayout(availableMain, BoxLayout.Y_AXIS));
+        searchCtls.setLayout(new BoxLayout(searchCtls, BoxLayout.X_AXIS));
+
+        JTextField searchField = new JTextField();
+        JButton search = new JButton("Search...");
+        resetSearch.setEnabled(false);
+        JComboBox<String> searchBy = new JComboBox<>(
+                new String[] { "by Name", "by Author", "by Description", "by Website" });
+
+        searchCtls.add(searchField);
+        searchCtls.add(searchBy);
+        searchCtls.add(search);
+        searchCtls.add(resetSearch);
+
+        searchCtls.setMaximumSize(new Dimension((int) ((SwingUtils.sSize.width / 3) * 0.8), 20));
+
+        availableMain.add(searchCtls);
+        availableMain.add(new JScrollPane(availableDisplay));
+
+        resetSearch.addActionListener(e -> {
+            searchConsumer.accept(null);
+        });
+
+        search.addActionListener(e -> {
+            SearchType type;
+            String query = searchField.getText();
+            if (query.isEmpty()) {
+                SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), null,
+                        "You must specify a phrase to search");
+                return;
+            }
+            switch (searchBy.getSelectedIndex()) {
+                default:
+                case 0: {
+                    type = SearchType.NAME;
+                    break;
+                }
+                case 1: {
+                    type = SearchType.AUTHOR;
+                    break;
+                }
+                case 2: {
+                    type = SearchType.DESCRIPTION;
+                    break;
+                }
+                case 3: {
+                    type = SearchType.WEBSITE;
+                    break;
+                }
+            }
+            searchConsumer.accept(new SearchQuery(query, type));
         });
 
         tabs.addTab("Installed", new JScrollPane(installedDisplay));
-        tabs.addTab("Available", new JScrollPane(availableDisplay));
+        tabs.addTab("Available", availableMain);
         new Thread(sync).start();
-        tabs.setPreferredSize(new Dimension(SwingUtils.sSize.width / 3, (int) (SwingUtils.sSize.getHeight() / 3)));
+        tabs.setPreferredSize(new Dimension(SwingUtils.sSize.width / 3, (int) (SwingUtils.sSize.getHeight() / 2)));
         od.setContentPane(tabs);
         od.pack();
         SwingUtils.centerWindow(od);

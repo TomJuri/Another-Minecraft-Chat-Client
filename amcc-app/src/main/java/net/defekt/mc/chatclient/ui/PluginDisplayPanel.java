@@ -259,19 +259,16 @@ public class PluginDisplayPanel extends JPanel {
             verified = false;
             trusted = false;
             JLabel verificationLabel = new JLabel("Malicious!");
-            verificationLabel.setForeground(new Color(150, 0, 0));
             verificationLabel.setIcon(exc);
 
             add(verificationLabel);
         } else if (verified) {
             JLabel verificationLabel = new JLabel("Verified!");
-            verificationLabel.setForeground(new Color(0, 100, 0));
             verificationLabel.setIcon(check);
 
             add(verificationLabel);
         } else if (trusted) {
             JLabel verificationLabel = new JLabel("Trusted");
-            verificationLabel.setForeground(new Color(0, 0, 150));
 //            verificationLabel.setIcon(check);
 
             add(verificationLabel);
@@ -287,7 +284,7 @@ public class PluginDisplayPanel extends JPanel {
         }
 
         add(new JLabel(" "));
-        for (String desc : plugin.getDescription())
+        if (plugin.getDescription() != null) for (String desc : plugin.getDescription())
             add(new JLabel(desc));
 
         ctls.setAlignmentX(LEFT_ALIGNMENT);
