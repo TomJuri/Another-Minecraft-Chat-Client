@@ -101,7 +101,7 @@ public class PluginDisplayPanel extends JPanel {
                         "Are you sure you want to delete plugin " + plugin.getName() + "?\n"
                                 + "If you press \"Yes\" the plugin will be deleted on the next startup.\n"
                                 + "This action is irreversible.",
-                        "title", JOptionPane.CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                        "Deleting plugin", JOptionPane.CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                         new String[] { "Yes", "No" }, 0);
                 if (resp == 1) return;
                 deleted.add(id);
@@ -119,14 +119,30 @@ public class PluginDisplayPanel extends JPanel {
                         int resp = JOptionPane.showOptionDialog(parent,
                                 "You are trying to load a plugin written\n" + "for an older version of AMCC.\n"
                                         + "Unexpected behavior may happen.\n\n" + "Do you want to continue?",
-                                "title", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                                "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
                                 new String[] { "Yes", "No" }, 0);
                         if (resp == 1) return;
                     }
 
                     boolean trusted = prefs.getTrustedAuthors().contains(plugin.getAuthor());
+                    int flag = Plugins.getPluginFlag(plugin);
+                    boolean verified = flag == Plugins.PLUGIN_VERIFIED;
+                    boolean malicious = flag == Plugins.PLUGIN_MALICIOUS;
 
-                    if (!Plugins.isVerified(plugin) && !trusted) {
+                    if (malicious) {
+                        SwingUtils.playExclamation();
+                        JOptionPane.showOptionDialog(parent,
+                                "This plugin was flagged as malicious and can't be enabled at the moment.\n"
+                                        + "It's highly recommended to completely delete the plugin.",
+                                "Malicious plugin detected", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE,
+                                null, new Object[] { new JButton("Yes, I understand the risk") {
+                                    {
+                                        setEnabled(false);
+                                    }
+                                }, "Take me back" }, 0);
+                        return;
+
+                    } else if (!verified && !trusted) {
                         SwingUtils.playExclamation();
                         JCheckBox trustBox = new JCheckBox("Trust this author");
                         int resp = JOptionPane.showOptionDialog(parent,
@@ -135,7 +151,7 @@ public class PluginDisplayPanel extends JPanel {
                                         + "as well as any information outside of AMCC (such as private files and documents)\n"
                                         + "Please make sure to download plugins only from trusted sources.\n\n"
                                         + "Do you wish to continue?", trustBox },
-                                "title", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                                "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
                                 new String[] { "Yes, I understand the risk", "Take me back" }, 0);
                         if (trustBox.isSelected()) prefs.getTrustedAuthors().add(plugin.getAuthor());
                         if (resp == 1) return;
@@ -234,10 +250,20 @@ public class PluginDisplayPanel extends JPanel {
         }
 
         add(title);
-        boolean verified = remote || Plugins.isVerified(plugin);
+        int flag = remote ? Plugins.PLUGIN_VERIFIED : Plugins.getPluginFlag(plugin);
+        boolean verified = flag == Plugins.PLUGIN_VERIFIED;
+        boolean malicious = flag == Plugins.PLUGIN_MALICIOUS;
         boolean trusted = !remote && Main.up.getTrustedAuthors().contains(plugin.getAuthor());
 
-        if (verified) {
+        if (malicious) {
+            verified = false;
+            trusted = false;
+            JLabel verificationLabel = new JLabel("Malicious!");
+            verificationLabel.setForeground(new Color(150, 0, 0));
+            verificationLabel.setIcon(exc);
+
+            add(verificationLabel);
+        } else if (verified) {
             JLabel verificationLabel = new JLabel("Verified!");
             verificationLabel.setForeground(new Color(0, 100, 0));
             verificationLabel.setIcon(check);

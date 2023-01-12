@@ -17,6 +17,7 @@ import java.util.zip.ZipFile;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
@@ -88,10 +89,15 @@ public class Plugins {
             MultipartRequest req = new MultipartRequest();
             req.addField("hashes", root.toString().getBytes("UTF-8"));
             String json = new String(req.send(new URL(pluginVerifyURL)), "utf-8");
-            JsonArray ar = JsonParser.parseString(json).getAsJsonArray();
-            for (JsonElement el : ar) {
+            JsonObject reg = JsonParser.parseString(json).getAsJsonObject();
+            for (JsonElement el : reg.get("verified").getAsJsonArray()) {
                 if (el instanceof JsonPrimitive) {
                     cache.put(el.getAsString(), true);
+                }
+            }
+            for (JsonElement el : reg.get("malicious").getAsJsonArray()) {
+                if (el instanceof JsonPrimitive) {
+                    cache.put(el.getAsString(), false);
                 }
             }
         } catch (Exception e) {
@@ -100,12 +106,16 @@ public class Plugins {
         }
     }
 
-    public static boolean isVerified(PluginDescription plugin) {
+    public static final int PLUGIN_MALICIOUS = 2;
+    public static final int PLUGIN_VERIFIED = 1;
+    public static final int PLUGIN_UNVERIFIED = 0;
+
+    public static int getPluginFlag(PluginDescription plugin) {
         String hash = plugin.sha256();
         if (hash != null) {
-            return cache.getOrDefault(hash, false);
+            return cache.containsKey(hash) ? cache.get(hash) ? 1 : 2 : 0;
         }
-        return false;
+        return 0;
     }
 
     public static File PLUGIN_DIR = new File("plugins");

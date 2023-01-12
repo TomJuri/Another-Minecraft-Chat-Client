@@ -274,32 +274,42 @@ public class SwingUtils {
         errDial.setModal(true);
         errDial.setTitle(title);
 
+        List<Component> btns = new ArrayList<>();
+        btns.add(new JButton(Messages.getString("Main.ok")) {
+            {
+                addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(final ActionEvent ev) {
+                        errDial.dispose();
+                    }
+                });
+            }
+        });
+
+        if (ex != null) {
+            btns.add(new JButton(Messages.getString("SwingUtils.errorDialogOptionDetails")) {
+                {
+                    addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(final ActionEvent ev) {
+                            showExceptionDetails(parent, ex);
+                        }
+                    });
+                }
+            });
+
+        }
+
         final JOptionPane jop = new JOptionPane(message, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
-                new Object[] { new JButton(Messages.getString("Main.ok")) {
-                    {
-                        addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(final ActionEvent ev) {
-                                errDial.dispose();
-                            }
-                        });
-                    }
-                }, new JButton(Messages.getString("SwingUtils.errorDialogOptionDetails")) {
-                    {
-                        addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(final ActionEvent ev) {
-                                showExceptionDetails(parent, ex);
-                            }
-                        });
-                    }
-                } });
+                btns.toArray(new Component[0]));
 
         errDial.setContentPane(jop);
         errDial.pack();
         SwingUtils.centerWindow(errDial);
+
         playExclamation();
         errDial.setVisible(true);
+
     }
 
     /**

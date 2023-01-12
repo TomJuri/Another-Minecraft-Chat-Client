@@ -249,6 +249,8 @@ public class Main {
     public static void main(final String[] args) {
         List<Exception> preErrors = new ArrayList<>();
         PluginDescription[] descs = Plugins.listPlugins(true);
+        Plugins.verify(e -> {
+        }, descs);
         List<String> deleted = up.getDeletedPlugins();
         List<String> en = up.getEnabledPlugins();
         for (PluginDescription desc : descs) {
@@ -265,17 +267,24 @@ public class Main {
         }
         deleted.clear();
         descs = Plugins.listPlugins();
-        for (PluginDescription desc : descs)
+        List<String> malicious = new ArrayList<>();
+        for (PluginDescription desc : descs) {
+            if (Plugins.getPluginFlag(desc) == Plugins.PLUGIN_MALICIOUS) {
+                if (en.contains(desc.getUID())) malicious.add(desc.getName());
+                en.remove(desc.getUID());
+                break;
+            }
             if (up.getEnabledPlugins().contains(desc.getUID())) try {
                 Plugins.loadPlugin(desc);
             } catch (Exception e) {
                 e.printStackTrace();
                 preErrors.add(e);
             }
-        Main.main(preErrors.toArray(new Exception[0]));
+        }
+        Main.main(malicious.toArray(new String[0]), preErrors.toArray(new Exception[0]));
     }
 
-    public static void main(Exception... preErrors) {
+    public static void main(String[] maliciousPlugins, Exception... preErrors) {
         SwingUtils.setNativeLook(up);
 
         if (!up.isWasLangSet()) {
@@ -339,7 +348,7 @@ public class Main {
         if (up.isEnableInventoryHandling() && up.isLoadInventoryTextures()) {
             SwingItemsWindow.initTextures(new Main(), true);
         }
-        new Main().init(preErrors);
+        new Main().init(maliciousPlugins, preErrors);
     }
 
     public static final UserPreferences up = UserPreferences.load();
@@ -454,7 +463,7 @@ public class Main {
         }
     }
 
-    private void init(Exception... preErrors) {
+    private void init(String[] malicious, Exception... preErrors) {
         discordIntegr.start();
 
         synchronized (up.getServers()) {
@@ -1359,6 +1368,12 @@ public class Main {
 
         if (preErrors.length > 0) SwingUtils.showErrorDialog(win, Messages.getString("ServerDetailsDialog.error"),
                 preErrors[0], "An error occured while enabling some of plugins!");
+
+        if (malicious.length > 0) {
+            SwingUtils.showErrorDialog(win, Messages.getString("ServerDetailsDialog.error"), null,
+                    "One or more installed plugins were marked malicious and therefore not loaded. \n"
+                            + "Please see plugin manager for details.");
+        }
     }
 
     // TODO
