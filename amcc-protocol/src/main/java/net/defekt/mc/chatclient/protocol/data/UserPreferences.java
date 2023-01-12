@@ -5,9 +5,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
 
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket.Status;
@@ -29,6 +32,55 @@ public class UserPreferences implements Serializable {
     private List<String> enabledPlugins;
     private transient List<String> haltedPlugins;
     private List<String> deletedPlugins;
+    private List<String> trustedAuthors;
+
+    public List<String> getTrustedAuthors() {
+        if (trustedAuthors == null) trustedAuthors = new ArrayList<>();
+        return trustedAuthors;
+    }
+
+    private String userID = generateHWID();
+
+    public String getUserID() {
+        if (userID == null) userID = generateHWID();
+        return userID;
+    }
+
+    public static String generateUserID(long seed) {
+        Random rand = new Random(seed);
+        String id = "User";
+        while (id.length() < 16)
+            id += Integer.toString(rand.nextInt(10));
+        return id;
+    }
+
+    public static String generateUserID() {
+        Random rand = new Random();
+        String id = "User";
+        while (id.length() < 16)
+            id += Integer.toString(rand.nextInt(10));
+        return id;
+    }
+
+    private static String generateHWID() {
+        try {
+            long seed = 0;
+            Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+            while (ifaces.hasMoreElements()) {
+                NetworkInterface iface = ifaces.nextElement();
+                if (!iface.isLoopback() && iface.getHardwareAddress() != null) {
+                    byte[] addr = iface.getHardwareAddress();
+                    for (int x = 0; x < addr.length; x++) {
+                        seed += (addr[x] * Math.pow(100, x + 1));
+                    }
+                }
+            }
+            return generateUserID(seed);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return generateUserID();
+        }
+    }
 
     public List<String> getEnabledPlugins() {
         if (enabledPlugins == null) enabledPlugins = new ArrayList<>();

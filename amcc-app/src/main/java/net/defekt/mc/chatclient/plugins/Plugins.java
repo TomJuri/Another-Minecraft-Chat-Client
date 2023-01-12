@@ -28,6 +28,7 @@ public class Plugins {
 
     private static final String pluginVerifyURL = "http://127.0.0.1/verify.php";
     private static final String pluginRepoURL = "http://127.0.0.1/repo.json"; // TODO
+    public static final String pluginStarsURL = "http://127.0.0.1/stars.php";
 
     private static final Map<String, Boolean> cache = new ConcurrentHashMap<>();
 

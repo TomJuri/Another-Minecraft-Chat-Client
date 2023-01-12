@@ -4,7 +4,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -14,6 +20,7 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -112,15 +119,20 @@ public class PluginDisplayPanel extends JPanel {
                         if (resp == 1) return;
                     }
 
-                    if (!Plugins.isVerified(plugin)) {
+                    boolean trusted = prefs.getTrustedAuthors().contains(plugin.getAuthor());
+
+                    if (!Plugins.isVerified(plugin) && !trusted) {
                         SwingUtils.playExclamation();
-                        int resp = JOptionPane.showOptionDialog(parent, "You are trying to load an unverified plugin.\n"
-                                + "Plugins can access all data sent between client and sever,\n"
-                                + "as well as any information outside of AMCC (such as private files and documents)\n"
-                                + "Please make sure to download plugins only from trusted sources.\n\n"
-                                + "Do you wish to continue?", "title", JOptionPane.OK_CANCEL_OPTION,
-                                JOptionPane.WARNING_MESSAGE, null,
+                        JCheckBox trustBox = new JCheckBox("Trust this author");
+                        int resp = JOptionPane.showOptionDialog(parent,
+                                new Object[] { "You are trying to load an unverified plugin.\n"
+                                        + "Plugins can access all data sent between client and sever,\n"
+                                        + "as well as any information outside of AMCC (such as private files and documents)\n"
+                                        + "Please make sure to download plugins only from trusted sources.\n\n"
+                                        + "Do you wish to continue?", trustBox },
+                                "title", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
                                 new String[] { "Yes, I understand the risk", "Take me back" }, 0);
+                        if (trustBox.isSelected()) prefs.getTrustedAuthors().add(plugin.getAuthor());
                         if (resp == 1) return;
                     }
 
@@ -168,17 +180,47 @@ public class PluginDisplayPanel extends JPanel {
             }
 
             boolean localHasUpdates = hasUpdates;
+            try {
+                String b = URLEncoder.encode(plugin.getName(), "utf-8");
+                starBtn.addActionListener(e -> {
+                    starBtn.setEnabled(false);
 
-            starBtn.addActionListener(e -> {
+                    new Thread(() -> {
+                        try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                                new URL(Plugins.pluginStarsURL + "?id=" + Main.up.getUserID() + "&p=" + b)
+                                        .openStream()))) {
+
+                            String result = br.readLine();
+                            br.close();
+                            if (!result.equalsIgnoreCase("ok")) throw new IOException("Invalid response");
+                            int i = Integer.parseInt(starBtn.getText());
+                            starBtn.setText(Integer.toString(i + 1));
+                        } catch (Exception ex) {
+
+                        }
+                    }).start();
+                });
+
+                new Thread(() -> {
+                    try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                            new URL(Plugins.pluginStarsURL + "?p=" + b + "&id=" + Main.up.getUserID() + "&stat=true")
+                                    .openStream()))) {
+
+                        String result = br.readLine();
+                        if (result.contains(";")) {
+                            result = result.substring(0, result.indexOf(";"));
+                            starBtn.setEnabled(false);
+                        }
+                        br.close();
+                        int i = Integer.parseInt(result);
+                        starBtn.setText(Integer.toString(i));
+                    } catch (Exception ex) {
+
+                    }
+                }).start();
+            } catch (UnsupportedEncodingException e1) {
                 starBtn.setEnabled(false);
-
-                try {
-                    int i = Integer.parseInt(starBtn.getText());
-                    starBtn.setText(Integer.toString(i + 1));
-                } catch (Exception e2) {
-                    e2.printStackTrace();
-                }
-            });
+            }
 
             download.addActionListener(e -> {
 
@@ -203,12 +245,19 @@ public class PluginDisplayPanel extends JPanel {
 
         add(title);
         boolean verified = remote || Plugins.isVerified(plugin);
+        boolean trusted = !remote && Main.up.getTrustedAuthors().contains(plugin.getAuthor());
 
         if (verified) {
             JLabel verificationLabel = new JLabel("Verified!");
             verificationLabel.setForeground(new Color(0, 100, 0));
             verificationLabel.setIcon(check);
 
+            add(verificationLabel);
+        } else if(trusted) {
+            JLabel verificationLabel = new JLabel("Trusted");
+            verificationLabel.setForeground(new Color(0, 0, 150));
+//            verificationLabel.setIcon(check);
+            
             add(verificationLabel);
         }
 

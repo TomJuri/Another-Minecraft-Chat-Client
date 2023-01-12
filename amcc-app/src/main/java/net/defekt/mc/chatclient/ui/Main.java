@@ -174,7 +174,7 @@ public class Main {
 
     private static BufferedImage logoImage = null;
 
-    public static final String VERSION = "1.8.6";
+    public static final String VERSION = "1.8.7";
     private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
 
     public static Font mcFont = Font.decode(null);
@@ -1387,7 +1387,6 @@ public class Main {
             setAllTabs(tabs, true, initial);
             tabs.repaint();
         };
-        new Thread(sync).start();
 
         tabs.addChangeListener(e -> {
             if (tabs.getSelectedIndex() == 1) {
@@ -1446,6 +1445,7 @@ public class Main {
 
         tabs.addTab("Installed", new JScrollPane(installedDisplay));
         tabs.addTab("Available", new JScrollPane(availableDisplay));
+        new Thread(sync).start();
         tabs.setPreferredSize(new Dimension(SwingUtils.sSize.width / 3, (int) (SwingUtils.sSize.getHeight() / 3)));
         od.setContentPane(tabs);
         od.pack();
@@ -1457,7 +1457,7 @@ public class Main {
         setAllTabs(pane, state, 0);
     }
 
-    private static void setAllTabs(JTabbedPane pane, boolean state, int initial) {
+    private static synchronized void setAllTabs(JTabbedPane pane, boolean state, int initial) {
         if (!state || pane.getSelectedIndex() == initial) for (int x = 0; x < pane.getTabCount(); x++) {
             pane.setEnabledAt(x, state);
         }
