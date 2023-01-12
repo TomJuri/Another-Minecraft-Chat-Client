@@ -120,16 +120,18 @@ public class Plugins {
 
     public static File PLUGIN_DIR = new File("plugins");
 
-    public static void loadPlugin(PluginDescription desc) {
+    public static AMCPlugin loadPlugin(PluginDescription desc) {
         try (URLClassLoader ucl = new URLClassLoader(
                 new URL[] { new URL("file:///" + desc.getOrigin().getAbsolutePath()) },
                 Plugins.class.getClassLoader())) {
 
             AMCPlugin instance = (AMCPlugin) ucl.loadClass(desc.getMain()).newInstance();
-            instance.onEnable();
+            instance.onLoaded();
+            return instance;
         } catch (Exception e) {
             System.err.println("An error occured while loading " + desc.getName() + "!");
             e.printStackTrace();
+            return null;
         }
     }
 

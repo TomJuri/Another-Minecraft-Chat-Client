@@ -29,6 +29,7 @@ public class ServerEntry implements Serializable {
     }
 
     private transient StatusInfo info = null;
+    private transient int protocol = -1;
     private String icon = null;
 
     /**
@@ -101,6 +102,7 @@ public class ServerEntry implements Serializable {
                     }
                     if (info != null && info.getProtocol() != -1) {
                         icon = info.getIcon();
+                        protocol = info.getProtocol();
                     }
 
                     refreshing = false;
@@ -194,5 +196,14 @@ public class ServerEntry implements Serializable {
             forgeMode = ForgeMode.AUTO;
         }
         return forgeMode;
+    }
+
+    /**
+     * Get server protocol received in status ping
+     * 
+     * @return protocol version
+     */
+    public int getProtocol() {
+        return protocol;
     }
 }

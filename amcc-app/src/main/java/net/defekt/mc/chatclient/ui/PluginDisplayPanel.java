@@ -26,6 +26,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
+import net.defekt.mc.chatclient.api.AMCPlugin;
+import net.defekt.mc.chatclient.api.GUIComponents;
 import net.defekt.mc.chatclient.api.PluginDescription;
 import net.defekt.mc.chatclient.plugins.Plugins;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
@@ -63,13 +65,13 @@ public class PluginDisplayPanel extends JPanel {
         star = new ImageIcon(starI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : starI);
     }
 
-    public PluginDisplayPanel(PluginDescription plugin, boolean remote, Consumer<PluginDescription> downloader,
-            Window parent) {
-        this(plugin, remote, downloader, parent, 0, false);
+    public PluginDisplayPanel(GUIComponents cpts, PluginDescription plugin, boolean remote,
+            Consumer<PluginDescription> downloader, Window parent) {
+        this(cpts, plugin, remote, downloader, parent, 0, false);
     }
 
-    public PluginDisplayPanel(PluginDescription plugin, boolean remote, Consumer<PluginDescription> downloader,
-            Window parent, int stars, boolean starred) {
+    public PluginDisplayPanel(GUIComponents cpts, PluginDescription plugin, boolean remote,
+            Consumer<PluginDescription> downloader, Window parent, int stars, boolean starred) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         Box title = Box.createHorizontalBox();
         JLabel nameLabel = new JLabel(plugin.getName() + " (v" + plugin.getVersion() + ")");
@@ -159,7 +161,9 @@ public class PluginDisplayPanel extends JPanel {
                     }
 
                     try {
-                        Plugins.loadPlugin(plugin);
+                        AMCPlugin pl = Plugins.loadPlugin(plugin);
+                        pl.onGUIInitialized(cpts);
+                        cpts.revalidateAll();
                         enabled.add(id);
                     } catch (Exception e2) {
                         e2.printStackTrace();

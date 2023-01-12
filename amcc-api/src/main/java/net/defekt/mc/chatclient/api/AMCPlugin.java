@@ -26,7 +26,15 @@ public abstract class AMCPlugin {
     /**
      * Called when plugin is enabled
      */
-    public abstract void onEnable();
+    public abstract void onLoaded();
+
+    /**
+     * Called when GUI fully initializes
+     * @param components 
+     */
+    public void onGUIInitialized(GUIComponents components) {
+
+    }
 
     /**
      * Get plugin description

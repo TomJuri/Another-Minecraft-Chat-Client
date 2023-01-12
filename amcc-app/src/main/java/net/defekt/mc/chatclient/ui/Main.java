@@ -115,6 +115,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.table.DefaultTableModel;
 
+import net.defekt.mc.chatclient.api.AMCPlugin;
+import net.defekt.mc.chatclient.api.GUIComponents;
 import net.defekt.mc.chatclient.api.PluginDescription;
 import net.defekt.mc.chatclient.integrations.discord.DiscordPresence;
 import net.defekt.mc.chatclient.plugins.Plugins;
@@ -270,6 +272,7 @@ public class Main {
         deleted.clear();
         descs = Plugins.listPlugins();
         List<String> malicious = new ArrayList<>();
+        List<AMCPlugin> loaded = new ArrayList<>();
         for (PluginDescription desc : descs) {
             if (Plugins.getPluginFlag(desc) == Plugins.PLUGIN_MALICIOUS) {
                 if (en.contains(desc.getUID())) malicious.add(desc.getName());
@@ -277,16 +280,18 @@ public class Main {
                 break;
             }
             if (up.getEnabledPlugins().contains(desc.getUID())) try {
-                Plugins.loadPlugin(desc);
+                AMCPlugin pl = Plugins.loadPlugin(desc);
+                if (pl != null) loaded.add(pl);
             } catch (Exception e) {
                 e.printStackTrace();
                 preErrors.add(e);
             }
         }
-        Main.main(malicious.toArray(new String[0]), preErrors.toArray(new Exception[0]));
+        Main.main(loaded.toArray(new AMCPlugin[0]), malicious.toArray(new String[0]),
+                preErrors.toArray(new Exception[0]));
     }
 
-    public static void main(String[] maliciousPlugins, Exception... preErrors) {
+    public static void main(AMCPlugin[] loadedPlugins, String[] maliciousPlugins, Exception... preErrors) {
         SwingUtils.setNativeLook(up);
 
         if (!up.isWasLangSet()) {
@@ -350,7 +355,7 @@ public class Main {
         if (up.isEnableInventoryHandling() && up.isLoadInventoryTextures()) {
             SwingItemsWindow.initTextures(new Main(), true);
         }
-        new Main().init(maliciousPlugins, preErrors);
+        new Main().init(loadedPlugins, maliciousPlugins, preErrors);
     }
 
     public static final UserPreferences up = UserPreferences.load();
@@ -360,6 +365,7 @@ public class Main {
     private final JTabbedPane tabPane = new JTabbedPane();
     private final Map<JSplitPane, MinecraftClient> clients = new HashMap<JSplitPane, MinecraftClient>();
     private final JFrame win = new JFrame();
+    private final JMenuBar menuBar = new JMenuBar();
     private TrayIcon trayIcon = null;
     private final DiscordPresence discordIntegr = new DiscordPresence("1015565248364826694", this, tabPane, clients);
 
@@ -465,7 +471,7 @@ public class Main {
         }
     }
 
-    private void init(String[] malicious, Exception... preErrors) {
+    private void init(AMCPlugin[] loadedPlugins, String[] malicious, Exception... preErrors) {
         discordIntegr.start();
 
         synchronized (up.getServers()) {
@@ -1354,15 +1360,11 @@ public class Main {
             }
         };
 
-        win.setJMenuBar(new JMenuBar() {
-            {
-                add(fileMenu);
-                add(optionMenu);
-                add(helpMenu);
-                add(pluginsMenu);
-            }
-
-        });
+        menuBar.add(fileMenu);
+        menuBar.add(optionMenu);
+        menuBar.add(helpMenu);
+        menuBar.add(pluginsMenu);
+        win.setJMenuBar(menuBar);
         win.setContentPane(tabPane);
         win.pack();
         SwingUtils.centerWindow(win);
@@ -1376,9 +1378,89 @@ public class Main {
                     "One or more installed plugins were marked malicious and therefore not loaded. \n"
                             + "Please see plugin manager for details.");
         }
+
+        guiComponents = new GUIComponents(win, menuBar, tabPane, trayIcon) {
+
+            @Override
+            public JSplitPane createClient(String host, int port, ProtocolEntry protocol, ForgeMode forge,
+                    String username, String password, AuthType authType, Proxy proxy, String name) {
+                ServerEntry et = new ServerEntry(host, port, name, protocol == null ? "Auto" : protocol.getName(),
+                        forge);
+                JSplitPane b = createServerPane(et, username, password, authType, proxy);
+
+                tabPane.addTab("", b);
+                tabPane.setSelectedComponent(b);
+
+                final Box b2 = Box.createHorizontalBox();
+                b2.setName(et.getHost() + "_" + et.getName() + "_" + username);
+                final int pxh = et.getIcon() == null ? 0 : 16;
+
+                BufferedImage bicon = null;
+                if (et.getIcon() != null) {
+                    try {
+                        bicon = ImageIO
+                                .read(new ByteArrayInputStream(Base64.getDecoder().decode(et.getIcon().getBytes())));
+                    } catch (final IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+
+                final BufferedImage bicon2 = bicon;
+
+                b2.add(new JPanel() {
+                    {
+                        setPreferredSize(new Dimension(pxh, 16));
+                    }
+
+                    final BufferedImage bico = bicon2;
+
+                    @Override
+                    public void paintComponent(final Graphics g) {
+                        g.drawImage(bico, 0, 0, 16, 16, null);
+                    }
+                });
+
+                b2.add(new JLabel(" " + et.getName() + " (Plugin)"));
+
+                final JButton close = new JButton("x");
+                close.setMargin(new Insets(0, 5, 0, 5));
+                close.addActionListener(new ActionListener() {
+                    private final JSplitPane box = b;
+
+                    @Override
+                    public void actionPerformed(final ActionEvent e) {
+                        for (int x = 0; x < tabPane.getTabCount(); x++)
+                            if (tabPane.getComponentAt(x).equals(box)) {
+                                if (clients.containsKey(box)) {
+                                    clients.get(box).close();
+                                }
+                                tabPane.removeTabAt(x);
+                                clients.remove(b);
+                                discordIntegr.update();
+                                break;
+                            }
+                    }
+                });
+
+                b2.add(close);
+                tabPane.setTabComponentAt(tabPane.getSelectedIndex(), b2);
+                return b;
+            }
+
+            @Override
+            public MinecraftClient getClient(JSplitPane pane) {
+                return clients.get(pane);
+            }
+
+        };
+
+        for (AMCPlugin plugin : loadedPlugins)
+            plugin.onGUIInitialized(guiComponents);
+        guiComponents.revalidateAll();
     }
 
-    // TODO
+    private GUIComponents guiComponents;
+
     private void showPluginManager() {
         JDialog od = new JDialog(win);
         od.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -1402,7 +1484,7 @@ public class Main {
                         "An error occured while verifying installed plugins");
             }, descs);
             for (PluginDescription desc : descs)
-                installedDisplay.add(new PluginDisplayPanel(desc, false, null, od));
+                installedDisplay.add(new PluginDisplayPanel(guiComponents, desc, false, null, od));
 
             installedDisplay.remove(installedLoadingCpt);
             setAllTabs(tabs, true, initial);
@@ -1460,7 +1542,7 @@ public class Main {
 
                             if (!subject.toLowerCase().contains(query.getQuery().toLowerCase())) continue;
                         }
-                        availableDisplay.add(new PluginDisplayPanel(plugin, true, desc -> {
+                        availableDisplay.add(new PluginDisplayPanel(guiComponents, plugin, true, desc -> {
                             Component downloadingCpt = createLoadingCpt("Downloading " + desc.getName() + "...");
                             availableDisplay.removeAll();
                             availableDisplay.add(downloadingCpt);
@@ -1492,7 +1574,7 @@ public class Main {
                             setAllTabs(tabs, true, initial2);
                             tabs.repaint();
                             new Thread(sync).start();
-                        }, od, stats.getStars(plugin.getName()), stats.hasStarred(plugin.getName()))); // TODO
+                        }, od, stats.getStars(plugin.getName()), stats.hasStarred(plugin.getName())));
                     }
 
                     availableDisplay.remove(installedLoadingCpt);
@@ -4040,7 +4122,7 @@ public class Main {
         box.add(hjsc);
         box.add(jsc);
         box.add(chatControls);
-        new Thread(new Runnable() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
 
@@ -4052,7 +4134,11 @@ public class Main {
                 switch (entry.getVersion()) {
                     case "Auto": {
                         try {
-                            protocol = MinecraftStat.serverListPing(host, port).getProtocol();
+                            protocol = entry.getProtocol();
+                            if (protocol <= 0) {
+                                protocol = -1;
+                                protocol = MinecraftStat.serverListPing(host, port).getProtocol();
+                            }
                             boolean contains = false;
                             for (final ProtocolEntry num : ProtocolNumber.getValues())
                                 if (num.protocol == protocol) {
@@ -4593,67 +4679,76 @@ public class Main {
 
                         });
 
-                        cl.connect(authType, username, password);
-                        discordIntegr.update();
+                        Runnable rr = () -> {
+                            try {
+                                cl.connect(authType, username, password);
+                                discordIntegr.update();
 
-                        try {
-                            Thread.sleep(1000);
-                        } catch (final InterruptedException e2) {
-                            e2.printStackTrace();
-                        }
-                        autoMessagesThread.start();
-
-                        SwingUtilities.invokeLater(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                fPane.setDividerLocation(0.8);
-                            }
-                        });
-
-                        playerList.setMcl(cl);
-                        PlayerSkinCache.getSkincache().clear();
-
-                        chatInput.addKeyListener(new KeyAdapter() {
-
-                            @Override
-                            public void keyPressed(final KeyEvent e) {
-
-                                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                                    chatSend.requestFocusInWindow();
-                                    chatSend.doClick();
-                                    chatInput.requestFocusInWindow();
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (final InterruptedException e2) {
+                                    e2.printStackTrace();
                                 }
-                            }
-                        });
+                                autoMessagesThread.start();
 
-                        chatSend.addActionListener(new ActionListener() {
+                                SwingUtilities.invokeLater(new Runnable() {
 
-                            @Override
-                            public void actionPerformed(final ActionEvent e) {
-                                final String message = chatInput.getText();
-                                if (!message.isEmpty()) {
-                                    try {
-                                        cl.sendChatMessage(message);
-                                    } catch (final IOException e1) {
-                                        SwingUtils.appendColoredText(
-                                                "\u00a7c" + Messages.getString("Main.connectionLostChatMessage2")
-                                                        + ": \r\n" + e1.toString(),
-                                                pane);
-                                        e1.printStackTrace();
-                                        for (final Component ct : chatControls.getComponents()) {
-                                            ct.setEnabled(false);
+                                    @Override
+                                    public void run() {
+                                        fPane.setDividerLocation(0.8);
+                                    }
+                                });
+
+                                playerList.setMcl(cl);
+                                PlayerSkinCache.getSkincache().clear();
+
+                                chatInput.addKeyListener(new KeyAdapter() {
+
+                                    @Override
+                                    public void keyPressed(final KeyEvent e) {
+
+                                        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                                            chatSend.requestFocusInWindow();
+                                            chatSend.doClick();
+                                            chatInput.requestFocusInWindow();
                                         }
                                     }
-                                    chatInput.setText("");
+                                });
+
+                                chatSend.addActionListener(new ActionListener() {
+
+                                    @Override
+                                    public void actionPerformed(final ActionEvent e) {
+                                        final String message = chatInput.getText();
+                                        if (!message.isEmpty()) {
+                                            try {
+                                                cl.sendChatMessage(message);
+                                            } catch (final IOException e1) {
+                                                SwingUtils.appendColoredText("\u00a7c"
+                                                        + Messages.getString("Main.connectionLostChatMessage2")
+                                                        + ": \r\n" + e1.toString(), pane);
+                                                e1.printStackTrace();
+                                                for (final Component ct : chatControls.getComponents()) {
+                                                    ct.setEnabled(false);
+                                                }
+                                            }
+                                            chatInput.setText("");
+                                        }
+                                    }
+                                });
+
+                                for (final Component ct : chatControls.getComponents()) {
+                                    ct.setEnabled(true);
                                 }
+                            } catch (Exception e) {
+                                SwingUtils.appendColoredText(
+                                        "\u00a7c" + Messages.getString("Main.connectionFailedChatMessage2") + "\r\n\r\n"
+                                                + e.toString(),
+                                        pane);
+                                e.printStackTrace();
                             }
-                        });
-
-                        for (final Component ct : chatControls.getComponents()) {
-                            ct.setEnabled(true);
-                        }
-
+                        };
+                        new Thread(rr).start();
                     } catch (
 
                     final IOException e) {
@@ -4661,9 +4756,12 @@ public class Main {
                                 + "\r\n\r\n" + e.toString(), pane);
                         e.printStackTrace();
                     }
+
                 }
             }
-        }).start();
+        };
+
+        r.run();
 
         return fPane;
     }
