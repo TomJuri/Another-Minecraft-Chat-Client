@@ -1,9 +1,7 @@
 package net.defekt.mc.chatclient.protocol.data;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 import net.defekt.mc.chatclient.protocol.ProtocolEntry;
 import net.defekt.mc.chatclient.protocol.ProtocolNumber;
@@ -34,28 +33,29 @@ public class TranslationUtils {
 
     private static final Map<Language, Map<String, String>> translationKeys = new HashMap<UserPreferences.Language, Map<String, String>>() {
         {
-            for (final Language lang : Language.values()) {
-                final InputStream is = TranslationUtils.class
-                        .getResourceAsStream("/resources/lang/minecraft/" + lang.getCode().toLowerCase() + ".lang");
-                if (is == null) {
-                    continue;
-                }
-                final Map<String, String> kMap = new HashMap<String, String>();
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-                    String line;
-                    while ((line = br.readLine()) != null)
-                        if (line.contains("=") && line.split("=").length > 1) {
-                            final String[] ags = line.split("=");
-                            kMap.put(ags[0], ags[1]);
-                        }
+            Language lang = UserPreferences.prefs().getAppLanguage();
+            final Map<String, String> kMap = new HashMap<String, String>();
+            try (final Reader reader = new InputStreamReader(TranslationUtils.class
+                    .getResourceAsStream("/resources/lang/minecraft/" + lang.getCode().toLowerCase() + ".json"))) {
+                JsonObject obj = JsonParser.parseReader(reader).getAsJsonObject();
+                reader.close();
 
-                    br.close();
-                } catch (final Exception e) {
-                    e.printStackTrace();
+                for (Map.Entry<String, JsonElement> element : obj.entrySet()) {
+                    if (element.getValue() instanceof JsonPrimitive) {
+                        try {
+                            kMap.put(element.getKey(), element.getValue().getAsString());
+                        } catch (Exception e) {
+
+                        }
+                    }
                 }
-                put(lang, kMap);
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            put(lang, kMap);
         }
+
     };
 
     private static final Map<Integer, Map<Integer, ItemInfo>> items = new HashMap<Integer, Map<Integer, ItemInfo>>() {
