@@ -117,6 +117,7 @@ import javax.swing.table.DefaultTableModel;
 import net.defekt.mc.chatclient.api.PluginDescription;
 import net.defekt.mc.chatclient.integrations.discord.DiscordPresence;
 import net.defekt.mc.chatclient.plugins.Plugins;
+import net.defekt.mc.chatclient.plugins.Plugins.StarStats;
 import net.defekt.mc.chatclient.protocol.AuthType;
 import net.defekt.mc.chatclient.protocol.InternalPacketListener;
 import net.defekt.mc.chatclient.protocol.LANListener;
@@ -1400,6 +1401,9 @@ public class Main {
 
                     availableDisplay.removeAll();
                     availableDisplay.add(installedLoadingCpt);
+
+                    StarStats stats = Plugins.fetchStars(Main.up.getUserID());
+
                     for (PluginDescription plugin : Plugins.listRemotePlugins(ex -> {
                         SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), ex,
                                 "An error occured while fetching remote plugins list");
@@ -1436,7 +1440,7 @@ public class Main {
                             setAllTabs(tabs, true, initial2);
                             tabs.repaint();
                             new Thread(sync).start();
-                        }, od));
+                        }, od, stats.getStars(plugin.getName()), stats.hasStarred(plugin.getName()))); // TODO
                     }
 
                     availableDisplay.remove(installedLoadingCpt);

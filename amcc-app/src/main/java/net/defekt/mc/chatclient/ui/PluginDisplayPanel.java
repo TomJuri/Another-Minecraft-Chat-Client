@@ -64,6 +64,11 @@ public class PluginDisplayPanel extends JPanel {
 
     public PluginDisplayPanel(PluginDescription plugin, boolean remote, Consumer<PluginDescription> downloader,
             Window parent) {
+        this(plugin, remote, downloader, parent, 0, false);
+    }
+
+    public PluginDisplayPanel(PluginDescription plugin, boolean remote, Consumer<PluginDescription> downloader,
+            Window parent, int stars, boolean starred) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         Box title = Box.createHorizontalBox();
         JLabel nameLabel = new JLabel(plugin.getName() + " (v" + plugin.getVersion() + ")");
@@ -155,7 +160,9 @@ public class PluginDisplayPanel extends JPanel {
             ctls.add(del);
         } else {
             JButton download = new JButton("Download");
-            JButton starBtn = new JButton("0", star);
+            JButton starBtn = new JButton(Integer.toString(stars), star);
+            starBtn.setEnabled(!starred);
+
             boolean isInstalled = false;
             boolean hasUpdates = false;
 
@@ -196,28 +203,11 @@ public class PluginDisplayPanel extends JPanel {
                             int i = Integer.parseInt(starBtn.getText());
                             starBtn.setText(Integer.toString(i + 1));
                         } catch (Exception ex) {
-
+                            ex.printStackTrace();
+                            starBtn.setEnabled(true);
                         }
                     }).start();
                 });
-
-                new Thread(() -> {
-                    try (BufferedReader br = new BufferedReader(new InputStreamReader(
-                            new URL(Plugins.pluginStarsURL + "?p=" + b + "&id=" + Main.up.getUserID() + "&stat=true")
-                                    .openStream()))) {
-
-                        String result = br.readLine();
-                        if (result.contains(";")) {
-                            result = result.substring(0, result.indexOf(";"));
-                            starBtn.setEnabled(false);
-                        }
-                        br.close();
-                        int i = Integer.parseInt(result);
-                        starBtn.setText(Integer.toString(i));
-                    } catch (Exception ex) {
-
-                    }
-                }).start();
             } catch (UnsupportedEncodingException e1) {
                 starBtn.setEnabled(false);
             }
@@ -253,11 +243,11 @@ public class PluginDisplayPanel extends JPanel {
             verificationLabel.setIcon(check);
 
             add(verificationLabel);
-        } else if(trusted) {
+        } else if (trusted) {
             JLabel verificationLabel = new JLabel("Trusted");
             verificationLabel.setForeground(new Color(0, 0, 150));
 //            verificationLabel.setIcon(check);
-            
+
             add(verificationLabel);
         }
 

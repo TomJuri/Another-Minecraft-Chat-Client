@@ -32,6 +32,50 @@ public class Plugins {
 
     private static final Map<String, Boolean> cache = new ConcurrentHashMap<>();
 
+    public static class StarStats {
+
+        public Map<String, RepoStats> repos = new ConcurrentHashMap<String, Plugins.StarStats.RepoStats>();
+
+        public int getStars(String repo) {
+            return repos.containsKey(repo) ? repos.get(repo).stars : 0;
+        }
+
+        public boolean hasStarred(String repo) {
+            return repos.containsKey(repo) ? repos.get(repo).starred : false;
+        }
+
+        public class RepoStats {
+            private final int stars;
+            private final boolean starred;
+
+            public RepoStats(boolean starred, int stars) {
+                this.stars = stars;
+                this.starred = starred;
+            }
+
+            public int getStars() {
+                return stars;
+            }
+
+            public boolean isStarred() {
+                return starred;
+            }
+        }
+    }
+
+    public static StarStats fetchStars(String uid) {
+        StarStats stats;
+
+        try (Reader rdr = new InputStreamReader(new URL(pluginStarsURL + "?id=" + uid).openStream())) {
+            stats = new Gson().fromJson(rdr, StarStats.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            stats = new StarStats();
+        }
+
+        return stats;
+    }
+
     public static void verify(Consumer<Exception> errorConsumer, PluginDescription... plugins) {
         JsonArray root = new JsonArray();
         String hash;
