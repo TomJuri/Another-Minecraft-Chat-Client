@@ -88,8 +88,26 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
     }
 
     @ServerPacketHandler
-    protected void spawnEntity(BaseServerSpawnEntityPacket sp) {
-        cl.getStoredEntities().put(sp.getId(), new Entity(sp.getUid(), sp.getType(), sp.getX(), sp.getY(), sp.getZ()));
+    protected void confirmTransaction(ServerConfirmTransactionPacket packet) throws IOException {
+        if (!up.isEnableInventoryHandling() || protocol >= 755) return;
+
+        final int windowID = packet.getWindowID();
+        final short actionID = packet.getActionID();
+        final boolean accepted = packet.isAccepted();
+
+        final ItemsWindow win = windowID == 0 ? cl.getInventory()
+                : cl.getOpenWindows().containsKey(windowID) ? cl.getOpenWindows().get(windowID) : null;
+
+        if (win != null) if (accepted) {
+            win.finishTransaction(actionID);
+        } else {
+            win.cancelTransaction(actionID);
+        }
+
+        if (!accepted) {
+            cl.sendPacket(PacketFactory.constructPacket(registry, "ClientConfirmTransactionPacket", (byte) windowID,
+                    actionID, accepted));
+        }
     }
 
     @ServerPacketHandler
@@ -159,104 +177,133 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
     }
 
     @ServerPacketHandler
-    protected void timeUpdate(ServerTimeUpdatePacket packet) {
-        for (final ClientListener cls : cl.getClientListeners(true)) {
-            cls.timeUpdated(packet.getTime(), packet.getWorldAge(), cl);
+    protected void entityRelativeMove(BaseServerEntityRelativeMovePacket move) {
+        final Entity entity = cl.getEntity(move.getEntityID());
+        if (entity == null) return;
+        final double x = entity.getX();
+        final double y = entity.getY();
+        final double z = entity.getZ();
+
+        final double dX = move.getDeltaX();
+        final double dY = move.getDeltaY();
+        final double dZ = move.getDeltaZ();
+
+        entity.setX(x + dX);
+        entity.setY(y + dY);
+        entity.setZ(z + dZ);
+        for (final ClientListener listener : cl.getClientListeners(true)) {
+            listener.entityMoved(entity, move.getEntityID(), cl);
         }
     }
 
     @ServerPacketHandler
-    protected void confirmTransaction(ServerConfirmTransactionPacket packet) throws IOException {
-        if (!up.isEnableInventoryHandling() || protocol >= 755) return;
-
-        final int windowID = packet.getWindowID();
-        final short actionID = packet.getActionID();
-        final boolean accepted = packet.isAccepted();
-
-        final ItemsWindow win = windowID == 0 ? cl.getInventory()
-                : cl.getOpenWindows().containsKey(windowID) ? cl.getOpenWindows().get(windowID) : null;
-
-        if (win != null) if (accepted) {
-            win.finishTransaction(actionID);
-        } else {
-            win.cancelTransaction(actionID);
-        }
-
-        if (!accepted) {
-            cl.sendPacket(PacketFactory.constructPacket(registry, "ClientConfirmTransactionPacket", (byte) windowID,
-                    actionID, accepted));
-        }
-    }
-
-    @ServerPacketHandler
-    protected void windowSlot(ServerSetSlotPacket packet) {
-        if (!up.isEnableInventoryHandling() || protocol >= 755) return;
-
-        final int windowID = packet.getWindowID();
-
-        final short slot = packet.getSlot();
-        final ItemStack item = packet.getItem();
-        if (windowID == 0 || (cl.getOpenWindows().containsKey(windowID) && cl.getOpenWindows().get(windowID) != null)) {
-            final ItemsWindow iWin = windowID == 0 ? cl.getInventory() : cl.getOpenWindows().get(windowID);
-            iWin.putItem(slot, item);
-        }
-    }
-
-    @ServerPacketHandler
-    protected void windowClose(ServerCloseWindowPacket packet) {
-        if (!up.isEnableInventoryHandling() || protocol >= 755) return;
-
-        final int windowID = packet.getWindowID();
-        if (cl.getOpenWindows().containsKey(windowID) && cl.getOpenWindows().get(windowID) != null) {
-            cl.getOpenWindows().get(windowID).closeWindow();
-        } else if (windowID == 0) {
-            cl.getInventory().closeWindow();
-        }
-    }
-
-    @ServerPacketHandler
-    protected void windowItems(ServerWindowItemsPacket packet) {
-        if (!up.isEnableInventoryHandling() || protocol >= 755) return;
-
-        final int windowID = packet.getWindowID();
-        final List<ItemStack> items = packet.getItems();
-        if (windowID == 0 || (cl.getOpenWindows().containsKey(windowID) && cl.getOpenWindows().get(windowID) != null)) {
-            final ItemsWindow iWin = windowID == 0 ? cl.getInventory() : cl.getOpenWindows().get(windowID);
-            for (int x = 0; x < items.size(); x++) {
-                iWin.putItem(x, items.get(x));
+    protected void entityTeleport(BaseServerEntityTeleportPacket tp) {
+        final double x = tp.getX();
+        final double y = tp.getY();
+        final double z = tp.getZ();
+        final int id = tp.getId();
+        final Entity et = cl.getEntity(id);
+        if (et != null) {
+            et.setX(x);
+            et.setZ(y);
+            et.setZ(z);
+            for (final ClientListener listener : cl.getClientListeners(true)) {
+                listener.entityMoved(et, id, cl);
             }
         }
     }
 
     @ServerPacketHandler
-    protected void windowOpened(BaseServerOpenWindowPacket packet) { // TODO
-        if (!up.isEnableInventoryHandling() || protocol >= 755) return;
-
-        final int windowID = packet.getWindowID();
-        final String windowTitle = ChatMessages.removeColors(ChatMessages.parse(packet.getWindowTitle()));
-        int slots = 0;
-        if (packet instanceof ServerOpenWindowPacket) {
-            slots = packet.getSlots();
-        } else {
-            final int windowType = packet.getWindowInt();
-            if (windowID <= 5) {
-                slots = (windowType + 1) * 9;
-            } else
-                return;
+    protected void loginDisconnect(ServerLoginResponsePacket e) {
+        for (final ClientListener ls : cl.getClientListeners(true)) {
+            ls.disconnected(ChatMessages.parse(e.getResponse()), cl);
         }
+        cl.close();
+    }
 
-        final ItemsWindow win = new DummyItemsWindow(windowTitle, slots, windowID);
-        cl.setOpenWindow(windowID, win);
-        for (final ClientListener l : cl.getClientListeners(true)) {
-            l.windowOpened(windowID, win, registry, cl);
+    @ServerPacketHandler
+    protected void loginSuccess(BaseServerLoginSuccessPacket e) {
+        cl.setCurrentState(State.IN);
+        try {
+            String uid = e.getUuid();
+            cl.setUid(UUID.fromString(uid));
+        } catch (final Exception ex) {
+            ex.printStackTrace();
         }
     }
 
     @ServerPacketHandler
-    protected void statsReceived(ServerStatisticsPacket packet) {
-        final Map<String, Integer> values = packet.getValues();
-        for (final ClientListener l : cl.getClientListeners(true)) {
-            l.statisticsReceived(values, cl);
+    protected void onChatReceived(BaseServerChatMessagePacket msgPacket) {
+
+        final String json = msgPacket.getMessage();
+        String msg = ChatMessages.parse(json, cl);
+        for (final ClientListener ls : cl.getClientListeners(true)) {
+            boolean cancel = ls.messageReceived(msg, msgPacket.getPosition(), cl);
+            if (cancel) return;
+        }
+    }
+
+    @ServerPacketHandler
+    protected void onJoinGame(ServerJoinGamePacket packet) throws IOException {
+        final int entityID = packet.getEntityID();
+        cl.setEntityID(entityID);
+        cl.getPlayersTabList().clear();
+
+        if (!up.isSendMCBrand()) return;
+
+        final String cname = protocol > 340 ? "minecraft:brand" : "MC|Brand";
+
+        for (int x = 0; x < cl.getInventory().getSize(); x++) {
+            cl.getInventory().putItem(x, new ItemStack((short) 0, 1, (short) 0, null));
+        }
+
+        cl.sendPacket(
+                PacketFactory.constructPacket(registry, "ClientPluginMessagePacket", cname, up.getBrand().getBytes()));
+
+        for (int x = 0; x <= 1; x++) {
+            cl.sendPacket(PacketFactory.constructPacket(registry, "ClientStatusPacket", x));
+        }
+    }
+
+    @ServerPacketHandler
+    protected void onKeepAliveReceived(BaseServerKeepAlivePacket ka) {
+        lastKeepAlivePacket = System.currentTimeMillis();
+        if (up.isIgnoreKeepAlive()) return;
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(up.getAdditionalPing());
+                    long id = ka.getPid();
+                    if (ka.isLegacy())
+                        cl.sendPacket(
+                                new net.defekt.mc.chatclient.protocol.packets.alt.serverbound.play.ClientKeepAlivePacket(
+                                        registry, (int) id));
+                    else
+                        cl.sendPacket(new ClientKeepAlivePacket(registry, id));
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    @ServerPacketHandler
+    protected void playDisconnect(ServerDisconnectPacket packet) {
+        final String json = packet.getReason();
+        final boolean dsIgnore = up.isIgnoreDisconnect();
+
+        for (final ClientListener ls : cl.getClientListeners(true))
+            if (dsIgnore) {
+                ls.messageReceived(
+                        "\u00a7cPacket " + Integer.toHexString(packet.getID()) + ": " + ChatMessages.parse(json),
+                        Position.CHAT, cl);
+            } else {
+                ls.disconnected(ChatMessages.parse(json), cl);
+            }
+        if (!dsIgnore) {
+            cl.close();
         }
     }
 
@@ -303,75 +350,6 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
     }
 
     @ServerPacketHandler
-    protected void onJoinGame(ServerJoinGamePacket packet) throws IOException {
-        final int entityID = packet.getEntityID();
-        cl.setEntityID(entityID);
-        cl.getPlayersTabList().clear();
-
-        if (!up.isSendMCBrand()) return;
-
-        final String cname = protocol > 340 ? "minecraft:brand" : "MC|Brand";
-
-        for (int x = 0; x < cl.getInventory().getSize(); x++) {
-            cl.getInventory().putItem(x, new ItemStack((short) 0, 1, (short) 0, null));
-        }
-
-        cl.sendPacket(
-                PacketFactory.constructPacket(registry, "ClientPluginMessagePacket", cname, up.getBrand().getBytes()));
-
-        for (int x = 0; x <= 1; x++) {
-            cl.sendPacket(PacketFactory.constructPacket(registry, "ClientStatusPacket", x));
-        }
-    }
-
-    @ServerPacketHandler
-    protected void updateHealth(ServerUpdateHealthPacket packet) throws IOException {
-        if (packet.getHealth() <= 0) {
-            cl.sendPacket(PacketFactory.constructPacket(registry, "ClientStatusPacket", 0));
-        }
-        final float hp = packet.getHealth();
-        final int food = packet.getFood();
-        for (final ClientListener ls : cl.getClientListeners(true)) {
-            ls.healthUpdate(hp, food, cl);
-        }
-    }
-
-    @ServerPacketHandler
-    protected void onKeepAliveReceived(BaseServerKeepAlivePacket ka) {
-        lastKeepAlivePacket = System.currentTimeMillis();
-        if (up.isIgnoreKeepAlive()) return;
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(up.getAdditionalPing());
-                    long id = ka.getPid();
-                    if (ka.isLegacy())
-                        cl.sendPacket(
-                                new net.defekt.mc.chatclient.protocol.packets.alt.serverbound.play.ClientKeepAlivePacket(
-                                        registry, (int) id));
-                    else
-                        cl.sendPacket(new ClientKeepAlivePacket(registry, id));
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    @ServerPacketHandler
-    protected void onChatReceived(BaseServerChatMessagePacket msgPacket) {
-
-        final String json = msgPacket.getMessage();
-        String msg = ChatMessages.parse(json, cl);
-        for (final ClientListener ls : cl.getClientListeners(true)) {
-            boolean cancel = ls.messageReceived(msg, msgPacket.getPosition(), cl);
-            if (cancel) return;
-        }
-    }
-
-    @ServerPacketHandler
     protected void playerPositionAndLook(BaseServerPlayerPositionAndLookPacket p) throws IOException {
         final double x = p.getX();
         final double y = p.getY();
@@ -392,24 +370,6 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
 
         synchronized (cl.getLock()) {
             cl.getLock().notify();
-        }
-    }
-
-    @ServerPacketHandler
-    protected void playDisconnect(ServerDisconnectPacket packet) {
-        final String json = packet.getReason();
-        final boolean dsIgnore = up.isIgnoreDisconnect();
-
-        for (final ClientListener ls : cl.getClientListeners(true))
-            if (dsIgnore) {
-                ls.messageReceived(
-                        "\u00a7cPacket " + Integer.toHexString(packet.getID()) + ": " + ChatMessages.parse(json),
-                        Position.CHAT, cl);
-            } else {
-                ls.disconnected(ChatMessages.parse(json), cl);
-            }
-        if (!dsIgnore) {
-            cl.close();
         }
     }
 
@@ -475,6 +435,14 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
     }
 
     @ServerPacketHandler
+    protected void removeEntities(ServerDestroyEntitiesPacket packet) {
+        final Map<Integer, Entity> ets = cl.getStoredEntities();
+        for (final int id : packet.getEntityIDs()) {
+            ets.remove(id);
+        }
+    }
+
+    @ServerPacketHandler
     protected void resPackReceived(BaseServerResourcePackSendPacket packet) throws IOException {
         if (up.isShowResourcePackMessages()) {
             for (final ClientListener ls : cl.getClientListeners(true)) {
@@ -499,77 +467,109 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
     }
 
     @ServerPacketHandler
+    protected void setCompression(ServerLoginSetCompressionPacket cp) {
+        cl.setCompression(true);
+    }
+
+    @ServerPacketHandler
+    protected void spawnEntity(BaseServerSpawnEntityPacket sp) {
+        cl.getStoredEntities().put(sp.getId(), new Entity(sp.getUid(), sp.getType(), sp.getX(), sp.getY(), sp.getZ()));
+    }
+
+    @ServerPacketHandler
     protected void spawnPlaye(BaseServerSpawnPlayerPacket sp) {
         if (sp.getId() == cl.getEntityID()) return;
         cl.getStoredEntities().put(sp.getId(), new Player(sp.getUid(), sp.getX(), sp.getY(), sp.getZ()));
     }
 
     @ServerPacketHandler
-    protected void removeEntities(ServerDestroyEntitiesPacket packet) {
-        final Map<Integer, Entity> ets = cl.getStoredEntities();
-        for (final int id : packet.getEntityIDs()) {
-            ets.remove(id);
+    protected void statsReceived(ServerStatisticsPacket packet) {
+        final Map<String, Integer> values = packet.getValues();
+        for (final ClientListener l : cl.getClientListeners(true)) {
+            l.statisticsReceived(values, cl);
         }
     }
 
     @ServerPacketHandler
-    protected void entityRelativeMove(BaseServerEntityRelativeMovePacket move) {
-        final Entity entity = cl.getEntity(move.getEntityID());
-        if (entity == null) return;
-        final double x = entity.getX();
-        final double y = entity.getY();
-        final double z = entity.getZ();
-
-        final double dX = move.getDeltaX();
-        final double dY = move.getDeltaY();
-        final double dZ = move.getDeltaZ();
-
-        entity.setX(x + dX);
-        entity.setY(y + dY);
-        entity.setZ(z + dZ);
-        for (final ClientListener listener : cl.getClientListeners(true)) {
-            listener.entityMoved(entity, move.getEntityID(), cl);
+    protected void timeUpdate(ServerTimeUpdatePacket packet) {
+        for (final ClientListener cls : cl.getClientListeners(true)) {
+            cls.timeUpdated(packet.getTime(), packet.getWorldAge(), cl);
         }
     }
 
     @ServerPacketHandler
-    protected void entityTeleport(BaseServerEntityTeleportPacket tp) {
-        final double x = tp.getX();
-        final double y = tp.getY();
-        final double z = tp.getZ();
-        final int id = tp.getId();
-        final Entity et = cl.getEntity(id);
-        if (et != null) {
-            et.setX(x);
-            et.setZ(y);
-            et.setZ(z);
-            for (final ClientListener listener : cl.getClientListeners(true)) {
-                listener.entityMoved(et, id, cl);
+    protected void updateHealth(ServerUpdateHealthPacket packet) throws IOException {
+        if (packet.getHealth() <= 0) {
+            cl.sendPacket(PacketFactory.constructPacket(registry, "ClientStatusPacket", 0));
+        }
+        final float hp = packet.getHealth();
+        final int food = packet.getFood();
+        for (final ClientListener ls : cl.getClientListeners(true)) {
+            ls.healthUpdate(hp, food, cl);
+        }
+    }
+
+    @ServerPacketHandler
+    protected void windowClose(ServerCloseWindowPacket packet) {
+        if (!up.isEnableInventoryHandling() || protocol >= 755) return;
+
+        final int windowID = packet.getWindowID();
+        if (cl.getOpenWindows().containsKey(windowID) && cl.getOpenWindows().get(windowID) != null) {
+            cl.getOpenWindows().get(windowID).closeWindow();
+        } else if (windowID == 0) {
+            cl.getInventory().closeWindow();
+        }
+    }
+
+    @ServerPacketHandler
+    protected void windowItems(ServerWindowItemsPacket packet) {
+        if (!up.isEnableInventoryHandling() || protocol >= 755) return;
+
+        final int windowID = packet.getWindowID();
+        final List<ItemStack> items = packet.getItems();
+        if (windowID == 0 || (cl.getOpenWindows().containsKey(windowID) && cl.getOpenWindows().get(windowID) != null)) {
+            final ItemsWindow iWin = windowID == 0 ? cl.getInventory() : cl.getOpenWindows().get(windowID);
+            for (int x = 0; x < items.size(); x++) {
+                iWin.putItem(x, items.get(x));
             }
         }
     }
 
     @ServerPacketHandler
-    protected void setCompression(ServerLoginSetCompressionPacket cp) {
-        cl.setCompression(true);
-    }
+    protected void windowOpened(BaseServerOpenWindowPacket packet) {
+        if (!up.isEnableInventoryHandling() || protocol >= 755) return;
 
-    @ServerPacketHandler
-    protected void loginDisconnect(ServerLoginResponsePacket e) {
-        for (final ClientListener ls : cl.getClientListeners(true)) {
-            ls.disconnected(ChatMessages.parse(e.getResponse()), cl);
+        final int windowID = packet.getWindowID();
+        final String windowTitle = ChatMessages.removeColors(ChatMessages.parse(packet.getWindowTitle()));
+        int slots = 0;
+        if (packet instanceof ServerOpenWindowPacket) {
+            slots = packet.getSlots();
+        } else {
+            final int windowType = packet.getWindowInt();
+            if (windowID <= 5) {
+                slots = (windowType + 1) * 9;
+            } else
+                return;
         }
-        cl.close();
+
+        final ItemsWindow win = new DummyItemsWindow(windowTitle, slots, windowID);
+        cl.setOpenWindow(windowID, win);
+        for (final ClientListener l : cl.getClientListeners(true)) {
+            l.windowOpened(windowID, win, registry, cl);
+        }
     }
 
     @ServerPacketHandler
-    protected void loginSuccess(BaseServerLoginSuccessPacket e) {
-        cl.setCurrentState(State.IN);
-        try {
-            String uid = e.getUuid();
-            cl.setUid(UUID.fromString(uid));
-        } catch (final Exception ex) {
-            ex.printStackTrace();
+    protected void windowSlot(ServerSetSlotPacket packet) {
+        if (!up.isEnableInventoryHandling() || protocol >= 755) return;
+
+        final int windowID = packet.getWindowID();
+
+        final short slot = packet.getSlot();
+        final ItemStack item = packet.getItem();
+        if (windowID == 0 || (cl.getOpenWindows().containsKey(windowID) && cl.getOpenWindows().get(windowID) != null)) {
+            final ItemsWindow iWin = windowID == 0 ? cl.getInventory() : cl.getOpenWindows().get(windowID);
+            iWin.putItem(slot, item);
         }
     }
 
