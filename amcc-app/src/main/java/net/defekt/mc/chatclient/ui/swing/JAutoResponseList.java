@@ -6,7 +6,6 @@ import java.util.List;
 
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule;
 
-@SuppressWarnings("javadoc")
 public class JAutoResponseList extends JMemList<AutoResponseRule> {
     private static final long serialVersionUID = 1L;
 

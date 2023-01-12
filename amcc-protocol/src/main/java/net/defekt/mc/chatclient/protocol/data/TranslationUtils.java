@@ -14,6 +14,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import net.defekt.mc.chatclient.protocol.ProtocolEntry;
 import net.defekt.mc.chatclient.protocol.ProtocolNumber;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences.Language;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
@@ -72,7 +73,7 @@ public class TranslationUtils {
             }
 
             for (final int protocol : protocols) {
-                final ProtocolNumber pNum = ProtocolNumber.getForNumber(protocol);
+                final ProtocolEntry pNum = ProtocolNumber.getForNumber(protocol);
                 try {
                     final HashMap<Integer, ItemInfo> infs = new HashMap<>();
                     final String pName = pNum.name;

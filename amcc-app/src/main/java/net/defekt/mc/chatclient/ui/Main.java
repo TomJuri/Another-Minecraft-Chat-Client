@@ -122,6 +122,7 @@ import net.defekt.mc.chatclient.protocol.InternalPacketListener;
 import net.defekt.mc.chatclient.protocol.LANListener;
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.MinecraftStat;
+import net.defekt.mc.chatclient.protocol.ProtocolEntry;
 import net.defekt.mc.chatclient.protocol.ProtocolNumber;
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule;
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule.EffectType;
@@ -165,8 +166,8 @@ import net.defekt.mc.chatclient.ui.swing.JStringMemList;
 import net.defekt.mc.chatclient.ui.swing.JVBoxPanel;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
 import net.defekt.mc.chatclient.ui.swing.TablePacketButton;
+import net.defekt.mc.chatclient.ui.swing.VersionFieldRenderer;
 
-@SuppressWarnings({ "javadoc" })
 public class Main {
 
     private Main() {
@@ -742,6 +743,7 @@ public class Main {
         final JButton addServer = new JMinecraftButton(Messages.getString("Main.addServerOption"));
         addServer.addActionListener(new ActionListener() {
 
+            @SuppressWarnings("unchecked")
             @Override
             public void actionPerformed(final ActionEvent e) {
                 final JTextField nameField = new JPlaceholderField(Messages.getString("Main.serveNameField"));
@@ -749,9 +751,10 @@ public class Main {
                 final JTextField hostField = new JPlaceholderField(Messages.getString("Main.serverAddressField"));
 
                 final JComboBox<String> versionField = new JComboBox<>();
+                versionField.setRenderer(new VersionFieldRenderer());
                 versionField.addItem("Auto");
                 versionField.addItem("Always Ask");
-                for (final ProtocolNumber num : ProtocolNumber.values()) {
+                for (final ProtocolEntry num : ProtocolNumber.getValues()) {
                     versionField.addItem(num.name);
                 }
                 final JComboBox<ForgeMode> forgeField = new JComboBox<>();
@@ -3934,7 +3937,7 @@ public class Main {
                         try {
                             protocol = MinecraftStat.serverListPing(host, port).getProtocol();
                             boolean contains = false;
-                            for (final ProtocolNumber num : ProtocolNumber.values())
+                            for (final ProtocolEntry num : ProtocolNumber.getValues())
                                 if (num.protocol == protocol) {
                                     contains = true;
                                     break;
@@ -3965,8 +3968,9 @@ public class Main {
                     final Box bb = Box.createVerticalBox();
 
                     final JComboBox<String> pcBox = new JComboBox<>();
+                    pcBox.setRenderer(new VersionFieldRenderer());
                     pcBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-                    for (final ProtocolNumber num : ProtocolNumber.values()) {
+                    for (final ProtocolEntry num : ProtocolNumber.getValues()) {
                         pcBox.addItem(num.name);
                     }
 

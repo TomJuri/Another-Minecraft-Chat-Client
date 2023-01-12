@@ -6,6 +6,13 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.UUID;
 
+/**
+ * This class is a container for information associated with a plugin
+ * 
+ * @author Defective4
+ *
+ */
+@SuppressWarnings("javadoc")
 public class PluginDescription {
     private final String name;
     private final String version;
@@ -17,6 +24,18 @@ public class PluginDescription {
     private transient File origin;
     private final String remote;
 
+    /**
+     * Default constructor
+     * 
+     * @param name
+     * @param version
+     * @param main
+     * @param description
+     * @param author
+     * @param api
+     * @param website
+     * @param remote
+     */
     public PluginDescription(String name, String version, String main, String[] description, String author, String api,
             String website, String remote) {
         super();

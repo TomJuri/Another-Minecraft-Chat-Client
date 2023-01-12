@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import net.defekt.mc.chatclient.protocol.ProtocolNumber;
 import net.defekt.mc.chatclient.protocol.data.Messages;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV107;
 import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV110;
@@ -49,7 +51,6 @@ public class PacketFactory {
             put(498, 477);
             put(575, 573);
             put(578, 573);
-//            put(735, 735);
             put(754, 753);
             put(758, 757);
         }
@@ -80,6 +81,34 @@ public class PacketFactory {
             }
         }
     };
+
+    private static final Map<Integer, String> userVersions = new ConcurrentHashMap<>();
+
+    /**
+     * Get all user-defined versions
+     * 
+     * @return Map of user defined versions. Keys are protocol numbers and Strings
+     *         are version names.
+     */
+    public static Map<Integer, String> getUserVersions() {
+        return new ConcurrentHashMap<>(userVersions);
+    }
+
+    /**
+     * 
+     * @param protocol
+     * @param registry
+     * @param name
+     */
+    public static void registerNewVersion(int protocol, PacketRegistry registry, String name) {
+        for (ProtocolNumber num : ProtocolNumber.values())
+            if (num.protocol == protocol) {
+                name = num.name;
+                break;
+            }
+        userVersions.put(protocol, name);
+        packetRegistries.put(protocol, registry);
+    }
 
     /**
      * Returns packet registry or specified protocol number

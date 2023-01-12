@@ -1,5 +1,12 @@
 package net.defekt.mc.chatclient.protocol;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
+
 /**
  * Enum with all supported protocol versions and names
  * 
@@ -62,15 +69,38 @@ public enum ProtocolNumber {
      * @param name human readable version name ("x.x.x")
      * @return enum representing this version or last supported version
      */
-    public static ProtocolNumber getForName(final String name) {
-        for (final ProtocolNumber num : ProtocolNumber.values())
+    public static ProtocolEntry getForName(final String name) {
+        for (final ProtocolEntry num : ProtocolNumber.getValues())
             if (num.name.equals(name)) return num;
-        return ProtocolNumber.values()[0];
+        return ProtocolNumber.getValues()[0];
     }
 
-    public static ProtocolNumber getForNumber(final int protocol) {
-        for (final ProtocolNumber num : ProtocolNumber.values())
+    public static ProtocolEntry getForNumber(final int protocol) {
+        for (final ProtocolEntry num : ProtocolNumber.getValues())
             if (num.protocol == protocol) return num;
-        return ProtocolNumber.values()[ProtocolNumber.values().length - 1];
+        return ProtocolNumber.getValues()[ProtocolNumber.values().length - 1];
+    }
+
+    public static ProtocolEntry[] getValues() {
+        List<ProtocolEntry> num = new ArrayList<>();
+        List<ProtocolNumber> values = new ArrayList<>();
+        Collections.addAll(values, values());
+        for (Map.Entry<Integer, String> up : PacketFactory.getUserVersions().entrySet()) {
+            boolean add = true;
+            for (ProtocolNumber nm : values) {
+                if (up.getKey().equals(nm.protocol)) {
+                    add = false;
+                    break;
+                }
+            }
+            if (!add) break;
+            ProtocolEntry pe = new ProtocolEntry(up.getKey(), up.getValue());
+            num.add(pe);
+        }
+        for (ProtocolNumber nm : values) {
+            num.add(new ProtocolEntry(nm.protocol, nm.name));
+        }
+
+        return num.toArray(new ProtocolEntry[0]);
     }
 }

@@ -11,18 +11,38 @@ import net.defekt.mc.chatclient.protocol.event.AnnotatedMinecraftPacketListener;
 import net.defekt.mc.chatclient.protocol.event.PacketHandler;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseClientChatMessagePacket;
 
+/**
+ * Represents a command listener
+ * 
+ * @author Defective4
+ *
+ */
 public class CommandListener extends AnnotatedMinecraftPacketListener {
 
     private final Map<String, CommandHandler> commands = new ConcurrentHashMap<String, CommandHandler>();
 
+    /**
+     * Register a command.<br>
+     * Should be called from {@link AMCPlugin}
+     * 
+     * @param cmd
+     * @param handler
+     */
     protected void registerCommand(String cmd, CommandHandler handler) {
         commands.put(cmd.toLowerCase(), handler);
     }
 
+    /**
+     * Unregister a command.<br>
+     * Should be called from {@link AMCPlugin}
+     * 
+     * @param cmd
+     */
     protected void unregisterCommand(String cmd) {
         commands.remove(cmd);
     }
 
+    @SuppressWarnings("javadoc")
     @PacketHandler
     protected void chatSending(BaseClientChatMessagePacket packet, MinecraftClient cl) {
         try {
