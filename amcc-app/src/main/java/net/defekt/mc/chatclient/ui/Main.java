@@ -4,6 +4,7 @@ import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -1621,11 +1622,13 @@ public class Main {
 
         searchCtls.setMaximumSize(new Dimension((int) ((SwingUtils.sSize.width / 3) * 0.8), 20));
 
+        searchCtls.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
         availableMain.add(searchCtls);
         availableMain.add(new JScrollPane(availableDisplay));
 
         resetSearch.addActionListener(e -> {
             searchConsumer.accept(null);
+            searchField.setText("");
         });
 
         search.addActionListener(e -> {
@@ -1671,7 +1674,28 @@ public class Main {
 
         settings.add(atClear);
 
-        tabs.addTab(Messages.getString("Main.pluginsTabInstalled"), new JScrollPane(installedDisplay));
+        JPanel installedMain = new JPanel();
+        installedMain.setLayout(new BoxLayout(installedMain, BoxLayout.Y_AXIS));
+
+        JButton openPluginsFolder = new JButton(Messages.getString("Main.openPluginsFolder")); // TODO translation
+
+        Box installedCtls = Box.createHorizontalBox();
+        installedCtls.setAlignmentX(Box.LEFT_ALIGNMENT);
+
+        openPluginsFolder.addActionListener(e -> {
+            try {
+                Desktop.getDesktop().open(Plugins.PLUGIN_DIR);
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        });
+
+        installedCtls.add(openPluginsFolder);
+
+        installedMain.add(installedCtls);
+        installedMain.add(new JScrollPane(installedDisplay));
+
+        tabs.addTab(Messages.getString("Main.pluginsTabInstalled"), installedMain);
         tabs.addTab(Messages.getString("Main.pluginsTabAvailable"), availableMain);
         tabs.addTab(Messages.getString("Main.pluginsTabSettings"), settings);
         new Thread(sync).start();

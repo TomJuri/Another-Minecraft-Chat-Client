@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -75,11 +76,11 @@ public class PluginDescription {
     }
 
     public String getName() {
-        return name;
+        return name.replace("<html>", "").replace("</html>", "");
     }
 
     public String getVersion() {
-        return version;
+        return version.replace("<html>", "").replace("</html>", "");
     }
 
     public String getMain() {
@@ -87,11 +88,17 @@ public class PluginDescription {
     }
 
     public String[] getDescription() {
-        return description;
+        String[] desc = description;
+        if (desc == null) desc = new String[0];
+
+        String[] array = Arrays.copyOf(desc, desc.length > 5 ? 5 : desc.length);
+        for (int x = 0; x < array.length; x++)
+            array[x] = array[x].replace("<html>", "").replace("</html>", "");
+        return array;
     }
 
     public String getAuthor() {
-        return author;
+        return author.replace("<html>", "").replace("</html>", "");
     }
 
     public String getApi() {
