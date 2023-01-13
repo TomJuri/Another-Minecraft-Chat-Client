@@ -16,6 +16,7 @@ AMCC is a GUI application that lets you join a Minecraft server and chat freely 
 * 📦 Basic inventory handling and item using.
 * ⏰ Automatic messages and responses, perfect for AFKing.
 * ~� Support for Mojang authentication~
+* :electric_plug: Easily extensible via plugins!
 
 ## 📙 My goals
 This project is my take on implementing Minecraft's protocol from scratch.<br>
