@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>io.github.defective4.amcc</groupId>
 			<artifactId>amcc-protocol</artifactId>
-			<version>${project.version}</version>
+			<version>1.8.7</version>
 		</dependency>
 		<dependency>
 			<groupId>com.formdev</groupId>
@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>io.github.defective4.amcc</groupId>
 			<artifactId>amcc-api</artifactId>
-			<version>${project.version}</version>
+			<version>1.8.7</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -63,4 +63,9 @@
 			</plugin>
 		</plugins>
 	</build>
+	<description>Main AMCC runnable</description>
+	<url>https://github.com/Defective4/Another-Minecraft-Chat-Client</url>
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
 </project>

@@ -5,6 +5,7 @@
 	<version>1.8.7</version>
 	<packaging>pom</packaging>
 	<name>Another Minecraft Chat Client</name>
+	
 	<modules>
 		<module>amcc-protocol</module>
 		<module>amcc-app</module>
@@ -27,4 +28,11 @@
 			</plugin>
 		</plugins>
 	</build>
+	<url>https://github.com/Defective4/Another-Minecraft-Chat-Client</url>
+	<description>Root project for AMCC Protocol and Plugin API</description>
+	<scm>
+		<url>https://github.com/Defective4/Another-Minecraft-Chat-Client</url>
+		<connection>git</connection>
+		<developerConnection>Defective4</developerConnection>
+	</scm>
 </project>

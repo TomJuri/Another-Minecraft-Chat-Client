@@ -11,11 +11,25 @@
 		<dependency>
 			<groupId>io.github.defective4.amcc</groupId>
 			<artifactId>amcc-protocol</artifactId>
-			<version>${project.version}</version>
+			<version>1.8.7</version>
 		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>3.0.1</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -54,4 +68,11 @@
 			</plugin>
 		</plugins>
 	</build>
+	<url>https://github.com/Defective4/Another-Minecraft-Chat-Client</url>
+	<description>API used to write plugins for Another Minecraft Chat Client</description>
+	<scm>
+		<url>https://github.com/Defective4/Another-Minecraft-Chat-Client</url>
+		<connection>git</connection>
+		<developerConnection>Defective4</developerConnection>
+	</scm>
 </project>
