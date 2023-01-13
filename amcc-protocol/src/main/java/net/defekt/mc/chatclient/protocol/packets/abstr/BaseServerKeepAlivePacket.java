@@ -20,7 +20,7 @@ public class BaseServerKeepAlivePacket extends Packet {
     protected long pid;
 
     /**
-     * If the packet comes from a < 1.9 client
+     * If the packet comes from a {@literal <} 1.9 client
      */
     protected boolean legacy = false;
 

@@ -43,7 +43,7 @@ public class ClientPlayerDiggingPacket extends Packet {
          */
         FINISH_ACTION(5),
         /**
-         * Swap items in hands (< 1.8)
+         * Swap items in hands ({@literal <} 1.8)
          */
         SWAP_ITEMS(6);
 
