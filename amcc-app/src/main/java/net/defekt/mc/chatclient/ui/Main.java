@@ -1664,8 +1664,22 @@ public class Main {
             searchConsumer.accept(new SearchQuery(query, type));
         });
 
+        JPanel settings = new JPanel();
+        settings.setLayout(new BoxLayout(settings, BoxLayout.Y_AXIS));
+
+        JButton atClear = new JButton("Clear trusted authors");
+        atClear.setEnabled(up.getTrustedAuthors().size() > 0);
+
+        atClear.addActionListener(e -> {
+            up.getTrustedAuthors().clear();
+            atClear.setEnabled(false);
+        });
+
+        settings.add(atClear);
+
         tabs.addTab("Installed", new JScrollPane(installedDisplay));
         tabs.addTab("Available", availableMain);
+        tabs.addTab("Settings", settings);
         new Thread(sync).start();
         tabs.setPreferredSize(new Dimension(SwingUtils.sSize.width / 3, (int) (SwingUtils.sSize.getHeight() / 2)));
         od.setContentPane(tabs);
