@@ -3,6 +3,8 @@ v1.9.0
 
 [+] Added:
   - Plugins! You can now extend AMCC functionality by creating, downloading and using plugins!
+  - Some minor functional improvements (including autologin function and graphical improvements)
+  - Refactored most of the code
 
 [/] Changed:
   - Project is now separated into modules.
