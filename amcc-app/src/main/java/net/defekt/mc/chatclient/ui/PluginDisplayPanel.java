@@ -146,7 +146,7 @@ public class PluginDisplayPanel extends JPanel {
 
                     } else if (!verified && !trusted) {
                         SwingUtils.playExclamation();
-                        JCheckBox trustBox = new JCheckBox("Trust this author");
+                        JCheckBox trustBox = new JCheckBox(Messages.getString("PluginManager.trustAuthorCheck"));
                         int resp = JOptionPane.showOptionDialog(parent,
                                 new Object[] { Messages.getString("PluginManager.loadUnverifiedWarning"), trustBox },
                                 Messages.getString("Main.inventoryHandlingHelpTitle"), JOptionPane.OK_CANCEL_OPTION,

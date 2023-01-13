@@ -27,9 +27,9 @@ import net.defekt.mc.chatclient.ui.MultipartRequest;
 
 public class Plugins {
 
-    private static final String pluginVerifyURL = "http://127.0.0.1/verify.php";
-    private static final String pluginRepoURL = "http://127.0.0.1/repo.json"; // TODO
-    public static final String pluginStarsURL = "http://127.0.0.1/stars.php";
+    private static final String pluginVerifyURL = "https://defekt4.tk/amcc/verify.php";
+    private static final String pluginRepoURL = "https://raw.githubusercontent.com/Defective4/AMCC-Plugins/master/repo.json";
+    public static final String pluginStarsURL = "https://defekt4.tk/amcc/stars.php";
 
     private static final Map<String, Boolean> cache = new ConcurrentHashMap<>();
 
