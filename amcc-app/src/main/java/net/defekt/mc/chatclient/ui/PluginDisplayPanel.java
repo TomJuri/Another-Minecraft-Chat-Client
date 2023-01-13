@@ -30,6 +30,7 @@ import net.defekt.mc.chatclient.api.AMCPlugin;
 import net.defekt.mc.chatclient.api.PluginDescription;
 import net.defekt.mc.chatclient.api.ui.GUIComponents;
 import net.defekt.mc.chatclient.plugins.Plugins;
+import net.defekt.mc.chatclient.protocol.data.Messages;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.ui.swing.JLinkLabel;
@@ -101,11 +102,10 @@ public class PluginDisplayPanel extends JPanel {
             del.addActionListener(e -> {
                 SwingUtils.playAsterisk();
                 int resp = JOptionPane.showOptionDialog(parent,
-                        "Are you sure you want to delete plugin " + plugin.getName() + "?\n"
-                                + "If you press \"Yes\" the plugin will be deleted on the next startup.\n"
-                                + "This action is irreversible.",
-                        "Deleting plugin", JOptionPane.CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                        new String[] { "Yes", "No" }, 0);
+                        String.format(Messages.getString("PluginManager.deleteWarning"), plugin.getName()),
+                        Messages.getString("PluginManager.deleteWarningTitle"), JOptionPane.CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null,
+                        new String[] { Messages.getString("Main.yes"), Messages.getString("Main.no") }, 0);
                 if (resp == 1) return;
                 deleted.add(id);
                 enabled.remove(id);
@@ -120,10 +120,10 @@ public class PluginDisplayPanel extends JPanel {
                     if (!plugin.getApi().equals(Main.VERSION)) {
                         SwingUtils.playAsterisk();
                         int resp = JOptionPane.showOptionDialog(parent,
-                                "You are trying to load a plugin written\n" + "for an older version of AMCC.\n"
-                                        + "Unexpected behavior may happen.\n\n" + "Do you want to continue?",
-                                "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
-                                new String[] { "Yes", "No" }, 0);
+                                Messages.getString("PluginManager.loadIncompatibleWarning"),
+                                Messages.getString("Main.inventoryHandlingHelpTitle"), JOptionPane.OK_CANCEL_OPTION,
+                                JOptionPane.WARNING_MESSAGE, null,
+                                new String[] { Messages.getString("Main.yes"), Messages.getString("Main.no") }, 0);
                         if (resp == 1) return;
                     }
 
@@ -134,28 +134,26 @@ public class PluginDisplayPanel extends JPanel {
 
                     if (malicious) {
                         SwingUtils.playExclamation();
-                        JOptionPane.showOptionDialog(parent,
-                                "This plugin was flagged as malicious and can't be enabled at the moment.\n"
-                                        + "It's highly recommended to completely delete the plugin.",
-                                "Malicious plugin detected", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE,
-                                null, new Object[] { new JButton("Yes, I understand the risk") {
+                        JOptionPane.showOptionDialog(parent, Messages.getString("PluginManager.loadMaliciousError"),
+                                Messages.getString("PluginManager.maliciousTitle"), JOptionPane.OK_CANCEL_OPTION,
+                                JOptionPane.ERROR_MESSAGE, null,
+                                new Object[] { new JButton(Messages.getString("PluginManager.unverifiedYes")) {
                                     {
                                         setEnabled(false);
                                     }
-                                }, "Take me back" }, 0);
+                                }, Messages.getString("PluginManager.unverifiedNo") }, 0);
                         return;
 
                     } else if (!verified && !trusted) {
                         SwingUtils.playExclamation();
                         JCheckBox trustBox = new JCheckBox("Trust this author");
                         int resp = JOptionPane.showOptionDialog(parent,
-                                new Object[] { "You are trying to load an unverified plugin.\n"
-                                        + "Plugins can access all data sent between client and sever,\n"
-                                        + "as well as any information outside of AMCC (such as private files and documents)\n"
-                                        + "Please make sure to download plugins only from trusted sources.\n\n"
-                                        + "Do you wish to continue?", trustBox },
-                                "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
-                                new String[] { "Yes, I understand the risk", "Take me back" }, 0);
+                                new Object[] { Messages.getString("PluginManager.loadUnverifiedWarning"), trustBox },
+                                Messages.getString("Main.inventoryHandlingHelpTitle"), JOptionPane.OK_CANCEL_OPTION,
+                                JOptionPane.WARNING_MESSAGE, null,
+                                new String[] { Messages.getString("PluginManager.unverifiedYes"),
+                                        Messages.getString("PluginManager.unverifiedNo") },
+                                0);
                         if (trustBox.isSelected()) prefs.getTrustedAuthors().add(plugin.getAuthor());
                         if (resp == 1) return;
                     }
@@ -167,7 +165,8 @@ public class PluginDisplayPanel extends JPanel {
                         enabled.add(id);
                     } catch (Exception e2) {
                         e2.printStackTrace();
-                        SwingUtils.showErrorDialog(parent, "Error", e2, "There was an error loading the plugin!");
+                        SwingUtils.showErrorDialog(parent, Messages.getString("ServerDetailsDialog.error"), e2,
+                                Messages.getString("PluginManager.errorLoading"));
                         return;
                     }
                 } else {
@@ -180,7 +179,7 @@ public class PluginDisplayPanel extends JPanel {
             ctls.add(load);
             ctls.add(del);
         } else {
-            JButton download = new JButton("Download");
+            JButton download = new JButton(Messages.getString("PluginManager.btnDownload"));
             JButton starBtn = new JButton(Integer.toString(stars), star);
             starBtn.setEnabled(!starred);
 
@@ -204,7 +203,7 @@ public class PluginDisplayPanel extends JPanel {
             download.setEnabled(!(isInstalled ^ hasUpdates));
 
             if (hasUpdates) {
-                download.setText("Update");
+                download.setText(Messages.getString("PluginManager.btnUpdate"));
             }
 
             boolean localHasUpdates = hasUpdates;
@@ -237,11 +236,9 @@ public class PluginDisplayPanel extends JPanel {
 
                 if (localHasUpdates) {
                     SwingUtils.playAsterisk();
-                    JOptionPane.showOptionDialog(parent,
-                            "Sorry, but automatic updates are not yet supported.\n"
-                                    + "Please delete the plugin manually and then try to download.",
-                            "Sorry", JOptionPane.CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
-                            new String[] { "Cancel" }, 0);
+                    JOptionPane.showOptionDialog(parent, Messages.getString("PluginManager.updateWarning"),
+                            Messages.getString("Main.cancel"), JOptionPane.CANCEL_OPTION,
+                            JOptionPane.INFORMATION_MESSAGE, null, new String[] { "Cancel" }, 0);
                 } else if (downloader != null) {
                     download.setEnabled(false);
                     new Thread(() -> {
@@ -270,25 +267,24 @@ public class PluginDisplayPanel extends JPanel {
         if (malicious) {
             verified = false;
             trusted = false;
-            JLabel verificationLabel = new JLabel("Malicious!");
+            JLabel verificationLabel = new JLabel(Messages.getString("PluginManager.malicious"));
             verificationLabel.setIcon(exc);
 
             add(verificationLabel);
         } else if (verified) {
-            JLabel verificationLabel = new JLabel("Verified!");
+            JLabel verificationLabel = new JLabel(Messages.getString("PluginManager.verified"));
             verificationLabel.setIcon(check);
 
             add(verificationLabel);
         } else if (trusted) {
-            JLabel verificationLabel = new JLabel("Trusted");
+            JLabel verificationLabel = new JLabel(Messages.getString("PluginManager.trusted"));
 //            verificationLabel.setIcon(check);
 
             add(verificationLabel);
         }
 
         if (!plugin.getApi().equals(Main.VERSION)) {
-            JLabel deprecationLabel = new JLabel(
-                    "Incompatible version! This plugin is made for AMCC v" + plugin.getApi());
+            JLabel deprecationLabel = new JLabel(Messages.getString("PluginManager.incompatible") + plugin.getApi());
             deprecationLabel.setForeground(new Color(100, 0, 0));
             deprecationLabel.setIcon(exc);
 
@@ -307,7 +303,8 @@ public class PluginDisplayPanel extends JPanel {
 
     private static void initBtnStates(JButton load, JButton delete, boolean enabled, boolean halted, boolean deleted) {
         boolean restart = halted || deleted;
-        load.setText(restart ? "Restart required..." : enabled ? "Disable" : "Enable");
+        load.setText(restart ? Messages.getString("PluginManager.restart")
+                : enabled ? Messages.getString("PluginManager.disable") : Messages.getString("PluginManager.enable"));
         load.setEnabled(!restart);
         delete.setEnabled(!deleted);
     }

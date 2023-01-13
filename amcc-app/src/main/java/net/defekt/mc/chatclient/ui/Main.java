@@ -1464,7 +1464,6 @@ public class Main {
         };
 
         for (AMCPlugin plugin : loadedPlugins) {
-            // TODO MinecraftClient creation events etc.
             plugin.onGUIInitialized(guiComponents);
         }
         guiComponents.revalidateAll();
@@ -1484,7 +1483,7 @@ public class Main {
         JPanel availableDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
 
         Runnable sync = () -> {
-            Component installedLoadingCpt = createLoadingCpt("Verifying installed plugins...");
+            Component installedLoadingCpt = createLoadingCpt(Messages.getString("Main.verifyingPlugins"));
             installedDisplay.add(installedLoadingCpt);
             int initial = tabs.getSelectedIndex();
             setAllTabs(tabs, false);
@@ -1492,7 +1491,7 @@ public class Main {
             PluginDescription[] descs = Plugins.listPlugins();
             Plugins.verify(ex -> {
                 SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), ex,
-                        "An error occured while verifying installed plugins");
+                        Messages.getString("Main.verifyingError"));
             }, descs);
             for (PluginDescription desc : descs)
                 installedDisplay.add(new PluginDisplayPanel(guiComponents, desc, false, null, od));
@@ -1508,7 +1507,8 @@ public class Main {
         Consumer<SearchQuery> searchConsumer = query -> {
             if (tabs.getSelectedIndex() == 1) {
                 new Thread(() -> {
-                    Component installedLoadingCpt = createLoadingCpt("Fetching available plugins list...");
+                    Component installedLoadingCpt = createLoadingCpt(
+                            Messages.getString("Main.availablePluginsFetching"));
                     setAllTabs(tabs, false);
                     for (Component cpt : searchCtls.getComponents())
                         cpt.setEnabled(false);
@@ -1521,7 +1521,7 @@ public class Main {
 
                     for (PluginDescription plugin : Plugins.listRemotePlugins(ex -> {
                         SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), ex,
-                                "An error occured while fetching remote plugins list");
+                                Messages.getString("Main.availablePluginsFetchingError"));
                     })) {
                         if (query != null) {
                             String subject;
@@ -1554,7 +1554,8 @@ public class Main {
                             if (!subject.toLowerCase().contains(query.getQuery().toLowerCase())) continue;
                         }
                         availableDisplay.add(new PluginDisplayPanel(guiComponents, plugin, true, desc -> {
-                            Component downloadingCpt = createLoadingCpt("Downloading " + desc.getName() + "...");
+                            Component downloadingCpt = createLoadingCpt(
+                                    Messages.getString("Main.downloading") + " " + desc.getName() + "...");
                             availableDisplay.removeAll();
                             availableDisplay.add(downloadingCpt);
                             setAllTabs(tabs, false);
@@ -1577,7 +1578,7 @@ public class Main {
                                     is.close();
                                 } catch (Exception e2) {
                                     SwingUtils.showErrorDialog(od, "Error!", e2,
-                                            "There was an error while downloading the plugin!");
+                                            Messages.getString("Main.downloadingError"));
                                 }
 
                             tabs.setSelectedIndex(0);
@@ -1610,7 +1611,8 @@ public class Main {
         JButton search = new JButton("Search...");
         resetSearch.setEnabled(false);
         JComboBox<String> searchBy = new JComboBox<>(
-                new String[] { "by Name", "by Author", "by Description", "by Website" });
+                new String[] { Messages.getString("Main.searchByName"), Messages.getString("Main.searchByAuthor"),
+                        Messages.getString("Main.searchByDescription"), Messages.getString("Main.searchByWebsite") });
 
         searchCtls.add(searchField);
         searchCtls.add(searchBy);
@@ -1631,7 +1633,7 @@ public class Main {
             String query = searchField.getText();
             if (query.isEmpty()) {
                 SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), null,
-                        "You must specify a phrase to search");
+                        Messages.getString("Main.searchNoPhrase"));
                 return;
             }
             switch (searchBy.getSelectedIndex()) {
@@ -1659,7 +1661,7 @@ public class Main {
         JPanel settings = new JPanel();
         settings.setLayout(new BoxLayout(settings, BoxLayout.Y_AXIS));
 
-        JButton atClear = new JButton("Clear trusted authors");
+        JButton atClear = new JButton(Messages.getString("Main.pluginSettingsClearTrusted"));
         atClear.setEnabled(up.getTrustedAuthors().size() > 0);
 
         atClear.addActionListener(e -> {
@@ -1669,9 +1671,9 @@ public class Main {
 
         settings.add(atClear);
 
-        tabs.addTab("Installed", new JScrollPane(installedDisplay));
-        tabs.addTab("Available", availableMain);
-        tabs.addTab("Settings", settings);
+        tabs.addTab(Messages.getString("Main.pluginsTabInstalled"), new JScrollPane(installedDisplay));
+        tabs.addTab(Messages.getString("Main.pluginsTabAvailable"), availableMain);
+        tabs.addTab(Messages.getString("Main.pluginsTabSettings"), settings);
         new Thread(sync).start();
         tabs.setPreferredSize(new Dimension(SwingUtils.sSize.width / 3, (int) (SwingUtils.sSize.getHeight() / 2)));
         od.setContentPane(tabs);
@@ -2263,7 +2265,7 @@ public class Main {
         JPanel accBox = new JPanel(new GridLayout(10, 1));
         JTextField loginCommand = new JTextField(up.getAutoLoginCommand());
 
-        accBox.add(new JLabel("Default server login command"));
+        accBox.add(new JLabel(Messages.getString("Main.settingsAutoLoginLabel")));
         accBox.add(loginCommand);
 
         jtp.add(Messages.getString("Main.settingsTabGeneral"), gnBox);
@@ -2274,7 +2276,7 @@ public class Main {
         jtp.add(Messages.getString("Main.settingsTabProtocol"), pkBox);
         jtp.add(Messages.getString("Main.settingsTabInventory"), ivBox);
         jtp.add(Messages.getString("Main.settingsTabDiscord"), dscBox);
-        jtp.add("Accessibility", accBox);
+        jtp.add(Messages.getString("Main.settingsTabAccessibility"), accBox);
         jtp.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
