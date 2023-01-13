@@ -59,7 +59,7 @@ import net.defekt.mc.chatclient.ui.swing.SwingUtils;
  * @author Defective4
  *
  */
-public class SwingItemsWindow {
+public class SwingItemsWindow extends ItemsWindow {
 
     private static final Map<String, BufferedImage> itemTextures = new HashMap<String, BufferedImage>();
     private static final String[] armorNames = new String[] { "helmet", "chestplate", "leggings", "boots", "pumpkin" };
@@ -94,6 +94,7 @@ public class SwingItemsWindow {
      */
     public SwingItemsWindow(final String title, final int size, final int windowID, final MinecraftClient client,
             final PacketRegistry registry) {
+        super(title, size, windowID, client, registry);
 
         isInventory = size == 46;
 

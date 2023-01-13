@@ -29,8 +29,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import net.defekt.mc.chatclient.protocol.data.ChatMessages;
-import net.defekt.mc.chatclient.protocol.data.DummyItemsWindow;
 import net.defekt.mc.chatclient.protocol.data.Hosts;
+import net.defekt.mc.chatclient.protocol.data.ItemWindowsFactory;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.data.Messages;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
@@ -114,6 +114,8 @@ public class MinecraftClient {
     private Thread playerPositionThread = null;
 
     private final Timer internalTickTimer = new Timer("tickTimer", true);
+
+    private final ItemWindowsFactory windowsFactory = new ItemWindowsFactory();
 
     /**
      * Add a outbound packet listener to listen for sent packets
@@ -316,7 +318,8 @@ public class MinecraftClient {
 
             this.os = soc.getOutputStream();
             this.is = new VarInputStream(soc.getInputStream());
-            inventory = new DummyItemsWindow(Messages.getString("MinecraftClient.clientInventoryName"), 46, 0);
+            inventory = windowsFactory.createWindow(Messages.getString("MinecraftClient.clientInventoryName"), 46, 0,
+                    this, reg);
             packetListeners.add(new MainPacketListener(this));
 
             final Packet handshake = new HandshakePacket(reg, protocol,
@@ -1245,5 +1248,14 @@ public class MinecraftClient {
      */
     public State getState() {
         return state;
+    }
+
+    /**
+     * Get default item windows factory
+     * 
+     * @return item windows factory bound to this client
+     */
+    public ItemWindowsFactory getWindowsFactory() {
+        return windowsFactory;
     }
 }

@@ -4217,6 +4217,7 @@ public class Main {
                         }
                         final MinecraftClient cl = new MinecraftClient(host, port, iprotocol,
                                 forgeMode == ForgeMode.AUTO ? forge : forgeMode == ForgeMode.NEVER == false);
+                        cl.getWindowsFactory().setItemWindowsClass(SwingItemsWindow.class);
                         clients.put(fPane, cl);
 
                         if (proxy != null) {

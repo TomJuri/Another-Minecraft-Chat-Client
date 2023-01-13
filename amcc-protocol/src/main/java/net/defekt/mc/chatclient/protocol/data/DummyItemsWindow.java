@@ -1,5 +1,8 @@
 package net.defekt.mc.chatclient.protocol.data;
 
+import net.defekt.mc.chatclient.protocol.MinecraftClient;
+import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+
 /**
  * An implementation of {@link ItemsWindow} acting as a void for items.<br>
  * It does not perform any item handling.
@@ -7,7 +10,7 @@ package net.defekt.mc.chatclient.protocol.data;
  * @author Defective4
  *
  */
-public class DummyItemsWindow implements ItemsWindow {
+public class DummyItemsWindow extends ItemsWindow {
 
     private final int slots;
 
@@ -15,20 +18,22 @@ public class DummyItemsWindow implements ItemsWindow {
      * Default constructor
      * 
      * @param title
-     * @param slots
-     * @param id
+     * @param size
+     * @param windowID
+     * @param client
+     * @param registry
      */
-    public DummyItemsWindow(String title, int slots, int id) {
-        super();
-        this.slots = slots;
+    public DummyItemsWindow(String title, int size, int windowID, MinecraftClient client, PacketRegistry registry) {
+        super(title, size, windowID, client, registry);
+        this.slots = size;
     }
 
     @Override
-    public void finishTransaction(int windowID) {
+    public void finishTransaction(short windowID) {
     }
 
     @Override
-    public void cancelTransaction(int windowID) {
+    public void cancelTransaction(short windowID) {
     }
 
     @Override

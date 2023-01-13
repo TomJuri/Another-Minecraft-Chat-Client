@@ -18,7 +18,6 @@ import com.google.gson.JsonPrimitive;
 
 import net.defekt.mc.chatclient.protocol.MojangAPI.RequestResponse;
 import net.defekt.mc.chatclient.protocol.data.ChatMessages;
-import net.defekt.mc.chatclient.protocol.data.DummyItemsWindow;
 import net.defekt.mc.chatclient.protocol.data.Hosts;
 import net.defekt.mc.chatclient.protocol.data.ItemStack;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
@@ -81,6 +80,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
 
     /**
      * Default constrictor
+     * 
      * @param client
      */
     protected MainPacketListener(MinecraftClient client) {
@@ -552,7 +552,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                 return;
         }
 
-        final ItemsWindow win = new DummyItemsWindow(windowTitle, slots, windowID);
+        final ItemsWindow win = cl.getWindowsFactory().createWindow(windowTitle, slots, windowID, cl, registry);
         cl.setOpenWindow(windowID, win);
         for (final ClientListener l : cl.getClientListeners(true)) {
             l.windowOpened(windowID, win, registry, cl);
