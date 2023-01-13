@@ -120,10 +120,12 @@ public class Plugins {
 
     public static File PLUGIN_DIR = new File("plugins");
 
+    @SuppressWarnings("resource")
     public static AMCPlugin loadPlugin(PluginDescription desc) {
-        try (URLClassLoader ucl = new URLClassLoader(
-                new URL[] { new URL("file:///" + desc.getOrigin().getAbsolutePath()) },
-                Plugins.class.getClassLoader())) {
+        try {
+            URLClassLoader ucl = new URLClassLoader(
+                    new URL[] { new URL("file:///" + desc.getOrigin().getAbsolutePath()) },
+                    Plugins.class.getClassLoader());
 
             AMCPlugin instance = (AMCPlugin) ucl.loadClass(desc.getMain()).newInstance();
             instance.onLoaded();

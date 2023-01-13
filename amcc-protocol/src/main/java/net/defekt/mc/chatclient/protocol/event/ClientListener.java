@@ -8,6 +8,7 @@ import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.entity.Entity;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 
 /**
@@ -18,6 +19,16 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
  * @author Defective4
  */
 public interface ClientListener {
+
+    /**
+     * Invoked when client's game state gets changed
+     * 
+     * @param oldState state before change
+     * @param newState state after change
+     * @param client
+     */
+    public void gameStateChanged(State oldState, State newState, MinecraftClient client);
+
     /**
      * Invoked when a chat message was received.
      * 

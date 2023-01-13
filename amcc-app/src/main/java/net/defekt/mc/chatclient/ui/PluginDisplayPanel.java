@@ -27,8 +27,8 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import net.defekt.mc.chatclient.api.AMCPlugin;
-import net.defekt.mc.chatclient.api.GUIComponents;
 import net.defekt.mc.chatclient.api.PluginDescription;
+import net.defekt.mc.chatclient.api.ui.GUIComponents;
 import net.defekt.mc.chatclient.plugins.Plugins;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;

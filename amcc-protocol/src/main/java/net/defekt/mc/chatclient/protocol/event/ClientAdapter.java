@@ -7,6 +7,7 @@ import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.entity.Entity;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 
 /**
@@ -56,6 +57,10 @@ public abstract class ClientAdapter implements ClientListener {
 
     @Override
     public void tick(MinecraftClient client) throws IOException {
+    }
+
+    @Override
+    public void gameStateChanged(State oldState, State newState, MinecraftClient client) {
     }
 
 }

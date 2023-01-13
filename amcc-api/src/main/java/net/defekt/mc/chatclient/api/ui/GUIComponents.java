@@ -1,7 +1,9 @@
-package net.defekt.mc.chatclient.api;
+package net.defekt.mc.chatclient.api.ui;
 
 import java.awt.TrayIcon;
 import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -15,7 +17,9 @@ import net.defekt.mc.chatclient.protocol.ProtocolNumber;
 import net.defekt.mc.chatclient.protocol.data.ForgeMode;
 
 /**
- * Container for all modifiable GUI components of the main application.
+ * Container for all modifiable GUI components of the main application.<br>
+ * Please not that the listeners defined here are shared between all active
+ * plugins!
  * 
  * @author Defective4
  *
@@ -26,6 +30,27 @@ public abstract class GUIComponents {
     private final JMenuBar mainMenuBar;
     private final JTabbedPane mainTabPane;
     private final TrayIcon mainTrayIcon;
+
+    private final List<UserActionListener> actionListeners = new ArrayList<>();
+
+    public void addActionListener(UserActionListener listener) {
+        if (!actionListeners.contains(listener)) actionListeners.add(listener);
+    }
+
+    public void removeActionListener(UserActionListener listener) {
+        actionListeners.remove(listener);
+    }
+
+    public UserActionListener[] getActionListeners() {
+        return actionListeners.toArray(new UserActionListener[0]);
+    }
+
+    /**
+     * Get all clients connected and visible in user's interface
+     * 
+     * @return array of Minecraft clients
+     */
+    public abstract MinecraftClient[] getConnectedClients();
 
     public GUIComponents(JFrame mainWindow, JMenuBar mainMenuBar, JTabbedPane tabPane, TrayIcon mainTrayIcon) {
         this.mainWindow = mainWindow;

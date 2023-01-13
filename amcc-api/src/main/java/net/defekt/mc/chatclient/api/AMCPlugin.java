@@ -1,6 +1,7 @@
 package net.defekt.mc.chatclient.api;
 
 import net.defekt.mc.chatclient.api.command.CommandHandler;
+import net.defekt.mc.chatclient.api.ui.GUIComponents;
 import net.defekt.mc.chatclient.protocol.GlobalListeners;
 import net.defekt.mc.chatclient.protocol.event.ClientListener;
 import net.defekt.mc.chatclient.protocol.event.MinecraftPacketListener;
@@ -30,7 +31,8 @@ public abstract class AMCPlugin {
 
     /**
      * Called when GUI fully initializes
-     * @param components 
+     * 
+     * @param components
      */
     public void onGUIInitialized(GUIComponents components) {
 

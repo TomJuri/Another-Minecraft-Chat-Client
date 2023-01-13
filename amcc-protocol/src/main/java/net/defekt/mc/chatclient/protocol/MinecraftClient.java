@@ -223,7 +223,7 @@ public class MinecraftClient {
 
     /**
      * Set current client state. This method is used internally by
-     * {@link ClientPacketListener} bound to this client
+     * {@link MainPacketListener} bound to this client
      * 
      * @param state next client state
      */
@@ -1236,5 +1236,14 @@ public class MinecraftClient {
      */
     public long getStartDate() {
         return startDate;
+    }
+
+    /**
+     * Get current game state
+     * 
+     * @return game state
+     */
+    public State getState() {
+        return state;
     }
 }

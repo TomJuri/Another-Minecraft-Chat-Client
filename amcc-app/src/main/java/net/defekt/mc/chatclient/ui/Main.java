@@ -116,8 +116,9 @@ import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.table.DefaultTableModel;
 
 import net.defekt.mc.chatclient.api.AMCPlugin;
-import net.defekt.mc.chatclient.api.GUIComponents;
 import net.defekt.mc.chatclient.api.PluginDescription;
+import net.defekt.mc.chatclient.api.ui.GUIComponents;
+import net.defekt.mc.chatclient.api.ui.UserActionListener;
 import net.defekt.mc.chatclient.integrations.discord.DiscordPresence;
 import net.defekt.mc.chatclient.plugins.Plugins;
 import net.defekt.mc.chatclient.plugins.Plugins.StarStats;
@@ -147,6 +148,7 @@ import net.defekt.mc.chatclient.protocol.data.UserPreferences.Language;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences.SkinRule;
 import net.defekt.mc.chatclient.protocol.entity.Entity;
 import net.defekt.mc.chatclient.protocol.entity.Player;
+import net.defekt.mc.chatclient.protocol.event.ClientAdapter;
 import net.defekt.mc.chatclient.protocol.event.ClientListener;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.protocol.io.ListenerHashMap.MapChangeListener;
@@ -560,6 +562,8 @@ public class Main {
                                         tray.remove(trayIcon);
                                         trayIcon = null;
                                         win.setVisible(true);
+                                        for (UserActionListener ls : guiComponents.getActionListeners())
+                                            ls.maximized();
                                     }
                                 };
                                 trayIcon.addMouseListener(ml);
@@ -693,6 +697,8 @@ public class Main {
 
                                 tray.add(trayIcon);
                                 win.setVisible(false);
+                                for (UserActionListener ls : guiComponents.getActionListeners())
+                                    ls.minimizedToTray(trayIcon);
                             } catch (final AWTException e1) {
                                 e1.printStackTrace();
                             }
@@ -1148,9 +1154,12 @@ public class Main {
                 final String uname = (String) unameField.getSelectedItem();
                 final JSplitPane b = createServerPane(et, uname, new String(upassField.getPassword()),
                         ((AuthType) authType.getSelectedItem()), proxyObj);
+                MinecraftClient client = clients.get(b);
 
                 tabPane.addTab("", b);
                 tabPane.setSelectedComponent(b);
+                for (UserActionListener ls : guiComponents.getActionListeners())
+                    ls.clientCreated(b, client);
 
                 final Box b2 = Box.createHorizontalBox();
                 b2.setName(et.getHost() + "_" + et.getName() + "_" + uname);
@@ -1387,9 +1396,12 @@ public class Main {
                 ServerEntry et = new ServerEntry(host, port, name, protocol == null ? "Auto" : protocol.getName(),
                         forge);
                 JSplitPane b = createServerPane(et, username, password, authType, proxy);
+                MinecraftClient client = getClient(b);
 
                 tabPane.addTab("", b);
                 tabPane.setSelectedComponent(b);
+                for (UserActionListener ls : guiComponents.getActionListeners())
+                    ls.clientCreated(b, client);
 
                 final Box b2 = Box.createHorizontalBox();
                 b2.setName(et.getHost() + "_" + et.getName() + "_" + username);
@@ -1452,10 +1464,17 @@ public class Main {
                 return clients.get(pane);
             }
 
+            @Override
+            public MinecraftClient[] getConnectedClients() {
+                return getClients();
+            }
+
         };
 
-        for (AMCPlugin plugin : loadedPlugins)
+        for (AMCPlugin plugin : loadedPlugins) {
+            // TODO MinecraftClient creation events etc.
             plugin.onGUIInitialized(guiComponents);
+        }
         guiComponents.revalidateAll();
     }
 
@@ -4319,7 +4338,7 @@ public class Main {
                                 });
                             }
                         });
-                        cl.addClientListener(new ClientListener() {
+                        cl.addClientListener(new ClientAdapter() {
 
                             final JTextPane jtp = pane;
                             final JTextPane hjtp = hotbar;
