@@ -142,6 +142,8 @@ public class UserPreferences implements Serializable {
         if (configVersion < 100) configVersion = DEFAULT_CONFIG_VERSION;
 
         if (openCounts < 0) openCounts = 1;
+
+        if (configVersion < 101) autoLoginCommand = "login %s";
     }
 
     /**
@@ -260,7 +262,14 @@ public class UserPreferences implements Serializable {
 
     }
 
-    private static final transient int DEFAULT_CONFIG_VERSION = 100;
+    private String autoLoginCommand = null;
+
+    public String getAutoLoginCommand() {
+        if (autoLoginCommand == null) autoLoginCommand = "login %s";
+        return autoLoginCommand;
+    }
+
+    private static final transient int DEFAULT_CONFIG_VERSION = 101;
     private int configVersion = DEFAULT_CONFIG_VERSION;
 
     private int openCounts = 0;
@@ -632,5 +641,9 @@ public class UserPreferences implements Serializable {
 
     public void setOpenCounts(int openCounts) {
         this.openCounts = openCounts;
+    }
+
+    public void setAutoLoginCommand(String autoLoginCommand) {
+        this.autoLoginCommand = autoLoginCommand;
     }
 }

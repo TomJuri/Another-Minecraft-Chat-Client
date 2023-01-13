@@ -156,6 +156,7 @@ import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.UnknownPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerPositionAndLookPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket.Status;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseEntityPacket.UseType;
@@ -956,15 +957,6 @@ public class Main {
                 }
 
                 final JPasswordField upassField = new JPasswordField();
-                upassField.setEnabled(((AuthType) authType.getSelectedItem()) == AuthType.Mojang);
-
-                authType.addActionListener(new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(final ActionEvent e) {
-                        upassField.setEnabled(((AuthType) authType.getSelectedItem()) == AuthType.Mojang);
-                    }
-                });
 
                 uCtl.add(unameField);
                 uCtl.add(unameClear);
@@ -1725,7 +1717,7 @@ public class Main {
 
         final JTabbedPane jtp = new JTabbedPane();
 
-        final JVBoxPanel rsBox = new JVBoxPanel();
+        final JPanel rsBox = new JPanel();
 
         final JComboBox<Status> rPackBehaviorBox = new JComboBox<>(Status.values());
         rPackBehaviorBox.setToolTipText(Messages.getString("Main.rsBehaviorToolTip"));
@@ -1752,14 +1744,7 @@ public class Main {
         rsBox.add(new JLabel(" "));
         rsBox.add(new JLabel(Messages.getString("Main.rsPackPositionLabel")));
         rsBox.add(rsPackMessagePosition);
-        rsBox.add(new JTextPane() {
-            {
-                setEditable(false);
-                setOpaque(false);
-            }
-        });
-
-        rsBox.alignAll();
+        rsBox.setLayout(new GridLayout(rsBox.getComponentCount(), 1));
 
         final JVBoxPanel skBox = new JVBoxPanel();
         skBox.add(new JLabel(Messages.getString("Main.skinFetchMetchodLabel")));
@@ -2275,6 +2260,12 @@ public class Main {
         });
         dscBox.alignAll();
 
+        JPanel accBox = new JPanel(new GridLayout(10, 1));
+        JTextField loginCommand = new JTextField(up.getAutoLoginCommand());
+
+        accBox.add(new JLabel("Default server login command"));
+        accBox.add(loginCommand);
+
         jtp.add(Messages.getString("Main.settingsTabGeneral"), gnBox);
         jtp.add(Messages.getString("Main.settingsTabAppearance"), apPane);
         jtp.add(Messages.getString("Main.settingsTabTray"), trBox);
@@ -2283,6 +2274,7 @@ public class Main {
         jtp.add(Messages.getString("Main.settingsTabProtocol"), pkBox);
         jtp.add(Messages.getString("Main.settingsTabInventory"), ivBox);
         jtp.add(Messages.getString("Main.settingsTabDiscord"), dscBox);
+        jtp.add("Accessibility", accBox);
         jtp.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
@@ -4240,10 +4232,22 @@ public class Main {
 
                         cl.addInputPacketListener(new InternalPacketListener() {
 
+                            boolean triedToLogin = false;
+
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
                                 if (packetAnalyzerPauseBtn.isSelected()) return;
                                 if (up.isDisablePacketAnalyzer()) return;
+                                if (packet instanceof BaseServerPlayerPositionAndLookPacket && !triedToLogin
+                                        && password != null && !password.isEmpty()) {
+                                    try {
+                                        cl.sendChatMessage(String.format("/" + up.getAutoLoginCommand(), password));
+                                        triedToLogin = true;
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
                                 if (packet instanceof UnknownPacket) {
                                     unknownModel.insertRow(0,
                                             new Object[] { packet, "0x" + Integer.toHexString(packet.getID()), "C",
