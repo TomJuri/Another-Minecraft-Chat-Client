@@ -10,6 +10,15 @@
 
 AMCC is a GUI application that lets you join a Minecraft server and chat freely without opening your game.
 
+|Table of contents|
+|-----------------|
+|* [Main features](https://github.com/Defective4/Another-Minecraft-Chat-Client#main-features)             |
+|* [Downloads](https://github.com/Defective4/Another-Minecraft-Chat-Client#main-features) |
+|* [Using the Plugin API](https://github.com/Defective4/Another-Minecraft-Chat-Client#using-the-plugin-api)  |
+|* [Building from source](https://github.com/Defective4/Another-Minecraft-Chat-Client#building-from-source) |
+|* [Translations](https://github.com/Defective4/Another-Minecraft-Chat-Client#building-from-source) |
+
+
 # Main features
 * 📖 Complete GUI with Minecraft styled server list, in-game player list with skins and a tabbed pane allowing you to chat on multiple clients.
 * 🎨 Minecraft style UI elements, such as chat font (Minecraftia), configurable buttons and text fields.
@@ -68,7 +77,7 @@ It started as a simple command line chat client and was quickly wrapped in a GUI
 Now my main goal is to implement as many features from Minecraft's original protocol as I can
 without using any other third-party libraries.
 
-## Current translations
+## Current translations (see [wiki](https://github.com/Defective4/Another-Minecraft-Chat-Client/wiki/Features#translations))
   * English - Defective4
   * Polish - Defective4
   * Chinese - [qiuzilu](https://github.com/qiuzilu)
