@@ -19,6 +19,35 @@ AMCC is a GUI application that lets you join a Minecraft server and chat freely 
 * ⏰ Automatic messages and responses, perfect for AFKing.
 * :electric_plug: Easily extensible via plugins!
 
+## Downloads
+You can download latest version of AMCC along with plugin and protocol API on the [https://github.com/Defective4/Another-Minecraft-Chat-Client/releases](releases) page.
+
+## Using the Plugin API
+You can include our Plugin API in your project by:
+
+### Manual download
+You can download the the Plugin API on the [releases](https://github.com/Defective4/Another-Minecraft-Chat-Client/releases) page.
+
+### Adding a Maven dependency
+Paste this in your `pom.xml`
+```xml
+<dependency>
+    <groupId>io.github.defective4.amcc</groupId>
+    <artifactId>amcc-api</artifactId>
+    <version>{version}</version>
+</dependency>
+```
+`{version}` is the release version you want to develop for. For example `1.9.0`
+
+### Adding a Gradle dependency
+Paste this in your `build.gradle`
+```gradle
+depencencies {
+  implementation 'io.github.defective4.amcc:amcc-api:{version}'
+}
+```
+`{version}` is the release version you want to develop for. For example `1.9.0`
+
 ## 📙 My goals
 This project is my take on implementing Minecraft's protocol from scratch.<br>
 It started as a simple command line chat client and was quickly wrapped in a GUI.<br>
