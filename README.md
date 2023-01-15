@@ -10,7 +10,7 @@
 
 AMCC is a GUI application that lets you join a Minecraft server and chat freely without opening your game.
 
-## Main features
+# Main features
 * 📖 Complete GUI with Minecraft styled server list, in-game player list with skins and a tabbed pane allowing you to chat on multiple clients.
 * 🎨 Minecraft style UI elements, such as chat font (Minecraftia), configurable buttons and text fields.
 * 📋 Tray support.
@@ -19,16 +19,16 @@ AMCC is a GUI application that lets you join a Minecraft server and chat freely 
 * ⏰ Automatic messages and responses, perfect for AFKing.
 * :electric_plug: Easily extensible via plugins!
 
-## Downloads
+# Downloads
 You can download latest version of AMCC along with plugin and protocol API on the [https://github.com/Defective4/Another-Minecraft-Chat-Client/releases](releases) page.
 
-## Using the Plugin API
+# Using the Plugin API
 You can include our Plugin API in your project by:
 
-### Manual download
+## Manual download
 You can download the the Plugin API on the [releases](https://github.com/Defective4/Another-Minecraft-Chat-Client/releases) page.
 
-### Adding a Maven dependency
+## Adding a Maven dependency
 Paste this in your `pom.xml`
 ```xml
 <dependency>
@@ -39,7 +39,7 @@ Paste this in your `pom.xml`
 ```
 `{version}` is the release version you want to develop for. For example `1.9.0`
 
-### Adding a Gradle dependency
+## Adding a Gradle dependency
 Paste this in your `build.gradle`
 ```gradle
 depencencies {
@@ -48,13 +48,26 @@ depencencies {
 ```
 `{version}` is the release version you want to develop for. For example `1.9.0`
 
-## 📙 My goals
+# Building from source
+If you don't want to download the pre-built release you can also build the application, plugin API and protocol implementation from source.
+
+0. Make sure you have Apache Maven installed. If not, please [download](https://maven.apache.org/download.cgi) and install it.
+1. `git clone https://github.com/Defective4/Another-Minecraft-Chat-Client.git`
+2. `cd Another-Minecraft-Chat-Client`
+3. 'mvn clean package`
+
+After all actions are complete, you will have:
+* A runnable AMCC application binary in the `amcc-app/target` directory. It's named `amcc-app-{version}-jar-with-dependencies.jar`
+* Plugin API with javadocs and dependencies in the `amcc-api/target` directory.
+* Protocol implementation with javadocs and dependencies in the `amcc-protocol/target` directory.
+
+# 📙 My goals
 This project is my take on implementing Minecraft's protocol from scratch.<br>
 It started as a simple command line chat client and was quickly wrapped in a GUI.<br>
 Now my main goal is to implement as many features from Minecraft's original protocol as I can
 without using any other third-party libraries.
 
-### Current translations
+## Current translations
   * English - Defective4
   * Polish - Defective4
   * Chinese - [qiuzilu](https://github.com/qiuzilu)
