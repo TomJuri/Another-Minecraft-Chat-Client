@@ -25,10 +25,10 @@ You can download latest version of AMCC along with plugin and protocol API on th
 # Using the Plugin API
 You can include our Plugin API in your project by:
 
-***Manual download***
+**Manual download**  
 You can download the the Plugin API on the [releases](https://github.com/Defective4/Another-Minecraft-Chat-Client/releases) page.
 
-***Adding a Maven dependency***
+**Adding a Maven dependency**  
 Paste this in your `pom.xml`
 ```xml
 <dependency>
@@ -39,7 +39,7 @@ Paste this in your `pom.xml`
 ```
 `{version}` is the release version you want to develop for. For example `1.9.0`
 
-**Adding a Gradle dependency**
+**Adding a Gradle dependency**  
 Paste this in your `build.gradle`
 ```gradle
 depencencies {
