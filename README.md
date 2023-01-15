@@ -57,7 +57,8 @@ If you don't want to download the pre-built release you can also build the appli
 3. `mvn clean package`
 
 After all actions are complete, you will have:
-* A runnable AMCC application binary in the `amcc-app/target` directory. It's named `amcc-app-{version}-jar-with-dependencies.jar`
+* A runnable AMCC application binary in the `amcc-app/target` directory.  
+  It's named `amcc-app-{version}-jar-with-dependencies.jar`
 * Plugin API with javadocs and dependencies in the `amcc-api/target` directory.
 * Protocol implementation with javadocs and dependencies in the `amcc-protocol/target` directory.
 
