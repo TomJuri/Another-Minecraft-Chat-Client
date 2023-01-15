@@ -54,7 +54,7 @@ If you don't want to download the pre-built release you can also build the appli
 0. Make sure you have Apache Maven installed. If not, please [download](https://maven.apache.org/download.cgi) and install it.
 1. `git clone https://github.com/Defective4/Another-Minecraft-Chat-Client.git`
 2. `cd Another-Minecraft-Chat-Client`
-3. 'mvn clean package`
+3. `mvn clean package`
 
 After all actions are complete, you will have:
 * A runnable AMCC application binary in the `amcc-app/target` directory. It's named `amcc-app-{version}-jar-with-dependencies.jar`
