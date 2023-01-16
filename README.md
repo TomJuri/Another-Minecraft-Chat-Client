@@ -51,7 +51,7 @@ Paste this in your `pom.xml`
 ### Adding a Gradle dependency
 Paste this in your `build.gradle`
 ```gradle
-depencencies {
+dependencies {
   implementation 'io.github.defective4.amcc:amcc-api:{version}'
 }
 ```
