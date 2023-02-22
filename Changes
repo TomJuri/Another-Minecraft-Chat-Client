@@ -2,11 +2,10 @@ AMCC Change Log
 v1.9.0
 
 [+] Added:
-  - Plugins! You can now extend AMCC functionality by creating, downloading and using plugins!
-  - Some minor functional improvements (including autologin function and graphical improvements)
-  - Refactored most of the code
+  - New servers tab - "Imported"!
+    It shows servers from your native Minecraft instalation (if one exists)
+  - Appearance "improvements" - icons and preferences makeover.
+    Feedback on this one will be appreciated!
 
-[/] Changed:
-  - Project is now separated into modules.
-    Protocol implementation is now a completely standalone module
-    and can be used in other projects.
+[-] Removed:
+  - Mojang authentication. Goodbye.
