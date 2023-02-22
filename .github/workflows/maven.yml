@@ -15,11 +15,24 @@ jobs:
           distribution: 'adopt'
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots package
-      - name: Upload a Build Artifact
+      - name: Upload the built app artifact
         uses: actions/upload-artifact@v3.1.2
         with:
           # Artifact name
           name: amcc-app
           # A file, directory or wildcard pattern that describes what to upload
-          path: amcc-app/target
-          # The desired behavior if no files are found using the provided path.
+          path: amcc-app/target/*.jar
+      - name: Upload the built protocol artifact
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          # Artifact name
+          name: amcc-protocol
+          # A file, directory or wildcard pattern that describes what to upload
+          path: amcc-protocol/target/*.jar
+      - name: Upload the built plugin API artifact
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          # Artifact name
+          name: amcc-api
+          # A file, directory or wildcard pattern that describes what to upload
+          path: amcc-api/target/*.jar
