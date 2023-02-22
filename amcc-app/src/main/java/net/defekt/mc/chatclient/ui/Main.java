@@ -1132,8 +1132,7 @@ public class Main {
                     if (response != JOptionPane.OK_OPTION) return;
 
                     final String uname = (String) unameField.getSelectedItem();
-                    if (uname == null || (((AuthType) authType.getSelectedItem()) == AuthType.Mojang
-                            && upassField.getPassword().length == 0)) {
+                    if (uname == null) {
                         continue;
                     }
                     final String proxy = pxField.getText().replace(" ", "");
@@ -1148,7 +1147,6 @@ public class Main {
                         }
                     }
                     if (!up.isUsernameAlertSeen() && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)
-                            && ((AuthType) authType.getSelectedItem()) != AuthType.Mojang
                             && ((AuthType) authType.getSelectedItem()) != AuthType.TheAltening) {
                         final int alResp = JOptionPane.showOptionDialog(win,
                                 Messages.getString("Main.nickIllegalCharsWarning1") + uname

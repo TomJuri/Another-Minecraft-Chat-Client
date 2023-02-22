@@ -285,10 +285,10 @@ public class MinecraftClient {
     public void connect(final AuthType auth, final String token, final String password) throws IOException {
         this.authType = auth;
         switch (auth) {
-            case TheAltening:
-            case Mojang: {
-                final MojangUser user = MojangAPI.authenticateUser(token, auth == AuthType.Mojang ? password : "none",
-                        auth == AuthType.Mojang ? Hosts.MOJANG_AUTHSERVER : Hosts.ALTENING_AUTHSERVER);
+            case TheAltening: {
+                final MojangUser user = MojangAPI.authenticateUser(token,
+                        auth == AuthType.TheAltening ? "none" : password,
+                        auth == AuthType.TheAltening ? Hosts.ALTENING_AUTHSERVER : Hosts.MOJANG_AUTHSERVER);
                 this.username = user.getUserName();
                 this.authID = user.getUserID();
                 this.authToken = user.getAccessToken();

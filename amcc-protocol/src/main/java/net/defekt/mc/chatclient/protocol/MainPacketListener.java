@@ -120,8 +120,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                 cl.close();
                 break;
             }
-            case TheAltening:
-            case Mojang: {
+            case TheAltening: {
                 final PublicKey publicKey = sPacket.getPublicKey();
                 final byte[] verifyToken = sPacket.getVerifyToken();
                 final String serverID = sPacket.getServerID();
@@ -138,8 +137,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                 final String sha = IOUtils.sha1(serverID.getBytes(), clientSecret, publicKey.getEncoded());
 
                 final RequestResponse resp = MojangAPI.makeJSONRequest(
-                        (cl.getAuthType() == AuthType.Mojang ? Hosts.MOJANG_SESSIONSERVER
-                                : Hosts.ALTENING_SESSIONSERVER) + "/session/minecraft/join",
+                        (cl.getAuthType() == AuthType.TheAltening ? Hosts.ALTENING_SESSIONSERVER
+                                : Hosts.MOJANG_SESSIONSERVER) + "/session/minecraft/join",
                         new HashMap<String, JsonElement>() {
                             {
                                 put("accessToken", new JsonPrimitive(cl.getAuthToken()));
