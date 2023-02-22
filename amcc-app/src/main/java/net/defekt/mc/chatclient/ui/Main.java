@@ -950,14 +950,7 @@ public class Main {
 
                 final Box uCtl = Box.createHorizontalBox();
 
-                BufferedImage x = null;
-                try {
-                    x = ImageIO.read(getClass().getResourceAsStream("/resources/x.png"));
-                    x = IOUtils.resizeImageProp(x, 12);
-                } catch (final Exception e2) {
-                    e2.printStackTrace();
-                }
-                final JButton unameClear = x == null ? new JButton("C") : new JButton(new ImageIcon(x));
+                final JButton unameClear = new JButton(Icons.X);
                 unameClear.setToolTipText(Messages.getString("Main.clearUnames"));
 
                 final JComboBox<String> unameField = new JComboBox<>();
@@ -1425,7 +1418,7 @@ public class Main {
         final JMenu fileMenu = new JMenu(Messages.getString("Main.fileMenu")) {
             {
                 setMnemonic(getText().charAt(0));
-                add(new JMenuItem(Messages.getString("Main.fileMenuQuit")) {
+                add(new JMenuItem(Messages.getString("Main.fileMenuQuit"), Icons.X) {
                     {
                         addActionListener(new ActionListener() {
                             @Override
@@ -1440,7 +1433,7 @@ public class Main {
         final JMenu optionMenu = new JMenu(Messages.getString("Main.optionsMenu")) {
             {
                 setMnemonic(getText().charAt(0));
-                add(new JMenuItem(Messages.getString("Main.optionsMenuSettings")) {
+                add(new JMenuItem(Messages.getString("Main.optionsMenuSettings"), Icons.GEAR) {
                     {
                         addActionListener(new ActionListener() {
                             @Override
@@ -1466,7 +1459,7 @@ public class Main {
 
         JMenu pluginsMenu = new JMenu("Plugins") {
             {
-                add(new JMenuItem("Plugin Manager") {
+                add(new JMenuItem("Plugin Manager", Icons.PLUG) {
                     {
                         addActionListener(e -> {
                             showPluginManager();
