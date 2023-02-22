@@ -19,6 +19,10 @@ public class TabGroup extends JPanel {
         this(icon, text, font, false);
     }
 
+    public TabGroup(String icon, String text, boolean displayText) {
+        this(icon, text, FontAwesome.FONT, displayText);
+    }
+
     public TabGroup(String icon, String text, Font font, boolean displayText) {
         this.text = text;
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

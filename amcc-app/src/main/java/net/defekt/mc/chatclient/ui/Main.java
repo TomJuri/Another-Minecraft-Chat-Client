@@ -945,7 +945,7 @@ public class Main {
 
                 final JComboBox<AuthType> authType = new JComboBox<AuthType>(AuthType.values());
 
-                box.add(new JLabel(Messages.getString("Main.selectAuthType") + ":"){
+                box.add(new JLabel(Messages.getString("Main.selectAuthType") + ":") {
                     {
                         setIcon(createIcon(FontAwesome.LOCK, this, getFont().getSize2D()));
                     }
@@ -986,7 +986,7 @@ public class Main {
 
                 box.add(uCtl);
                 box.add(new JLabel(" "));
-                box.add(new JLabel(Messages.getString("Main.enterPasswordLabel") + ":"){
+                box.add(new JLabel(Messages.getString("Main.enterPasswordLabel") + ":") {
                     {
                         setIcon(createIcon(FontAwesome.KEY, this, getFont().getSize2D()));
                     }
@@ -1800,7 +1800,11 @@ public class Main {
         JPanel installedMain = new JPanel();
         installedMain.setLayout(new BoxLayout(installedMain, BoxLayout.Y_AXIS));
 
-        JButton openPluginsFolder = new JButton(Messages.getString("Main.openPluginsFolder"));
+        JButton openPluginsFolder = new JButton(Messages.getString("Main.openPluginsFolder")) {
+            {
+                setIcon(FontAwesome.createIcon(FontAwesome.FOLDER, this, getFont().getSize2D()));
+            }
+        };
 
         Box installedCtls = Box.createHorizontalBox();
         installedCtls.setAlignmentX(Box.LEFT_ALIGNMENT);
@@ -3434,10 +3438,14 @@ public class Main {
         worldBox.add(attackPanel);
         worldBox.add(new JLabel("") {
             {
-                setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
+//                setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
             }
         });
         worldBox.alignAll();
+
+        trackingBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
+        for(Component cpt : attackPanel.getComponents())
+            cpt.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
 
         final JVBoxPanel autoMsgBox = new JVBoxPanel();
 
@@ -4281,13 +4289,33 @@ public class Main {
         messagesTabPane.addTab(Messages.getString("Main.intervalMessagesTab"), autoMsgBox);
         messagesTabPane.addTab(Messages.getString("Main.autoResponsesTab"), autoRespBox);
 
-        controlsTabPane.addTab(Messages.getString("Main.playerListTab"), playerListBox);
-        controlsTabPane.addTab(Messages.getString("Main.playerTab"), playerBox);
-        controlsTabPane.addTab(Messages.getString("Main.statisticsTab"), statisticsPane);
-        controlsTabPane.addTab(Messages.getString("Main.inventoryTab"), inventoryBox);
-        controlsTabPane.addTab(Messages.getString("Main.worldTab"), worldBox);
-        controlsTabPane.addTab(Messages.getString("Main.autoMessagesTab"), messagesTabPane);
-        controlsTabPane.addTab(Messages.getString("Main.packetsTab"), packetsBtnPane);
+        controlsTabPane.addTab("", playerListBox);
+        controlsTabPane.setTabComponentAt(0,
+                new TabGroup(FontAwesome.USERS, Messages.getString("Main.playerListTab"), true));
+
+        controlsTabPane.addTab("", playerBox);
+        controlsTabPane.setTabComponentAt(1,
+                new TabGroup(FontAwesome.USER, Messages.getString("Main.playerTab"), true));
+
+        controlsTabPane.addTab("", statisticsPane);
+        controlsTabPane.setTabComponentAt(2,
+                new TabGroup(FontAwesome.CLOCK, Messages.getString("Main.statisticsTab"), true));
+
+        controlsTabPane.addTab("", inventoryBox);
+        controlsTabPane.setTabComponentAt(3,
+                new TabGroup(FontAwesome.BOX, Messages.getString("Main.inventoryTab"), true));
+
+        controlsTabPane.addTab("", new JScrollPane(worldBox));
+        controlsTabPane.setTabComponentAt(4,
+                new TabGroup(FontAwesome.GLOBE, Messages.getString("Main.worldTab"), true));
+
+        controlsTabPane.addTab("", messagesTabPane);
+        controlsTabPane.setTabComponentAt(5,
+                new TabGroup(FontAwesome.STOPWATCH, Messages.getString("Main.autoMessagesTab"), true));
+
+        controlsTabPane.addTab("", packetsBtnPane);
+        controlsTabPane.setTabComponentAt(6,
+                new TabGroup(FontAwesome.VIAL, Messages.getString("Main.packetsTab"), true));
 
         fPane.add(box);
         fPane.add(controlsTabPane);

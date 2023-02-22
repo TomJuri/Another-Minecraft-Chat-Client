@@ -28,12 +28,17 @@ public class FontAwesome {
     public static final String BOX = "\uf49e";
     public static final String CLOSED_BOX = "\uf466";
     public static final String USER = "\uf007";
+    public static final String USERS = "\uf0c0";
     public static final String USER_C = "\uf2bd";
     public static final String WRENCH = "\uf0ad";
     public static final String NETWORK = "\uf6ff";
     public static final String LOCK = "\uf023";
     public static final String KEY = "\uf084";
     public static final String FOLDER = "\uf07b";
+    public static final String CLOCK = "\uf017";
+    public static final String GLOBE = "\uf0ac";
+    public static final String STOPWATCH = "\uf2f2";
+    public static final String VIAL = "\uf492";
 
     // Brands
 
