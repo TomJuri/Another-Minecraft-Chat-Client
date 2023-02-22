@@ -206,4 +206,12 @@ public class ServerEntry implements Serializable {
     public int getProtocol() {
         return protocol;
     }
+
+    /**
+     * Set current server icon (Base64)
+     * @param icon
+     */
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 }

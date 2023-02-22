@@ -116,6 +116,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.table.DefaultTableModel;
 
+import dev.dewy.nbt.Nbt;
+import dev.dewy.nbt.tags.collection.CompoundTag;
+import dev.dewy.nbt.tags.collection.ListTag;
 import net.defekt.mc.chatclient.api.AMCPlugin;
 import net.defekt.mc.chatclient.api.PluginDescription;
 import net.defekt.mc.chatclient.api.ui.GUIComponents;
@@ -184,7 +187,7 @@ public class Main {
 
     private static BufferedImage logoImage = null;
 
-    public static final String VERSION = "1.9.0";
+    public static final String VERSION = "1.9.1";
     private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
 
     public static Font mcFont = Font.decode(null);
@@ -366,6 +369,7 @@ public class Main {
     private List<ServerEntry> servers = Collections.synchronizedList(new ArrayList<ServerEntry>());
     private final JMinecraftServerList serverListComponent = new JMinecraftServerList(this, true);
     private final JMinecraftServerList lanListComponent = new JMinecraftServerList(this, false);
+    private final JMinecraftServerList importListComponent = new JMinecraftServerList(this, false);
     private final JTabbedPane tabPane = new JTabbedPane();
     private final Map<JSplitPane, MinecraftClient> clients = new HashMap<JSplitPane, MinecraftClient>();
     private final JFrame win = new JFrame();
@@ -494,7 +498,7 @@ public class Main {
                 final ServerEntry[] ets = lanListComponent.getListData() == null ? new ServerEntry[0]
                         : lanListComponent.getListData();
                 final ServerEntry ent = new ServerEntry(sender.getHostAddress(), port,
-                        sender.getHostAddress() + ":" + Integer.toString(port), Messages.getString("Main.Auto"),
+                        sender.getHostAddress() + ":" + Integer.toString(port), Messages.getString("Always Ask"),
                         ForgeMode.AUTO);
                 for (final ServerEntry et : ets)
                     if (et.equals(ent)) return;
@@ -888,8 +892,22 @@ public class Main {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final ServerEntry et = sTypesPane.getSelectedIndex() == 0 ? serverListComponent.getSelectedValue()
-                        : lanListComponent.getSelectedValue();
+                final ServerEntry et;
+                switch (sTypesPane.getSelectedIndex()) {
+                    default:
+                    case 0: {
+                        et = serverListComponent.getSelectedValue();
+                        break;
+                    }
+                    case 1: {
+                        et = lanListComponent.getSelectedValue();
+                        break;
+                    }
+                    case 2: {
+                        et = importListComponent.getSelectedValue();
+                        break;
+                    }
+                }
                 if (et == null) return;
 
                 if (et.isRefreshing() || et.isError()) {
@@ -1303,8 +1321,104 @@ public class Main {
         lanListBox.add(lanControlsBox);
         lanListComponent.setMinimumSize(lanListBox.getPreferredSize());
 
+        final JPanel importListBox = new JPanel();
+        importListBox.setBackground(serverListBox.getBackground());
+        importListBox.setLayout(new BoxLayout(importListBox, BoxLayout.Y_AXIS));
+        importListBox.setPreferredSize(
+                new Dimension((int) (SwingUtils.sSize.width / 1.5), (int) (SwingUtils.sSize.height / 1.5)));
+
+        final JScrollPane importListPane = new JScrollPane(importListComponent);
+        importListPane.setOpaque(false);
+
+        importListPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        final Box importControlsBox = Box.createHorizontalBox();
+
+        final JButton importConnect = new JMinecraftButton(connectServer.getText());
+        final JButton importAdd = new JMinecraftButton(addServer.getText());
+        final JButton importRemove = new JMinecraftButton(removeServer.getText());
+        final JButton importRefresh = new JMinecraftButton(refresh.getText());
+
+        importConnect.setEnabled(false);
+        importAdd.setEnabled(false);
+        importRemove.setEnabled(false);
+
+        importConnect.addActionListener(alis);
+
+        importControlsBox.add(importConnect);
+        importControlsBox.add(importAdd);
+        importControlsBox.add(importRemove);
+        importControlsBox.add(importRefresh);
+
+        importListComponent.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(final ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    selectedServer = importListComponent.getSelectedValue();
+                    if (selectedServer != null) {
+                        importConnect.setEnabled(true);
+                    } else {
+                        importConnect.setEnabled(false);
+                    }
+
+                }
+            }
+        });
+
+        importListBox.add(importListPane);
+        importListBox.add(importControlsBox);
+        importListComponent.setMinimumSize(importListBox.getPreferredSize());
+
+        ActionListener importRefreshListener = new ActionListener() {
+
+            private final String[] lookLocations = { "AppData/Roaming/.minecraft", ".minecraft" };
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                importListComponent.setListData(new ServerEntry[0]);
+                List<ServerEntry> svs = new ArrayList<>();
+                for (String loc : lookLocations) {
+                    File file = new File(
+                            System.getProperty("user.home") + File.separator + loc + File.separator + "servers.dat");
+                    if (file.isFile()) {
+                        try {
+                            CompoundTag root = new Nbt().fromFile(file);
+                            ListTag<CompoundTag> serversTag = root.getList("servers");
+                            for (CompoundTag serverTag : serversTag) {
+                                String ip = serverTag.getString("ip").getValue();
+                                String name = serverTag.getString("name").getValue();
+
+                                String host = ip;
+                                int port = 25565;
+                                if (host.contains(":")) {
+                                    port = Integer.parseInt(host.substring(host.indexOf(":") + 1));
+                                    host = host.substring(0, host.indexOf(":"));
+                                }
+
+                                String icon = serverTag.contains("icon") ? serverTag.getString("icon").getValue()
+                                        : null;
+
+                                ServerEntry sv = new ServerEntry(host, port, name, "Always Ask", ForgeMode.AUTO);
+                                sv.setIcon(icon);
+                                sv.ping();
+                                svs.add(sv);
+                            }
+                        } catch (Exception e2) {
+                            e2.printStackTrace();
+                        }
+                    }
+                }
+                importListComponent.setListData(svs.toArray(new ServerEntry[0]));
+            }
+        };
+
+        importRefresh.addActionListener(importRefreshListener);
+        importRefreshListener.actionPerformed(null);
+
         sTypesPane.addTab(Messages.getString("Main.serversTabInternet"), serverListBox);
         sTypesPane.addTab(Messages.getString("Main.serversTabLAN"), lanListBox);
+        sTypesPane.addTab(Messages.getString("Main.serversTabImported"), importListBox);
 
         tabPane.addTab(Messages.getString("Main.serversListTab"), sTypesPane);
 
@@ -1677,7 +1791,7 @@ public class Main {
         JPanel installedMain = new JPanel();
         installedMain.setLayout(new BoxLayout(installedMain, BoxLayout.Y_AXIS));
 
-        JButton openPluginsFolder = new JButton(Messages.getString("Main.openPluginsFolder")); // TODO translation
+        JButton openPluginsFolder = new JButton(Messages.getString("Main.openPluginsFolder"));
 
         Box installedCtls = Box.createHorizontalBox();
         installedCtls.setAlignmentX(Box.LEFT_ALIGNMENT);
