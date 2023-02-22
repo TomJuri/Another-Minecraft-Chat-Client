@@ -80,4 +80,4 @@ without using any other third-party libraries.
 ## Current translations (see [wiki](https://github.com/Defective4/Another-Minecraft-Chat-Client/wiki/Features#translations))
   * English - Defective4
   * Polish - Defective4
-  * Chinese - [qiuzilu](https://github.com/qiuzilu)
+  * Chinese - [qiuzilu](https://github.com/qiuzilu) and [xiaoliang2012](https://github.com/xiaoliang2012)
