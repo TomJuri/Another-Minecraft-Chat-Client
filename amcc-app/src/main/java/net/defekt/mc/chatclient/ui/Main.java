@@ -2424,12 +2424,13 @@ public class Main {
         jtp.setTabComponentAt(6, new TabGroup(FontAwesome.CLOSED_BOX, Messages.getString("Main.settingsTabInventory")));
 
         jtp.add("", dscBox);
-        jtp.setTabComponentAt(7, new TabGroup(FontAwesome.DISCORD, Messages.getString("Main.settingsTabDiscord"), FontAwesome.BRANDS_FONT));
+        jtp.setTabComponentAt(7, new TabGroup(FontAwesome.DISCORD, Messages.getString("Main.settingsTabDiscord"),
+                FontAwesome.BRANDS_FONT));
 
         jtp.add("", accBox);
         jtp.setTabComponentAt(8, new TabGroup(FontAwesome.USER_C, Messages.getString("Main.settingsTabAccessibility")));
 
-        jtp.addChangeListener(new ChangeListener() {
+        ChangeListener ls = new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
                 final JTabbedPane tp = (JTabbedPane) e.getSource();
@@ -2438,8 +2439,16 @@ public class Main {
                             Messages.getString("Main.protocolSettingsWarningTitle"), JOptionPane.OK_OPTION,
                             JOptionPane.WARNING_MESSAGE, null, new Object[] { Messages.getString("Main.ok") }, e);
                 }
+
+                Component tabCpt = tp.getTabComponentAt(tp.getSelectedIndex());
+                if (tabCpt instanceof TabGroup) {
+                    TabGroup tg = (TabGroup) tabCpt;
+                    od.setTitle(tg.getText() + " - " + Messages.getString("Main.settingsTitle"));
+                }
             }
-        });
+        };
+        jtp.addChangeListener(ls);
+        ls.stateChanged(new ChangeEvent(jtp));
         b.add(jtp);
 
         final JButton sOk = new JButton(Messages.getString("Main.ok"));
