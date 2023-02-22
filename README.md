@@ -46,7 +46,7 @@ Paste this in your `pom.xml`
     <version>{version}</version>
 </dependency>
 ```
-`{version}` is the release version you want to develop for. For example `1.9.0`
+`{version}` is the release version you want to develop for. For example `1.10.0`
 
 ### Adding a Gradle dependency
 Paste this in your `build.gradle`
@@ -55,7 +55,7 @@ dependencies {
   implementation 'io.github.defective4.amcc:amcc-api:{version}'
 }
 ```
-`{version}` is the release version you want to develop for. For example `1.9.0`
+`{version}` is the release version you want to develop for. For example `1.10.0`
 
 # Building from source
 If you don't want to download the pre-built release you can also build the application, plugin API and protocol implementation from source.
