@@ -3,6 +3,8 @@ v1.10.0
 
 [+] Added:
   - New preferences file format
+  - "About" information
+  - Missing sounds to remaining dialogs
   - New servers tab - "Imported"!
     It shows servers from your native Minecraft instalation (if one exists)
   - Appearance "improvements" - icons and preferences makeover.
