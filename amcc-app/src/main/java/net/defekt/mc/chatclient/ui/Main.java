@@ -945,10 +945,18 @@ public class Main {
 
                 final JComboBox<AuthType> authType = new JComboBox<AuthType>(AuthType.values());
 
-                box.add(new JLabel(Messages.getString("Main.selectAuthType") + ":"));
+                box.add(new JLabel(Messages.getString("Main.selectAuthType") + ":"){
+                    {
+                        setIcon(createIcon(FontAwesome.LOCK, this, getFont().getSize2D()));
+                    }
+                });
                 box.add(authType);
                 box.add(new JLabel(" "));
-                box.add(new JLabel(Messages.getString("Main.enterUsernameLabel")));
+                box.add(new JLabel(Messages.getString("Main.enterUsernameLabel")) {
+                    {
+                        setIcon(createIcon(FontAwesome.USER, this, getFont().getSize2D()));
+                    }
+                });
 
                 final Box uCtl = Box.createHorizontalBox();
 
@@ -978,7 +986,11 @@ public class Main {
 
                 box.add(uCtl);
                 box.add(new JLabel(" "));
-                box.add(new JLabel(Messages.getString("Main.enterPasswordLabel") + ":"));
+                box.add(new JLabel(Messages.getString("Main.enterPasswordLabel") + ":"){
+                    {
+                        setIcon(createIcon(FontAwesome.KEY, this, getFont().getSize2D()));
+                    }
+                });
                 box.add(upassField);
                 box.alignAll();
 
@@ -1115,7 +1127,8 @@ public class Main {
                 do {
                     final int response = JOptionPane.showOptionDialog(win, userTabs,
                             Messages.getString("Main.enterUsernameTitle"), JOptionPane.OK_CANCEL_OPTION,
-                            JOptionPane.QUESTION_MESSAGE, null, null, null);
+                            JOptionPane.QUESTION_MESSAGE, FontAwesome.createIcon(FontAwesome.USER_C, pxSave, 32f), null,
+                            null);
                     if (response != JOptionPane.OK_OPTION) return;
 
                     final String uname = (String) unameField.getSelectedItem();
