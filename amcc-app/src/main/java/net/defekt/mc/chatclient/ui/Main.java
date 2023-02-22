@@ -1421,7 +1421,7 @@ public class Main {
         final JMenu fileMenu = new JMenu(Messages.getString("Main.fileMenu")) {
             {
                 setMnemonic(getText().charAt(0));
-                add(new JMenuItem(Messages.getString("Main.fileMenuQuit"), createIcon(FontAwesome.X)) {
+                add(new JMenuItem(Messages.getString("Main.fileMenuQuit"), createIcon(FontAwesome.X, this)) {
                     {
                         addActionListener(new ActionListener() {
                             @Override
@@ -1436,7 +1436,7 @@ public class Main {
         final JMenu optionMenu = new JMenu(Messages.getString("Main.optionsMenu")) {
             {
                 setMnemonic(getText().charAt(0));
-                add(new JMenuItem(Messages.getString("Main.optionsMenuSettings"), createIcon(FontAwesome.GEAR)) {
+                add(new JMenuItem(Messages.getString("Main.optionsMenuSettings"), createIcon(FontAwesome.GEAR, this)) {
                     {
                         addActionListener(new ActionListener() {
                             @Override
@@ -1462,7 +1462,7 @@ public class Main {
 
         JMenu pluginsMenu = new JMenu(Messages.getString("Main.pluginsMenu")) {
             {
-                add(new JMenuItem(Messages.getString("Main.pluginsMenuManager"), createIcon(FontAwesome.PLUG)) {
+                add(new JMenuItem(Messages.getString("Main.pluginsMenuManager"), createIcon(FontAwesome.PLUG, this)) {
                     {
                         addActionListener(e -> {
                             showPluginManager();
@@ -2402,15 +2402,33 @@ public class Main {
         accBox.add(new JLabel(Messages.getString("Main.settingsAutoLoginLabel")));
         accBox.add(loginCommand);
 
-        jtp.add(Messages.getString("Main.settingsTabGeneral"), gnBox);
-        jtp.add(Messages.getString("Main.settingsTabAppearance"), apPane);
-        jtp.add(Messages.getString("Main.settingsTabTray"), trBox);
-        jtp.add(Messages.getString("Main.settingsTabResourcePacks"), rsBox);
-        jtp.add(Messages.getString("Main.settingsTabSkins"), skBox);
-        jtp.add(Messages.getString("Main.settingsTabProtocol"), pkBox);
-        jtp.add(Messages.getString("Main.settingsTabInventory"), ivBox);
-        jtp.add(Messages.getString("Main.settingsTabDiscord"), dscBox);
-        jtp.add(Messages.getString("Main.settingsTabAccessibility"), accBox);
+        jtp.add("", gnBox);
+        jtp.setTabComponentAt(0, new TabGroup(FontAwesome.GEAR, Messages.getString("Main.settingsTabGeneral")));
+
+        jtp.add("", apPane);
+        jtp.setTabComponentAt(1, new TabGroup(FontAwesome.PALETTE, Messages.getString("Main.settingsTabAppearance")));
+
+        jtp.add("", trBox);
+        jtp.setTabComponentAt(2, new TabGroup(FontAwesome.DOWNLOAD, Messages.getString("Main.settingsTabTray")));
+
+        jtp.add("", rsBox);
+        jtp.setTabComponentAt(3, new TabGroup(FontAwesome.BOX, Messages.getString("Main.settingsTabResourcePacks")));
+
+        jtp.add("", skBox);
+        jtp.setTabComponentAt(4, new TabGroup(FontAwesome.USER, Messages.getString("Main.settingsTabSkins")));
+
+        jtp.add("", pkBox);
+        jtp.setTabComponentAt(5, new TabGroup(FontAwesome.WRENCH, Messages.getString("Main.settingsTabProtocol")));
+
+        jtp.add("", ivBox);
+        jtp.setTabComponentAt(6, new TabGroup(FontAwesome.CLOSED_BOX, Messages.getString("Main.settingsTabInventory")));
+
+        jtp.add("", dscBox);
+        jtp.setTabComponentAt(7, new TabGroup(FontAwesome.DISCORD, Messages.getString("Main.settingsTabDiscord"), FontAwesome.BRANDS_FONT));
+
+        jtp.add("", accBox);
+        jtp.setTabComponentAt(8, new TabGroup(FontAwesome.USER_C, Messages.getString("Main.settingsTabAccessibility")));
+
         jtp.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
