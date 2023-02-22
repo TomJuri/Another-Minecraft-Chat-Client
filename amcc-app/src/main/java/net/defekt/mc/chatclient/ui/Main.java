@@ -1,5 +1,7 @@
 package net.defekt.mc.chatclient.ui;
 
+import static net.defekt.mc.chatclient.ui.FontAwesome.createIcon;
+
 import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
@@ -950,7 +952,8 @@ public class Main {
 
                 final Box uCtl = Box.createHorizontalBox();
 
-                final JButton unameClear = new JButton(Icons.X);
+                final JButton unameClear = new JButton(FontAwesome.CLEAR);
+                unameClear.setFont(FontAwesome.FONT);
                 unameClear.setToolTipText(Messages.getString("Main.clearUnames"));
 
                 final JComboBox<String> unameField = new JComboBox<>();
@@ -1418,7 +1421,7 @@ public class Main {
         final JMenu fileMenu = new JMenu(Messages.getString("Main.fileMenu")) {
             {
                 setMnemonic(getText().charAt(0));
-                add(new JMenuItem(Messages.getString("Main.fileMenuQuit"), Icons.X) {
+                add(new JMenuItem(Messages.getString("Main.fileMenuQuit"), createIcon(FontAwesome.X)) {
                     {
                         addActionListener(new ActionListener() {
                             @Override
@@ -1433,7 +1436,7 @@ public class Main {
         final JMenu optionMenu = new JMenu(Messages.getString("Main.optionsMenu")) {
             {
                 setMnemonic(getText().charAt(0));
-                add(new JMenuItem(Messages.getString("Main.optionsMenuSettings"), Icons.GEAR) {
+                add(new JMenuItem(Messages.getString("Main.optionsMenuSettings"), createIcon(FontAwesome.GEAR)) {
                     {
                         addActionListener(new ActionListener() {
                             @Override
@@ -1459,7 +1462,7 @@ public class Main {
 
         JMenu pluginsMenu = new JMenu("Plugins") {
             {
-                add(new JMenuItem("Plugin Manager", Icons.PLUG) {
+                add(new JMenuItem("Plugin Manager", createIcon(FontAwesome.PLUG)) {
                     {
                         addActionListener(e -> {
                             showPluginManager();
