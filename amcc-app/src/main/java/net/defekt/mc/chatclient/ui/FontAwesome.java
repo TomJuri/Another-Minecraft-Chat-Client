@@ -39,6 +39,10 @@ public class FontAwesome {
     public static final String GLOBE = "\uf0ac";
     public static final String STOPWATCH = "\uf2f2";
     public static final String VIAL = "\uf492";
+    public static final String GITHUB = "\uf09b";
+    public static final String BUG = "\uf188";
+    public static final String INFO = "\uf05a";
+    public static final String COPY = "\uf0c5";
 
     // Brands
 

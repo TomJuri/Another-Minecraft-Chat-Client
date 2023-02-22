@@ -5,8 +5,11 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Desktop.Action;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -15,7 +18,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -44,6 +49,8 @@ import net.defekt.mc.chatclient.protocol.data.ChatColor;
 import net.defekt.mc.chatclient.protocol.data.Messages;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences.Constants;
+import net.defekt.mc.chatclient.protocol.io.IOUtils;
+import net.defekt.mc.chatclient.ui.FontAwesome;
 import net.defekt.mc.chatclient.ui.Main;
 
 /**
@@ -64,6 +71,64 @@ public class SwingUtils {
     public static void playExclamation() {
         Object obj = Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.exclamation");
         if (obj instanceof Runnable) ((Runnable) obj).run();
+    }
+
+    public static void showAboutDialog(Window parent) {
+        JDialog dialog = new JDialog(parent);
+        dialog.setTitle("About AMCC");
+        dialog.setModal(true);
+
+        JVBoxPanel panel = new JVBoxPanel();
+        panel.add(new JLabel(new ImageIcon(IOUtils.resizeImageProp(Main.logoImage, 64))));
+        panel.add(new JLabel("Another Minecraft Chat Client") {
+            {
+                setFont(getFont().deriveFont(Font.BOLD).deriveFont(15f));
+            }
+        });
+        panel.add(new JLabel("Version " + Main.VERSION));
+        panel.add(new JLabel(" "));
+        panel.add(new JLabel("Author: Defective4"));
+        panel.add(new JLinkLabel("https://github.com/Defective4/Another-Minecraft-Chat-Client") {
+            {
+                setFont(getFont().deriveFont(13f));
+                setText("<html><a href=#>GitHub</a></html>");
+                setIcon(FontAwesome.createIcon(FontAwesome.GITHUB, this, getFont().getSize2D(),
+                        FontAwesome.BRANDS_FONT));
+            }
+        });
+
+        Box discordBox = Box.createHorizontalBox();
+
+        discordBox.add(new JLabel("Defective#3858") {
+            {
+                setFont(getFont().deriveFont(13f));
+                setIcon(FontAwesome.createIcon(FontAwesome.DISCORD, this, getFont().getSize2D(),
+                        FontAwesome.BRANDS_FONT));
+            }
+        });
+
+        JButton copy = new JButton(FontAwesome.COPY);
+        copy.setFont(FontAwesome.FONT.deriveFont(11f));
+        copy.setMargin(new Insets(5, 5, 5, 5));
+
+        copy.addActionListener(e -> {
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection("Defective#3858"), null);
+            playAsterisk();
+            JOptionPane.showOptionDialog(dialog, "Copied to clipboard!", "...", JOptionPane.CANCEL_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE, null, new String[] { Messages.getString("Main.ok") }, 0);
+        });
+
+        discordBox.add(copy);
+
+        panel.add(discordBox);
+
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        panel.alignAll();
+
+        dialog.setContentPane(panel);
+        dialog.pack();
+        centerWindow(dialog);
+        dialog.setVisible(true);
     }
 
     /**

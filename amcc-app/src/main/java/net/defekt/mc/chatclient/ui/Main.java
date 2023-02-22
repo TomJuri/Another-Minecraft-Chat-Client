@@ -53,6 +53,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -189,7 +190,7 @@ public class Main {
     private Main() {
     }
 
-    private static BufferedImage logoImage = null;
+    public static BufferedImage logoImage = null;
 
     public static final String VERSION = "1.10.0";
     private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
@@ -452,7 +453,7 @@ public class Main {
                 PrintWriter pw = new PrintWriter(Base64.getEncoder().wrap(os));
                 pw.println(new GsonBuilder().setPrettyPrinting().create().toJson(up));
                 pw.flush();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -1466,11 +1467,38 @@ public class Main {
         JMenu helpMenu = new JMenu(Messages.getString("Main.helpMenu")) {
             {
                 setMnemonic(getText().charAt(0));
-                add(new JMenuItem(Messages.getString("Main.helpMenuAboutStats")) {
+                add(new JMenuItem("GitHub", FontAwesome.createIcon(FontAwesome.GITHUB, this, FontAwesome.BRANDS_FONT)) {
                     {
-                        setEnabled(false);
+                        addActionListener(e -> {
+                            try {
+                                Desktop.getDesktop()
+                                        .browse(new URI("https://github.com/Defective4/Another-Minecraft-Chat-Client"));
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                        });
                     }
                 });
+                add(new JMenuItem("Report an issue", FontAwesome.createIcon(FontAwesome.BUG, this)) {
+                    {
+                        addActionListener(e -> {
+                            try {
+                                Desktop.getDesktop().browse(
+                                        new URI("https://github.com/Defective4/Another-Minecraft-Chat-Client/issues"));
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                        });
+                    }
+                });
+                add(new JMenuItem("About AMCC", FontAwesome.createIcon(FontAwesome.INFO, this)) {
+                    {
+                        addActionListener(e -> {
+                            SwingUtils.showAboutDialog(win);
+                        });
+                    }
+                });
+                
             }
         };
 
