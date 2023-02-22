@@ -114,7 +114,7 @@ public class SwingUtils {
         copy.addActionListener(e -> {
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection("Defective#3858"), null);
             playAsterisk();
-            JOptionPane.showOptionDialog(dialog, "Copied to clipboard!", "...", JOptionPane.CANCEL_OPTION,
+            JOptionPane.showOptionDialog(dialog, Messages.getString("Main.copied"), "...", JOptionPane.CANCEL_OPTION,
                     JOptionPane.INFORMATION_MESSAGE, null, new String[] { Messages.getString("Main.ok") }, 0);
         });
 

@@ -1479,7 +1479,7 @@ public class Main {
                         });
                     }
                 });
-                add(new JMenuItem("Report an issue", FontAwesome.createIcon(FontAwesome.BUG, this)) {
+                add(new JMenuItem(Messages.getString("Main.reportIssue"), FontAwesome.createIcon(FontAwesome.BUG, this)) {
                     {
                         addActionListener(e -> {
                             try {
@@ -1491,7 +1491,7 @@ public class Main {
                         });
                     }
                 });
-                add(new JMenuItem("About AMCC", FontAwesome.createIcon(FontAwesome.INFO, this)) {
+                add(new JMenuItem(Messages.getString("Main.aboutProgram"), FontAwesome.createIcon(FontAwesome.INFO, this)) {
                     {
                         addActionListener(e -> {
                             SwingUtils.showAboutDialog(win);
