@@ -1,6 +1,9 @@
 AMCC Change Log
 v1.10.0
 
+[+] Fixed:
+  - Server List Ping is now improved
+
 [+] Added:
   - New preferences file format
   - "About" information

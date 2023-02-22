@@ -69,7 +69,8 @@ public class MinecraftStat {
             final OutputStream os = soc.getOutputStream();
             final VarInputStream is = new VarInputStream(soc.getInputStream());
 
-            final Packet handshake = new HandshakePacket(PacketFactory.constructPacketRegistry(47), -1, host, port, 1);
+            final Packet handshake = new HandshakePacket(PacketFactory.constructPacketRegistry(47),
+                    ProtocolNumber.values()[0].protocol, host, port, 1);
             os.write(handshake.getData(false));
             os.write(0x01);
             os.write(0x00);

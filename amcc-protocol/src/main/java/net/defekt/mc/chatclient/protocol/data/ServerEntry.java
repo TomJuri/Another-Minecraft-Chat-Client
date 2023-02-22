@@ -86,6 +86,7 @@ public class ServerEntry implements Serializable {
                             try {
                                 info = MinecraftStat.serverListPing(host, port);
                             } catch (final Exception e) {
+                                e.printStackTrace();
                                 info = MinecraftStat.legacyServerListPing(host, port);
                             }
                         }
