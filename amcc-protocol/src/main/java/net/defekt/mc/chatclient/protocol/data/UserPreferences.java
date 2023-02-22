@@ -3,14 +3,23 @@ package net.defekt.mc.chatclient.protocol.data;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket.Status;
@@ -318,13 +327,28 @@ public class UserPreferences implements Serializable {
     private int maxPacketsOnList = 500;
     private boolean disablePacketAnalyzer = false;
 
-    public static final File serverFile = new File("mcc.prefs");
+    public static final File oldServerFile = new File("mcc.prefs");
+    public static final File serverFile = new File("mcc.prefs.dat");
 
     public static UserPreferences load() {
         try {
-            if (serverFile.exists()) {
-                try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(serverFile))) {
-                    final UserPreferences prefs = (UserPreferences) is.readObject();
+            if (oldServerFile.isFile()) {
+                UserPreferences prefs;
+                try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(oldServerFile))) {
+                    prefs = (UserPreferences) is.readObject();
+                    prefs.initDefaults();
+                }
+                try (OutputStream os = new FileOutputStream(UserPreferences.serverFile)) {
+                    PrintWriter pw = new PrintWriter(Base64.getEncoder().wrap(os));
+                    pw.println(new GsonBuilder().setPrettyPrinting().create().toJson(prefs));
+                    pw.flush();
+                }
+                oldServerFile.delete();
+                return prefs;
+            } else if (serverFile.isFile()) {
+                try (InputStream is = new FileInputStream(serverFile)) {
+                    InputStreamReader reader = new InputStreamReader(Base64.getDecoder().wrap(is));
+                    final UserPreferences prefs = new Gson().fromJson(reader, UserPreferences.class);
                     prefs.initDefaults();
                     return prefs;
                 }

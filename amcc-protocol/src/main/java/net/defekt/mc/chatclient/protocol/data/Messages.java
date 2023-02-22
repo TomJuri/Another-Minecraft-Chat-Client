@@ -1,6 +1,5 @@
 package net.defekt.mc.chatclient.protocol.data;
 
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
@@ -24,7 +23,7 @@ public class Messages {
     public static String getString(final String key) {
         try {
             return RESOURCE_BUNDLE.getString(key);
-        } catch (final MissingResourceException e) {
+        } catch (final Exception e) {
             return '!' + key + '!';
         }
     }

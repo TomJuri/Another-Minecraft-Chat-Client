@@ -45,8 +45,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -117,6 +117,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.table.DefaultTableModel;
+
+import com.google.gson.GsonBuilder;
 
 import dev.dewy.nbt.Nbt;
 import dev.dewy.nbt.tags.collection.CompoundTag;
@@ -446,10 +448,11 @@ public class Main {
 
         @Override
         public void run() {
-            try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(UserPreferences.serverFile))) {
-                os.writeObject(up);
-                os.close();
-            } catch (final Exception e) {
+            try (OutputStream os = new FileOutputStream(UserPreferences.serverFile)) {
+                PrintWriter pw = new PrintWriter(Base64.getEncoder().wrap(os));
+                pw.println(new GsonBuilder().setPrettyPrinting().create().toJson(up));
+                pw.flush();
+            } catch(Exception e) {
                 e.printStackTrace();
             }
         }
@@ -3442,7 +3445,7 @@ public class Main {
         worldBox.alignAll();
 
         trackingBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
-        for(Component cpt : attackPanel.getComponents())
+        for (Component cpt : attackPanel.getComponents())
             cpt.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
 
         final JVBoxPanel autoMsgBox = new JVBoxPanel();
