@@ -920,6 +920,7 @@ public class Main {
                     final String haltReason = et.isRefreshing() ? Messages.getString("Main.haltReasonRefreshing")
                             : Messages.getString("Main.haltReasonError");
 
+                    SwingUtils.playAsterisk();
                     final int haltResponse = JOptionPane.showOptionDialog(win,
                             new String[] { haltReason, Messages.getString("Main.haltQuestion") },
                             Messages.getString("Main.haltTitle"), JOptionPane.DEFAULT_OPTION,
@@ -1152,6 +1153,7 @@ public class Main {
                     }
                     if (!up.isUsernameAlertSeen() && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)
                             && ((AuthType) authType.getSelectedItem()) != AuthType.TheAltening) {
+                        SwingUtils.playAsterisk();
                         final int alResp = JOptionPane.showOptionDialog(win,
                                 Messages.getString("Main.nickIllegalCharsWarning1") + uname
                                         + Messages.getString("Main.nickIllegalCharsWarning2")
@@ -2481,6 +2483,7 @@ public class Main {
             public void stateChanged(final ChangeEvent e) {
                 final JTabbedPane tp = (JTabbedPane) e.getSource();
                 if (tp.getSelectedIndex() == 5) {
+                    SwingUtils.playAsterisk();
                     JOptionPane.showOptionDialog(win, Messages.getString("Main.protocolSettingsWarning"),
                             Messages.getString("Main.protocolSettingsWarningTitle"), JOptionPane.OK_OPTION,
                             JOptionPane.WARNING_MESSAGE, null, new Object[] { Messages.getString("Main.ok") }, e);
@@ -2560,6 +2563,7 @@ public class Main {
                         && ((up.isEnableInventoryHandling() != enableIVHandling.isSelected())
                                 || (up.isLoadInventoryTextures() != loadTextures.isSelected()))
                         && SwingItemsWindow.getTexturesSize() > 0) {
+                    SwingUtils.playAsterisk();
                     final int response = JOptionPane.showOptionDialog(od,
                             Messages.getString("Main.inventoryHandlingDisabled"),
                             Messages.getString("Main.inventoryHandlingDisabledTitle"), JOptionPane.YES_NO_OPTION,
@@ -2575,6 +2579,7 @@ public class Main {
                 if ((enableIVHandling.isSelected() && loadTextures.isSelected())
                         && (up.isEnableInventoryHandling() != enableIVHandling.isSelected())
                         || (up.isLoadInventoryTextures() != loadTextures.isSelected() && loadTextures.isSelected())) {
+                    SwingUtils.playAsterisk();
                     final int response = JOptionPane.showOptionDialog(od, Messages.getString("Main.itemLoadingEnabled"),
                             Messages.getString("Main.itemLoadingEnabledTitle"), JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE, null,
@@ -2594,6 +2599,7 @@ public class Main {
                 }
 
                 if (enableIVHandling.isSelected() && !up.isEnableInventoryHandling() && (clients.size() > 0)) {
+                    SwingUtils.playAsterisk();
                     JOptionPane.showOptionDialog(od, Messages.getString("Main.inventoryHandlingEnabled"),
                             Messages.getString("Main.inventoryHandlingEnabledTitle"), JOptionPane.OK_CANCEL_OPTION,
                             JOptionPane.INFORMATION_MESSAGE, null, new Object[] { Messages.getString("Main.ok") }, 0);
@@ -2622,6 +2628,7 @@ public class Main {
                 PlayerSkinCache.getSkincache().clear();
 
                 if (themeChanged) {
+                    SwingUtils.playAsterisk();
                     JOptionPane.showOptionDialog(od, Messages.getString("Main.themeChangedLabel"),
                             Messages.getString("Main.themeChangedDialogTitle"), JOptionPane.OK_OPTION,
                             JOptionPane.INFORMATION_MESSAGE, null,
@@ -2630,6 +2637,7 @@ public class Main {
                 }
 
                 if (langChanged) {
+                    SwingUtils.playAsterisk();
                     final int response = JOptionPane.showOptionDialog(od, Messages.getString("Main.langChangedLabel"),
                             Messages.getString("Main.langChangedDialogTitle"), JOptionPane.OK_OPTION,
                             JOptionPane.INFORMATION_MESSAGE, null,
@@ -3494,6 +3502,7 @@ public class Main {
                 final int val = (int) src.getValue();
                 if (val < 1 && !permitted) {
                     src.setValue(1);
+                    SwingUtils.playAsterisk();
                     final String msg = Messages.getString("Main.autoValWarning");
                     final int resp = JOptionPane.showOptionDialog(win, msg,
                             Messages.getString("Main.autoValWarningTitle"), JOptionPane.YES_NO_OPTION,
@@ -3663,6 +3672,7 @@ public class Main {
                 if (ret == JFileChooser.APPROVE_OPTION) {
                     final File out = IOUtils.forceExtension(fc.getSelectedFile(), ".amf");
                     if (out.exists()) {
+                        SwingUtils.playExclamation();
                         final int ov = JOptionPane.showOptionDialog(win, Messages.getString("Main.overwriteFile"),
                                 Messages.getString("Main.overwriteFileTitle"), JOptionPane.YES_NO_OPTION,
                                 JOptionPane.WARNING_MESSAGE, null,
@@ -4019,6 +4029,7 @@ public class Main {
 
                     if ((triggersList == null || triggersList.length <= 0)
                             || (effectsList == null || effectsList.length <= 0)) {
+                        SwingUtils.playExclamation();
                         JOptionPane.showOptionDialog(win, Messages.getString("Main.autoResponseAddEmptyError"),
                                 Messages.getString("Main.errorTitle"), JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE,
                                 null, new Object[] { Messages.getString("Main.ok") }, 0);

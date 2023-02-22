@@ -144,6 +144,7 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
                                                         try (OutputStream os = new FileOutputStream(out)) {
                                                             os.write(image);
                                                             os.close();
+                                                            SwingUtils.playAsterisk();
                                                             JOptionPane.showOptionDialog(main.getMainWindow(),
                                                                     Messages.getString(
                                                                             "JMinecraftServerList.exportIconSuccess"),

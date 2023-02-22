@@ -435,6 +435,7 @@ public class SwingUtils {
                 final JLabel message = new JLabel("<html>" + msg.append("</html>").toString());
                 final JScrollPane jsp = new JScrollPane(message);
                 jsp.setPreferredSize(win.getSize());
+                SwingUtils.playAsterisk();
                 JOptionPane.showOptionDialog(win, jsp,
                         Messages.getString("SwingUtils.updateDialogChangesTitle") + newVersion,
                         JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
