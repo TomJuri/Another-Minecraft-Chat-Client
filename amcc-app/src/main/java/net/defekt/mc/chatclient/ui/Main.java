@@ -1460,9 +1460,9 @@ public class Main {
             }
         };
 
-        JMenu pluginsMenu = new JMenu("Plugins") {
+        JMenu pluginsMenu = new JMenu(Messages.getString("Main.pluginsMenu")) {
             {
-                add(new JMenuItem("Plugin Manager", createIcon(FontAwesome.PLUG)) {
+                add(new JMenuItem(Messages.getString("Main.pluginsMenuManager"), createIcon(FontAwesome.PLUG)) {
                     {
                         addActionListener(e -> {
                             showPluginManager();

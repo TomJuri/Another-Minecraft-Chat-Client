@@ -88,7 +88,7 @@ public class PluginDisplayPanel extends JPanel {
 
         Box ctls = Box.createHorizontalBox();
         JButton load = new JButton();
-        JButton del = new JButton("Delete");
+        JButton del = new JButton(Messages.getString("Main.delete"));
 
         if (!remote) {
             UserPreferences prefs = Main.up;
