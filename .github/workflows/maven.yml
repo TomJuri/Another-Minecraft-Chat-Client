@@ -36,3 +36,6 @@ jobs:
           name: amcc-api
           # A file, directory or wildcard pattern that describes what to upload
           path: amcc-api/target/*.jar
+      - name: Maven Dependency Tree Dependency Submission
+        uses: advanced-security/maven-dependency-submission-action@v3.0.0
+          
