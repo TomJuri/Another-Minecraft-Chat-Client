@@ -38,8 +38,8 @@ public class PluginDescription {
      * @param website
      * @param remote
      */
-    public PluginDescription(String name, String version, String main, String[] description, String author, String api,
-            String website, String remote) {
+    public PluginDescription(final String name, final String version, final String main, final String[] description,
+            final String author, final String api, final String website, final String remote) {
         super();
         this.name = name;
         this.version = version;
@@ -54,18 +54,18 @@ public class PluginDescription {
 
     public String sha256() {
         if (origin.exists()) try (InputStream is = new FileInputStream(origin)) {
-            MessageDigest sha = MessageDigest.getInstance("sha-256");
-            byte[] buffer = new byte[1024];
+            final MessageDigest sha = MessageDigest.getInstance("sha-256");
+            final byte[] buffer = new byte[1024];
             int read;
             while ((read = is.read(buffer)) > 0) {
                 sha.update(buffer, 0, read);
             }
-            byte[] digest = sha.digest();
-            StringBuilder bd = new StringBuilder();
-            for (byte b : digest)
+            final byte[] digest = sha.digest();
+            final StringBuilder bd = new StringBuilder();
+            for (final byte b : digest)
                 bd.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
             return bd.toString();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -91,7 +91,7 @@ public class PluginDescription {
         String[] desc = description;
         if (desc == null) desc = new String[0];
 
-        String[] array = Arrays.copyOf(desc, desc.length > 5 ? 5 : desc.length);
+        final String[] array = Arrays.copyOf(desc, desc.length > 5 ? 5 : desc.length);
         for (int x = 0; x < array.length; x++)
             array[x] = array[x].replace("<html>", "").replace("</html>", "");
         return array;
@@ -108,13 +108,13 @@ public class PluginDescription {
     public URL getWebsite() {
         try {
             return new URL(website);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return null;
         }
     }
 
     public String getWebsiteString() {
-        URL site = getWebsite();
+        final URL site = getWebsite();
         return site == null ? null : site.toString();
     }
 
@@ -122,7 +122,7 @@ public class PluginDescription {
         return origin;
     }
 
-    public void setOrigin(File origin) {
+    public void setOrigin(final File origin) {
         this.origin = origin;
     }
 

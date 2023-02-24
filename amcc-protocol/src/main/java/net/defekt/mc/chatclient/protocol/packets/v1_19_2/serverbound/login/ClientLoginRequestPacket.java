@@ -17,7 +17,7 @@ public class ClientLoginRequestPacket extends BaseClientLoginRequestPacket {
      * @param reg
      * @param name
      */
-    public ClientLoginRequestPacket(PacketRegistry reg, String name) {
+    public ClientLoginRequestPacket(final PacketRegistry reg, final String name) {
         super(reg, name);
         putString(name);
         putBoolean(false);

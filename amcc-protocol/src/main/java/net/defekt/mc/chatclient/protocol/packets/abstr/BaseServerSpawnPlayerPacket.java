@@ -35,7 +35,7 @@ public class BaseServerSpawnPlayerPacket extends Packet {
      * @param data
      * @throws IOException
      */
-    protected BaseServerSpawnPlayerPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerSpawnPlayerPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
     }
 

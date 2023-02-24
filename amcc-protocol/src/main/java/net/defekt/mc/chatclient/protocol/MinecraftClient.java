@@ -160,8 +160,8 @@ public class MinecraftClient {
      * 
      * @return list of client listeners added to this client
      */
-    public List<ClientListener> getClientListeners(boolean includeGlobal) {
-        List<ClientListener> ls = new ArrayList<ClientListener>();
+    public List<ClientListener> getClientListeners(final boolean includeGlobal) {
+        final List<ClientListener> ls = new ArrayList<ClientListener>();
         if (includeGlobal) Collections.addAll(ls, GlobalListeners.getClientListeners());
         ls.addAll(clientListeners);
         return ls;
@@ -388,8 +388,8 @@ public class MinecraftClient {
                                 }
                                 packet.setCompressed(compressed);
                                 packet.setEncrypted(isEncrypted);
-                                for (MinecraftPacketListener listener : GlobalListeners.getListeners()) {
-                                    Packet nPacket = listener.packetReceiving(packet, MinecraftClient.this);
+                                for (final MinecraftPacketListener listener : GlobalListeners.getListeners()) {
+                                    final Packet nPacket = listener.packetReceiving(packet, MinecraftClient.this);
                                     if (nPacket != null) packet = nPacket;
                                     if (packet.isCancelled()) break;
                                 }
@@ -397,7 +397,7 @@ public class MinecraftClient {
                                     for (final InternalPacketListener lis : packetListeners) {
                                         lis.packetReceived(packet, reg);
                                     }
-                                    for (MinecraftPacketListener listener : GlobalListeners.getListeners()) {
+                                    for (final MinecraftPacketListener listener : GlobalListeners.getListeners()) {
                                         listener.packetReceived(packet, MinecraftClient.this);
                                     }
                                 }
@@ -624,13 +624,13 @@ public class MinecraftClient {
                 listener.packetReceived(packet, reg);
                 if (packet.isCancelled()) return;
             }
-            for (MinecraftPacketListener listener : GlobalListeners.getListeners()) {
-                Packet nPacket = listener.packetSending(packet, this);
+            for (final MinecraftPacketListener listener : GlobalListeners.getListeners()) {
+                final Packet nPacket = listener.packetSending(packet, this);
                 if (nPacket != null) packet = nPacket;
                 if (packet.isCancelled()) return;
             }
             os.write(packet.getData(compression));
-            for (MinecraftPacketListener listener : GlobalListeners.getListeners()) {
+            for (final MinecraftPacketListener listener : GlobalListeners.getListeners()) {
                 listener.packetSent(packet, this);
             }
         } else
@@ -645,15 +645,11 @@ public class MinecraftClient {
      *                     error sending packet to server
      */
     public void sendChatMessage(final String message) throws IOException {
-        int protocol = PacketFactory.getProtocolFor(reg);
-        if (protocol >= 759) {
-            if (message.startsWith("/")) {
-                sendPacket(PacketFactory.constructPacket(reg, "ClientChatCommandPacket", message));
-            } else
-                sendPacket(PacketFactory.constructPacket(reg, "ClientChatMessagePacket", message));
-        } else {
+        final int protocol = PacketFactory.getProtocolFor(reg);
+        if ((protocol >= 759) && message.startsWith("/")) {
+            sendPacket(PacketFactory.constructPacket(reg, "ClientChatCommandPacket", message));
+        } else
             sendPacket(PacketFactory.constructPacket(reg, "ClientChatMessagePacket", message));
-        }
     }
 
     /**
@@ -666,8 +662,8 @@ public class MinecraftClient {
      * @param message  message to display
      * @param position position in which the message should be displayed
      */
-    public void receiveMessage(String message, Position position) {
-        for (ClientListener ls : getClientListeners(false))
+    public void receiveMessage(final String message, final Position position) {
+        for (final ClientListener ls : getClientListeners(false))
             ls.messageReceived(message, position, this);
     }
 

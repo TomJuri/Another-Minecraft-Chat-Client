@@ -33,11 +33,11 @@ public abstract class GUIComponents {
 
     private final List<UserActionListener> actionListeners = new ArrayList<>();
 
-    public void addActionListener(UserActionListener listener) {
+    public void addActionListener(final UserActionListener listener) {
         if (!actionListeners.contains(listener)) actionListeners.add(listener);
     }
 
-    public void removeActionListener(UserActionListener listener) {
+    public void removeActionListener(final UserActionListener listener) {
         actionListeners.remove(listener);
     }
 
@@ -52,7 +52,8 @@ public abstract class GUIComponents {
      */
     public abstract MinecraftClient[] getConnectedClients();
 
-    public GUIComponents(JFrame mainWindow, JMenuBar mainMenuBar, JTabbedPane tabPane, TrayIcon mainTrayIcon) {
+    public GUIComponents(final JFrame mainWindow, final JMenuBar mainMenuBar, final JTabbedPane tabPane,
+            final TrayIcon mainTrayIcon) {
         this.mainWindow = mainWindow;
         this.mainMenuBar = mainMenuBar;
         this.mainTabPane = tabPane;

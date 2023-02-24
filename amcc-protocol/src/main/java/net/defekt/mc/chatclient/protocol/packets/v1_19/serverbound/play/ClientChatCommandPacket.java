@@ -17,7 +17,7 @@ public class ClientChatCommandPacket extends BaseClientChatMessagePacket {
      * @param reg
      * @param message
      */
-    public ClientChatCommandPacket(PacketRegistry reg, String message) {
+    public ClientChatCommandPacket(final PacketRegistry reg, final String message) {
         super(reg, message, true);
         String cmd = message;
         if (cmd.startsWith("/")) cmd = cmd.substring(1);

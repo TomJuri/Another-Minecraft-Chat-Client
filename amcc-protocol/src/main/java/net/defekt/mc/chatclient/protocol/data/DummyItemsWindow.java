@@ -23,21 +23,22 @@ public class DummyItemsWindow extends ItemsWindow {
      * @param client
      * @param registry
      */
-    public DummyItemsWindow(String title, int size, int windowID, MinecraftClient client, PacketRegistry registry) {
+    public DummyItemsWindow(final String title, final int size, final int windowID, final MinecraftClient client,
+            final PacketRegistry registry) {
         super(title, size, windowID, client, registry);
         this.slots = size;
     }
 
     @Override
-    public void finishTransaction(short windowID) {
+    public void finishTransaction(final short windowID) {
     }
 
     @Override
-    public void cancelTransaction(short windowID) {
+    public void cancelTransaction(final short windowID) {
     }
 
     @Override
-    public void putItem(int slot, ItemStack item) {
+    public void putItem(final int slot, final ItemStack item) {
     }
 
     @Override
@@ -45,7 +46,7 @@ public class DummyItemsWindow extends ItemsWindow {
     }
 
     @Override
-    public void closeWindow(boolean silent) {
+    public void closeWindow(final boolean silent) {
     }
 
     @Override

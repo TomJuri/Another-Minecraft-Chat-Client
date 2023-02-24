@@ -23,7 +23,7 @@ public class GlobalListeners {
      * 
      * @param clistener
      */
-    public static void registerListener(ClientListener clistener) {
+    public static void registerListener(final ClientListener clistener) {
         synchronized (clientListeners) {
             clientListeners.add(clistener);
         }
@@ -35,7 +35,7 @@ public class GlobalListeners {
      * 
      * @param listener
      */
-    public static void registerListener(MinecraftPacketListener listener) {
+    public static void registerListener(final MinecraftPacketListener listener) {
         synchronized (packetListeners) {
             if (!packetListeners.contains(listener)) packetListeners.add(listener);
         }

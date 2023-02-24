@@ -465,6 +465,7 @@ public class SwingItemsWindow extends ItemsWindow {
      * @param index slot to put item to
      * @param item  item stack for this slot
      */
+    @Override
     @SuppressWarnings("unchecked")
     public void putItem(final int index, final ItemStack item) {
         if (index >= items.length || index < 0) return;
@@ -499,9 +500,9 @@ public class SwingItemsWindow extends ItemsWindow {
         try {
             if (item.getNbt() != null) {
 
-                LinkedHashMap<String, Tag> map = (LinkedHashMap<String, Tag>) item.getNbt().getValue();
+                final LinkedHashMap<String, Tag> map = (LinkedHashMap<String, Tag>) item.getNbt().getValue();
                 if (map.containsKey("display")) {
-                    LinkedHashMap<String, Tag> map2 = (LinkedHashMap<String, Tag>) map.get("display").getValue();
+                    final LinkedHashMap<String, Tag> map2 = (LinkedHashMap<String, Tag>) map.get("display").getValue();
                     if (map2.containsKey("Name")) {
                         label = "\u00a7f" + ChatMessages.parse((String) map2.get("Name").getValue());
                     }
@@ -566,6 +567,7 @@ public class SwingItemsWindow extends ItemsWindow {
      * 
      * @return inventory size
      */
+    @Override
     public int getSize() {
         return size;
     }
@@ -573,6 +575,7 @@ public class SwingItemsWindow extends ItemsWindow {
     /**
      * Closes this inventory
      */
+    @Override
     public void closeWindow() {
         closeWindow(false);
     }
@@ -583,6 +586,7 @@ public class SwingItemsWindow extends ItemsWindow {
      * @param silently if set to true, no window close packet will be sent when
      *                 closing window
      */
+    @Override
     public void closeWindow(final boolean silently) {
         closeSilently = true;
         if (dialog != null) {
@@ -596,6 +600,7 @@ public class SwingItemsWindow extends ItemsWindow {
      * 
      * @param actionID transaction ID
      */
+    @Override
     public void finishTransaction(final short actionID) {
         if (pendingTransactions.containsKey(actionID)) {
             pendingTransactions.get(actionID).run();
@@ -608,6 +613,7 @@ public class SwingItemsWindow extends ItemsWindow {
      * 
      * @param actionID transaction ID
      */
+    @Override
     public void cancelTransaction(final short actionID) {
         if (pendingTransactions.containsKey(actionID)) {
             pendingTransactions.remove(actionID);

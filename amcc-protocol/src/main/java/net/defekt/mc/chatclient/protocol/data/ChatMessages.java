@@ -33,7 +33,7 @@ public class ChatMessages {
      * @param message message to translate
      * @return translated message
      */
-    public static String translateColorCodes(char code, String message) {
+    public static String translateColorCodes(final char code, final String message) {
         return message.replace(code, '§');
     }
 
@@ -46,7 +46,7 @@ public class ChatMessages {
      * @param json chat message
      * @return parsed text
      */
-    public static String parse(String json) {
+    public static String parse(final String json) {
         return parse(json, null);
     }
 
@@ -59,7 +59,7 @@ public class ChatMessages {
      * @param client
      * @return parsed, human-readable chat message
      */
-    public static String parse(String json, MinecraftClient client) {
+    public static String parse(String json, final MinecraftClient client) {
         json = json.replace(pChar + "k", "").replace(pChar + "l", "").replace(pChar + "m", "").replace(pChar + "n", "");
         try {
             final JsonElement element = JsonParser.parseString(json);
@@ -86,12 +86,12 @@ public class ChatMessages {
                 if (client != null) {
                     if (obj.has("amcPlayer")) {
                         try {
-                            UUID uid = UUID.fromString(obj.get("amcPlayer").getAsString());
-                            PlayerInfo inf = client.getPlayersTabList().get(uid);
+                            final UUID uid = UUID.fromString(obj.get("amcPlayer").getAsString());
+                            final PlayerInfo inf = client.getPlayersTabList().get(uid);
                             if (inf != null) {
                                 text = inf.getName();
                             }
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                         }
                     }
                 }

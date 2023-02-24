@@ -39,7 +39,7 @@ public class BaseServerOpenWindowPacket extends Packet {
      */
     protected int slots = -1;
 
-    protected BaseServerOpenWindowPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerOpenWindowPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
     }
 

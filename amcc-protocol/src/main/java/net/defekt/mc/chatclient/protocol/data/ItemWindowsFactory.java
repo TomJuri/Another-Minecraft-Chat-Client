@@ -25,11 +25,11 @@ public class ItemWindowsFactory {
     public ItemsWindow createWindow(final String title, final int size, final int windowID,
             final MinecraftClient client, final PacketRegistry registry) {
         try {
-            ItemsWindow window = (ItemsWindow) itemWindowsClass.getConstructors()[0].newInstance(title, size, windowID,
-                    client, registry);
+            final ItemsWindow window = (ItemsWindow) itemWindowsClass.getConstructors()[0].newInstance(title, size,
+                    windowID, client, registry);
 
             return window;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return new DummyItemsWindow(title, size, windowID, client, registry);
         }
@@ -41,7 +41,7 @@ public class ItemWindowsFactory {
     }
 
     @SuppressWarnings("javadoc")
-    public void setItemWindowsClass(Class<? extends ItemsWindow> itemWindowsClass) {
+    public void setItemWindowsClass(final Class<? extends ItemsWindow> itemWindowsClass) {
         this.itemWindowsClass = itemWindowsClass;
     }
 }

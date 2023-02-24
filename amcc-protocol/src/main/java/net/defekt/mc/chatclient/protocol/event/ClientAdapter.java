@@ -19,48 +19,49 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 public abstract class ClientAdapter implements ClientListener {
 
     @Override
-    public boolean messageReceived(String message, Position position, MinecraftClient client) {
+    public boolean messageReceived(final String message, final Position position, final MinecraftClient client) {
         return false;
     }
 
     @Override
-    public void disconnected(String reason, MinecraftClient client) {
+    public void disconnected(final String reason, final MinecraftClient client) {
     }
 
     @Override
-    public void healthUpdate(float health, int food, MinecraftClient client) {
+    public void healthUpdate(final float health, final int food, final MinecraftClient client) {
     }
 
     @Override
-    public void positionChanged(double x, double y, double z, MinecraftClient client) {
+    public void positionChanged(final double x, final double y, final double z, final MinecraftClient client) {
     }
 
     @Override
-    public void statisticsReceived(Map<String, Integer> values, MinecraftClient client) {
+    public void statisticsReceived(final Map<String, Integer> values, final MinecraftClient client) {
     }
 
     @Override
-    public void windowOpened(int id, ItemsWindow win, PacketRegistry reg, MinecraftClient client) {
+    public void windowOpened(final int id, final ItemsWindow win, final PacketRegistry reg,
+            final MinecraftClient client) {
     }
 
     @Override
-    public void timeUpdated(long time, long worldAge, MinecraftClient client) {
+    public void timeUpdated(final long time, final long worldAge, final MinecraftClient client) {
     }
 
     @Override
-    public void changedTrackedEntity(int id, MinecraftClient client) {
+    public void changedTrackedEntity(final int id, final MinecraftClient client) {
     }
 
     @Override
-    public void entityMoved(Entity entity, int id, MinecraftClient client) {
+    public void entityMoved(final Entity entity, final int id, final MinecraftClient client) {
     }
 
     @Override
-    public void tick(MinecraftClient client) throws IOException {
+    public void tick(final MinecraftClient client) throws IOException {
     }
 
     @Override
-    public void gameStateChanged(State oldState, State newState, MinecraftClient client) {
+    public void gameStateChanged(final State oldState, final State newState, final MinecraftClient client) {
     }
 
 }

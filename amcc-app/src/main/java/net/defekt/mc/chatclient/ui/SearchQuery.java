@@ -8,7 +8,7 @@ public class SearchQuery {
     private final SearchType type;
     private final String query;
 
-    public SearchQuery(String query, SearchType type) {
+    public SearchQuery(final String query, final SearchType type) {
         this.type = type;
         this.query = query;
     }

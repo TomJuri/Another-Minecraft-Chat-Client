@@ -210,9 +210,10 @@ public class ServerEntry implements Serializable {
 
     /**
      * Set current server icon (Base64)
+     * 
      * @param icon
      */
-    public void setIcon(String icon) {
+    public void setIcon(final String icon) {
         this.icon = icon;
     }
 }

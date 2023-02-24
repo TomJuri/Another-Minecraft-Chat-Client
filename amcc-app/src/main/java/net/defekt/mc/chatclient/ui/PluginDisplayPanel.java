@@ -25,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 import net.defekt.mc.chatclient.api.AMCPlugin;
 import net.defekt.mc.chatclient.api.PluginDescription;
@@ -49,36 +50,36 @@ public class PluginDisplayPanel extends JPanel {
         try (InputStream in = PluginDisplayPanel.class.getResourceAsStream("/resources/icons/check.png")) {
             checkI = ImageIO.read(in);
             checkI = IOUtils.resizeImageProp(checkI, 16);
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
         try (InputStream in = PluginDisplayPanel.class.getResourceAsStream("/resources/icons/x.png")) {
             excI = ImageIO.read(in);
             excI = IOUtils.resizeImageProp(excI, 16);
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
         try (InputStream in = PluginDisplayPanel.class.getResourceAsStream("/resources/icons/star.png")) {
             starI = ImageIO.read(in);
             starI = IOUtils.resizeImageProp(starI, 14);
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
         check = new ImageIcon(checkI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : checkI);
         exc = new ImageIcon(excI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : excI);
         star = new ImageIcon(starI == null ? new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB) : starI);
     }
 
-    public PluginDisplayPanel(GUIComponents cpts, PluginDescription plugin, boolean remote,
-            Consumer<PluginDescription> downloader, Window parent) {
+    public PluginDisplayPanel(final GUIComponents cpts, final PluginDescription plugin, final boolean remote,
+            final Consumer<PluginDescription> downloader, final Window parent) {
         this(cpts, plugin, remote, downloader, parent, 0, false);
     }
 
-    public PluginDisplayPanel(GUIComponents cpts, PluginDescription plugin, boolean remote,
-            Consumer<PluginDescription> downloader, Window parent, int stars, boolean starred) {
+    public PluginDisplayPanel(final GUIComponents cpts, final PluginDescription plugin, final boolean remote,
+            final Consumer<PluginDescription> downloader, final Window parent, final int stars, final boolean starred) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        Box title = Box.createHorizontalBox();
-        JLabel nameLabel = new JLabel(plugin.getName() + " (v" + plugin.getVersion() + ")");
+        final Box title = Box.createHorizontalBox();
+        final JLabel nameLabel = new JLabel(plugin.getName() + " (v" + plugin.getVersion() + ")");
         nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD).deriveFont(13f));
 
-        JLabel authorLabel = new JLabel("by " + plugin.getAuthor());
+        final JLabel authorLabel = new JLabel("by " + plugin.getAuthor());
         nameLabel.setFont(nameLabel.getFont().deriveFont(12f));
 
         title.add(nameLabel);
@@ -86,22 +87,22 @@ public class PluginDisplayPanel extends JPanel {
         title.add(authorLabel);
         title.setAlignmentX(LEFT_ALIGNMENT);
 
-        Box ctls = Box.createHorizontalBox();
-        JButton load = new JButton();
-        JButton del = new JButton(Messages.getString("Main.delete"));
+        final Box ctls = Box.createHorizontalBox();
+        final JButton load = new JButton();
+        final JButton del = new JButton(Messages.getString("Main.delete"));
 
         if (!remote) {
-            UserPreferences prefs = Main.up;
-            List<String> enabled = prefs.getEnabledPlugins();
-            List<String> halted = prefs.getHaltedPlugins();
-            List<String> deleted = prefs.getDeletedPlugins();
-            String id = plugin.getUID();
+            final UserPreferences prefs = Main.up;
+            final List<String> enabled = prefs.getEnabledPlugins();
+            final List<String> halted = prefs.getHaltedPlugins();
+            final List<String> deleted = prefs.getDeletedPlugins();
+            final String id = plugin.getUID();
 
             initBtnStates(load, del, enabled.contains(id), halted.contains(id), deleted.contains(id));
 
             del.addActionListener(e -> {
                 SwingUtils.playAsterisk();
-                int resp = JOptionPane.showOptionDialog(parent,
+                final int resp = JOptionPane.showOptionDialog(parent,
                         String.format(Messages.getString("PluginManager.deleteWarning"), plugin.getName()),
                         Messages.getString("PluginManager.deleteWarningTitle"), JOptionPane.CANCEL_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null,
@@ -113,13 +114,13 @@ public class PluginDisplayPanel extends JPanel {
             });
 
             load.addActionListener(e -> {
-                boolean enable = !enabled.contains(id);
+                final boolean enable = !enabled.contains(id);
                 boolean halt = false;
                 if (enable) {
 
                     if (!plugin.getApi().equals(Main.VERSION)) {
                         SwingUtils.playAsterisk();
-                        int resp = JOptionPane.showOptionDialog(parent,
+                        final int resp = JOptionPane.showOptionDialog(parent,
                                 Messages.getString("PluginManager.loadIncompatibleWarning"),
                                 Messages.getString("Main.inventoryHandlingHelpTitle"), JOptionPane.OK_CANCEL_OPTION,
                                 JOptionPane.WARNING_MESSAGE, null,
@@ -127,10 +128,10 @@ public class PluginDisplayPanel extends JPanel {
                         if (resp == 1) return;
                     }
 
-                    boolean trusted = prefs.getTrustedAuthors().contains(plugin.getAuthor());
-                    int flag = Plugins.getPluginFlag(plugin);
-                    boolean verified = flag == Plugins.PLUGIN_VERIFIED;
-                    boolean malicious = flag == Plugins.PLUGIN_MALICIOUS;
+                    final boolean trusted = prefs.getTrustedAuthors().contains(plugin.getAuthor());
+                    final int flag = Plugins.getPluginFlag(plugin);
+                    final boolean verified = flag == Plugins.PLUGIN_VERIFIED;
+                    final boolean malicious = flag == Plugins.PLUGIN_MALICIOUS;
 
                     if (malicious) {
                         SwingUtils.playExclamation();
@@ -146,8 +147,8 @@ public class PluginDisplayPanel extends JPanel {
 
                     } else if (!verified && !trusted) {
                         SwingUtils.playExclamation();
-                        JCheckBox trustBox = new JCheckBox(Messages.getString("PluginManager.trustAuthorCheck"));
-                        int resp = JOptionPane.showOptionDialog(parent,
+                        final JCheckBox trustBox = new JCheckBox(Messages.getString("PluginManager.trustAuthorCheck"));
+                        final int resp = JOptionPane.showOptionDialog(parent,
                                 new Object[] { Messages.getString("PluginManager.loadUnverifiedWarning"), trustBox },
                                 Messages.getString("Main.inventoryHandlingHelpTitle"), JOptionPane.OK_CANCEL_OPTION,
                                 JOptionPane.WARNING_MESSAGE, null,
@@ -159,11 +160,11 @@ public class PluginDisplayPanel extends JPanel {
                     }
 
                     try {
-                        AMCPlugin pl = Plugins.loadPlugin(plugin);
+                        final AMCPlugin pl = Plugins.loadPlugin(plugin);
                         pl.onGUIInitialized(cpts);
                         cpts.revalidateAll();
                         enabled.add(id);
-                    } catch (Exception e2) {
+                    } catch (final Exception e2) {
                         e2.printStackTrace();
                         SwingUtils.showErrorDialog(parent, Messages.getString("ServerDetailsDialog.error"), e2,
                                 Messages.getString("PluginManager.errorLoading"));
@@ -179,14 +180,14 @@ public class PluginDisplayPanel extends JPanel {
             ctls.add(load);
             ctls.add(del);
         } else {
-            JButton download = new JButton(Messages.getString("PluginManager.btnDownload"));
-            JButton starBtn = new JButton(Integer.toString(stars), star);
+            final JButton download = new JButton(Messages.getString("PluginManager.btnDownload"));
+            final JButton starBtn = new JButton(Integer.toString(stars), star);
             starBtn.setEnabled(!starred);
 
             boolean isInstalled = false;
             boolean hasUpdates = false;
 
-            for (PluginDescription localPlugin : Plugins.listPlugins()) {
+            for (final PluginDescription localPlugin : Plugins.listPlugins()) {
                 if ((localPlugin.getMain().equals(plugin.getMain())) || (localPlugin.getName().equals(plugin.getName())
                         && localPlugin.getAuthor().equals(plugin.getName()))) {
                     isInstalled = true;
@@ -206,9 +207,9 @@ public class PluginDisplayPanel extends JPanel {
                 download.setText(Messages.getString("PluginManager.btnUpdate"));
             }
 
-            boolean localHasUpdates = hasUpdates;
+            final boolean localHasUpdates = hasUpdates;
             try {
-                String b = URLEncoder.encode(plugin.getName(), "utf-8");
+                final String b = URLEncoder.encode(plugin.getName(), "utf-8");
                 starBtn.addActionListener(e -> {
                     starBtn.setEnabled(false);
 
@@ -217,18 +218,18 @@ public class PluginDisplayPanel extends JPanel {
                                 new URL(Plugins.pluginStarsURL + "?id=" + Main.up.getUserID() + "&p=" + b)
                                         .openStream()))) {
 
-                            String result = br.readLine();
+                            final String result = br.readLine();
                             br.close();
                             if (!result.equalsIgnoreCase("ok")) throw new IOException("Invalid response");
-                            int i = Integer.parseInt(starBtn.getText());
+                            final int i = Integer.parseInt(starBtn.getText());
                             starBtn.setText(Integer.toString(i + 1));
-                        } catch (Exception ex) {
+                        } catch (final Exception ex) {
                             ex.printStackTrace();
                             starBtn.setEnabled(true);
                         }
                     }).start();
                 });
-            } catch (UnsupportedEncodingException e1) {
+            } catch (final UnsupportedEncodingException e1) {
                 starBtn.setEnabled(false);
             }
 
@@ -252,14 +253,14 @@ public class PluginDisplayPanel extends JPanel {
         }
 
         add(title);
-        int flag = remote ? Plugins.PLUGIN_VERIFIED : Plugins.getPluginFlag(plugin);
+        final int flag = remote ? Plugins.PLUGIN_VERIFIED : Plugins.getPluginFlag(plugin);
         boolean verified = flag == Plugins.PLUGIN_VERIFIED;
-        boolean malicious = flag == Plugins.PLUGIN_MALICIOUS;
+        final boolean malicious = flag == Plugins.PLUGIN_MALICIOUS;
         boolean trusted = !remote && Main.up.getTrustedAuthors().contains(plugin.getAuthor());
 
-        String website = plugin.getWebsiteString();
+        final String website = plugin.getWebsiteString();
         if (website != null) {
-            JLabel linkLabel = new JLinkLabel(website);
+            final JLabel linkLabel = new JLinkLabel(website);
 
             add(linkLabel);
         }
@@ -267,24 +268,25 @@ public class PluginDisplayPanel extends JPanel {
         if (malicious) {
             verified = false;
             trusted = false;
-            JLabel verificationLabel = new JLabel(Messages.getString("PluginManager.malicious"));
+            final JLabel verificationLabel = new JLabel(Messages.getString("PluginManager.malicious"));
             verificationLabel.setIcon(exc);
 
             add(verificationLabel);
         } else if (verified) {
-            JLabel verificationLabel = new JLabel(Messages.getString("PluginManager.verified"));
+            final JLabel verificationLabel = new JLabel(Messages.getString("PluginManager.verified"));
             verificationLabel.setIcon(check);
 
             add(verificationLabel);
         } else if (trusted) {
-            JLabel verificationLabel = new JLabel(Messages.getString("PluginManager.trusted"));
+            final JLabel verificationLabel = new JLabel(Messages.getString("PluginManager.trusted"));
 //            verificationLabel.setIcon(check);
 
             add(verificationLabel);
         }
 
         if (!plugin.getApi().equals(Main.VERSION)) {
-            JLabel deprecationLabel = new JLabel(Messages.getString("PluginManager.incompatible") + plugin.getApi());
+            final JLabel deprecationLabel = new JLabel(
+                    Messages.getString("PluginManager.incompatible") + plugin.getApi());
             deprecationLabel.setForeground(new Color(100, 0, 0));
             deprecationLabel.setIcon(exc);
 
@@ -292,17 +294,18 @@ public class PluginDisplayPanel extends JPanel {
         }
 
         add(new JLabel(" "));
-        if (plugin.getDescription() != null) for (String desc : plugin.getDescription())
+        if (plugin.getDescription() != null) for (final String desc : plugin.getDescription())
             add(new JLabel(desc));
 
         ctls.setAlignmentX(LEFT_ALIGNMENT);
         add(ctls);
         add(new JLabel(" "));
-        add(new JSeparator(JSeparator.HORIZONTAL));
+        add(new JSeparator(SwingConstants.HORIZONTAL));
     }
 
-    private static void initBtnStates(JButton load, JButton delete, boolean enabled, boolean halted, boolean deleted) {
-        boolean restart = halted || deleted;
+    private static void initBtnStates(final JButton load, final JButton delete, final boolean enabled,
+            final boolean halted, final boolean deleted) {
+        final boolean restart = halted || deleted;
         load.setText(restart ? Messages.getString("PluginManager.restart")
                 : enabled ? Messages.getString("PluginManager.disable") : Messages.getString("PluginManager.enable"));
         load.setEnabled(!restart);

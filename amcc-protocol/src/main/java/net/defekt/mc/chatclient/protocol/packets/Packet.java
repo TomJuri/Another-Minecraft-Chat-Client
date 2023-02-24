@@ -348,7 +348,7 @@ public class Packet implements Cancellable {
     }
 
     @Override
-    public void setCancelled(boolean canceled) {
+    public void setCancelled(final boolean canceled) {
         this.canceled = canceled;
     }
 }

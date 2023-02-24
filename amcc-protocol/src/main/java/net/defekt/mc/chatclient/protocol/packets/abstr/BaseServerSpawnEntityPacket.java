@@ -40,7 +40,7 @@ public class BaseServerSpawnEntityPacket extends Packet {
      * @param data
      * @throws IOException
      */
-    protected BaseServerSpawnEntityPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerSpawnEntityPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
     }
 

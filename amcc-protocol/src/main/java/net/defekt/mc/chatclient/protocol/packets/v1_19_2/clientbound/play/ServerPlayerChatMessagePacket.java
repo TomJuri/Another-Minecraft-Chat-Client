@@ -32,14 +32,14 @@ public class ServerPlayerChatMessagePacket extends BaseServerChatMessagePacket {
         if (is.readBoolean()) {
             is.skip(is.readVarInt());
         }
-        UUID uid = is.readUUID();
+        final UUID uid = is.readUUID();
         is.skip(is.readVarInt());
         String msg = is.readString();
-        JsonObject obj = new JsonObject();
+        final JsonObject obj = new JsonObject();
         obj.add("translate", new JsonPrimitive("chat.type.text"));
-        JsonArray ar = new JsonArray();
-        JsonObject sender = new JsonObject();
-        JsonObject msgJ = new JsonObject();
+        final JsonArray ar = new JsonArray();
+        final JsonObject sender = new JsonObject();
+        final JsonObject msgJ = new JsonObject();
 
         sender.add("amcPlayer", new JsonPrimitive(uid.toString()));
         msgJ.add("text", new JsonPrimitive(msg));

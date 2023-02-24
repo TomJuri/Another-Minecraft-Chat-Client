@@ -41,7 +41,7 @@ public class BaseServerEntityRelativeMovePacket extends Packet {
      * @param data
      * @throws IOException
      */
-    protected BaseServerEntityRelativeMovePacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerEntityRelativeMovePacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
     }
 

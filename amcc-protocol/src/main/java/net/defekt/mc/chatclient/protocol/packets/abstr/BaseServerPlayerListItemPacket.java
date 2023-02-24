@@ -167,7 +167,7 @@ public class BaseServerPlayerListItemPacket extends Packet {
      * @param data
      * @throws IOException
      */
-    protected BaseServerPlayerListItemPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerPlayerListItemPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
     }
 

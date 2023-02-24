@@ -258,8 +258,8 @@ public class IOUtils {
     /**
      * Save automatic messages to file
      * 
-     * @param out          output file
-     * @param data 
+     * @param out  output file
+     * @param data
      * @throws IOException thrown when there was an error while saving automatic
      *                     messages
      */
@@ -331,11 +331,11 @@ public class IOUtils {
      * @param list automatic responses list
      * @throws IOException thrown when there was an error while writing to file
      */
-    public static void writeArfFile(final File out, AutoResponseRule... list) throws IOException {
+    public static void writeArfFile(final File out, final AutoResponseRule... list) throws IOException {
 
         if (list == null) throw new IOException("Rules list empty");
         try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(out))) {
-            List<AutoResponseRule> rules = new ArrayList<>();
+            final List<AutoResponseRule> rules = new ArrayList<>();
             Collections.addAll(rules, list);
             os.writeObject(rules);
         } catch (final Exception e) {

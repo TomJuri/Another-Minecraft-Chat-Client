@@ -32,7 +32,7 @@ public class BaseServerChatMessagePacket extends Packet {
      * @param data
      * @throws IOException
      */
-    public BaseServerChatMessagePacket(PacketRegistry reg, byte[] data) throws IOException {
+    public BaseServerChatMessagePacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
     }
 

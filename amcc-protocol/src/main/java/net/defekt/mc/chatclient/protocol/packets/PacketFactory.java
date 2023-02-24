@@ -100,8 +100,8 @@ public class PacketFactory {
      * @param registry
      * @param name
      */
-    public static void registerNewVersion(int protocol, PacketRegistry registry, String name) {
-        for (ProtocolNumber num : ProtocolNumber.values())
+    public static void registerNewVersion(final int protocol, final PacketRegistry registry, String name) {
+        for (final ProtocolNumber num : ProtocolNumber.values())
             if (num.protocol == protocol) {
                 name = num.name;
                 break;

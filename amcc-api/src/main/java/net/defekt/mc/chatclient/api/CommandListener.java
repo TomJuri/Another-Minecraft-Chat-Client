@@ -28,7 +28,7 @@ public class CommandListener extends AnnotatedMinecraftPacketListener {
      * @param cmd
      * @param handler
      */
-    protected void registerCommand(String cmd, CommandHandler handler) {
+    protected void registerCommand(final String cmd, final CommandHandler handler) {
         commands.put(cmd.toLowerCase(), handler);
     }
 
@@ -38,29 +38,29 @@ public class CommandListener extends AnnotatedMinecraftPacketListener {
      * 
      * @param cmd
      */
-    protected void unregisterCommand(String cmd) {
+    protected void unregisterCommand(final String cmd) {
         commands.remove(cmd);
     }
 
     @SuppressWarnings("javadoc")
     @PacketHandler
-    protected void chatSending(BaseClientChatMessagePacket packet, MinecraftClient cl) {
+    protected void chatSending(final BaseClientChatMessagePacket packet, final MinecraftClient cl) {
         try {
             String message = packet.getMessage();
             if (message.startsWith("/")) {
                 message = message.substring(1);
-                String[] split = message.split(" ");
-                String cmd = split[0];
-                String[] args = split.length > 1 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
+                final String[] split = message.split(" ");
+                final String cmd = split[0];
+                final String[] args = split.length > 1 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
 
-                for (Entry<String, CommandHandler> entry : commands.entrySet()) {
+                for (final Entry<String, CommandHandler> entry : commands.entrySet()) {
                     if (entry.getKey().equalsIgnoreCase(cmd)) {
                         packet.setCancelled(true);
                         entry.getValue().userCommand(cmd, args, cl);
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

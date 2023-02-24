@@ -33,24 +33,24 @@ public class TranslationUtils {
 
     private static final Map<Language, Map<String, String>> translationKeys = new HashMap<UserPreferences.Language, Map<String, String>>() {
         {
-            Language lang = UserPreferences.prefs().getAppLanguage();
+            final Language lang = UserPreferences.prefs().getAppLanguage();
             final Map<String, String> kMap = new HashMap<String, String>();
             try (final Reader reader = new InputStreamReader(TranslationUtils.class
                     .getResourceAsStream("/resources/lang/minecraft/" + lang.getCode().toLowerCase() + ".json"))) {
-                JsonObject obj = JsonParser.parseReader(reader).getAsJsonObject();
+                final JsonObject obj = JsonParser.parseReader(reader).getAsJsonObject();
                 reader.close();
 
-                for (Map.Entry<String, JsonElement> element : obj.entrySet()) {
+                for (final Map.Entry<String, JsonElement> element : obj.entrySet()) {
                     if (element.getValue() instanceof JsonPrimitive) {
                         try {
                             kMap.put(element.getKey(), element.getValue().getAsString());
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
 
                         }
                     }
                 }
 
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
             put(lang, kMap);

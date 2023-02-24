@@ -6,7 +6,7 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.BaseClientChatMessagePack
 @SuppressWarnings("javadoc")
 public class ClientChatCommandPacket extends BaseClientChatMessagePacket {
 
-    public ClientChatCommandPacket(PacketRegistry reg, String message) {
+    public ClientChatCommandPacket(final PacketRegistry reg, final String message) {
         super(reg, message, true);
         String cmd = message;
         if (cmd.startsWith("/")) cmd = cmd.substring(1);

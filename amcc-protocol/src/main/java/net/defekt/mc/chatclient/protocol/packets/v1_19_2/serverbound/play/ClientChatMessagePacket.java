@@ -17,7 +17,7 @@ public class ClientChatMessagePacket extends BaseClientChatMessagePacket {
      * @param reg
      * @param message
      */
-    public ClientChatMessagePacket(PacketRegistry reg, String message) {
+    public ClientChatMessagePacket(final PacketRegistry reg, final String message) {
         super(reg, message, false);
         putString(message);
         putLong(System.currentTimeMillis());

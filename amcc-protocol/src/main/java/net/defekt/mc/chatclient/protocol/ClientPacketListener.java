@@ -27,7 +27,7 @@ class ClientPacketListener implements InternalPacketListener {
     private final UserPreferences up;
 
     private final Timer keepAliveTimer = new Timer("keepAliveTimer", true);
-    private long lastKeepAlivePacket = System.currentTimeMillis();
+    private final long lastKeepAlivePacket = System.currentTimeMillis();
 
     /**
      * Constructs packet listener bound to specified client

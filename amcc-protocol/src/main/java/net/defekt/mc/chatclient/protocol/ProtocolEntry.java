@@ -13,10 +13,11 @@ public class ProtocolEntry {
 
     /**
      * Creates new protocol entry
+     * 
      * @param protocol
      * @param name
      */
-    public ProtocolEntry(int protocol, String name) {
+    public ProtocolEntry(final int protocol, final String name) {
         this.name = name;
         this.protocol = protocol;
     }

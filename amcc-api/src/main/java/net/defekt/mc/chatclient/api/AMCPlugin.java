@@ -14,8 +14,8 @@ import net.defekt.mc.chatclient.protocol.event.MinecraftPacketListener;
  */
 public abstract class AMCPlugin {
 
-    private PluginDescription description = null;
-    private CommandListener ls = new CommandListener();
+    private final PluginDescription description = null;
+    private final CommandListener ls = new CommandListener();
 
     /**
      * Default constructor
@@ -34,7 +34,7 @@ public abstract class AMCPlugin {
      * 
      * @param components
      */
-    public void onGUIInitialized(GUIComponents components) {
+    public void onGUIInitialized(final GUIComponents components) {
 
     }
 
@@ -52,7 +52,7 @@ public abstract class AMCPlugin {
      * 
      * @param listener
      */
-    protected void registerPacketListener(MinecraftPacketListener listener) {
+    protected void registerPacketListener(final MinecraftPacketListener listener) {
         GlobalListeners.registerListener(listener);
     }
 
@@ -61,7 +61,7 @@ public abstract class AMCPlugin {
      * 
      * @param listener
      */
-    protected void registerClientListener(ClientListener listener) {
+    protected void registerClientListener(final ClientListener listener) {
         GlobalListeners.registerListener(listener);
     }
 
@@ -71,7 +71,7 @@ public abstract class AMCPlugin {
      * @param cmd
      * @param handler
      */
-    protected void registerCommand(String cmd, CommandHandler handler) {
+    protected void registerCommand(final String cmd, final CommandHandler handler) {
         ls.registerCommand(cmd, handler);
     }
 
@@ -80,7 +80,7 @@ public abstract class AMCPlugin {
      * 
      * @param cmd
      */
-    protected void unregisterCommand(String cmd) {
+    protected void unregisterCommand(final String cmd) {
         ls.unregisterCommand(cmd);
     }
 }

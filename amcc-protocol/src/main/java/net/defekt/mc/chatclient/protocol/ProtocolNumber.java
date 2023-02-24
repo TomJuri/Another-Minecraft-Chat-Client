@@ -82,22 +82,22 @@ public enum ProtocolNumber {
     }
 
     public static ProtocolEntry[] getValues() {
-        List<ProtocolEntry> num = new ArrayList<>();
-        List<ProtocolNumber> values = new ArrayList<>();
+        final List<ProtocolEntry> num = new ArrayList<>();
+        final List<ProtocolNumber> values = new ArrayList<>();
         Collections.addAll(values, values());
-        for (Map.Entry<Integer, String> up : PacketFactory.getUserVersions().entrySet()) {
+        for (final Map.Entry<Integer, String> up : PacketFactory.getUserVersions().entrySet()) {
             boolean add = true;
-            for (ProtocolNumber nm : values) {
+            for (final ProtocolNumber nm : values) {
                 if (up.getKey().equals(nm.protocol)) {
                     add = false;
                     break;
                 }
             }
             if (!add) break;
-            ProtocolEntry pe = new ProtocolEntry(up.getKey(), up.getValue());
+            final ProtocolEntry pe = new ProtocolEntry(up.getKey(), up.getValue());
             num.add(pe);
         }
-        for (ProtocolNumber nm : values) {
+        for (final ProtocolNumber nm : values) {
             num.add(new ProtocolEntry(nm.protocol, nm.name));
         }
 

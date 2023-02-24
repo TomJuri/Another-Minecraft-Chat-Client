@@ -55,8 +55,8 @@ public class UserPreferences implements Serializable {
         return userID;
     }
 
-    public static String generateUserID(long seed) {
-        Random rand = new Random(seed);
+    public static String generateUserID(final long seed) {
+        final Random rand = new Random(seed);
         String id = "User";
         while (id.length() < 16)
             id += Integer.toString(rand.nextInt(10));
@@ -64,7 +64,7 @@ public class UserPreferences implements Serializable {
     }
 
     public static String generateUserID() {
-        Random rand = new Random();
+        final Random rand = new Random();
         String id = "User";
         while (id.length() < 16)
             id += Integer.toString(rand.nextInt(10));
@@ -74,18 +74,18 @@ public class UserPreferences implements Serializable {
     private static String generateHWID() {
         try {
             long seed = 0;
-            Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+            final Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
             while (ifaces.hasMoreElements()) {
-                NetworkInterface iface = ifaces.nextElement();
+                final NetworkInterface iface = ifaces.nextElement();
                 if (!iface.isLoopback() && iface.getHardwareAddress() != null) {
-                    byte[] addr = iface.getHardwareAddress();
+                    final byte[] addr = iface.getHardwareAddress();
                     for (int x = 0; x < addr.length; x++) {
                         seed += (addr[x] * Math.pow(100, x + 1));
                     }
                 }
             }
             return generateUserID(seed);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             ex.printStackTrace();
             return generateUserID();
         }
@@ -106,7 +106,7 @@ public class UserPreferences implements Serializable {
         return deletedPlugins;
     }
 
-    public boolean isEnabled(String name) {
+    public boolean isEnabled(final String name) {
         return enabledPlugins.contains(name);
     }
 
@@ -339,7 +339,7 @@ public class UserPreferences implements Serializable {
                     prefs.initDefaults();
                 }
                 try (OutputStream os = new FileOutputStream(UserPreferences.serverFile)) {
-                    PrintWriter pw = new PrintWriter(Base64.getEncoder().wrap(os));
+                    final PrintWriter pw = new PrintWriter(Base64.getEncoder().wrap(os));
                     pw.println(new GsonBuilder().setPrettyPrinting().create().toJson(prefs));
                     pw.flush();
                 }
@@ -347,7 +347,7 @@ public class UserPreferences implements Serializable {
                 return prefs;
             } else if (serverFile.isFile()) {
                 try (InputStream is = new FileInputStream(serverFile)) {
-                    InputStreamReader reader = new InputStreamReader(Base64.getDecoder().wrap(is));
+                    final InputStreamReader reader = new InputStreamReader(Base64.getDecoder().wrap(is));
                     final UserPreferences prefs = new Gson().fromJson(reader, UserPreferences.class);
                     prefs.initDefaults();
                     return prefs;
@@ -663,11 +663,11 @@ public class UserPreferences implements Serializable {
         return openCounts;
     }
 
-    public void setOpenCounts(int openCounts) {
+    public void setOpenCounts(final int openCounts) {
         this.openCounts = openCounts;
     }
 
-    public void setAutoLoginCommand(String autoLoginCommand) {
+    public void setAutoLoginCommand(final String autoLoginCommand) {
         this.autoLoginCommand = autoLoginCommand;
     }
 }

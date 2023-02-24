@@ -9,24 +9,24 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class TabGroup extends JPanel {
-    public TabGroup(String icon, String text) {
+    public TabGroup(final String icon, final String text) {
         this(icon, text, FontAwesome.FONT);
     }
 
     private final String text;
 
-    public TabGroup(String icon, String text, Font font) {
+    public TabGroup(final String icon, final String text, final Font font) {
         this(icon, text, font, false);
     }
 
-    public TabGroup(String icon, String text, boolean displayText) {
+    public TabGroup(final String icon, final String text, final boolean displayText) {
         this(icon, text, FontAwesome.FONT, displayText);
     }
 
-    public TabGroup(String icon, String text, Font font, boolean displayText) {
+    public TabGroup(final String icon, final String text, final Font font, final boolean displayText) {
         this.text = text;
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        JLabel iconL = new JLabel(icon);
+        final JLabel iconL = new JLabel(icon);
         iconL.setFont(font);
 
         add(iconL);

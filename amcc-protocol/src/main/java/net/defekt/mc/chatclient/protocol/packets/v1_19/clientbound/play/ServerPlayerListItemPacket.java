@@ -63,7 +63,7 @@ public class ServerPlayerListItemPacket extends BaseServerPlayerListItemPacket {
                         displayName = is.readString();
                     }
 
-                    boolean hasSigData = is.readBoolean();
+                    final boolean hasSigData = is.readBoolean();
                     if (hasSigData) {
                         is.readLong();
                         is.skip(is.readVarInt());

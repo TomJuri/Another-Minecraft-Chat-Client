@@ -10,9 +10,10 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
  *
  */
 public abstract class ItemsWindow {
-    
+
     /**
      * Default constructor
+     * 
      * @param title
      * @param size
      * @param windowID
@@ -21,9 +22,9 @@ public abstract class ItemsWindow {
      */
     public ItemsWindow(final String title, final int size, final int windowID, final MinecraftClient client,
             final PacketRegistry registry) {
-        
+
     }
-    
+
     /**
      * Mark the transaction as finished and flush any pending changes.
      * 

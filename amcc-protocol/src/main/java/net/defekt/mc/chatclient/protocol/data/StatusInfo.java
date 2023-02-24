@@ -34,10 +34,10 @@ public class StatusInfo implements Serializable {
      * @param version     server's version name
      * @param protocol    protocol used by server
      * @param icon        server's icon, or null if none
-     * @param modType     server's mod loader type if present, otherwise it should be
-     *                    null.
-     * @param modList     server's mods list if present, otherwise it should be null, or
-     *                    empty.
+     * @param modType     server's mod loader type if present, otherwise it should
+     *                    be null.
+     * @param modList     server's mods list if present, otherwise it should be
+     *                    null, or empty.
      * @param players     list of players playing on this server
      */
     public StatusInfo(final String description, final int online, final int max, final String version,

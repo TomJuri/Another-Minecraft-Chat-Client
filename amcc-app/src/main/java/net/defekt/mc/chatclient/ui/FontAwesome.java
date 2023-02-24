@@ -48,25 +48,26 @@ public class FontAwesome {
 
     public static final String DISCORD = "\uf392";
 
-    public static Icon createIcon(String character, Component parent, Font overrideFont) {
+    public static Icon createIcon(final String character, final Component parent, final Font overrideFont) {
         return createIcon(character, parent, FONT.getSize2D(), overrideFont);
     }
 
-    public static Icon createIcon(String character, Component parent, float size) {
+    public static Icon createIcon(final String character, final Component parent, final float size) {
         return createIcon(character, parent, size, FONT);
     }
 
-    public static Icon createIcon(String character, Component parent) {
+    public static Icon createIcon(final String character, final Component parent) {
         return createIcon(character, parent, FONT);
     }
 
-    public static Icon createIcon(String character, Component parent, float fontSize, Font font) {
-        Font overrideFont = font.deriveFont(fontSize);
-        Rectangle2D bounds = overrideFont.getStringBounds(character,
+    public static Icon createIcon(final String character, final Component parent, final float fontSize,
+            final Font font) {
+        final Font overrideFont = font.deriveFont(fontSize);
+        final Rectangle2D bounds = overrideFont.getStringBounds(character,
                 new FontRenderContext(overrideFont.getTransform(), true, true));
-        BufferedImage img = new BufferedImage((int) bounds.getWidth() + 4, (int) bounds.getHeight() + 4,
+        final BufferedImage img = new BufferedImage((int) bounds.getWidth() + 4, (int) bounds.getHeight() + 4,
                 BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = img.createGraphics();
+        final Graphics2D g = img.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setFont(overrideFont);
@@ -79,14 +80,14 @@ public class FontAwesome {
         Font f;
         try (InputStream is = FontAwesome.class.getResourceAsStream("/resources/fa-solid-900.ttf")) {
             f = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(16f);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             f = new JLabel().getFont();
             e.printStackTrace();
         }
         FONT = f;
         try (InputStream is = FontAwesome.class.getResourceAsStream("/resources/fa-brands-400.ttf")) {
             f = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(16f);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             f = new JLabel().getFont();
             e.printStackTrace();
         }

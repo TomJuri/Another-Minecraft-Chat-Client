@@ -22,7 +22,7 @@ public class BaseClientLoginRequestPacket extends Packet {
      * @param reg
      * @param name
      */
-    protected BaseClientLoginRequestPacket(PacketRegistry reg, String name) {
+    protected BaseClientLoginRequestPacket(final PacketRegistry reg, final String name) {
         super(reg);
         this.name = name;
     }

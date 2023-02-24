@@ -16,21 +16,21 @@ import net.defekt.mc.chatclient.protocol.packets.Packet;
 public abstract class MinecraftPacketAdapter implements MinecraftPacketListener {
 
     @Override
-    public Packet packetReceiving(Packet inPacket, MinecraftClient client) {
+    public Packet packetReceiving(final Packet inPacket, final MinecraftClient client) {
         return inPacket;
     }
 
     @Override
-    public Packet packetSending(Packet outPacket, MinecraftClient client) {
+    public Packet packetSending(final Packet outPacket, final MinecraftClient client) {
         return outPacket;
     }
 
     @Override
-    public void packetReceived(Packet inPacket, MinecraftClient client) {
+    public void packetReceived(final Packet inPacket, final MinecraftClient client) {
     }
 
     @Override
-    public void packetSent(Packet outPacket, MinecraftClient client) {
+    public void packetSent(final Packet outPacket, final MinecraftClient client) {
     }
 
 }

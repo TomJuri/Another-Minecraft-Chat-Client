@@ -15,11 +15,11 @@ import net.defekt.mc.chatclient.protocol.MinecraftClient;
 public abstract class UserActionAdapter implements UserActionListener {
 
     @Override
-    public void clientCreated(JSplitPane pane, MinecraftClient client) {
+    public void clientCreated(final JSplitPane pane, final MinecraftClient client) {
     }
 
     @Override
-    public void minimizedToTray(TrayIcon icon) {
+    public void minimizedToTray(final TrayIcon icon) {
     }
 
     @Override

@@ -41,7 +41,7 @@ public class BaseServerEntityTeleportPacket extends Packet {
      * @param data
      * @throws IOException
      */
-    protected BaseServerEntityTeleportPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerEntityTeleportPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
     }
 

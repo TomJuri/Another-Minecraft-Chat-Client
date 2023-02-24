@@ -31,7 +31,7 @@ public class BaseServerKeepAlivePacket extends Packet {
      * @param data
      * @throws IOException
      */
-    protected BaseServerKeepAlivePacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerKeepAlivePacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
     }
 

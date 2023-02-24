@@ -26,7 +26,7 @@ public class BaseServerResourcePackSendPacket extends Packet {
      * @param data
      * @throws IOException
      */
-    protected BaseServerResourcePackSendPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerResourcePackSendPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
     }
 

@@ -87,7 +87,7 @@ public class VarOutputStream extends DataOutputStream {
         if (is.getNbt() == null) {
             writeByte(0);
         } else {
-            Tag tg = is.getNbt();
+            final Tag tg = is.getNbt();
             if (tg instanceof CompoundTag) nbt.toStream((CompoundTag) tg, this);
         }
     }

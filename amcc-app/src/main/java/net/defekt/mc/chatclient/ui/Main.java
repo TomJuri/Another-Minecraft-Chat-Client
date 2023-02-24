@@ -263,19 +263,19 @@ public class Main {
     }
 
     public static void main(final String[] args) {
-        List<Exception> preErrors = new ArrayList<>();
+        final List<Exception> preErrors = new ArrayList<>();
         PluginDescription[] descs = Plugins.listPlugins(true);
         Plugins.verify(e -> {
         }, descs);
-        List<String> deleted = up.getDeletedPlugins();
-        List<String> en = up.getEnabledPlugins();
-        for (PluginDescription desc : descs) {
-            String id = desc.getUID();
+        final List<String> deleted = up.getDeletedPlugins();
+        final List<String> en = up.getEnabledPlugins();
+        for (final PluginDescription desc : descs) {
+            final String id = desc.getUID();
             if (deleted.contains(id)) {
                 try {
                     desc.getOrigin().delete();
                     en.remove(id);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     e.printStackTrace();
                     preErrors.add(e);
                 }
@@ -283,18 +283,18 @@ public class Main {
         }
         deleted.clear();
         descs = Plugins.listPlugins();
-        List<String> malicious = new ArrayList<>();
-        List<AMCPlugin> loaded = new ArrayList<>();
-        for (PluginDescription desc : descs) {
+        final List<String> malicious = new ArrayList<>();
+        final List<AMCPlugin> loaded = new ArrayList<>();
+        for (final PluginDescription desc : descs) {
             if (Plugins.getPluginFlag(desc) == Plugins.PLUGIN_MALICIOUS) {
                 if (en.contains(desc.getUID())) malicious.add(desc.getName());
                 en.remove(desc.getUID());
                 break;
             }
             if (up.getEnabledPlugins().contains(desc.getUID())) try {
-                AMCPlugin pl = Plugins.loadPlugin(desc);
+                final AMCPlugin pl = Plugins.loadPlugin(desc);
                 if (pl != null) loaded.add(pl);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
                 preErrors.add(e);
             }
@@ -303,7 +303,8 @@ public class Main {
                 preErrors.toArray(new Exception[0]));
     }
 
-    public static void main(AMCPlugin[] loadedPlugins, String[] maliciousPlugins, Exception... preErrors) {
+    public static void main(final AMCPlugin[] loadedPlugins, final String[] maliciousPlugins,
+            final Exception... preErrors) {
         SwingUtils.setNativeLook(up);
 
         if (!up.isWasLangSet()) {
@@ -450,10 +451,10 @@ public class Main {
         @Override
         public void run() {
             try (OutputStream os = new FileOutputStream(UserPreferences.serverFile)) {
-                PrintWriter pw = new PrintWriter(Base64.getEncoder().wrap(os));
+                final PrintWriter pw = new PrintWriter(Base64.getEncoder().wrap(os));
                 pw.println(new GsonBuilder().setPrettyPrinting().create().toJson(up));
                 pw.flush();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
@@ -485,7 +486,7 @@ public class Main {
         }
     }
 
-    private void init(AMCPlugin[] loadedPlugins, String[] malicious, Exception... preErrors) {
+    private void init(final AMCPlugin[] loadedPlugins, final String[] malicious, final Exception... preErrors) {
         discordIntegr.start();
 
         synchronized (up.getServers()) {
@@ -574,7 +575,7 @@ public class Main {
                                         tray.remove(trayIcon);
                                         trayIcon = null;
                                         win.setVisible(true);
-                                        for (UserActionListener ls : guiComponents.getActionListeners())
+                                        for (final UserActionListener ls : guiComponents.getActionListeners())
                                             ls.maximized();
                                     }
                                 };
@@ -683,9 +684,9 @@ public class Main {
                                                     @Override
                                                     public void actionPerformed(final ActionEvent ev) {
                                                         if (!up.isEnableInventoryHandling()) return;
-                                                        ItemsWindow ww = client.getInventory();
+                                                        final ItemsWindow ww = client.getInventory();
                                                         if (ww instanceof SwingItemsWindow) {
-                                                            SwingItemsWindow swi = (SwingItemsWindow) ww;
+                                                            final SwingItemsWindow swi = (SwingItemsWindow) ww;
                                                             swi.openWindow(win, up.isSendWindowClosePackets());
                                                         }
                                                     }
@@ -709,7 +710,7 @@ public class Main {
 
                                 tray.add(trayIcon);
                                 win.setVisible(false);
-                                for (UserActionListener ls : guiComponents.getActionListeners())
+                                for (final UserActionListener ls : guiComponents.getActionListeners())
                                     ls.minimizedToTray(trayIcon);
                             } catch (final AWTException e1) {
                                 e1.printStackTrace();
@@ -1178,11 +1179,11 @@ public class Main {
                 final String uname = (String) unameField.getSelectedItem();
                 final JSplitPane b = createServerPane(et, uname, new String(upassField.getPassword()),
                         ((AuthType) authType.getSelectedItem()), proxyObj);
-                MinecraftClient client = clients.get(b);
+                final MinecraftClient client = clients.get(b);
 
                 tabPane.addTab("", b);
                 tabPane.setSelectedComponent(b);
-                for (UserActionListener ls : guiComponents.getActionListeners())
+                for (final UserActionListener ls : guiComponents.getActionListeners())
                     ls.clientCreated(b, client);
 
                 final Box b2 = Box.createHorizontalBox();
@@ -1383,24 +1384,24 @@ public class Main {
         importListBox.add(importControlsBox);
         importListComponent.setMinimumSize(importListBox.getPreferredSize());
 
-        ActionListener importRefreshListener = new ActionListener() {
+        final ActionListener importRefreshListener = new ActionListener() {
 
             private final String[] lookLocations = { "AppData/Roaming/.minecraft", ".minecraft" };
 
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 importListComponent.setListData(new ServerEntry[0]);
-                List<ServerEntry> svs = new ArrayList<>();
-                for (String loc : lookLocations) {
-                    File file = new File(
+                final List<ServerEntry> svs = new ArrayList<>();
+                for (final String loc : lookLocations) {
+                    final File file = new File(
                             System.getProperty("user.home") + File.separator + loc + File.separator + "servers.dat");
                     if (file.isFile()) {
                         try {
-                            CompoundTag root = new Nbt().fromFile(file);
-                            ListTag<CompoundTag> serversTag = root.getList("servers");
-                            for (CompoundTag serverTag : serversTag) {
-                                String ip = serverTag.getString("ip").getValue();
-                                String name = serverTag.getString("name").getValue();
+                            final CompoundTag root = new Nbt().fromFile(file);
+                            final ListTag<CompoundTag> serversTag = root.getList("servers");
+                            for (final CompoundTag serverTag : serversTag) {
+                                final String ip = serverTag.getString("ip").getValue();
+                                final String name = serverTag.getString("name").getValue();
 
                                 String host = ip;
                                 int port = 25565;
@@ -1409,15 +1410,15 @@ public class Main {
                                     host = host.substring(0, host.indexOf(":"));
                                 }
 
-                                String icon = serverTag.contains("icon") ? serverTag.getString("icon").getValue()
+                                final String icon = serverTag.contains("icon") ? serverTag.getString("icon").getValue()
                                         : null;
 
-                                ServerEntry sv = new ServerEntry(host, port, name, "Always Ask", ForgeMode.AUTO);
+                                final ServerEntry sv = new ServerEntry(host, port, name, "Always Ask", ForgeMode.AUTO);
                                 sv.setIcon(icon);
                                 sv.ping();
                                 svs.add(sv);
                             }
-                        } catch (Exception e2) {
+                        } catch (final Exception e2) {
                             e2.printStackTrace();
                         }
                     }
@@ -1466,7 +1467,7 @@ public class Main {
             }
         };
 
-        JMenu helpMenu = new JMenu(Messages.getString("Main.helpMenu")) {
+        final JMenu helpMenu = new JMenu(Messages.getString("Main.helpMenu")) {
             {
                 setMnemonic(getText().charAt(0));
                 add(new JMenuItem("GitHub", FontAwesome.createIcon(FontAwesome.GITHUB, this, FontAwesome.BRANDS_FONT)) {
@@ -1475,36 +1476,38 @@ public class Main {
                             try {
                                 Desktop.getDesktop()
                                         .browse(new URI("https://github.com/Defective4/Another-Minecraft-Chat-Client"));
-                            } catch (Exception e1) {
+                            } catch (final Exception e1) {
                                 e1.printStackTrace();
                             }
                         });
                     }
                 });
-                add(new JMenuItem(Messages.getString("Main.reportIssue"), FontAwesome.createIcon(FontAwesome.BUG, this)) {
+                add(new JMenuItem(Messages.getString("Main.reportIssue"),
+                        FontAwesome.createIcon(FontAwesome.BUG, this)) {
                     {
                         addActionListener(e -> {
                             try {
                                 Desktop.getDesktop().browse(
                                         new URI("https://github.com/Defective4/Another-Minecraft-Chat-Client/issues"));
-                            } catch (Exception e1) {
+                            } catch (final Exception e1) {
                                 e1.printStackTrace();
                             }
                         });
                     }
                 });
-                add(new JMenuItem(Messages.getString("Main.aboutProgram"), FontAwesome.createIcon(FontAwesome.INFO, this)) {
+                add(new JMenuItem(Messages.getString("Main.aboutProgram"),
+                        FontAwesome.createIcon(FontAwesome.INFO, this)) {
                     {
                         addActionListener(e -> {
                             SwingUtils.showAboutDialog(win);
                         });
                     }
                 });
-                
+
             }
         };
 
-        JMenu pluginsMenu = new JMenu(Messages.getString("Main.pluginsMenu")) {
+        final JMenu pluginsMenu = new JMenu(Messages.getString("Main.pluginsMenu")) {
             {
                 add(new JMenuItem(Messages.getString("Main.pluginsMenuManager"), createIcon(FontAwesome.PLUG, this)) {
                     {
@@ -1538,16 +1541,17 @@ public class Main {
         guiComponents = new GUIComponents(win, menuBar, tabPane, trayIcon) {
 
             @Override
-            public JSplitPane createClient(String host, int port, ProtocolEntry protocol, ForgeMode forge,
-                    String username, String password, AuthType authType, Proxy proxy, String name) {
-                ServerEntry et = new ServerEntry(host, port, name, protocol == null ? "Auto" : protocol.getName(),
+            public JSplitPane createClient(final String host, final int port, final ProtocolEntry protocol,
+                    final ForgeMode forge, final String username, final String password, final AuthType authType,
+                    final Proxy proxy, final String name) {
+                final ServerEntry et = new ServerEntry(host, port, name, protocol == null ? "Auto" : protocol.getName(),
                         forge);
-                JSplitPane b = createServerPane(et, username, password, authType, proxy);
-                MinecraftClient client = getClient(b);
+                final JSplitPane b = createServerPane(et, username, password, authType, proxy);
+                final MinecraftClient client = getClient(b);
 
                 tabPane.addTab("", b);
                 tabPane.setSelectedComponent(b);
-                for (UserActionListener ls : guiComponents.getActionListeners())
+                for (final UserActionListener ls : guiComponents.getActionListeners())
                     ls.clientCreated(b, client);
 
                 final Box b2 = Box.createHorizontalBox();
@@ -1607,7 +1611,7 @@ public class Main {
             }
 
             @Override
-            public MinecraftClient getClient(JSplitPane pane) {
+            public MinecraftClient getClient(final JSplitPane pane) {
                 return clients.get(pane);
             }
 
@@ -1618,7 +1622,7 @@ public class Main {
 
         };
 
-        for (AMCPlugin plugin : loadedPlugins) {
+        for (final AMCPlugin plugin : loadedPlugins) {
             plugin.onGUIInitialized(guiComponents);
         }
         guiComponents.revalidateAll();
@@ -1627,28 +1631,28 @@ public class Main {
     private GUIComponents guiComponents;
 
     private void showPluginManager() {
-        JDialog od = new JDialog(win);
-        od.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        final JDialog od = new JDialog(win);
+        od.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         od.setModal(true);
         od.setResizable(false);
         od.setTitle("Plugin Manager");
 
-        JTabbedPane tabs = new JTabbedPane();
-        JPanel installedDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
-        JPanel availableDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
+        final JTabbedPane tabs = new JTabbedPane();
+        final JPanel installedDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
+        final JPanel availableDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
 
-        Runnable sync = () -> {
-            Component installedLoadingCpt = createLoadingCpt(Messages.getString("Main.verifyingPlugins"));
+        final Runnable sync = () -> {
+            final Component installedLoadingCpt = createLoadingCpt(Messages.getString("Main.verifyingPlugins"));
             installedDisplay.add(installedLoadingCpt);
-            int initial = tabs.getSelectedIndex();
+            final int initial = tabs.getSelectedIndex();
             setAllTabs(tabs, false);
 
-            PluginDescription[] descs = Plugins.listPlugins();
+            final PluginDescription[] descs = Plugins.listPlugins();
             Plugins.verify(ex -> {
                 SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), ex,
                         Messages.getString("Main.verifyingError"));
             }, descs);
-            for (PluginDescription desc : descs)
+            for (final PluginDescription desc : descs)
                 installedDisplay.add(new PluginDisplayPanel(guiComponents, desc, false, null, od));
 
             installedDisplay.remove(installedLoadingCpt);
@@ -1656,25 +1660,25 @@ public class Main {
             tabs.repaint();
         };
 
-        JPanel searchCtls = new JPanel();
-        JButton resetSearch = new JButton("Reset");
+        final JPanel searchCtls = new JPanel();
+        final JButton resetSearch = new JButton("Reset");
 
-        Consumer<SearchQuery> searchConsumer = query -> {
+        final Consumer<SearchQuery> searchConsumer = query -> {
             if (tabs.getSelectedIndex() == 1) {
                 new Thread(() -> {
-                    Component installedLoadingCpt = createLoadingCpt(
+                    final Component installedLoadingCpt = createLoadingCpt(
                             Messages.getString("Main.availablePluginsFetching"));
                     setAllTabs(tabs, false);
-                    for (Component cpt : searchCtls.getComponents())
+                    for (final Component cpt : searchCtls.getComponents())
                         cpt.setEnabled(false);
-                    int initial = tabs.getSelectedIndex();
+                    final int initial = tabs.getSelectedIndex();
 
                     availableDisplay.removeAll();
                     availableDisplay.add(installedLoadingCpt);
 
-                    StarStats stats = Plugins.fetchStars(Main.up.getUserID());
+                    final StarStats stats = Plugins.fetchStars(Main.up.getUserID());
 
-                    for (PluginDescription plugin : Plugins.listRemotePlugins(ex -> {
+                    for (final PluginDescription plugin : Plugins.listRemotePlugins(ex -> {
                         SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), ex,
                                 Messages.getString("Main.availablePluginsFetchingError"));
                     })) {
@@ -1691,8 +1695,8 @@ public class Main {
                                     break;
                                 }
                                 case DESCRIPTION: {
-                                    StringBuilder bd = new StringBuilder();
-                                    for (String line : plugin.getDescription() == null ? new String[0]
+                                    final StringBuilder bd = new StringBuilder();
+                                    for (final String line : plugin.getDescription() == null ? new String[0]
                                             : plugin.getDescription())
                                         bd.append(line);
                                     subject = bd.toString();
@@ -1704,17 +1708,15 @@ public class Main {
                                 }
                             }
 
-                            if (subject == null) continue;
-
-                            if (!subject.toLowerCase().contains(query.getQuery().toLowerCase())) continue;
+                            if ((subject == null) || !subject.toLowerCase().contains(query.getQuery().toLowerCase())) continue;
                         }
                         availableDisplay.add(new PluginDisplayPanel(guiComponents, plugin, true, desc -> {
-                            Component downloadingCpt = createLoadingCpt(
+                            final Component downloadingCpt = createLoadingCpt(
                                     Messages.getString("Main.downloading") + " " + desc.getName() + "...");
                             availableDisplay.removeAll();
                             availableDisplay.add(downloadingCpt);
                             setAllTabs(tabs, false);
-                            int initial2 = tabs.getSelectedIndex();
+                            final int initial2 = tabs.getSelectedIndex();
 
                             if (desc.getRemote() != null)
                                 try (InputStream is = new URL(desc.getRemote()).openStream()) {
@@ -1724,14 +1726,14 @@ public class Main {
                                         out = new File(Plugins.PLUGIN_DIR, "_" + out.getName());
                                     }
                                     try (OutputStream os = new FileOutputStream(out)) {
-                                        byte[] buffer = new byte[1024];
+                                        final byte[] buffer = new byte[1024];
                                         int read;
                                         while ((read = is.read(buffer)) > 0)
                                             os.write(buffer, 0, read);
                                         os.close();
                                     }
                                     is.close();
-                                } catch (Exception e2) {
+                                } catch (final Exception e2) {
                                     SwingUtils.showErrorDialog(od, "Error!", e2,
                                             Messages.getString("Main.downloadingError"));
                                 }
@@ -1746,7 +1748,7 @@ public class Main {
 
                     availableDisplay.remove(installedLoadingCpt);
                     setAllTabs(tabs, true, initial);
-                    for (Component cpt : searchCtls.getComponents())
+                    for (final Component cpt : searchCtls.getComponents())
                         cpt.setEnabled(true);
                     resetSearch.setEnabled(query != null);
                     tabs.repaint();
@@ -1758,14 +1760,14 @@ public class Main {
             searchConsumer.accept(null);
         });
 
-        JPanel availableMain = new JPanel();
+        final JPanel availableMain = new JPanel();
         availableMain.setLayout(new BoxLayout(availableMain, BoxLayout.Y_AXIS));
         searchCtls.setLayout(new BoxLayout(searchCtls, BoxLayout.X_AXIS));
 
-        JTextField searchField = new JTextField();
-        JButton search = new JButton("Search...");
+        final JTextField searchField = new JTextField();
+        final JButton search = new JButton("Search...");
         resetSearch.setEnabled(false);
-        JComboBox<String> searchBy = new JComboBox<>(
+        final JComboBox<String> searchBy = new JComboBox<>(
                 new String[] { Messages.getString("Main.searchByName"), Messages.getString("Main.searchByAuthor"),
                         Messages.getString("Main.searchByDescription"), Messages.getString("Main.searchByWebsite") });
 
@@ -1776,7 +1778,7 @@ public class Main {
 
         searchCtls.setMaximumSize(new Dimension((int) ((SwingUtils.sSize.width / 3) * 0.8), 20));
 
-        searchCtls.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
+        searchCtls.setAlignmentX(Component.RIGHT_ALIGNMENT);
         availableMain.add(searchCtls);
         availableMain.add(new JScrollPane(availableDisplay));
 
@@ -1787,7 +1789,7 @@ public class Main {
 
         search.addActionListener(e -> {
             SearchType type;
-            String query = searchField.getText();
+            final String query = searchField.getText();
             if (query.isEmpty()) {
                 SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), null,
                         Messages.getString("Main.searchNoPhrase"));
@@ -1815,10 +1817,10 @@ public class Main {
             searchConsumer.accept(new SearchQuery(query, type));
         });
 
-        JPanel settings = new JPanel();
+        final JPanel settings = new JPanel();
         settings.setLayout(new BoxLayout(settings, BoxLayout.Y_AXIS));
 
-        JButton atClear = new JButton(Messages.getString("Main.pluginSettingsClearTrusted"));
+        final JButton atClear = new JButton(Messages.getString("Main.pluginSettingsClearTrusted"));
         atClear.setEnabled(up.getTrustedAuthors().size() > 0);
 
         atClear.addActionListener(e -> {
@@ -1828,22 +1830,22 @@ public class Main {
 
         settings.add(atClear);
 
-        JPanel installedMain = new JPanel();
+        final JPanel installedMain = new JPanel();
         installedMain.setLayout(new BoxLayout(installedMain, BoxLayout.Y_AXIS));
 
-        JButton openPluginsFolder = new JButton(Messages.getString("Main.openPluginsFolder")) {
+        final JButton openPluginsFolder = new JButton(Messages.getString("Main.openPluginsFolder")) {
             {
                 setIcon(FontAwesome.createIcon(FontAwesome.FOLDER, this, getFont().getSize2D()));
             }
         };
 
-        Box installedCtls = Box.createHorizontalBox();
-        installedCtls.setAlignmentX(Box.LEFT_ALIGNMENT);
+        final Box installedCtls = Box.createHorizontalBox();
+        installedCtls.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         openPluginsFolder.addActionListener(e -> {
             try {
                 Desktop.getDesktop().open(Plugins.PLUGIN_DIR);
-            } catch (Exception e2) {
+            } catch (final Exception e2) {
                 e2.printStackTrace();
             }
         });
@@ -1864,26 +1866,26 @@ public class Main {
         od.setVisible(true);
     }
 
-    private static void setAllTabs(JTabbedPane pane, boolean state) {
+    private static void setAllTabs(final JTabbedPane pane, final boolean state) {
         setAllTabs(pane, state, 0);
     }
 
-    private static synchronized void setAllTabs(JTabbedPane pane, boolean state, int initial) {
+    private static synchronized void setAllTabs(final JTabbedPane pane, final boolean state, final int initial) {
         if (!state || pane.getSelectedIndex() == initial) for (int x = 0; x < pane.getTabCount(); x++) {
             pane.setEnabledAt(x, state);
         }
 
     }
 
-    private static Component createLoadingCpt(String text) {
-        JPanel panel = new JPanel();
+    private static Component createLoadingCpt(final String text) {
+        final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         panel.add(new JLabel(text));
         panel.add(new JLabel(" "));
         panel.add(new JProgressBar() {
             {
-                setAlignmentX(JPanel.LEFT_ALIGNMENT);
+                setAlignmentX(Component.LEFT_ALIGNMENT);
                 setIndeterminate(true);
             }
         });
@@ -2444,8 +2446,8 @@ public class Main {
         });
         dscBox.alignAll();
 
-        JPanel accBox = new JPanel(new GridLayout(10, 1));
-        JTextField loginCommand = new JTextField(up.getAutoLoginCommand());
+        final JPanel accBox = new JPanel(new GridLayout(10, 1));
+        final JTextField loginCommand = new JTextField(up.getAutoLoginCommand());
 
         accBox.add(new JLabel(Messages.getString("Main.settingsAutoLoginLabel")));
         accBox.add(loginCommand);
@@ -2478,7 +2480,7 @@ public class Main {
         jtp.add("", accBox);
         jtp.setTabComponentAt(8, new TabGroup(FontAwesome.USER_C, Messages.getString("Main.settingsTabAccessibility")));
 
-        ChangeListener ls = new ChangeListener() {
+        final ChangeListener ls = new ChangeListener() {
             @Override
             public void stateChanged(final ChangeEvent e) {
                 final JTabbedPane tp = (JTabbedPane) e.getSource();
@@ -2489,9 +2491,9 @@ public class Main {
                             JOptionPane.WARNING_MESSAGE, null, new Object[] { Messages.getString("Main.ok") }, e);
                 }
 
-                Component tabCpt = tp.getTabComponentAt(tp.getSelectedIndex());
+                final Component tabCpt = tp.getTabComponentAt(tp.getSelectedIndex());
                 if (tabCpt instanceof TabGroup) {
-                    TabGroup tg = (TabGroup) tabCpt;
+                    final TabGroup tg = (TabGroup) tabCpt;
                     od.setTitle(tg.getText() + " - " + Messages.getString("Main.settingsTitle"));
                 }
             }
@@ -2935,7 +2937,7 @@ public class Main {
                 if (!up.isEnableInventoryHandling()) return;
 
                 final MinecraftClient cl = clients.get(fPane);
-                ItemsWindow iw = cl.getInventory();
+                final ItemsWindow iw = cl.getInventory();
                 if (iw instanceof SwingItemsWindow)
                     ((SwingItemsWindow) cl.getInventory()).openWindow(win, up.isSendWindowClosePackets());
             }
@@ -3481,7 +3483,7 @@ public class Main {
         worldBox.alignAll();
 
         trackingBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
-        for (Component cpt : attackPanel.getComponents())
+        for (final Component cpt : attackPanel.getComponents())
             cpt.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
 
         final JVBoxPanel autoMsgBox = new JVBoxPanel();
@@ -4391,7 +4393,7 @@ public class Main {
         box.add(hjsc);
         box.add(jsc);
         box.add(chatControls);
-        Runnable r = new Runnable() {
+        final Runnable r = new Runnable() {
             @Override
             public void run() {
 
@@ -4466,7 +4468,7 @@ public class Main {
                             controlsTabPane.setEnabledAt(2, false);
                         }
                         final MinecraftClient cl = new MinecraftClient(host, port, iprotocol,
-                                forgeMode == ForgeMode.AUTO ? forge : forgeMode == ForgeMode.NEVER == false);
+                                forgeMode == ForgeMode.AUTO ? forge : (forgeMode != ForgeMode.NEVER));
                         cl.getWindowsFactory().setItemWindowsClass(SwingItemsWindow.class);
                         clients.put(fPane, cl);
 
@@ -4480,14 +4482,13 @@ public class Main {
 
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
-                                if (packetAnalyzerPauseBtn.isSelected()) return;
-                                if (up.isDisablePacketAnalyzer()) return;
+                                if (packetAnalyzerPauseBtn.isSelected() || up.isDisablePacketAnalyzer()) return;
                                 if (packet instanceof BaseServerPlayerPositionAndLookPacket && !triedToLogin
                                         && password != null && !password.isEmpty()) {
                                     try {
                                         cl.sendChatMessage(String.format("/" + up.getAutoLoginCommand(), password));
                                         triedToLogin = true;
-                                    } catch (IOException e) {
+                                    } catch (final IOException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -4519,8 +4520,7 @@ public class Main {
 
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
-                                if (packetAnalyzerPauseBtn.isSelected()) return;
-                                if (up.isDisablePacketAnalyzer()) return;
+                                if (packetAnalyzerPauseBtn.isSelected() || up.isDisablePacketAnalyzer()) return;
                                 outModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
                                         "S", packet.getClass().getSimpleName(), packet.getSize() });
                                 allModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
@@ -4608,7 +4608,7 @@ public class Main {
 
                             @Override
                             public boolean messageReceived(final String message, final Position pos,
-                                    MinecraftClient cl) {
+                                    final MinecraftClient cl) {
                                 if (pos == Position.HOTBAR) {
                                     hjtp.setText("");
                                     SwingUtils.appendColoredText(message, hjtp);
@@ -4698,7 +4698,7 @@ public class Main {
                             }
 
                             @Override
-                            public void disconnected(final String reason, MinecraftClient cl) {
+                            public void disconnected(final String reason, final MinecraftClient cl) {
                                 autoMessagesThread.interrupt();
                                 SwingUtils.appendColoredText(
                                         "\u00a7c" + Messages.getString("Main.connectionLostChatMessage") + ": \r\n"
@@ -4758,7 +4758,7 @@ public class Main {
                             }
 
                             @Override
-                            public void healthUpdate(final float health, final int food, MinecraftClient cl) {
+                            public void healthUpdate(final float health, final int food, final MinecraftClient cl) {
                                 if (health > healthBar.getMaximum()) {
                                     healthBar.setMaximum((int) health);
                                 }
@@ -4778,7 +4778,7 @@ public class Main {
 
                             @Override
                             public void positionChanged(final double x, final double y, final double z,
-                                    MinecraftClient cl) {
+                                    final MinecraftClient cl) {
                                 String sx = Double.toString(x);
                                 String sy = Double.toString(y);
                                 String sz = Double.toString(z);
@@ -4800,7 +4800,8 @@ public class Main {
                             Map<String, Integer> trueValues = new HashMap<String, Integer>();
 
                             @Override
-                            public void statisticsReceived(final Map<String, Integer> values, MinecraftClient cl) {
+                            public void statisticsReceived(final Map<String, Integer> values,
+                                    final MinecraftClient cl) {
                                 if (values.size() == 0) return;
                                 statisticsContainer.removeAll();
                                 for (final String key : values.keySet()) {
@@ -4822,7 +4823,7 @@ public class Main {
 
                             @Override
                             public void windowOpened(final int id, final ItemsWindow win, final PacketRegistry reg,
-                                    MinecraftClient cl) {
+                                    final MinecraftClient cl) {
                                 if (up.isHideIncomingWindows()) {
                                     if (up.isHiddenWindowsResponse()) {
                                         try {
@@ -4840,7 +4841,7 @@ public class Main {
                             }
 
                             @Override
-                            public void timeUpdated(long time, final long worldAge, MinecraftClient cl) {
+                            public void timeUpdated(long time, final long worldAge, final MinecraftClient cl) {
                                 if (time < 0) {
                                     time = time * -1;
                                 }
@@ -4867,7 +4868,7 @@ public class Main {
                             }
 
                             @Override
-                            public void changedTrackedEntity(final int id, MinecraftClient cl) {
+                            public void changedTrackedEntity(final int id, final MinecraftClient cl) {
                                 if (id == -1) {
                                     trackingField.setText("");
                                     stopTrackingBtn.setEnabled(false);
@@ -4889,7 +4890,7 @@ public class Main {
                             }
 
                             @Override
-                            public void entityMoved(final Entity entity, final int id, MinecraftClient cl) {
+                            public void entityMoved(final Entity entity, final int id, final MinecraftClient cl) {
 
                                 if (autoTrackEnable.isSelected()) {
                                     double closestDistance = Double.MAX_VALUE;
@@ -4922,7 +4923,7 @@ public class Main {
                             private boolean isUsing = false;
 
                             @Override
-                            public void tick(MinecraftClient cl) throws IOException {
+                            public void tick(final MinecraftClient cl) throws IOException {
                                 if (cl.isEntityAttacking()) {
                                     attackTicks++;
                                     if (attackTicks > (int) autoAttackRate.getValue()) {
@@ -4961,7 +4962,7 @@ public class Main {
 
                         });
 
-                        Runnable rr = () -> {
+                        final Runnable rr = () -> {
                             try {
                                 cl.connect(authType, username, password);
                                 discordIntegr.update();
@@ -5022,7 +5023,7 @@ public class Main {
                                 for (final Component ct : chatControls.getComponents()) {
                                     ct.setEnabled(true);
                                 }
-                            } catch (Exception e) {
+                            } catch (final Exception e) {
                                 SwingUtils.appendColoredText(
                                         "\u00a7c" + Messages.getString("Main.connectionFailedChatMessage2") + "\r\n\r\n"
                                                 + e.toString(),

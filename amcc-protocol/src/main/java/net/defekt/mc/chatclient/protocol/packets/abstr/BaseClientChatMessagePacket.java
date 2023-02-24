@@ -21,7 +21,7 @@ public class BaseClientChatMessagePacket extends Packet {
      * @param message
      * @param command
      */
-    protected BaseClientChatMessagePacket(PacketRegistry reg, String message, boolean command) {
+    protected BaseClientChatMessagePacket(final PacketRegistry reg, final String message, final boolean command) {
         super(reg);
         this.message = message;
         this.command = command;

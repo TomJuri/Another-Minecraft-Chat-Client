@@ -64,21 +64,21 @@ import net.defekt.mc.chatclient.ui.Main;
 public class SwingUtils {
 
     public static void playAsterisk() {
-        Object obj = Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.asterisk");
+        final Object obj = Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.asterisk");
         if (obj instanceof Runnable) ((Runnable) obj).run();
     }
 
     public static void playExclamation() {
-        Object obj = Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.exclamation");
+        final Object obj = Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.exclamation");
         if (obj instanceof Runnable) ((Runnable) obj).run();
     }
 
-    public static void showAboutDialog(Window parent) {
-        JDialog dialog = new JDialog(parent);
+    public static void showAboutDialog(final Window parent) {
+        final JDialog dialog = new JDialog(parent);
         dialog.setTitle("About AMCC");
         dialog.setModal(true);
 
-        JVBoxPanel panel = new JVBoxPanel();
+        final JVBoxPanel panel = new JVBoxPanel();
         panel.add(new JLabel(new ImageIcon(IOUtils.resizeImageProp(Main.logoImage, 64))));
         panel.add(new JLabel("Another Minecraft Chat Client") {
             {
@@ -97,7 +97,7 @@ public class SwingUtils {
             }
         });
 
-        Box discordBox = Box.createHorizontalBox();
+        final Box discordBox = Box.createHorizontalBox();
 
         discordBox.add(new JLabel("Defective#3858") {
             {
@@ -107,7 +107,7 @@ public class SwingUtils {
             }
         });
 
-        JButton copy = new JButton(FontAwesome.COPY);
+        final JButton copy = new JButton(FontAwesome.COPY);
         copy.setFont(FontAwesome.FONT.deriveFont(11f));
         copy.setMargin(new Insets(5, 5, 5, 5));
 
@@ -289,7 +289,7 @@ public class SwingUtils {
         errDial.setModal(true);
         errDial.setTitle(title);
 
-        List<Component> btns = new ArrayList<>();
+        final List<Component> btns = new ArrayList<>();
         btns.add(new JButton(Messages.getString("Main.ok")) {
             {
                 addActionListener(new ActionListener() {

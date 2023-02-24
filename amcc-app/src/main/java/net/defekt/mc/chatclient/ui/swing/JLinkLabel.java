@@ -12,7 +12,7 @@ public class JLinkLabel extends JLabel {
 
     private final String link;
 
-    public JLinkLabel(String link) {
+    public JLinkLabel(final String link) {
         this.link = link;
         setText("<html><a href=\"" + link + "\">" + link + "</a></html>");
 
@@ -21,10 +21,10 @@ public class JLinkLabel extends JLabel {
         addMouseListener(new MouseAdapter() {
 
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mouseClicked(final MouseEvent e) {
                 try {
                     Desktop.getDesktop().browse(new URL(link).toURI());
-                } catch (Exception e2) {
+                } catch (final Exception e2) {
                     e2.printStackTrace();
                 }
             }

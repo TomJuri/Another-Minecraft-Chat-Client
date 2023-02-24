@@ -19,35 +19,35 @@ import net.defekt.mc.chatclient.protocol.packets.Packet;
 public abstract class AnnotatedMinecraftPacketListener implements MinecraftPacketListener {
 
     @Override
-    public Packet packetReceiving(Packet inPacket, MinecraftClient client) {
+    public Packet packetReceiving(final Packet inPacket, final MinecraftClient client) {
         return propagate(inPacket, client, true);
     }
 
     @Override
-    public Packet packetSending(Packet outPacket, MinecraftClient client) {
+    public Packet packetSending(final Packet outPacket, final MinecraftClient client) {
         return propagate(outPacket, client, true);
     }
 
     @Override
-    public void packetReceived(Packet inPacket, MinecraftClient client) {
+    public void packetReceived(final Packet inPacket, final MinecraftClient client) {
         propagate(inPacket, client, false);
     }
 
     @Override
-    public void packetSent(Packet outPacket, MinecraftClient client) {
+    public void packetSent(final Packet outPacket, final MinecraftClient client) {
         propagate(outPacket, client, false);
     }
 
-    private Packet propagate(Packet packet, MinecraftClient client, boolean pre) {
+    private Packet propagate(final Packet packet, final MinecraftClient client, final boolean pre) {
         try {
-            for (Method method : getClass().getDeclaredMethods()) {
+            for (final Method method : getClass().getDeclaredMethods()) {
                 method.setAccessible(true);
                 if (method.isAnnotationPresent(PacketHandler.class)) {
-                    PacketHandler ann = method.getAnnotation(PacketHandler.class);
+                    final PacketHandler ann = method.getAnnotation(PacketHandler.class);
                     if (ann.preSend() != pre) break;
                     if (method.getParameterCount() >= 1) {
-                        Parameter[] pms = method.getParameters();
-                        Class<?> pmType = pms[0].getType();
+                        final Parameter[] pms = method.getParameters();
+                        final Class<?> pmType = pms[0].getType();
                         Class<?> pmL = packet.getClass();
                         while (pmL != null && pmL != pmType) {
                             pmL = pmL.getSuperclass();
@@ -72,7 +72,7 @@ public abstract class AnnotatedMinecraftPacketListener implements MinecraftPacke
                 }
                 method.setAccessible(false);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
         return null;
     }

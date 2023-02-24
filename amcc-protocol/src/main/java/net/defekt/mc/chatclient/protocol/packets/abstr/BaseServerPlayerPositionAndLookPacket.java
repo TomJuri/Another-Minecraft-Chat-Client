@@ -7,6 +7,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
 /**
  * Base class for clientbound player position and rotation packets
+ * 
  * @author Defective4
  *
  */
@@ -23,11 +24,12 @@ public class BaseServerPlayerPositionAndLookPacket extends Packet {
 
     /**
      * Default constructor
+     * 
      * @param reg
      * @param data
      * @throws IOException
      */
-    protected BaseServerPlayerPositionAndLookPacket(PacketRegistry reg, byte[] data) throws IOException {
+    protected BaseServerPlayerPositionAndLookPacket(final PacketRegistry reg, final byte[] data) throws IOException {
         super(reg, data);
     }
 
