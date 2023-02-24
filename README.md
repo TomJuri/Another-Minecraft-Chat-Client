@@ -58,6 +58,30 @@ dependencies {
 ```
 `{version}` is the release version you want to develop for. For example `1.10.0`
 
+# Using the Protocol implemenetation in your project
+You can include our project implementation in your project by:
+
+### Manual download
+You can download the the protocol implementation on the [releases](https://github.com/Defective4/Another-Minecraft-Chat-Client/releases) page.
+
+### Adding a Maven dependency
+Paste this in your `pom.xml`
+```xml
+<dependency>
+    <groupId>io.github.defective4.amcc</groupId>
+    <artifactId>amcc-protocol</artifactId>
+    <version>1.10.0</version>
+</dependency>
+```
+
+### Adding a Gradle dependency
+Paste this in your `build.gradle`
+```gradle
+dependencies {
+  implementation 'io.github.defective4.amcc:amcc.protocol:1.10.0'
+}
+```
+
 # Building from source
 If you don't want to download the pre-built release you can also build the application, plugin API and protocol implementation from source.
 
