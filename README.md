@@ -3,7 +3,8 @@
 ![version](https://img.shields.io/github/v/release/Defective4/Minecraft-Chat-Client)
 ![lastCommit](https://img.shields.io/github/last-commit/Defective4/Minecraft-Chat-Client)
 ![version](https://img.shields.io/badge/latest_mc_version-1.19.2-success)
-[![Java CI](https://github.com/Defective4/Another-Minecraft-Chat-Client/actions/workflows/maven.yml/badge.svg)](https://github.com/Defective4/Another-Minecraft-Chat-Client/actions/workflows/maven.yml)  
+[![Java CI](https://github.com/Defective4/Another-Minecraft-Chat-Client/actions/workflows/maven.yml/badge.svg)](https://github.com/Defective4/Another-Minecraft-Chat-Client/actions/workflows/maven.yml)
+![downloads](https://img.shields.io/github/downloads/Defective4/Another-Minecraft-Chat-Client/total)
 
 <img width=10% src="https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/logo.png"/>  
 
