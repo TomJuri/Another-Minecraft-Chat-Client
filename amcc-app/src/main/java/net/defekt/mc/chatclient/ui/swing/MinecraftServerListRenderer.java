@@ -38,6 +38,7 @@ import net.defekt.mc.chatclient.ui.Main;
 public class MinecraftServerListRenderer extends DefaultListCellRenderer {
     private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("deprecation")
     @Override
     public Component getListCellRendererComponent(final JList<? extends Object> list, final Object value,
             final int index, final boolean isSelected, final boolean cellHasFocus) {

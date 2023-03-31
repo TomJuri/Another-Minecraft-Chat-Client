@@ -44,6 +44,8 @@ import javax.swing.text.StyledDocument;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import net.defekt.mc.chatclient.protocol.data.ChatColor;
 import net.defekt.mc.chatclient.protocol.data.Messages;
@@ -221,44 +223,27 @@ public class SwingUtils {
      *             <font style="color: 5555ff;">World</font>""
      * @param pane pane to append text to
      */
-    public static void appendColoredText(final String text, final JTextPane pane) {
+    public static void appendColoredText(String text, final JTextPane pane) {
+        text = ChatColor.legacyToHex("\u00a7#ffffff" + text);
         final StyledDocument doc = pane.getStyledDocument();
         final StyleContext ctx = new StyleContext();
         final Style style = ctx.addStyle("style", null);
 
-        final String[] split = text.split("\u00a7");
         boolean lineSupported = true;
         final int ctxIndex = doc.getLength();
-        for (final String part : split) {
+
+        for (JsonElement el : ChatColor.parseColors(text)) {
             try {
-                if (text.startsWith(part)) {
-                    doc.insertString(doc.getLength(), part, null);
-                } else {
-                    final String code = part.substring(0, 1);
-                    Color c;
-                    boolean isHex = false;
-                    if (code.equals("#") && part.length() > 7) {
-                        try {
-                            final String hex = part.substring(1, 7);
-                            final int rgb = Integer.parseInt(hex, 16);
-                            c = new Color(rgb);
-                            isHex = true;
-                        } catch (final Exception e) {
-                            c = ChatColor.translateColorCode(code);
-                        }
-                    } else {
-                        c = ChatColor.translateColorCode(code);
-                    }
-                    StyleConstants.setForeground(style, c);
+                JsonObject obj = el.getAsJsonObject();
+                String tx = obj.get("text").getAsString();
+                Color c = Color.decode("#" + obj.get("color").getAsString());
+                StyleConstants.setForeground(style, c);
 
-                    final String rest = part.substring(isHex ? 7 : 1);
-
-                    if (!net.defekt.mc.chatclient.ui.swing.SwingConstants.checkMCSupported(rest)) {
-                        lineSupported = false;
-                    }
-
-                    doc.insertString(doc.getLength(), rest, style);
+                if (!net.defekt.mc.chatclient.ui.swing.SwingConstants.checkMCSupported(tx)) {
+                    lineSupported = false;
                 }
+
+                doc.insertString(doc.getLength(), tx, style);
             } catch (final Exception e) {
                 e.printStackTrace();
             }

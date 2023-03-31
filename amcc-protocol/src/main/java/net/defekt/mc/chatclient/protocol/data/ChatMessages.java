@@ -60,7 +60,6 @@ public class ChatMessages {
      * @return parsed, human-readable chat message
      */
     public static String parse(String json, final MinecraftClient client) {
-        json = json.replace(pChar + "k", "").replace(pChar + "l", "").replace(pChar + "m", "").replace(pChar + "n", "");
         try {
             final JsonElement element = JsonParser.parseString(json);
             String text = "";

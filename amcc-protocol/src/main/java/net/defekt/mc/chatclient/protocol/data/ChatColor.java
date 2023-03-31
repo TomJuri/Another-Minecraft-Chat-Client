@@ -4,6 +4,10 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 /**
  * Class containing Minecraft's color codes, their names and their RGB
  * representation
@@ -58,8 +62,78 @@ public class ChatColor {
             put("e", "255:255:85");
             put("f", "255:255:255");
             put("r", "255:255:255");
+
+            put("o", "255:255:255");
+            put("k", "255:255:255");
+            put("l", "255:255:255");
+            put("m", "255:255:255");
+            put("n", "255:255:255");
         }
     };
+
+    /**
+     * Parse HEX colored message string to json array
+     * @param hexed HEX message string
+     * @return json array
+     */
+    public static JsonArray parseColors(String hexed) {
+        JsonArray parts = new JsonArray();
+        String result = hexed;
+        String[] split = result.split("\u00a7#");
+        for (String sec : split) {
+            JsonObject obj = new JsonObject();
+            try {
+                if (sec.length() >= 6) {
+                    String color = sec.substring(0, 6);
+                    String txt = sec.substring(6);
+                    Integer.parseInt(color, 16);
+                    obj.add("color", new JsonPrimitive(color));
+                    obj.add("text", new JsonPrimitive(txt));
+                } else
+                    throw new NumberFormatException();
+            } catch (Exception e) {
+                obj.add("color", new JsonPrimitive("ffffff"));
+                obj.add("text", new JsonPrimitive(sec));
+            }
+            parts.add(obj);
+        }
+
+        return parts;
+    }
+
+    /**
+     * Convert all legacy color codes to HEX
+     * 
+     * @param legacy legacy string
+     * @return hexed string
+     */
+    public static String legacyToHex(String legacy) {
+        String hexed = "\u00a7#ffffff" + legacy;
+
+        for (String key : colors.keySet()) {
+            String[] rgb = colors.get(key).split(":");
+            String hex = toHex(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
+            hexed = hexed.replace("\u00a7" + key, "\u00a7#" + hex);
+        }
+
+        return hexed;
+    }
+
+    /**
+     * Converts RGB to HEX value (######)
+     * 
+     * @param r Red value
+     * @param g Green value
+     * @param b Blue value
+     * @return encoded HEX string
+     */
+    public static String toHex(int r, int g, int b) {
+        return pad(Integer.toHexString(r)) + pad(Integer.toHexString(g)) + pad(Integer.toHexString(b));
+    }
+
+    private static String pad(String sec) {
+        return sec.length() == 1 ? "0" + sec : sec;
+    }
 
     /**
      * Translate Minecraft color code (0-9 a-f) to {@link Color} object.<br>
@@ -67,6 +141,7 @@ public class ChatColor {
      * 
      * @param code color code
      * @return RGB color
+     * @deprecated
      */
     public static Color translateColorCode(final String code) {
         if (colors.containsKey(code)) {
@@ -88,7 +163,7 @@ public class ChatColor {
     public static String translateColorName(String name) {
         name = name.toLowerCase();
 
-        if (name.contains("#") && name.length() > 1) return "\u00a7" + name;
+        if (name.contains("#") && name.length() > 1) return name;
 
         return colorCodes.containsKey(name) ? colorCodes.get(name) : colorCodes.get("white");
     }
