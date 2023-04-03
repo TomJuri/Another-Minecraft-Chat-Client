@@ -184,6 +184,7 @@ import net.defekt.mc.chatclient.ui.swing.JVBoxPanel;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
 import net.defekt.mc.chatclient.ui.swing.TablePacketButton;
 import net.defekt.mc.chatclient.ui.swing.VersionFieldRenderer;
+import net.defekt.mc.chatclient.ui.swing.windows.AccountManagerWindow;
 
 public class Main {
 
@@ -263,6 +264,7 @@ public class Main {
     }
 
     public static void main(final String[] args) {
+
         final List<Exception> preErrors = new ArrayList<>();
         PluginDescription[] descs = Plugins.listPlugins(true);
         Plugins.verify(e -> {
@@ -1519,10 +1521,23 @@ public class Main {
             }
         };
 
+        JMenu accountsMenu = new JMenu("Accounts") {
+            {
+                add(new JMenuItem("Account manager") {
+                    {
+                        addActionListener(e -> {
+                            showAccountManager();
+                        });
+                    }
+                });
+            }
+        }; // TODO translation
+
         menuBar.add(fileMenu);
         menuBar.add(optionMenu);
         menuBar.add(helpMenu);
         menuBar.add(pluginsMenu);
+        menuBar.add(accountsMenu);
         win.setJMenuBar(menuBar);
         win.setContentPane(tabPane);
         win.pack();
@@ -1630,6 +1645,12 @@ public class Main {
 
     private GUIComponents guiComponents;
 
+    private void showAccountManager() { // TODO account manager
+        AccountManagerWindow dw = new AccountManagerWindow(win);
+        SwingUtils.centerWindow(dw);
+        dw.setVisible(true);
+    }
+
     private void showPluginManager() {
         final JDialog od = new JDialog(win);
         od.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -1708,7 +1729,8 @@ public class Main {
                                 }
                             }
 
-                            if ((subject == null) || !subject.toLowerCase().contains(query.getQuery().toLowerCase())) continue;
+                            if ((subject == null) || !subject.toLowerCase().contains(query.getQuery().toLowerCase()))
+                                continue;
                         }
                         availableDisplay.add(new PluginDisplayPanel(guiComponents, plugin, true, desc -> {
                             final Component downloadingCpt = createLoadingCpt(
@@ -4394,6 +4416,7 @@ public class Main {
         box.add(jsc);
         box.add(chatControls);
         final Runnable r = new Runnable() {
+            @SuppressWarnings("deprecation")
             @Override
             public void run() {
 
@@ -4964,6 +4987,7 @@ public class Main {
 
                         final Runnable rr = () -> {
                             try {
+                                // TODO
                                 cl.connect(authType, username, password);
                                 discordIntegr.update();
 

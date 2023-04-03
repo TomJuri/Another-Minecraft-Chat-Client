@@ -28,6 +28,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import net.defekt.mc.chatclient.protocol.auth.UserInfo;
 import net.defekt.mc.chatclient.protocol.data.ChatMessages;
 import net.defekt.mc.chatclient.protocol.data.Hosts;
 import net.defekt.mc.chatclient.protocol.data.ItemWindowsFactory;
@@ -277,27 +278,37 @@ public class MinecraftClient {
      * 
      * @param auth     authentication type to use
      * @param token    an username or email
-     * @param password authentication password or null it offline
+     * @param password useless
      * @throws IOException
+     * 
+     * @deprecated Microsoft auth is NOT supported in this method.
      */
     public void connect(final AuthType auth, final String token, final String password) throws IOException {
+        if (auth == AuthType.Microsoft)
+            throw new IOException("Use MinecraftClient#connect(AuthType, UserInfo) when using Microsoft auth!");
+        
+        connect(auth, new UserInfo("", token, "", ""));
+    }
+
+    /**
+     * 
+     */
+    public void connect(final AuthType auth, final UserInfo ui) throws IOException {
         this.authType = auth;
         switch (auth) {
+            case Microsoft: {
+                break;
+            }
             case TheAltening: {
-                final MojangUser user = MojangAPI.authenticateUser(token,
-                        auth == AuthType.TheAltening ? "none" : password,
-                        auth == AuthType.TheAltening ? Hosts.ALTENING_AUTHSERVER : Hosts.MOJANG_AUTHSERVER);
+                final MojangUser user = MojangAPI.authenticateUser(ui.getName(), "none", Hosts.ALTENING_AUTHSERVER);
                 this.username = user.getUserName();
                 this.authID = user.getUserID();
                 this.authToken = user.getAccessToken();
                 break;
             }
+            default: 
             case Offline: {
-                this.username = token;
-                break;
-            }
-            default: {
-                this.username = token;
+                this.username = ui.getName();
                 break;
             }
         }
