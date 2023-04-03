@@ -111,8 +111,8 @@ public class MinecraftClient {
     private ItemsWindow inventory = null;
 
     private Thread packetReaderThread = null;
-    private Thread playerPositionThread = null;
 
+    private final Timer playerPositionTimer = new Timer("positionTimer", true);
     private final Timer internalTickTimer = new Timer("tickTimer", true);
 
     private final ItemWindowsFactory windowsFactory = new ItemWindowsFactory();
@@ -211,9 +211,7 @@ public class MinecraftClient {
                 if (packetReaderThread != null) {
                     packetReaderThread.interrupt();
                 }
-                if (playerPositionThread != null) {
-                    playerPositionThread.interrupt();
-                }
+                playerPositionTimer.cancel();
             } catch (final IOException e) {
             }
         }
@@ -422,33 +420,27 @@ public class MinecraftClient {
                     e.printStackTrace();
                 }
             }
-            playerPositionThread = new Thread(new Runnable() {
+
+            playerPositionTimer.scheduleAtFixedRate(new TimerTask() {
 
                 @Override
                 public void run() {
+                    if (x == Integer.MIN_VALUE) {
+                        return;
+                    }
                     try {
-                        while (true) {
-                            Thread.sleep(1000);
-                            if (x == Integer.MIN_VALUE) {
-                                continue;
-                            }
-                            try {
-                                if (soc.isClosed()) {
-                                    close();
-                                    return;
-                                }
-                                final Packet playerPositionPacket = PacketFactory.constructPacket(reg,
-                                        "ClientPlayerPositionPacket", x, y, z, true);
-                                sendPacket(playerPositionPacket);
-                            } catch (final Exception e) {
-                                e.printStackTrace();
-                            }
+                        if (soc.isClosed()) {
+                            close();
+                            return;
                         }
-                    } catch (final InterruptedException e) {
+                        final Packet playerPositionPacket = PacketFactory.constructPacket(reg,
+                                "ClientPlayerPositionPacket", x, y, z, true);
+                        sendPacket(playerPositionPacket);
+                    } catch (final Exception e) {
+                        e.printStackTrace();
                     }
                 }
-            });
-            playerPositionThread.start();
+            }, 1000, 1000);
 
             internalTickTimer.scheduleAtFixedRate(new TimerTask() {
 
