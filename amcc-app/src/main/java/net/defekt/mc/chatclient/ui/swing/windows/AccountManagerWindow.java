@@ -1,12 +1,19 @@
 package net.defekt.mc.chatclient.ui.swing.windows;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.datatransfer.StringSelection;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.util.WeakHashMap;
 
+import javax.imageio.ImageIO;
 import javax.swing.Box;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -20,6 +27,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import net.defekt.mc.chatclient.protocol.auth.UserInfo;
+import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.ui.Main;
 import net.defekt.mc.chatclient.ui.swing.JLinkLabel;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
@@ -64,6 +72,34 @@ public class AccountManagerWindow extends JDialog {
         list.setBounds(5, 25, 424, 189);
         update(list);
         contentPane.add(list);
+
+        list.setCellRenderer(new DefaultListCellRenderer() {
+
+            WeakHashMap<String, BufferedImage> skins = new WeakHashMap<>();
+
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                    boolean cellHasFocus) {
+                Component cpt = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (!(cpt instanceof JLabel)) return cpt;
+                JLabel label = (JLabel) cpt;
+                UserInfo val = (UserInfo) value;
+
+                if (!skins.containsKey(val.getUuid())) {
+                    try {
+                        BufferedImage img = ImageIO.read(new URL(val.getSkin()));
+                        skins.put(val.getUuid(), IOUtils.trimSkinHead(img, true));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (skins.containsKey(val.getUuid()))
+                    label.setIcon(new ImageIcon(IOUtils.resizeImageProp(skins.get(val.getUuid()), 32)));
+
+                return label;
+            }
+        });
 
         JButton btnNewButton = new JButton("Close");
         btnNewButton.setBounds(335, 225, 89, 23);
