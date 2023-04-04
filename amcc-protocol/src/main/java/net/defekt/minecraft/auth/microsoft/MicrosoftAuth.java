@@ -17,7 +17,7 @@ import com.google.gson.JsonPrimitive;
 
 public class MicrosoftAuth {
 
-    private static final String CLIENT_ID = "389b1b32-b5d5-43b2-bddc-84ce938d6737";
+    private static final String CLIENT_ID = "829558a9-67cf-4682-bd15-e600d67ee289";
 
     private static HttpURLConnection openJson(String url) throws IOException {
         return open(url, "application/json", "application/json");
