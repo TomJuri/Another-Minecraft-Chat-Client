@@ -120,6 +120,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                 cl.close();
                 break;
             }
+            case Microsoft:
             case TheAltening: {
                 final PublicKey publicKey = sPacket.getPublicKey();
                 final byte[] verifyToken = sPacket.getVerifyToken();

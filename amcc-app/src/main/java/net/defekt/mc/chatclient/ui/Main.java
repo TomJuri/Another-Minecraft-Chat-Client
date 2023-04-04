@@ -138,6 +138,7 @@ import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.MinecraftStat;
 import net.defekt.mc.chatclient.protocol.ProtocolEntry;
 import net.defekt.mc.chatclient.protocol.ProtocolNumber;
+import net.defekt.mc.chatclient.protocol.auth.UserInfo;
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule;
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule.EffectType;
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule.TriggerType;
@@ -264,7 +265,7 @@ public class Main {
     }
 
     public static void main(final String[] args) {
-        
+
         final List<Exception> preErrors = new ArrayList<>();
         PluginDescription[] descs = Plugins.listPlugins(true);
         Plugins.verify(e -> {
@@ -972,7 +973,7 @@ public class Main {
                 unameClear.setFont(FontAwesome.FONT);
                 unameClear.setToolTipText(Messages.getString("Main.clearUnames"));
 
-                final JComboBox<String> unameField = new JComboBox<>();
+                final JComboBox<Object> unameField = new JComboBox<>();
                 unameClear.addActionListener(new ActionListener() {
 
                     @Override
@@ -986,6 +987,25 @@ public class Main {
                 for (final String uname : up.getLastUserNames()) {
                     unameField.addItem(uname);
                 }
+
+                authType.addActionListener(e2 -> {
+                    AuthType current = (AuthType) authType.getSelectedItem();
+                    if (current == AuthType.Microsoft) {
+                        unameClear.setEnabled(false);
+                        unameField.setEditable(false);
+                        unameField.removeAllItems();
+                        for (UserInfo ui : up.getMsUsers()) {
+                            unameField.addItem(ui);
+                        }
+                    } else {
+                        unameClear.setEnabled(true);
+                        unameField.setEditable(true);
+                        unameField.removeAllItems();
+                        for (final String uname : up.getLastUserNames()) {
+                            unameField.addItem(uname);
+                        }
+                    }
+                });
 
                 final JPasswordField upassField = new JPasswordField();
 
@@ -1139,10 +1159,18 @@ public class Main {
                             null);
                     if (response != JOptionPane.OK_OPTION) return;
 
-                    final String uname = (String) unameField.getSelectedItem();
-                    if (uname == null) {
+                    final Object unameObj = (Object) unameField.getSelectedItem();
+                    if (unameObj == null) {
                         continue;
                     }
+
+                    String uname;
+
+                    if (unameObj instanceof UserInfo)
+                        uname = ((UserInfo) unameObj).getUsername();
+                    else
+                        uname = unameObj.toString();
+
                     final String proxy = pxField.getText().replace(" ", "");
                     if (!proxy.isEmpty() && proxy.contains(":") && proxy.split(":").length == 2) {
                         try {
@@ -1154,8 +1182,8 @@ public class Main {
                             ex.printStackTrace();
                         }
                     }
-                    if (!up.isUsernameAlertSeen() && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)
-                            && ((AuthType) authType.getSelectedItem()) != AuthType.TheAltening) {
+                    if (((AuthType) authType.getSelectedItem()) != AuthType.TheAltening && !up.isUsernameAlertSeen()
+                            && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)) {
                         SwingUtils.playAsterisk();
                         final int alResp = JOptionPane.showOptionDialog(win,
                                 Messages.getString("Main.nickIllegalCharsWarning1") + uname
@@ -1178,7 +1206,7 @@ public class Main {
                     }
                 } while (true);
 
-                final String uname = (String) unameField.getSelectedItem();
+                final Object uname = unameField.getSelectedItem();
                 final JSplitPane b = createServerPane(et, uname, new String(upassField.getPassword()),
                         ((AuthType) authType.getSelectedItem()), proxyObj);
                 final MinecraftClient client = clients.get(b);
@@ -1217,7 +1245,7 @@ public class Main {
                     }
                 });
 
-                b2.add(new JLabel(" " + et.getName() + " (" + (String) unameField.getSelectedItem() + ")"));
+                b2.add(new JLabel(" " + et.getName() + " (" + unameField.getSelectedItem().toString() + ")"));
 
                 final JButton close = new JButton("x");
                 close.setMargin(new Insets(0, 5, 0, 5));
@@ -1240,7 +1268,7 @@ public class Main {
                 });
 
                 b2.add(close);
-                up.putUserName(uname);
+                if (authType.getSelectedItem() == AuthType.Offline) up.putUserName(uname.toString());
                 tabPane.setTabComponentAt(tabPane.getSelectedIndex(), b2);
             }
         };
@@ -2698,7 +2726,7 @@ public class Main {
     }
 
     @SuppressWarnings("unchecked")
-    private JSplitPane createServerPane(final ServerEntry entry, final String username, final String password,
+    private JSplitPane createServerPane(final ServerEntry entry, final Object uname, final String password,
             final AuthType authType, final Proxy proxy) {
         final JSplitPane fPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
@@ -3014,7 +3042,7 @@ public class Main {
                     rWin.dispose();
                     rWin = null;
                 }
-                rWin = new JFrame("Entity Radar: " + username + " (" + selectedServer.getName() + ")");
+                rWin = new JFrame("Entity Radar: " + uname + " (" + selectedServer.getName() + ")");
                 rWin.setAlwaysOnTop(true);
                 rWin.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -4416,7 +4444,6 @@ public class Main {
         box.add(jsc);
         box.add(chatControls);
         final Runnable r = new Runnable() {
-            @SuppressWarnings("deprecation")
             @Override
             public void run() {
 
@@ -4766,7 +4793,7 @@ public class Main {
                                     if (ct == null) {
                                         continue;
                                     }
-                                    if (ct.getName().equals(entry.getHost() + "_" + entry.getName() + "_" + username)
+                                    if (ct.getName().equals(entry.getHost() + "_" + entry.getName() + "_" + uname)
                                             && (ct instanceof Box)) {
                                         final Box ctb = (Box) ct;
                                         for (final Component ctt : ctb.getComponents())
@@ -4988,7 +5015,8 @@ public class Main {
                         final Runnable rr = () -> {
                             try {
                                 // TODO
-                                cl.connect(authType, username, password);
+                                cl.connect(authType, ((uname instanceof UserInfo) ? (UserInfo) uname
+                                        : new UserInfo(uname.toString(), uname.toString(), "", "", "")));
                                 discordIntegr.update();
 
                                 try {
