@@ -1,12 +1,2 @@
 AMCC Change Log
-v1.11.0
-
-[+] Added:
-  - Microsoft authentication! (finally)
-    Microsoft authentication is now fully supported on versions 1.8-1.18.x
-  - Packet analyzer is now DISABLED by default
-  - Missing translation keys
-
-[+] Fixed:
-  - Improved color formatting
-  - Performance improvements
+v1.12.0
