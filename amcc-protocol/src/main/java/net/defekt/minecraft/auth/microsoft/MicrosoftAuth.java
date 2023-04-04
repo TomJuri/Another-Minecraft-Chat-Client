@@ -239,8 +239,10 @@ public class MicrosoftAuth {
         con.setRequestProperty("User-Agent", "Java");
         con.setRequestProperty("Authorization", "Bearer " + authToken);
 
-        if (con.getResponseCode() >= 400)
-            throw new IOException("Server returned " + con.getResponseCode() + " when retrieving game profile!");
+        if (con.getResponseCode() >= 400) {
+            con.disconnect();
+            return null;
+        }
 
         JsonObject obj = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
         con.disconnect();

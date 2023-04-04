@@ -25,6 +25,8 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import net.defekt.mc.chatclient.protocol.auth.UserInfo;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
@@ -111,7 +113,23 @@ public class AccountManagerWindow extends JDialog {
 
         JButton btnNewButton_2 = new JButton("Remove");
         btnNewButton_2.setBounds(96, 225, 89, 23);
+        btnNewButton_2.setEnabled(false);
         contentPane.add(btnNewButton_2);
+
+        list.addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                btnNewButton_2.setEnabled(list.getSelectedValue() != null);
+            }
+        });
+
+        btnNewButton_2.addActionListener(e -> {
+            if (list.getSelectedValue() != null) {
+                Main.up.getMsUsers().remove(list.getSelectedValue());
+                update(list);
+            }
+        });
 
         btnNewButton_1.addActionListener(e -> {
             CodeResponse code;

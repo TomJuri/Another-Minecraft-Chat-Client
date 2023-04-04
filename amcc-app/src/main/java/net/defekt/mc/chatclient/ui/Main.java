@@ -1212,30 +1212,7 @@ public class Main {
                 } while (true);
 
                 final Object uname = unameField.getSelectedItem();
-                if (uname instanceof UserInfo) {
-                    try {
-                        String refresh = ((UserInfo) uname).getRefresh();
-                        OnlineProfile profile = MicrosoftAuth.getProfile(((UserInfo) uname).getToken());
-                        if (profile == null) {
-                            TokenResponse resp = MicrosoftAuth.refreshToken(refresh);
-                            String xblToken = MicrosoftAuth.authXBL(resp);
-                            XSTSResponse xstsToken = MicrosoftAuth.authXSTS(xblToken);
-                            MinecraftAuthResponse mar = MicrosoftAuth.authMinecraft(xstsToken);
-                            OnlineProfile prof = MicrosoftAuth.getProfile(mar.getAccess_token());
-                            if (prof == null) throw new IOException("You don't seem to own the game anymore!");
-                            UserInfo i = (UserInfo) uname;
-                            i.setRefresh(resp.getRefresh_token());
-                            i.setSkin(prof.getSkinUrl());
-                            i.setToken(mar.getAccess_token());
-                            i.setUsername(prof.getName());
-                            i.setUuid(prof.getId());
-                        }
-                    } catch (Exception e2) {
-                        SwingUtils.showErrorDialog(pWin, "Error", e2,
-                                "An error occured while refreshing user information");
-                        return;
-                    }
-                }
+
                 final JSplitPane b = createServerPane(et, uname, new String(upassField.getPassword()),
                         ((AuthType) authType.getSelectedItem()), proxyObj);
                 final MinecraftClient client = clients.get(b);
@@ -5043,7 +5020,35 @@ public class Main {
 
                         final Runnable rr = () -> {
                             try {
-                                // TODO
+                                if (uname instanceof UserInfo) {
+                                    try {
+                                        SwingUtils.appendColoredText("Please wait, refreshing your account...\n", pane);
+                                        String refresh = ((UserInfo) uname).getRefresh();
+                                        OnlineProfile profile = MicrosoftAuth.getProfile(((UserInfo) uname).getToken());
+                                        if (profile == null) {
+                                            TokenResponse resp = MicrosoftAuth.refreshToken(refresh);
+                                            String xblToken = MicrosoftAuth.authXBL(resp);
+                                            XSTSResponse xstsToken = MicrosoftAuth.authXSTS(xblToken);
+                                            MinecraftAuthResponse mar = MicrosoftAuth.authMinecraft(xstsToken);
+                                            OnlineProfile prof = MicrosoftAuth.getProfile(mar.getAccess_token());
+                                            if (prof == null) throw new IOException(
+                                                    "You don't seem to own the game anymore! \nPlease try adding your account again in the Accounts Manager");
+                                            UserInfo i = (UserInfo) uname;
+                                            i.setRefresh(resp.getRefresh_token());
+                                            i.setSkin(prof.getSkinUrl());
+                                            i.setToken(mar.getAccess_token());
+                                            i.setUsername(prof.getName());
+                                            i.setUuid(prof.getId());
+                                        }
+                                    } catch (Exception e2) {
+                                        SwingUtils.showErrorDialog(pWin, "Error", e2,
+                                                "An error occured while refreshing user information. \nPlease try adding your account again in the Accounts Manager");
+                                        SwingUtils.appendColoredText(
+                                                "\u00a7cAn error occured while refreshing user information. \nPlease try adding your account again in the Accounts Manager",
+                                                pane);
+                                        return;
+                                    }
+                                }
                                 cl.connect(authType, ((uname instanceof UserInfo) ? (UserInfo) uname
                                         : new UserInfo(uname.toString(), uname.toString(), "", "", "")));
                                 discordIntegr.update();

@@ -435,7 +435,7 @@ public class MinecraftClient {
                 }
             }
 
-            playerPositionTimer.scheduleAtFixedRate(new TimerTask() {
+            if (connected) playerPositionTimer.scheduleAtFixedRate(new TimerTask() {
 
                 @Override
                 public void run() {

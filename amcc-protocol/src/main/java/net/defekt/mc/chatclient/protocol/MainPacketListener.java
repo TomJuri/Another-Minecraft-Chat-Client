@@ -159,7 +159,6 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                         break;
                     }
                 } catch (final Exception ex) {
-                    ex.printStackTrace();
                 }
 
                 cl.sendPacket(new ClientLoginEncryptionPacket(registry, encryptedSecret, encryptedToken));
