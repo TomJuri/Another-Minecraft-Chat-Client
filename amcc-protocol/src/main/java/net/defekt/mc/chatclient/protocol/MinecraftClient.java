@@ -286,8 +286,8 @@ public class MinecraftClient {
     public void connect(final AuthType auth, final String token, final String password) throws IOException {
         if (auth == AuthType.Microsoft)
             throw new IOException("Use MinecraftClient#connect(AuthType, UserInfo) when using Microsoft auth!");
-        
-        connect(auth, new UserInfo("", token, "", ""));
+
+        connect(auth, new UserInfo("", token, "", "", ""));
     }
 
     /**
@@ -297,18 +297,21 @@ public class MinecraftClient {
         this.authType = auth;
         switch (auth) {
             case Microsoft: {
+                this.username = ui.getUsername();
+                this.authID = ui.getUuid();
+                this.authToken = ui.getToken();
                 break;
             }
             case TheAltening: {
-                final MojangUser user = MojangAPI.authenticateUser(ui.getName(), "none", Hosts.ALTENING_AUTHSERVER);
+                final MojangUser user = MojangAPI.authenticateUser(ui.getUsername(), "none", Hosts.ALTENING_AUTHSERVER);
                 this.username = user.getUserName();
                 this.authID = user.getUserID();
                 this.authToken = user.getAccessToken();
                 break;
             }
-            default: 
+            default:
             case Offline: {
-                this.username = ui.getName();
+                this.username = ui.getUsername();
                 break;
             }
         }

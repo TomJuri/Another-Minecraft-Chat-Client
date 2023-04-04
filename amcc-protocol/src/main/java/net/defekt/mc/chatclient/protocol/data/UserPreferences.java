@@ -21,6 +21,7 @@ import java.util.Random;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import net.defekt.mc.chatclient.protocol.auth.UserInfo;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket.Status;
 
@@ -42,6 +43,7 @@ public class UserPreferences implements Serializable {
     private transient List<String> haltedPlugins;
     private List<String> deletedPlugins;
     private List<String> trustedAuthors;
+    private List<UserInfo> msUsers;
 
     public List<String> getTrustedAuthors() {
         if (trustedAuthors == null) trustedAuthors = new ArrayList<>();
@@ -669,5 +671,10 @@ public class UserPreferences implements Serializable {
 
     public void setAutoLoginCommand(final String autoLoginCommand) {
         this.autoLoginCommand = autoLoginCommand;
+    }
+
+    public List<UserInfo> getMsUsers() {
+        if (msUsers == null) msUsers = new ArrayList<>();
+        return msUsers;
     }
 }

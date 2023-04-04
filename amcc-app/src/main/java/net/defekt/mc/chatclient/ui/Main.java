@@ -264,7 +264,7 @@ public class Main {
     }
 
     public static void main(final String[] args) {
-
+        
         final List<Exception> preErrors = new ArrayList<>();
         PluginDescription[] descs = Plugins.listPlugins(true);
         Plugins.verify(e -> {

@@ -1,29 +1,41 @@
 package net.defekt.mc.chatclient.protocol.auth;
 
-public class UserInfo {
-    private final String id, name, token, refreshToken;
+import java.io.Serializable;
 
-    public UserInfo(String id, String name, String token, String refreshToken) {
+public class UserInfo implements Serializable {
+    private final String username, token, uuid, refresh, skin;
+
+    public UserInfo(String username, String token, String uuid, String refresh, String skin) {
         super();
-        this.id = id;
-        this.name = name;
+        this.username = username;
         this.token = token;
-        this.refreshToken = refreshToken;
+        this.uuid = uuid;
+        this.refresh = refresh;
+        this.skin = skin;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
     public String getToken() {
         return token;
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
+    public String getUuid() {
+        return uuid;
+    }
+
+    public String getRefresh() {
+        return refresh;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    @Override
+    public String toString() {
+        return username;
     }
 }
