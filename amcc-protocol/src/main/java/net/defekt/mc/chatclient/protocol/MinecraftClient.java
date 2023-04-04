@@ -28,6 +28,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import net.defekt.mc.chatclient.protocol.auth.UserInfo;
 import net.defekt.mc.chatclient.protocol.data.ChatMessages;
 import net.defekt.mc.chatclient.protocol.data.Hosts;
 import net.defekt.mc.chatclient.protocol.data.ItemWindowsFactory;
@@ -111,8 +112,8 @@ public class MinecraftClient {
     private ItemsWindow inventory = null;
 
     private Thread packetReaderThread = null;
-    private Thread playerPositionThread = null;
 
+    private final Timer playerPositionTimer = new Timer("positionTimer", true);
     private final Timer internalTickTimer = new Timer("tickTimer", true);
 
     private final ItemWindowsFactory windowsFactory = new ItemWindowsFactory();
@@ -211,9 +212,7 @@ public class MinecraftClient {
                 if (packetReaderThread != null) {
                     packetReaderThread.interrupt();
                 }
-                if (playerPositionThread != null) {
-                    playerPositionThread.interrupt();
-                }
+                playerPositionTimer.cancel();
             } catch (final IOException e) {
             }
         }
@@ -279,27 +278,44 @@ public class MinecraftClient {
      * 
      * @param auth     authentication type to use
      * @param token    an username or email
-     * @param password authentication password or null it offline
+     * @param password useless
      * @throws IOException
+     * 
+     * @deprecated Microsoft auth is NOT supported in this method.
      */
     public void connect(final AuthType auth, final String token, final String password) throws IOException {
+        if (auth == AuthType.Microsoft)
+            throw new IOException("Use MinecraftClient#connect(AuthType, UserInfo) when using Microsoft auth!");
+
+        connect(auth, new UserInfo("", token, "", "", ""));
+    }
+
+    /**
+     * Connect this client to the server
+     * 
+     * @param auth authentication type to use
+     * @param ui   user information
+     * @throws IOException
+     */
+    public void connect(final AuthType auth, final UserInfo ui) throws IOException {
         this.authType = auth;
         switch (auth) {
+            case Microsoft: {
+                this.username = ui.getUsername();
+                this.authID = ui.getUuid();
+                this.authToken = ui.getToken();
+                break;
+            }
             case TheAltening: {
-                final MojangUser user = MojangAPI.authenticateUser(token,
-                        auth == AuthType.TheAltening ? "none" : password,
-                        auth == AuthType.TheAltening ? Hosts.ALTENING_AUTHSERVER : Hosts.MOJANG_AUTHSERVER);
+                final MojangUser user = MojangAPI.authenticateUser(ui.getUsername(), "none", Hosts.ALTENING_AUTHSERVER);
                 this.username = user.getUserName();
                 this.authID = user.getUserID();
                 this.authToken = user.getAccessToken();
                 break;
             }
+            default:
             case Offline: {
-                this.username = token;
-                break;
-            }
-            default: {
-                this.username = token;
+                this.username = ui.getUsername();
                 break;
             }
         }
@@ -422,33 +438,27 @@ public class MinecraftClient {
                     e.printStackTrace();
                 }
             }
-            playerPositionThread = new Thread(new Runnable() {
+
+            if (connected) playerPositionTimer.scheduleAtFixedRate(new TimerTask() {
 
                 @Override
                 public void run() {
+                    if (x == Integer.MIN_VALUE) {
+                        return;
+                    }
                     try {
-                        while (true) {
-                            Thread.sleep(1000);
-                            if (x == Integer.MIN_VALUE) {
-                                continue;
-                            }
-                            try {
-                                if (soc.isClosed()) {
-                                    close();
-                                    return;
-                                }
-                                final Packet playerPositionPacket = PacketFactory.constructPacket(reg,
-                                        "ClientPlayerPositionPacket", x, y, z, true);
-                                sendPacket(playerPositionPacket);
-                            } catch (final Exception e) {
-                                e.printStackTrace();
-                            }
+                        if (soc.isClosed()) {
+                            close();
+                            return;
                         }
-                    } catch (final InterruptedException e) {
+                        final Packet playerPositionPacket = PacketFactory.constructPacket(reg,
+                                "ClientPlayerPositionPacket", x, y, z, true);
+                        sendPacket(playerPositionPacket);
+                    } catch (final Exception e) {
+                        e.printStackTrace();
                     }
                 }
-            });
-            playerPositionThread.start();
+            }, 1000, 1000);
 
             internalTickTimer.scheduleAtFixedRate(new TimerTask() {
 

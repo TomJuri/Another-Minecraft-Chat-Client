@@ -138,6 +138,7 @@ import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.MinecraftStat;
 import net.defekt.mc.chatclient.protocol.ProtocolEntry;
 import net.defekt.mc.chatclient.protocol.ProtocolNumber;
+import net.defekt.mc.chatclient.protocol.auth.UserInfo;
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule;
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule.EffectType;
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule.TriggerType;
@@ -184,6 +185,12 @@ import net.defekt.mc.chatclient.ui.swing.JVBoxPanel;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
 import net.defekt.mc.chatclient.ui.swing.TablePacketButton;
 import net.defekt.mc.chatclient.ui.swing.VersionFieldRenderer;
+import net.defekt.mc.chatclient.ui.swing.windows.AccountManagerWindow;
+import net.defekt.minecraft.auth.microsoft.MicrosoftAuth;
+import net.defekt.minecraft.auth.microsoft.MinecraftAuthResponse;
+import net.defekt.minecraft.auth.microsoft.OnlineProfile;
+import net.defekt.minecraft.auth.microsoft.TokenResponse;
+import net.defekt.minecraft.auth.microsoft.XSTSResponse;
 
 public class Main {
 
@@ -192,7 +199,7 @@ public class Main {
 
     public static BufferedImage logoImage = null;
 
-    public static final String VERSION = "1.10.0";
+    public static final String VERSION = "1.11.0";
     private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
 
     public static Font mcFont = Font.decode(null);
@@ -263,10 +270,9 @@ public class Main {
     }
 
     public static void main(final String[] args) {
+
         final List<Exception> preErrors = new ArrayList<>();
         PluginDescription[] descs = Plugins.listPlugins(true);
-        Plugins.verify(e -> {
-        }, descs);
         final List<String> deleted = up.getDeletedPlugins();
         final List<String> en = up.getEnabledPlugins();
         for (final PluginDescription desc : descs) {
@@ -970,7 +976,7 @@ public class Main {
                 unameClear.setFont(FontAwesome.FONT);
                 unameClear.setToolTipText(Messages.getString("Main.clearUnames"));
 
-                final JComboBox<String> unameField = new JComboBox<>();
+                final JComboBox<Object> unameField = new JComboBox<>();
                 unameClear.addActionListener(new ActionListener() {
 
                     @Override
@@ -984,6 +990,25 @@ public class Main {
                 for (final String uname : up.getLastUserNames()) {
                     unameField.addItem(uname);
                 }
+
+                authType.addActionListener(e2 -> {
+                    AuthType current = (AuthType) authType.getSelectedItem();
+                    if (current == AuthType.Microsoft) {
+                        unameClear.setEnabled(false);
+                        unameField.setEditable(false);
+                        unameField.removeAllItems();
+                        for (UserInfo ui : up.getMsUsers()) {
+                            unameField.addItem(ui);
+                        }
+                    } else {
+                        unameClear.setEnabled(true);
+                        unameField.setEditable(true);
+                        unameField.removeAllItems();
+                        for (final String uname : up.getLastUserNames()) {
+                            unameField.addItem(uname);
+                        }
+                    }
+                });
 
                 final JPasswordField upassField = new JPasswordField();
 
@@ -1137,10 +1162,18 @@ public class Main {
                             null);
                     if (response != JOptionPane.OK_OPTION) return;
 
-                    final String uname = (String) unameField.getSelectedItem();
-                    if (uname == null) {
+                    final Object unameObj = (Object) unameField.getSelectedItem();
+                    if (unameObj == null) {
                         continue;
                     }
+
+                    String uname;
+
+                    if (unameObj instanceof UserInfo)
+                        uname = ((UserInfo) unameObj).getUsername();
+                    else
+                        uname = unameObj.toString();
+
                     final String proxy = pxField.getText().replace(" ", "");
                     if (!proxy.isEmpty() && proxy.contains(":") && proxy.split(":").length == 2) {
                         try {
@@ -1152,8 +1185,8 @@ public class Main {
                             ex.printStackTrace();
                         }
                     }
-                    if (!up.isUsernameAlertSeen() && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)
-                            && ((AuthType) authType.getSelectedItem()) != AuthType.TheAltening) {
+                    if (((AuthType) authType.getSelectedItem()) != AuthType.TheAltening && !up.isUsernameAlertSeen()
+                            && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)) {
                         SwingUtils.playAsterisk();
                         final int alResp = JOptionPane.showOptionDialog(win,
                                 Messages.getString("Main.nickIllegalCharsWarning1") + uname
@@ -1176,7 +1209,8 @@ public class Main {
                     }
                 } while (true);
 
-                final String uname = (String) unameField.getSelectedItem();
+                final Object uname = unameField.getSelectedItem();
+
                 final JSplitPane b = createServerPane(et, uname, new String(upassField.getPassword()),
                         ((AuthType) authType.getSelectedItem()), proxyObj);
                 final MinecraftClient client = clients.get(b);
@@ -1215,7 +1249,7 @@ public class Main {
                     }
                 });
 
-                b2.add(new JLabel(" " + et.getName() + " (" + (String) unameField.getSelectedItem() + ")"));
+                b2.add(new JLabel(" " + et.getName() + " (" + unameField.getSelectedItem().toString() + ")"));
 
                 final JButton close = new JButton("x");
                 close.setMargin(new Insets(0, 5, 0, 5));
@@ -1238,7 +1272,7 @@ public class Main {
                 });
 
                 b2.add(close);
-                up.putUserName(uname);
+                if (authType.getSelectedItem() == AuthType.Offline) up.putUserName(uname.toString());
                 tabPane.setTabComponentAt(tabPane.getSelectedIndex(), b2);
             }
         };
@@ -1519,10 +1553,23 @@ public class Main {
             }
         };
 
+        JMenu accountsMenu = new JMenu(Messages.getString("accounts")) {
+            {
+                add(new JMenuItem(Messages.getString("accountsManager"), createIcon(FontAwesome.KEY, this)) {
+                    {
+                        addActionListener(e -> {
+                            showAccountManager();
+                        });
+                    }
+                });
+            }
+        };
+
         menuBar.add(fileMenu);
         menuBar.add(optionMenu);
         menuBar.add(helpMenu);
         menuBar.add(pluginsMenu);
+        menuBar.add(accountsMenu);
         win.setJMenuBar(menuBar);
         win.setContentPane(tabPane);
         win.pack();
@@ -1530,12 +1577,11 @@ public class Main {
         win.setVisible(true);
 
         if (preErrors.length > 0) SwingUtils.showErrorDialog(win, Messages.getString("ServerDetailsDialog.error"),
-                preErrors[0], "An error occured while enabling some of plugins!");
+                preErrors[0], Messages.getString("pluginsEnableError"));
 
         if (malicious.length > 0) {
             SwingUtils.showErrorDialog(win, Messages.getString("ServerDetailsDialog.error"), null,
-                    "One or more installed plugins were marked malicious and therefore not loaded. \n"
-                            + "Please see plugin manager for details.");
+                    Messages.getString("pluginsEnableErrorContent"));
         }
 
         guiComponents = new GUIComponents(win, menuBar, tabPane, trayIcon) {
@@ -1630,12 +1676,18 @@ public class Main {
 
     private GUIComponents guiComponents;
 
+    private void showAccountManager() {
+        AccountManagerWindow dw = new AccountManagerWindow(win);
+        SwingUtils.centerWindow(dw);
+        dw.setVisible(true);
+    }
+
     private void showPluginManager() {
         final JDialog od = new JDialog(win);
         od.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         od.setModal(true);
         od.setResizable(false);
-        od.setTitle("Plugin Manager");
+        od.setTitle(Messages.getString("pluginManager"));
 
         final JTabbedPane tabs = new JTabbedPane();
         final JPanel installedDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
@@ -1708,7 +1760,8 @@ public class Main {
                                 }
                             }
 
-                            if ((subject == null) || !subject.toLowerCase().contains(query.getQuery().toLowerCase())) continue;
+                            if ((subject == null) || !subject.toLowerCase().contains(query.getQuery().toLowerCase()))
+                                continue;
                         }
                         availableDisplay.add(new PluginDisplayPanel(guiComponents, plugin, true, desc -> {
                             final Component downloadingCpt = createLoadingCpt(
@@ -1980,9 +2033,9 @@ public class Main {
         maxPacketsOnListField.setValue(up.getMaxPacketsOnList());
         SwingUtils.alignSpinner(maxPacketsOnListField);
 
-        final JCheckBox disablePacketAnalyzer = new JCheckBox(Messages.getString("Main.optionsDisablePacketAnalyzer"));
-        disablePacketAnalyzer.setToolTipText(Messages.getString("Main.optionsDisablePacketAnalyzerTooltip"));
-        disablePacketAnalyzer.setSelected(up.isDisablePacketAnalyzer());
+        final JCheckBox enablePacketAnalyzer = new JCheckBox(Messages.getString("Main.optionsEnablePacketAnalyzer"));
+        enablePacketAnalyzer.setToolTipText(Messages.getString("Main.optionsDisablePacketAnalyzerTooltip"));
+        enablePacketAnalyzer.setSelected(up.isEnablePacketAnalyzer());
 
         pkBox.add(ignoreKAPackets);
         pkBox.add(ignoreDSPackets);
@@ -1992,7 +2045,7 @@ public class Main {
         pkBox.add(new JLabel(" "));
         pkBox.add(new JLabel(Messages.getString("Main.optionsAnalyzerMax")));
         pkBox.add(maxPacketsOnListField);
-        pkBox.add(disablePacketAnalyzer);
+        pkBox.add(enablePacketAnalyzer);
         pkBox.add(new JLabel(" "));
         pkBox.add(new JSeparator());
         pkBox.add(new JLabel(" "));
@@ -2533,7 +2586,7 @@ public class Main {
                 up.setDisableCustomButtons(customBtnsBox.isSelected());
                 up.setUiTheme((String) lafBox.getSelectedItem());
                 up.setMaxPacketsOnList((int) maxPacketsOnListField.getValue());
-                up.setDisablePacketAnalyzer(disablePacketAnalyzer.isSelected());
+                up.setEnablePacketAnalyzer(enablePacketAnalyzer.isSelected());
                 up.setResourcePackBehavior(rsBehavior);
                 up.setShowResourcePackMessages(showResourcePackMessages);
                 up.setResourcePackMessage(resourcePackMessage.replace("&", "\u00a7"));
@@ -2676,7 +2729,7 @@ public class Main {
     }
 
     @SuppressWarnings("unchecked")
-    private JSplitPane createServerPane(final ServerEntry entry, final String username, final String password,
+    private JSplitPane createServerPane(final ServerEntry entry, final Object uname, final String password,
             final AuthType authType, final Proxy proxy) {
         final JSplitPane fPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
@@ -2992,7 +3045,7 @@ public class Main {
                     rWin.dispose();
                     rWin = null;
                 }
-                rWin = new JFrame("Entity Radar: " + username + " (" + selectedServer.getName() + ")");
+                rWin = new JFrame("Entity Radar: " + uname + " (" + selectedServer.getName() + ")");
                 rWin.setAlwaysOnTop(true);
                 rWin.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -3273,13 +3326,13 @@ public class Main {
                     JPopupMenu entityMenu = new JPopupMenu("") {
                         {
                             add(currentEntityItem);
-                            add(new JMenuItem("Track Entity") {
+                            add(new JMenuItem(Messages.getString("radarTrackEntity")) {
                                 {
                                     setFont(getFont().deriveFont(Font.BOLD));
                                     addActionListener(lClick);
                                 }
                             });
-                            add(new JMenuItem("Attack Entity") {
+                            add(new JMenuItem(Messages.getString("radarAttackEntity")) {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
@@ -3289,7 +3342,7 @@ public class Main {
                                     });
                                 }
                             });
-                            add(new JMenuItem("Interact with Entity") {
+                            add(new JMenuItem(Messages.getString("radarInteractEntity")) {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
@@ -3303,7 +3356,7 @@ public class Main {
                                     });
                                 }
                             });
-                            add(new JMenuItem("Hit Entity") {
+                            add(new JMenuItem(Messages.getString("radarHitEntity")) {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
@@ -3390,7 +3443,7 @@ public class Main {
 
         final JTextField trackingField = new JTextField();
         trackingField.setEditable(false);
-        final JButton stopTrackingBtn = new JButton("Stop tracking");
+        final JButton stopTrackingBtn = new JButton(Messages.getString("radarStopTracking"));
         stopTrackingBtn.setEnabled(false);
         stopTrackingBtn.addActionListener(new ActionListener() {
             @Override
@@ -4482,7 +4535,7 @@ public class Main {
 
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
-                                if (packetAnalyzerPauseBtn.isSelected() || up.isDisablePacketAnalyzer()) return;
+                                if (packetAnalyzerPauseBtn.isSelected() || up.isEnablePacketAnalyzer()) return;
                                 if (packet instanceof BaseServerPlayerPositionAndLookPacket && !triedToLogin
                                         && password != null && !password.isEmpty()) {
                                     try {
@@ -4520,7 +4573,7 @@ public class Main {
 
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
-                                if (packetAnalyzerPauseBtn.isSelected() || up.isDisablePacketAnalyzer()) return;
+                                if (packetAnalyzerPauseBtn.isSelected() || !up.isEnablePacketAnalyzer()) return;
                                 outModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
                                         "S", packet.getClass().getSimpleName(), packet.getSize() });
                                 allModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
@@ -4743,7 +4796,7 @@ public class Main {
                                     if (ct == null) {
                                         continue;
                                     }
-                                    if (ct.getName().equals(entry.getHost() + "_" + entry.getName() + "_" + username)
+                                    if (ct.getName().equals(entry.getHost() + "_" + entry.getName() + "_" + uname)
                                             && (ct instanceof Box)) {
                                         final Box ctb = (Box) ct;
                                         for (final Component ctt : ctb.getComponents())
@@ -4963,8 +5016,50 @@ public class Main {
                         });
 
                         final Runnable rr = () -> {
+                            SwingUtilities.invokeLater(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    fPane.setDividerLocation(0.8);
+                                }
+                            });
                             try {
-                                cl.connect(authType, username, password);
+                                if (cl.getProtocol() >= ProtocolNumber.V1_19.protocol && authType != AuthType.Offline) {
+                                    SwingUtils.appendColoredText(
+                                            "\u00a7c" + Messages.getString("authUnavailable") + "\n", pane);
+                                    return;
+                                }
+                                if (uname instanceof UserInfo && authType == AuthType.Microsoft) {
+                                    try {
+                                        SwingUtils.appendColoredText(
+                                                "\u00a7e" + Messages.getString("authRefreshing") + "\n", pane);
+                                        String refresh = ((UserInfo) uname).getRefresh();
+                                        OnlineProfile profile = MicrosoftAuth.getProfile(((UserInfo) uname).getToken());
+                                        if (profile == null) {
+                                            TokenResponse resp = MicrosoftAuth.refreshToken(refresh);
+                                            String xblToken = MicrosoftAuth.authXBL(resp);
+                                            XSTSResponse xstsToken = MicrosoftAuth.authXSTS(xblToken);
+                                            MinecraftAuthResponse mar = MicrosoftAuth.authMinecraft(xstsToken);
+                                            OnlineProfile prof = MicrosoftAuth.getProfile(mar.getAccess_token());
+                                            if (prof == null)
+                                                throw new IOException(Messages.getString("authGameMissing"));
+                                            UserInfo i = (UserInfo) uname;
+                                            i.setRefresh(resp.getRefresh_token());
+                                            i.setSkin(prof.getSkinUrl());
+                                            i.setToken(mar.getAccess_token());
+                                            i.setUsername(prof.getName());
+                                            i.setUuid(prof.getId());
+                                        }
+                                    } catch (Exception e2) {
+                                        SwingUtils.showErrorDialog(pWin, "Error", e2,
+                                                Messages.getString("authRefreshingError"));
+                                        SwingUtils.appendColoredText(
+                                                "\u00a7c" + Messages.getString("authRefreshingErrorChat"), pane);
+                                        return;
+                                    }
+                                }
+                                cl.connect(authType, ((uname instanceof UserInfo) ? (UserInfo) uname
+                                        : new UserInfo(uname.toString(), uname.toString(), "", "", "")));
                                 discordIntegr.update();
 
                                 try {
