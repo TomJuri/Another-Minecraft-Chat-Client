@@ -273,8 +273,6 @@ public class Main {
 
         final List<Exception> preErrors = new ArrayList<>();
         PluginDescription[] descs = Plugins.listPlugins(true);
-        Plugins.verify(e -> {
-        }, descs);
         final List<String> deleted = up.getDeletedPlugins();
         final List<String> en = up.getEnabledPlugins();
         for (final PluginDescription desc : descs) {
@@ -5019,10 +5017,24 @@ public class Main {
                         });
 
                         final Runnable rr = () -> {
+                            SwingUtilities.invokeLater(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    fPane.setDividerLocation(0.8);
+                                }
+                            });
                             try {
-                                if (uname instanceof UserInfo) {
+                                if (cl.getProtocol() >= ProtocolNumber.V1_19.protocol && authType != AuthType.Offline) {
+                                    SwingUtils.appendColoredText(
+                                            "\u00a7cOnline authentication is not available for versions 1.19.x yet\nSorry...\n",
+                                            pane);
+                                    return;
+                                }
+                                if (uname instanceof UserInfo && authType == AuthType.Microsoft) {
                                     try {
-                                        SwingUtils.appendColoredText("Please wait, refreshing your account...\n", pane);
+                                        SwingUtils.appendColoredText("\u00a7ePlease wait, refreshing your account...\n",
+                                                pane);
                                         String refresh = ((UserInfo) uname).getRefresh();
                                         OnlineProfile profile = MicrosoftAuth.getProfile(((UserInfo) uname).getToken());
                                         if (profile == null) {
