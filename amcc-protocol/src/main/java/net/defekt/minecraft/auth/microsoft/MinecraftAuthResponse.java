@@ -1,5 +1,6 @@
 package net.defekt.minecraft.auth.microsoft;
 
+@SuppressWarnings("javadoc")
 public class MinecraftAuthResponse {
     private String username, access_token, token_type;
 

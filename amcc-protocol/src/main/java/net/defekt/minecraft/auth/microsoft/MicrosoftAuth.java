@@ -15,6 +15,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+/**
+ * Class containing all methods required for full Microsoft authentication with device code flow
+ * @author Defective4
+ *
+ */
+@SuppressWarnings("javadoc")
 public class MicrosoftAuth {
 
     private static final String CLIENT_ID = "829558a9-67cf-4682-bd15-e600d67ee289";

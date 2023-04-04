@@ -1,5 +1,6 @@
 package net.defekt.minecraft.auth.microsoft;
 
+@SuppressWarnings("javadoc")
 public class TokenResponse {
     private String token_type, scope, access_token, refresh_token, id_token;
     private int expires_in;

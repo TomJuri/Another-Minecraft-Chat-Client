@@ -2,6 +2,7 @@ package net.defekt.mc.chatclient.protocol.auth;
 
 import java.io.Serializable;
 
+@SuppressWarnings("javadoc")
 public class UserInfo implements Serializable {
     private String username, token, uuid, refresh, skin;
 

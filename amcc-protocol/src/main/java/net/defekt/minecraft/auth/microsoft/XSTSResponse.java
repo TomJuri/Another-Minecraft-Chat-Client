@@ -1,5 +1,6 @@
 package net.defekt.minecraft.auth.microsoft;
 
+@SuppressWarnings("javadoc")
 public class XSTSResponse {
     String token;
     String userhash;

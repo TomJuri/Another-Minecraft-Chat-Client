@@ -1,5 +1,6 @@
 package net.defekt.minecraft.auth.microsoft;
 
+@SuppressWarnings("javadoc")
 public class CodeResponse {
     private String device_code, user_code, verification_uri, message;
     private int expires_in, interval;

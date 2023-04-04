@@ -291,7 +291,11 @@ public class MinecraftClient {
     }
 
     /**
+     * Connect this client to the server
      * 
+     * @param auth authentication type to use
+     * @param ui   user information
+     * @throws IOException
      */
     public void connect(final AuthType auth, final UserInfo ui) throws IOException {
         this.authType = auth;

@@ -1,5 +1,6 @@
 package net.defekt.minecraft.auth.microsoft;
 
+@SuppressWarnings("javadoc")
 public class OnlineProfile {
     private final String id, name, skinUrl;
 
