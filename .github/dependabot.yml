@@ -12,3 +12,4 @@ updates:
     labels:
       - "update"
     open-pull-requests-limit: 3
+    target-branch: development
