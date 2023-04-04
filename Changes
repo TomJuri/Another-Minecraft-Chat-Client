@@ -1,17 +1,12 @@
 AMCC Change Log
-v1.10.0
-
-[+] Fixed:
-  - Server List Ping is now improved
+v1.11.0
 
 [+] Added:
-  - New preferences file format
-  - "About" information
-  - Missing sounds to remaining dialogs
-  - New servers tab - "Imported"!
-    It shows servers from your native Minecraft instalation (if one exists)
-  - Appearance "improvements" - icons and preferences makeover.
-    Feedback on this one will be appreciated!
+  - Microsoft authentication! (finally)
+    Microsoft authentication is now fully supported on versions 1.8-1.18.x
+  - Packet analyzer is now DISABLED by default
+  - Missing translation keys
 
-[-] Removed:
-  - Mojang authentication. Goodbye.
+[+] Fixed:
+  - Improved color formatting
+  - Performance improvements

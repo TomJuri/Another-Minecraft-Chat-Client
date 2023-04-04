@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.defekt.mc.chatclient.protocol.auth.UserInfo;
+import net.defekt.mc.chatclient.protocol.data.Messages;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.ui.Main;
 import net.defekt.mc.chatclient.ui.swing.JLinkLabel;
@@ -64,7 +65,7 @@ public class AccountManagerWindow extends JDialog {
         setContentPane(contentPane);
         contentPane.setLayout(null);
 
-        JLabel lblMicrosoftAccounts = new JLabel("Microsoft accounts");
+        JLabel lblMicrosoftAccounts = new JLabel(Messages.getString("microsoftAccounts"));
         lblMicrosoftAccounts.setHorizontalAlignment(SwingConstants.CENTER);
         lblMicrosoftAccounts.setBounds(5, 0, 424, 22);
         lblMicrosoftAccounts.setMaximumSize(new Dimension(0, 20));
@@ -103,15 +104,15 @@ public class AccountManagerWindow extends JDialog {
             }
         });
 
-        JButton btnNewButton = new JButton("Close");
+        JButton btnNewButton = new JButton(Messages.getString("Main.cancel"));
         btnNewButton.setBounds(335, 225, 89, 23);
         contentPane.add(btnNewButton);
 
-        JButton btnNewButton_1 = new JButton("Add account");
+        JButton btnNewButton_1 = new JButton(Messages.getString("addAccount"));
         btnNewButton_1.setBounds(195, 225, 130, 23);
         contentPane.add(btnNewButton_1);
 
-        JButton btnNewButton_2 = new JButton("Remove");
+        JButton btnNewButton_2 = new JButton(Messages.getString("remove"));
         btnNewButton_2.setBounds(96, 225, 89, 23);
         btnNewButton_2.setEnabled(false);
         contentPane.add(btnNewButton_2);
@@ -136,7 +137,8 @@ public class AccountManagerWindow extends JDialog {
             try {
                 code = MicrosoftAuth.retrieveCode();
             } catch (Exception e2) {
-                SwingUtils.showErrorDialog(AccountManagerWindow.this, "Error", e2, "An error occured...");
+                SwingUtils.showErrorDialog(AccountManagerWindow.this, Messages.getString("ServerDetailsDialog.error"),
+                        e2, Messages.getString("Main.errorTitle") + "...");
                 return;
             }
 
@@ -144,8 +146,8 @@ public class AccountManagerWindow extends JDialog {
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setModal(true);
 
-            JButton copyCode = new JButton("Copy Code");
-            JButton close = new JButton("Cancel");
+            JButton copyCode = new JButton(Messages.getString("copyCode"));
+            JButton close = new JButton(Messages.getString("Main.cancel"));
 
             copyCode.addActionListener(e2 -> {
                 StringSelection sel = new StringSelection(code.getUser_code());
@@ -163,16 +165,16 @@ public class AccountManagerWindow extends JDialog {
             prog.setIndeterminate(true);
 
             Box labels = Box.createHorizontalBox();
-            labels.add(new JLabel("Open "));
+            labels.add(new JLabel(Messages.getString("openInBrowser") + " "));
             labels.add(new JLinkLabel(code.getVerification_uri()));
-            labels.add(new JLabel(" in your browser and enter the code "));
+            labels.add(new JLabel(" " + Messages.getString("openInBrowser2") + " "));
             labels.add(new JTextField(code.getUser_code()) {
                 {
                     setFont(getFont().deriveFont(Font.BOLD));
                     setEditable(false);
                 }
             });
-            labels.add(new JLabel(" to add a new account."));
+            labels.add(new JLabel(" " + Messages.getString("openInBrowser3")));
 
             box.add(labels);
             box.add(prog);
@@ -185,15 +187,15 @@ public class AccountManagerWindow extends JDialog {
                 @Override
                 public void exception(Exception ex) {
                     dialog.dispose();
-                    SwingUtils.showErrorDialog(AccountManagerWindow.this, "Error", ex,
-                            "An error occured while adding the account.");
+                    SwingUtils.showErrorDialog(AccountManagerWindow.this,
+                            Messages.getString("ServerDetailsDialog.error"), ex, Messages.getString("accountAddError"));
                 }
 
                 @Override
                 public void errored(TokenErrorResponse resp) {
-                    JOptionPane.showOptionDialog(dialog, "Server responded with an error: " + resp.getResponse(),
+                    JOptionPane.showOptionDialog(dialog, Messages.getString("serverError") + " " + resp.getResponse(),
                             "Error", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null,
-                            new String[] { "Ok" }, 0);
+                            new String[] { Messages.getString("Main.ok") }, 0);
                     dialog.dispose();
                 }
 
@@ -225,7 +227,8 @@ public class AccountManagerWindow extends JDialog {
                         update(list);
                     } catch (Exception e2) {
                         dialog.dispose();
-                        SwingUtils.showErrorDialog(parent, "Error", e2, "An error occured while adding an account");
+                        SwingUtils.showErrorDialog(parent, Messages.getString("ServerDetailsDialog.error"), e2,
+                                Messages.getString("accountAddError"));
                     }
                 }
             });

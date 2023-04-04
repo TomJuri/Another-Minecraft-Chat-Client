@@ -327,7 +327,7 @@ public class UserPreferences implements Serializable {
     private boolean sendWindowClosePackets = true;
 
     private int maxPacketsOnList = 500;
-    private boolean disablePacketAnalyzer = false;
+    private boolean enablePacketAnalyzer = false;
 
     public static final File oldServerFile = new File("mcc.prefs");
     public static final File serverFile = new File("mcc.prefs.dat");
@@ -613,12 +613,12 @@ public class UserPreferences implements Serializable {
         this.maxPacketsOnList = maxPacketsOnList;
     }
 
-    public boolean isDisablePacketAnalyzer() {
-        return disablePacketAnalyzer;
+    public boolean isEnablePacketAnalyzer() {
+        return enablePacketAnalyzer;
     }
 
-    public void setDisablePacketAnalyzer(final boolean disablePacketAnalyzer) {
-        this.disablePacketAnalyzer = disablePacketAnalyzer;
+    public void setEnablePacketAnalyzer(final boolean enablePacketAnalyzer) {
+        this.enablePacketAnalyzer = enablePacketAnalyzer;
     }
 
     public String getUiTheme() {

@@ -199,7 +199,7 @@ public class Main {
 
     public static BufferedImage logoImage = null;
 
-    public static final String VERSION = "1.10.0";
+    public static final String VERSION = "1.11.0";
     private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
 
     public static Font mcFont = Font.decode(null);
@@ -1553,9 +1553,9 @@ public class Main {
             }
         };
 
-        JMenu accountsMenu = new JMenu("Accounts") {
+        JMenu accountsMenu = new JMenu(Messages.getString("accounts")) {
             {
-                add(new JMenuItem("Account manager") {
+                add(new JMenuItem(Messages.getString("accountsManager")) {
                     {
                         addActionListener(e -> {
                             showAccountManager();
@@ -1563,7 +1563,7 @@ public class Main {
                     }
                 });
             }
-        }; // TODO translation
+        };
 
         menuBar.add(fileMenu);
         menuBar.add(optionMenu);
@@ -1577,12 +1577,11 @@ public class Main {
         win.setVisible(true);
 
         if (preErrors.length > 0) SwingUtils.showErrorDialog(win, Messages.getString("ServerDetailsDialog.error"),
-                preErrors[0], "An error occured while enabling some of plugins!");
+                preErrors[0], Messages.getString("pluginsEnableError"));
 
         if (malicious.length > 0) {
             SwingUtils.showErrorDialog(win, Messages.getString("ServerDetailsDialog.error"), null,
-                    "One or more installed plugins were marked malicious and therefore not loaded. \n"
-                            + "Please see plugin manager for details.");
+                    Messages.getString("pluginsEnableErrorContent"));
         }
 
         guiComponents = new GUIComponents(win, menuBar, tabPane, trayIcon) {
@@ -1677,7 +1676,7 @@ public class Main {
 
     private GUIComponents guiComponents;
 
-    private void showAccountManager() { // TODO account manager
+    private void showAccountManager() {
         AccountManagerWindow dw = new AccountManagerWindow(win);
         SwingUtils.centerWindow(dw);
         dw.setVisible(true);
@@ -1688,7 +1687,7 @@ public class Main {
         od.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         od.setModal(true);
         od.setResizable(false);
-        od.setTitle("Plugin Manager");
+        od.setTitle(Messages.getString("pluginManager"));
 
         final JTabbedPane tabs = new JTabbedPane();
         final JPanel installedDisplay = new JPanel(new GridLayout(0, 1, 0, 10));
@@ -2034,9 +2033,9 @@ public class Main {
         maxPacketsOnListField.setValue(up.getMaxPacketsOnList());
         SwingUtils.alignSpinner(maxPacketsOnListField);
 
-        final JCheckBox disablePacketAnalyzer = new JCheckBox(Messages.getString("Main.optionsDisablePacketAnalyzer"));
-        disablePacketAnalyzer.setToolTipText(Messages.getString("Main.optionsDisablePacketAnalyzerTooltip"));
-        disablePacketAnalyzer.setSelected(up.isDisablePacketAnalyzer());
+        final JCheckBox enablePacketAnalyzer = new JCheckBox(Messages.getString("Main.optionsEnablePacketAnalyzer"));
+        enablePacketAnalyzer.setToolTipText(Messages.getString("Main.optionsDisablePacketAnalyzerTooltip"));
+        enablePacketAnalyzer.setSelected(up.isEnablePacketAnalyzer());
 
         pkBox.add(ignoreKAPackets);
         pkBox.add(ignoreDSPackets);
@@ -2046,7 +2045,7 @@ public class Main {
         pkBox.add(new JLabel(" "));
         pkBox.add(new JLabel(Messages.getString("Main.optionsAnalyzerMax")));
         pkBox.add(maxPacketsOnListField);
-        pkBox.add(disablePacketAnalyzer);
+        pkBox.add(enablePacketAnalyzer);
         pkBox.add(new JLabel(" "));
         pkBox.add(new JSeparator());
         pkBox.add(new JLabel(" "));
@@ -2587,7 +2586,7 @@ public class Main {
                 up.setDisableCustomButtons(customBtnsBox.isSelected());
                 up.setUiTheme((String) lafBox.getSelectedItem());
                 up.setMaxPacketsOnList((int) maxPacketsOnListField.getValue());
-                up.setDisablePacketAnalyzer(disablePacketAnalyzer.isSelected());
+                up.setEnablePacketAnalyzer(enablePacketAnalyzer.isSelected());
                 up.setResourcePackBehavior(rsBehavior);
                 up.setShowResourcePackMessages(showResourcePackMessages);
                 up.setResourcePackMessage(resourcePackMessage.replace("&", "\u00a7"));
@@ -3327,13 +3326,13 @@ public class Main {
                     JPopupMenu entityMenu = new JPopupMenu("") {
                         {
                             add(currentEntityItem);
-                            add(new JMenuItem("Track Entity") {
+                            add(new JMenuItem(Messages.getString("radarTrackEntity")) {
                                 {
                                     setFont(getFont().deriveFont(Font.BOLD));
                                     addActionListener(lClick);
                                 }
                             });
-                            add(new JMenuItem("Attack Entity") {
+                            add(new JMenuItem(Messages.getString("radarAttackEntity")) {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
@@ -3343,7 +3342,7 @@ public class Main {
                                     });
                                 }
                             });
-                            add(new JMenuItem("Interact with Entity") {
+                            add(new JMenuItem(Messages.getString("radarInteractEntity")) {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
@@ -3357,7 +3356,7 @@ public class Main {
                                     });
                                 }
                             });
-                            add(new JMenuItem("Hit Entity") {
+                            add(new JMenuItem(Messages.getString("radarHitEntity")) {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
@@ -3444,7 +3443,7 @@ public class Main {
 
         final JTextField trackingField = new JTextField();
         trackingField.setEditable(false);
-        final JButton stopTrackingBtn = new JButton("Stop tracking");
+        final JButton stopTrackingBtn = new JButton(Messages.getString("radarStopTracking"));
         stopTrackingBtn.setEnabled(false);
         stopTrackingBtn.addActionListener(new ActionListener() {
             @Override
@@ -4536,7 +4535,7 @@ public class Main {
 
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
-                                if (packetAnalyzerPauseBtn.isSelected() || up.isDisablePacketAnalyzer()) return;
+                                if (packetAnalyzerPauseBtn.isSelected() || up.isEnablePacketAnalyzer()) return;
                                 if (packet instanceof BaseServerPlayerPositionAndLookPacket && !triedToLogin
                                         && password != null && !password.isEmpty()) {
                                     try {
@@ -4574,7 +4573,7 @@ public class Main {
 
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
-                                if (packetAnalyzerPauseBtn.isSelected() || up.isDisablePacketAnalyzer()) return;
+                                if (packetAnalyzerPauseBtn.isSelected() || !up.isEnablePacketAnalyzer()) return;
                                 outModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
                                         "S", packet.getClass().getSimpleName(), packet.getSize() });
                                 allModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
@@ -5027,14 +5026,13 @@ public class Main {
                             try {
                                 if (cl.getProtocol() >= ProtocolNumber.V1_19.protocol && authType != AuthType.Offline) {
                                     SwingUtils.appendColoredText(
-                                            "\u00a7cOnline authentication is not available for versions 1.19.x yet\nSorry...\n",
-                                            pane);
+                                            "\u00a7c" + Messages.getString("authUnavailable") + "\n", pane);
                                     return;
                                 }
                                 if (uname instanceof UserInfo && authType == AuthType.Microsoft) {
                                     try {
-                                        SwingUtils.appendColoredText("\u00a7ePlease wait, refreshing your account...\n",
-                                                pane);
+                                        SwingUtils.appendColoredText(
+                                                "\u00a7e" + Messages.getString("authRefreshing") + "\n", pane);
                                         String refresh = ((UserInfo) uname).getRefresh();
                                         OnlineProfile profile = MicrosoftAuth.getProfile(((UserInfo) uname).getToken());
                                         if (profile == null) {
@@ -5044,7 +5042,7 @@ public class Main {
                                             MinecraftAuthResponse mar = MicrosoftAuth.authMinecraft(xstsToken);
                                             OnlineProfile prof = MicrosoftAuth.getProfile(mar.getAccess_token());
                                             if (prof == null) throw new IOException(
-                                                    "You don't seem to own the game anymore! \nPlease try adding your account again in the Accounts Manager");
+                                                    Messages.getString("authGameMissing"));
                                             UserInfo i = (UserInfo) uname;
                                             i.setRefresh(resp.getRefresh_token());
                                             i.setSkin(prof.getSkinUrl());
@@ -5054,9 +5052,9 @@ public class Main {
                                         }
                                     } catch (Exception e2) {
                                         SwingUtils.showErrorDialog(pWin, "Error", e2,
-                                                "An error occured while refreshing user information. \nPlease try adding your account again in the Accounts Manager");
+                                                Messages.getString("authRefreshingError"));
                                         SwingUtils.appendColoredText(
-                                                "\u00a7cAn error occured while refreshing user information. \nPlease try adding your account again in the Accounts Manager",
+                                                "\u00a7c"+Messages.getString("authRefreshingErrorChat"),
                                                 pane);
                                         return;
                                     }
