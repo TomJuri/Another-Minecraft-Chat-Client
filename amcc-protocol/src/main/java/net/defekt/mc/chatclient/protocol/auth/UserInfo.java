@@ -3,7 +3,7 @@ package net.defekt.mc.chatclient.protocol.auth;
 import java.io.Serializable;
 
 public class UserInfo implements Serializable {
-    private final String username, token, uuid, refresh, skin;
+    private String username, token, uuid, refresh, skin;
 
     public UserInfo(String username, String token, String uuid, String refresh, String skin) {
         super();
@@ -11,6 +11,26 @@ public class UserInfo implements Serializable {
         this.token = token;
         this.uuid = uuid;
         this.refresh = refresh;
+        this.skin = skin;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public void setRefresh(String refresh) {
+        this.refresh = refresh;
+    }
+
+    public void setSkin(String skin) {
         this.skin = skin;
     }
 
