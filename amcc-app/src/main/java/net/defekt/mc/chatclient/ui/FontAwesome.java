@@ -43,6 +43,8 @@ public class FontAwesome {
     public static final String BUG = "\uf188";
     public static final String INFO = "\uf05a";
     public static final String COPY = "\uf0c5";
+    public static final String PLUS = "\uf067";
+    public static final String MINUS = "\uf068";
 
     // Brands
 

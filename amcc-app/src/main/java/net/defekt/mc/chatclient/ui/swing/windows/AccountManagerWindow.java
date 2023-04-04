@@ -31,6 +31,7 @@ import javax.swing.event.ListSelectionListener;
 import net.defekt.mc.chatclient.protocol.auth.UserInfo;
 import net.defekt.mc.chatclient.protocol.data.Messages;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
+import net.defekt.mc.chatclient.ui.FontAwesome;
 import net.defekt.mc.chatclient.ui.Main;
 import net.defekt.mc.chatclient.ui.swing.JLinkLabel;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
@@ -104,15 +105,18 @@ public class AccountManagerWindow extends JDialog {
             }
         });
 
-        JButton btnNewButton = new JButton(Messages.getString("Main.cancel"));
+        JButton btnNewButton = new JButton(Messages.getString("Main.cancel"),
+                FontAwesome.createIcon(FontAwesome.X, this));
         btnNewButton.setBounds(335, 225, 89, 23);
         contentPane.add(btnNewButton);
 
-        JButton btnNewButton_1 = new JButton(Messages.getString("addAccount"));
+        JButton btnNewButton_1 = new JButton(Messages.getString("addAccount"),
+                FontAwesome.createIcon(FontAwesome.PLUS, this));
         btnNewButton_1.setBounds(195, 225, 130, 23);
         contentPane.add(btnNewButton_1);
 
-        JButton btnNewButton_2 = new JButton(Messages.getString("remove"));
+        JButton btnNewButton_2 = new JButton(Messages.getString("remove"),
+                FontAwesome.createIcon(FontAwesome.MINUS, this));
         btnNewButton_2.setBounds(96, 225, 89, 23);
         btnNewButton_2.setEnabled(false);
         contentPane.add(btnNewButton_2);
@@ -146,8 +150,10 @@ public class AccountManagerWindow extends JDialog {
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setModal(true);
 
-            JButton copyCode = new JButton(Messages.getString("copyCode"));
-            JButton close = new JButton(Messages.getString("Main.cancel"));
+            JButton copyCode = new JButton(Messages.getString("copyCode"),
+                    FontAwesome.createIcon(FontAwesome.COPY, this));
+            JButton close = new JButton(Messages.getString("Main.cancel"),
+                    FontAwesome.createIcon(FontAwesome.X, this));
 
             copyCode.addActionListener(e2 -> {
                 StringSelection sel = new StringSelection(code.getUser_code());
@@ -202,6 +208,8 @@ public class AccountManagerWindow extends JDialog {
                 @Override
                 public void authed(TokenResponse resp) {
                     try {
+                        close.setEnabled(false);
+                        copyCode.setEnabled(false);
                         labels.removeAll();
                         JLabel lb = new JLabel("Authenticating with Xbox Live...");
                         labels.add(lb);

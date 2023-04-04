@@ -1555,7 +1555,7 @@ public class Main {
 
         JMenu accountsMenu = new JMenu(Messages.getString("accounts")) {
             {
-                add(new JMenuItem(Messages.getString("accountsManager")) {
+                add(new JMenuItem(Messages.getString("accountsManager"), createIcon(FontAwesome.KEY, this)) {
                     {
                         addActionListener(e -> {
                             showAccountManager();
@@ -5041,8 +5041,8 @@ public class Main {
                                             XSTSResponse xstsToken = MicrosoftAuth.authXSTS(xblToken);
                                             MinecraftAuthResponse mar = MicrosoftAuth.authMinecraft(xstsToken);
                                             OnlineProfile prof = MicrosoftAuth.getProfile(mar.getAccess_token());
-                                            if (prof == null) throw new IOException(
-                                                    Messages.getString("authGameMissing"));
+                                            if (prof == null)
+                                                throw new IOException(Messages.getString("authGameMissing"));
                                             UserInfo i = (UserInfo) uname;
                                             i.setRefresh(resp.getRefresh_token());
                                             i.setSkin(prof.getSkinUrl());
@@ -5054,8 +5054,7 @@ public class Main {
                                         SwingUtils.showErrorDialog(pWin, "Error", e2,
                                                 Messages.getString("authRefreshingError"));
                                         SwingUtils.appendColoredText(
-                                                "\u00a7c"+Messages.getString("authRefreshingErrorChat"),
-                                                pane);
+                                                "\u00a7c" + Messages.getString("authRefreshingErrorChat"), pane);
                                         return;
                                     }
                                 }

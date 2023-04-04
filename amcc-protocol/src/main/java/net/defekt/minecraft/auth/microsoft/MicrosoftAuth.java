@@ -16,7 +16,9 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 /**
- * Class containing all methods required for full Microsoft authentication with device code flow
+ * Class containing all methods required for full Microsoft authentication with
+ * device code flow
+ * 
  * @author Defective4
  *
  */
@@ -63,8 +65,25 @@ public class MicrosoftAuth {
         }
     }
 
+    private static Timer timer;
+
+    public static void cancelCodeAuth() {
+        if (timer != null) {
+            try {
+                timer.cancel();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void authenticateCode(CodeResponse response, TokenCallback callback) {
-        Timer timer = new Timer(false);
+        if (timer != null) try {
+            timer.cancel();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        timer = new Timer(false);
         timer.scheduleAtFixedRate(new TimerTask() {
 
             @Override
