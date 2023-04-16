@@ -106,7 +106,7 @@ It started as a simple command line chat client and was quickly wrapped in a GUI
 Now my main goal is to implement as many features from Minecraft's original protocol as I can
 without using any other third-party libraries.
 
-# :heart: Sponsors ([Sponsor this project[(https://github.com/sponsors/Defective4))
+# :heart: Sponsors ([Sponsor this project](https://github.com/sponsors/Defective4))
 - [Swofty](https://github.com/Swofty-Developments) - Thank you!
 
 ## Current translations (see [wiki](https://github.com/Defective4/Another-Minecraft-Chat-Client/wiki/Features#translations))
