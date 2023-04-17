@@ -955,7 +955,7 @@ public class Main {
                 final JTabbedPane userTabs = new JTabbedPane();
                 final JVBoxPanel box = new JVBoxPanel();
 
-                final JComboBox<AuthType> authType = new JComboBox<AuthType>(AuthType.values());
+                final JComboBox<AuthType> authType = new JComboBox<AuthType>(AuthType.valuesX());
 
                 box.add(new JLabel(Messages.getString("Main.selectAuthType") + ":") {
                     {
@@ -1185,7 +1185,7 @@ public class Main {
                             ex.printStackTrace();
                         }
                     }
-                    if (((AuthType) authType.getSelectedItem()) != AuthType.TheAltening && !up.isUsernameAlertSeen()
+                    if (!up.isUsernameAlertSeen()
                             && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)) {
                         SwingUtils.playAsterisk();
                         final int alResp = JOptionPane.showOptionDialog(win,
