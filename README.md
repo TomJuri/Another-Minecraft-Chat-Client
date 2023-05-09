@@ -34,7 +34,7 @@ AMCC is a GUI application that lets you join a Minecraft server and chat freely 
 * :electric_plug: Easily extensible via plugins!
 
 # Downloads
-You can download latest version of AMCC along with plugin and protocol API on the [https://github.com/Defective4/Another-Minecraft-Chat-Client/releases](releases) page.
+You can download latest version of AMCC along with plugin and protocol API on the [releases](https://github.com/Defective4/Another-Minecraft-Chat-Client/releases) page.
 
 # Using the Plugin API
 You can include our Plugin API in your project by:
