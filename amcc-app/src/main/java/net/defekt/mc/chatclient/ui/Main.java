@@ -4535,7 +4535,7 @@ public class Main {
 
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
-                                if (packetAnalyzerPauseBtn.isSelected() || up.isEnablePacketAnalyzer()) return;
+                                if (packetAnalyzerPauseBtn.isSelected() || !up.isEnablePacketAnalyzer()) return;
                                 if (packet instanceof BaseServerPlayerPositionAndLookPacket && !triedToLogin
                                         && password != null && !password.isEmpty()) {
                                     try {
