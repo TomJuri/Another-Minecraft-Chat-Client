@@ -1,15 +1,14 @@
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+import java.io.IOException;
+
 /**
  * Sent by server when client has successfully joined the game
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerJoinGamePacket extends Packet {
 
@@ -17,7 +16,7 @@ public class ServerJoinGamePacket extends Packet {
 
     /**
      * Constructs {@link ServerJoinGamePacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown
@@ -29,7 +28,7 @@ public class ServerJoinGamePacket extends Packet {
 
     /**
      * Get player's entity ID
-     * 
+     *
      * @return entity ID
      */
     public int getEntityID() {

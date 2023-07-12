@@ -1,16 +1,14 @@
 package net.defekt.mc.chatclient.api.ui;
 
-import java.awt.TrayIcon;
-
-import javax.swing.JSplitPane;
-
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * An abstract adapter class for {@link UserActionListener}
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public abstract class UserActionAdapter implements UserActionListener {
 

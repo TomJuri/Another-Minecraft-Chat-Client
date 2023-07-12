@@ -5,15 +5,14 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.BaseClientLoginRequestPac
 
 /**
  * Sent by client to start login process
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ClientLoginRequestPacket extends BaseClientLoginRequestPacket {
 
     /**
      * Constructs new {@link ClientLoginRequestPacket}
-     * 
+     *
      * @param reg      packet registry used to contruct this packet
      * @param username player's username
      */

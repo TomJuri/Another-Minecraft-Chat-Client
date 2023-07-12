@@ -1,40 +1,38 @@
 package net.defekt.mc.chatclient.protocol.data;
 
-import java.io.Serializable;
-import java.util.UUID;
-
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerListItemPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPlayerListItemPacket;
 
+import java.io.Serializable;
+import java.util.UUID;
+
 /**
  * A container used to store information about a player
- * 
+ *
+ * @author Defective4
  * @see BaseServerPlayerListItemPacket
  * @see ServerPlayerListItemPacket
  * @see net.defekt.mc.chatclient.protocol.packets.v1_19.clientbound.play.ServerPlayerListItemPacket
- * @author Defective4
- *
  */
 public class PlayerInfo implements Serializable {
     private static final long serialVersionUID = -1040109725883178962L;
 
     private final String name;
     private final String displayName;
-    private String texture;
     private final int ping;
     private final UUID uuid;
+    private String texture;
 
     /**
      * Create Player Info object
-     * 
+     *
      * @param name        player's real name
      * @param texture     player's skin url, may be null
      * @param displayName player's display name
      * @param ping        player ping
      * @param uuid        player's UUID
      */
-    public PlayerInfo(final String name, final String texture, final String displayName, final int ping,
-            final UUID uuid) {
+    public PlayerInfo(final String name, final String texture, final String displayName, final int ping, final UUID uuid) {
         this.displayName = displayName;
         this.name = name;
         this.texture = texture;
@@ -44,7 +42,7 @@ public class PlayerInfo implements Serializable {
 
     /**
      * Get player's real name
-     * 
+     *
      * @return player's real name
      */
     public String getName() {
@@ -53,7 +51,7 @@ public class PlayerInfo implements Serializable {
 
     /**
      * Get player's display name
-     * 
+     *
      * @return player's display name
      */
     public String getDisplayName() {
@@ -62,7 +60,7 @@ public class PlayerInfo implements Serializable {
 
     /**
      * Get player's skin texture URL
-     * 
+     *
      * @return player's skin url, "default" if none
      */
     public String getTexture() {
@@ -70,8 +68,17 @@ public class PlayerInfo implements Serializable {
     }
 
     /**
+     * Set player's texture
+     *
+     * @param texture player's texture
+     */
+    public void setTexture(final String texture) {
+        this.texture = texture;
+    }
+
+    /**
      * Get player's ping
-     * 
+     *
      * @return player's ping
      */
     public int getPing() {
@@ -80,19 +87,10 @@ public class PlayerInfo implements Serializable {
 
     /**
      * Get player's UUID
-     * 
+     *
      * @return player's UUID
      */
     public UUID getUUID() {
         return uuid;
-    }
-
-    /**
-     * Set player's texture
-     * 
-     * @param texture player's texture
-     */
-    public void setTexture(final String texture) {
-        this.texture = texture;
     }
 }

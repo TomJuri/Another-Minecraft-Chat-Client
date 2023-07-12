@@ -8,10 +8,9 @@ import net.defekt.mc.chatclient.protocol.packets.Packet;
  * All methods of this class are empty by default.<br>
  * For easier packet type checking and overall easier usage, please see
  * {@link AnnotatedMinecraftPacketListener}
- * 
- * @see AnnotatedMinecraftPacketListener
- * @author Defective4
  *
+ * @author Defective4
+ * @see AnnotatedMinecraftPacketListener
  */
 public abstract class MinecraftPacketAdapter implements MinecraftPacketListener {
 

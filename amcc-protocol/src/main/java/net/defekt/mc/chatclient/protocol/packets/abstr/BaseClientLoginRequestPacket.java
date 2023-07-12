@@ -5,9 +5,8 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
 /**
  * Base class for all serverbound client login request packets
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class BaseClientLoginRequestPacket extends Packet {
 
@@ -18,7 +17,7 @@ public class BaseClientLoginRequestPacket extends Packet {
 
     /**
      * Default constructor
-     * 
+     *
      * @param reg
      * @param name
      */

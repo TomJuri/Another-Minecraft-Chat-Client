@@ -1,17 +1,16 @@
 package net.defekt.mc.chatclient.protocol.data;
 
+import net.defekt.mc.chatclient.protocol.MinecraftStat;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.defekt.mc.chatclient.protocol.MinecraftStat;
-
 /**
  * Stores information about server's status
- * 
- * @see MinecraftStat
- * @author Defective4
  *
+ * @author Defective4
+ * @see MinecraftStat
  */
 public class StatusInfo implements Serializable {
     private static final long serialVersionUID = -5082589117119994307L;
@@ -20,14 +19,14 @@ public class StatusInfo implements Serializable {
     private final int protocol;
     private final String versionName;
     private final String description;
-    private String icon;
     private final String modType;
     private final List<ModInfo> modList;
     private final String[] playersList;
+    private String icon;
 
     /**
      * Constructs status info object
-     * 
+     *
      * @param description server's MOTD
      * @param online      online players count
      * @param max         max players
@@ -40,9 +39,7 @@ public class StatusInfo implements Serializable {
      *                    null, or empty.
      * @param players     list of players playing on this server
      */
-    public StatusInfo(final String description, final int online, final int max, final String version,
-            final int protocol, final String icon, final String modType, final List<ModInfo> modList,
-            final String... players) {
+    public StatusInfo(final String description, final int online, final int max, final String version, final int protocol, final String icon, final String modType, final List<ModInfo> modList, final String... players) {
         this.description = description;
         this.onlinePlayers = online;
         this.maxPlayers = max;
@@ -56,7 +53,7 @@ public class StatusInfo implements Serializable {
 
     /**
      * Get online players count
-     * 
+     *
      * @return online players count
      */
     public int getOnlinePlayers() {
@@ -65,7 +62,7 @@ public class StatusInfo implements Serializable {
 
     /**
      * Get max players
-     * 
+     *
      * @return max players
      */
     public int getMaxPlayers() {
@@ -74,7 +71,7 @@ public class StatusInfo implements Serializable {
 
     /**
      * Get server's protocol
-     * 
+     *
      * @return server's protocol
      */
     public int getProtocol() {
@@ -83,7 +80,7 @@ public class StatusInfo implements Serializable {
 
     /**
      * Get server's version name
-     * 
+     *
      * @return version name
      */
     public String getVersionName() {
@@ -92,7 +89,7 @@ public class StatusInfo implements Serializable {
 
     /**
      * Get server's motd
-     * 
+     *
      * @return server's motd
      */
     public String getDescription() {
@@ -101,7 +98,7 @@ public class StatusInfo implements Serializable {
 
     /**
      * Get server icon
-     * 
+     *
      * @return server icon icon encoded as Base64 string
      */
     public String getIcon() {
@@ -111,7 +108,7 @@ public class StatusInfo implements Serializable {
 
     /**
      * Set server icon
-     * 
+     *
      * @param icon server icon encoded as Base64 string
      */
     public void setIcon(final String icon) {

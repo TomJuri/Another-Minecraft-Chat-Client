@@ -5,9 +5,8 @@ import java.util.UUID;
 /**
  * This class is used to store information about an entity sent to client by
  * server
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class Entity {
     private final UUID uid;
@@ -18,7 +17,7 @@ public class Entity {
 
     /**
      * Default constructor
-     * 
+     *
      * @param uid  entity's unique ID
      * @param type entity type
      * @param x    entity's X coordinate
@@ -36,7 +35,7 @@ public class Entity {
 
     /**
      * Get entity's UID
-     * 
+     *
      * @return entity UID
      */
     public UUID getUid() {
@@ -45,7 +44,7 @@ public class Entity {
 
     /**
      * Get entity type
-     * 
+     *
      * @return entity type
      */
     public int getType() {
@@ -54,7 +53,7 @@ public class Entity {
 
     /**
      * Get entity's X Coordinate
-     * 
+     *
      * @return X coordinate
      */
     public double getX() {
@@ -62,26 +61,8 @@ public class Entity {
     }
 
     /**
-     * Get entity's Y Coordinate
-     * 
-     * @return Y coordinate
-     */
-    public double getY() {
-        return y;
-    }
-
-    /**
-     * Get entity's Z Coordinate
-     * 
-     * @return Z coordinate
-     */
-    public double getZ() {
-        return z;
-    }
-
-    /**
      * Set entity's X position
-     * 
+     *
      * @param x new X position
      */
     public void setX(final double x) {
@@ -89,8 +70,17 @@ public class Entity {
     }
 
     /**
+     * Get entity's Y Coordinate
+     *
+     * @return Y coordinate
+     */
+    public double getY() {
+        return y;
+    }
+
+    /**
      * Set entity's Y position
-     * 
+     *
      * @param y new Y position
      */
     public void setY(final double y) {
@@ -98,8 +88,17 @@ public class Entity {
     }
 
     /**
+     * Get entity's Z Coordinate
+     *
+     * @return Z coordinate
+     */
+    public double getZ() {
+        return z;
+    }
+
+    /**
      * Set entity's Z position
-     * 
+     *
      * @param z new Z position
      */
     public void setZ(final double z) {

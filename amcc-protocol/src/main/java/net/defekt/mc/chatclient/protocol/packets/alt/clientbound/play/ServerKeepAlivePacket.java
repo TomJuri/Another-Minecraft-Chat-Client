@@ -1,23 +1,22 @@
 package net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerKeepAlivePacket;
+
+import java.io.IOException;
 
 /**
  * An older version of
  * {@link net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerKeepAlivePacket}
  * packet used in protocol versions below 340
- * 
- * @see net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerKeepAlivePacket
- * @author Defective4
  *
+ * @author Defective4
+ * @see net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerKeepAlivePacket
  */
 public class ServerKeepAlivePacket extends BaseServerKeepAlivePacket {
     /**
      * Constructs new {@link ServerKeepAlivePacket}
-     * 
+     *
      * @param reg  packet registry used to contruct this packet
      * @param data packet data
      * @throws IOException never thrown

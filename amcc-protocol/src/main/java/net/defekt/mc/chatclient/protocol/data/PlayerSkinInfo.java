@@ -4,11 +4,10 @@ import java.awt.image.BufferedImage;
 
 /**
  * Stores info about player skin
- * 
+ *
+ * @author Defective4
  * @see PlayerSkinCache
  * @see BufferedImage
- * @author Defective4
- *
  */
 public class PlayerSkinInfo {
     private final BufferedImage img;
@@ -16,7 +15,7 @@ public class PlayerSkinInfo {
 
     /**
      * Constructs player skin information
-     * 
+     *
      * @param img player's skin image
      * @param url player's skin url
      */
@@ -27,7 +26,7 @@ public class PlayerSkinInfo {
 
     /**
      * Get skin image
-     * 
+     *
      * @return skin image
      */
     public BufferedImage getImg() {
@@ -36,7 +35,7 @@ public class PlayerSkinInfo {
 
     /**
      * Get skin URL
-     * 
+     *
      * @return skin URL
      */
     public String getUrl() {

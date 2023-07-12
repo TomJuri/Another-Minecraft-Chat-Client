@@ -5,17 +5,32 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
 /**
  * Sent by client when it performs an in-game action
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ClientPlayerDiggingPacket extends Packet {
 
     /**
-     * Actions enum
-     * 
-     * @author Defective4
+     * Constructs new {@link ClientPlayerDiggingPacket}
      *
+     * @param reg    packet registry used to construct this packet
+     * @param status action to perform
+     * @param x      action X
+     * @param y      action Y
+     * @param z      action Z
+     * @param face   action face
+     */
+    public ClientPlayerDiggingPacket(final PacketRegistry reg, final Status status, final Integer x, final Integer y, final Integer z, final Byte face) {
+        super(reg);
+        putVarInt(status.getStatus());
+        putLong(((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF));
+        putByte(face);
+    }
+
+    /**
+     * Actions enum
+     *
+     * @author Defective4
      */
     public static enum Status {
         /**
@@ -55,30 +70,12 @@ public class ClientPlayerDiggingPacket extends Packet {
 
         /**
          * Get status number
-         * 
+         *
          * @return status number
          */
         public int getStatus() {
             return status;
         }
-    }
-
-    /**
-     * Constructs new {@link ClientPlayerDiggingPacket}
-     * 
-     * @param reg    packet registry used to construct this packet
-     * @param status action to perform
-     * @param x      action X
-     * @param y      action Y
-     * @param z      action Z
-     * @param face   action face
-     */
-    public ClientPlayerDiggingPacket(final PacketRegistry reg, final Status status, final Integer x, final Integer y,
-            final Integer z, final Byte face) {
-        super(reg);
-        putVarInt(status.getStatus());
-        putLong(((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF));
-        putByte(face);
     }
 
 }

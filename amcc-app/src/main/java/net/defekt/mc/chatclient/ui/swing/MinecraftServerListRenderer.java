@@ -1,47 +1,34 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.Base64;
-
-import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
-
 import net.defekt.mc.chatclient.protocol.data.ChatColor;
 import net.defekt.mc.chatclient.protocol.data.Messages;
 import net.defekt.mc.chatclient.protocol.data.ServerEntry;
 import net.defekt.mc.chatclient.protocol.data.StatusInfo;
 import net.defekt.mc.chatclient.ui.Main;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Base64;
+
 /**
  * Custom cell renderer used in {@link JMinecraftServerList}.<br>
  * It is used to render contained servers and show information about them,
  * including motd, server name, player count, etc.
- * 
+ *
+ * @author Defective4
  * @see JMinecraftServerList
  * @see ServerEntry
- * 
- * @author Defective4
- *
  */
 public class MinecraftServerListRenderer extends DefaultListCellRenderer {
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("deprecation")
     @Override
-    public Component getListCellRendererComponent(final JList<? extends Object> list, final Object value,
-            final int index, final boolean isSelected, final boolean cellHasFocus) {
+    public Component getListCellRendererComponent(final JList<? extends Object> list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
 
         final ServerEntry entry = (ServerEntry) value;
         final Box serverBox = Box.createVerticalBox();
@@ -50,8 +37,7 @@ public class MinecraftServerListRenderer extends DefaultListCellRenderer {
         final JLabel name = new JLabel(" " + entry.getName());
         final JTextPane version = new JTextPane();
         version.setText("???");
-        final JLabel players = new JLabel(" " + Messages.getString("MinecraftServerListRenderer.serverListPlayersLabel")
-                + entry.getVersion() + ")");
+        final JLabel players = new JLabel(" " + Messages.getString("MinecraftServerListRenderer.serverListPlayersLabel") + entry.getVersion() + ")");
         final JTextPane description = new JTextPane();
         description.setText(" " + Messages.getString("MinecraftServerListRenderer.serverListStatusPinging"));
 
@@ -83,13 +69,10 @@ public class MinecraftServerListRenderer extends DefaultListCellRenderer {
         if (entry.getInfo() != null) {
             final StatusInfo inf = entry.getInfo();
             if (inf.getOnlinePlayers() != -1) {
-                players.setText(
-                        " " + Integer.toString(inf.getOnlinePlayers()) + "/" + Integer.toString(inf.getMaxPlayers())
-                                + " " + Messages.getString("MinecraftServerListRenderer.serverListPlayersLabel2")
-                                + entry.getVersion() + ")"
-                                + (inf.getModType() != null
-                                        ? " (" + Messages.getString("MinecraftServerListRenderer.modded") + ")"
-                                        : ""));
+                players.setText(" " + Integer.toString(inf.getOnlinePlayers()) + "/" + Integer.toString(inf.getMaxPlayers()) + " " + Messages.getString(
+                        "MinecraftServerListRenderer.serverListPlayersLabel2") + entry.getVersion() + ")" + (inf.getModType() != null ?
+                        " (" + Messages.getString("MinecraftServerListRenderer.modded") + ")" :
+                        ""));
             }
             description.setText("");
             SwingUtils.appendColoredText(" " + inf.getDescription().replace("\n", "\n "), description);

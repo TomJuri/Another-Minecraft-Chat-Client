@@ -1,15 +1,14 @@
 package net.defekt.mc.chatclient.protocol.packets.abstr;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+import java.io.IOException;
+
 /**
  * Base class for all entity relavie move packets.
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 @SuppressWarnings("javadoc")
 public class BaseServerEntityRelativeMovePacket extends Packet {
@@ -36,7 +35,7 @@ public class BaseServerEntityRelativeMovePacket extends Packet {
 
     /**
      * Default constructor
-     * 
+     *
      * @param reg
      * @param data
      * @throws IOException

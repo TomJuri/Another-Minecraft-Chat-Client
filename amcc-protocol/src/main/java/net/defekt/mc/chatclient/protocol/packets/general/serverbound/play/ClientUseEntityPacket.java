@@ -7,22 +7,7 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 @SuppressWarnings("javadoc")
 public class ClientUseEntityPacket extends Packet {
 
-    public enum UseType {
-        INTERACT(0), ATTACK(1);
-
-        private final int type;
-
-        private UseType(final int type) {
-            this.type = type;
-        }
-
-        public int getType() {
-            return type;
-        }
-    }
-
-    public ClientUseEntityPacket(final PacketRegistry reg, final Integer entityID, final UseType type,
-            final Boolean sneaking) {
+    public ClientUseEntityPacket(final PacketRegistry reg, final Integer entityID, final UseType type, final Boolean sneaking) {
         super(reg);
         putVarInt(entityID);
         putVarInt(type.getType());
@@ -34,6 +19,21 @@ public class ClientUseEntityPacket extends Packet {
             if (protocol > 735) {
                 putBoolean(sneaking);
             }
+        }
+    }
+
+    public enum UseType {
+        INTERACT(0),
+        ATTACK(1);
+
+        private final int type;
+
+        private UseType(final int type) {
+            this.type = type;
+        }
+
+        public int getType() {
+            return type;
         }
     }
 

@@ -1,17 +1,12 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Component;
-
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Simple {@link JPanel} extension with vertical {@link BoxLayout}
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 
 public class JVBoxPanel extends JPanel {

@@ -1,30 +1,31 @@
 package net.defekt.mc.chatclient.protocol.io;
 
+import dev.dewy.nbt.Nbt;
+import dev.dewy.nbt.api.Tag;
+import net.defekt.mc.chatclient.protocol.MinecraftClient;
+import net.defekt.mc.chatclient.protocol.data.ItemStack;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-import dev.dewy.nbt.Nbt;
-import dev.dewy.nbt.api.Tag;
-import net.defekt.mc.chatclient.protocol.MinecraftClient;
-import net.defekt.mc.chatclient.protocol.data.ItemStack;
-
 /**
  * An extension of {@link DataInputStream} with methods to read Minecraft's data
  * types
- * 
+ *
+ * @author Defective4
  * @see VarOutputStream
  * @see MinecraftClient
- * @author Defective4
- *
  */
 public class VarInputStream extends DataInputStream {
 
+    private final Nbt nbt = new Nbt();
+
     /**
      * Wrap an input stream in {@link VarInputStream}
-     * 
+     *
      * @param in input steam to wrap
      */
     public VarInputStream(final InputStream in) {
@@ -35,7 +36,7 @@ public class VarInputStream extends DataInputStream {
      * Read a string from stream<br>
      * This methods first reads VarInt indicating string lenght, and then it reads a
      * string
-     * 
+     *
      * @return read String
      * @throws IOException thrown when there was an error reading from stream
      */
@@ -50,7 +51,7 @@ public class VarInputStream extends DataInputStream {
      * Read a UUID from stream<br>
      * This method reads two {@link Long}s, the most and least significant one, and
      * creates {@link UUID} from them
-     * 
+     *
      * @return read UUIF
      * @throws IOException thrown when there was an error reading from stream
      */
@@ -64,7 +65,7 @@ public class VarInputStream extends DataInputStream {
      * Read a VarInt from stream.<br>
      * Snippet from
      * <a href="https://wiki.vg/Protocol#VarInt_and_VarLong">wiki.vg</a>
-     * 
+     *
      * @return read VarInt
      * @throws IOException thrown when there was an error reading from stream
      */
@@ -84,11 +85,9 @@ public class VarInputStream extends DataInputStream {
         return result;
     }
 
-    private final Nbt nbt = new Nbt();
-
     /**
      * Read item data from stream
-     * 
+     *
      * @param protocol protocol determining slot data format
      * @return read item stack
      * @throws IOException thrown when there was an error reading from stream

@@ -7,15 +7,14 @@ import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.Client
 /**
  * An older version of
  * {@link net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket}
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ClientResourcePackStatusPacket extends Packet {
 
     /**
      * Constructs new {@link ClientKeepAlivePacket}
-     * 
+     *
      * @param reg    packet registry used to construct this packet
      * @param hash   resource pack's hash
      * @param status resource pack's hash

@@ -5,15 +5,14 @@ import net.defekt.mc.chatclient.protocol.packets.abstr.BaseClientChatMessagePack
 
 /**
  * Sent by client when it's trying to send a chat message
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ClientChatMessagePacket extends BaseClientChatMessagePacket {
 
     /**
      * Constructs new {@link ClientChatMessagePacket}
-     * 
+     *
      * @param reg     packet registry used to construct this packet
      * @param message chat message
      */

@@ -2,9 +2,8 @@ package net.defekt.mc.chatclient.protocol.data;
 
 /**
  * Stores information from server query
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class QueryInfo {
     private final String motd;
@@ -15,15 +14,14 @@ public class QueryInfo {
 
     /**
      * Construct query information object
-     * 
+     *
      * @param motd         server motd
      * @param gamemode     server's gamemode, usually "SMP"
      * @param map          server's map
      * @param onlinePlayer online players
      * @param maxPlayers   maximum players
      */
-    public QueryInfo(final String motd, final String gamemode, final String map, final String onlinePlayer,
-            final String maxPlayers) {
+    public QueryInfo(final String motd, final String gamemode, final String map, final String onlinePlayer, final String maxPlayers) {
         super();
         this.motd = motd;
         this.gamemode = gamemode;
@@ -33,7 +31,6 @@ public class QueryInfo {
     }
 
     /**
-     * 
      * @return server's motd
      */
     public String getMotd() {
@@ -41,7 +38,6 @@ public class QueryInfo {
     }
 
     /**
-     * 
      * @return server's gamemode
      */
     public String getGamemode() {
@@ -49,7 +45,6 @@ public class QueryInfo {
     }
 
     /**
-     * 
      * @return server's map
      */
     public String getMap() {
@@ -57,7 +52,6 @@ public class QueryInfo {
     }
 
     /**
-     * 
      * @return online players
      */
     public String getOnlinePlayer() {
@@ -65,7 +59,6 @@ public class QueryInfo {
     }
 
     /**
-     * 
      * @return maximum players
      */
     public String getMaxPlayers() {

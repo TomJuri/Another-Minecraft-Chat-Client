@@ -1,16 +1,15 @@
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.login;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+
+import java.io.IOException;
 
 /**
  * An universal login response packet used by server to send a text message to
  * client
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerLoginResponsePacket extends Packet {
 
@@ -18,7 +17,7 @@ public class ServerLoginResponsePacket extends Packet {
 
     /**
      * Contructs {@link ServerLoginResponsePacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown
@@ -30,7 +29,7 @@ public class ServerLoginResponsePacket extends Packet {
 
     /**
      * Get message sent by server
-     * 
+     *
      * @return server message
      */
     public String getResponse() {

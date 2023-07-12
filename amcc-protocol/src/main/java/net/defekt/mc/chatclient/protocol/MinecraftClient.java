@@ -1,5 +1,24 @@
 package net.defekt.mc.chatclient.protocol;
 
+import net.defekt.mc.chatclient.protocol.auth.UserInfo;
+import net.defekt.mc.chatclient.protocol.data.*;
+import net.defekt.mc.chatclient.protocol.entity.Entity;
+import net.defekt.mc.chatclient.protocol.entity.Player;
+import net.defekt.mc.chatclient.protocol.event.ClientListener;
+import net.defekt.mc.chatclient.protocol.event.MinecraftPacketListener;
+import net.defekt.mc.chatclient.protocol.io.ListenerHashMap;
+import net.defekt.mc.chatclient.protocol.io.VarInputStream;
+import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
+import net.defekt.mc.chatclient.protocol.packets.*;
+import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerStatisticsPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientEntityActionPacket.EntityAction;
+import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseEntityPacket.UseType;
+
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,169 +28,72 @@ import java.net.Socket;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.Inflater;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-
-import net.defekt.mc.chatclient.protocol.auth.UserInfo;
-import net.defekt.mc.chatclient.protocol.data.ChatMessages;
-import net.defekt.mc.chatclient.protocol.data.Hosts;
-import net.defekt.mc.chatclient.protocol.data.ItemWindowsFactory;
-import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
-import net.defekt.mc.chatclient.protocol.data.Messages;
-import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
-import net.defekt.mc.chatclient.protocol.entity.Entity;
-import net.defekt.mc.chatclient.protocol.entity.Player;
-import net.defekt.mc.chatclient.protocol.event.ClientListener;
-import net.defekt.mc.chatclient.protocol.event.MinecraftPacketListener;
-import net.defekt.mc.chatclient.protocol.io.ListenerHashMap;
-import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
-import net.defekt.mc.chatclient.protocol.packets.HandshakePacket;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
-import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
-import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
-import net.defekt.mc.chatclient.protocol.packets.UnknownPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerStatisticsPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientEntityActionPacket.EntityAction;
-import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseEntityPacket.UseType;
 
 /**
  * MinecraftClient is Minecraft protocol implementation at IO level. It is
  * responsible for connecting to a Minecraft server and handling all data
  * received from it.
- * 
+ *
+ * @author Defective4
  * @see ClientListener
  * @see MinecraftStat
  * @see ProtocolNumber
- * @author Defective4
  */
 public class MinecraftClient {
 
+    private static final String notConnectedError = Messages.getString("MinecraftClient.clientErrorNotConnected");
     private final String host;
     private final int port;
     private final int protocol;
     private final PacketRegistry reg;
-
+    private final Map<Integer, Entity> storedEntities = new ConcurrentHashMap<>();
+    private final int cThreshold = -1;
+    private final Object lock = new Object();
+    private final ListenerHashMap<UUID, PlayerInfo> playersTabList = new ListenerHashMap<UUID, PlayerInfo>();
+    private final List<InternalPacketListener> packetListeners = new ArrayList<InternalPacketListener>();
+    private final List<InternalPacketListener> outPacketListeners = new ArrayList<InternalPacketListener>();
+    private final List<ClientListener> clientListeners = Collections.synchronizedList(new ArrayList<ClientListener>());
+    private final boolean forge;
+    private final Map<Integer, ItemsWindow> openWindows = new HashMap<Integer, ItemsWindow>();
+    private final Timer playerPositionTimer = new Timer("positionTimer", true);
+    private final Timer internalTickTimer = new Timer("tickTimer", true);
+    private final ItemWindowsFactory windowsFactory = new ItemWindowsFactory();
     private String username = "";
-
     private double x = Integer.MIN_VALUE;
     private double y = 0;
     private double z = 0;
     private float yaw = 0;
     private float pitch = 0;
-
     private int entityID = 0;
     private UUID uid = null;
-
-    private final Map<Integer, Entity> storedEntities = new ConcurrentHashMap<>();
     private int trackedEntity = -1;
     private boolean isTrackedAttacking = false;
-
     private Socket soc = null;
     private OutputStream os = null;
     private VarInputStream is = null;
-
     private boolean compression = false;
-    private final int cThreshold = -1;
-
     private boolean sneaking = false;
     private boolean sprinting = false;
-
-    private final Object lock = new Object();
-
     private long startDate = System.currentTimeMillis();
-
-    private static final String notConnectedError = Messages.getString("MinecraftClient.clientErrorNotConnected");
-
-    private final ListenerHashMap<UUID, PlayerInfo> playersTabList = new ListenerHashMap<UUID, PlayerInfo>();
-
-    private final List<InternalPacketListener> packetListeners = new ArrayList<InternalPacketListener>();
-    private final List<InternalPacketListener> outPacketListeners = new ArrayList<InternalPacketListener>();
-    private final List<ClientListener> clientListeners = Collections.synchronizedList(new ArrayList<ClientListener>());
-    private final boolean forge;
-
-    private final Map<Integer, ItemsWindow> openWindows = new HashMap<Integer, ItemsWindow>();
     private ItemsWindow inventory = null;
-
     private Thread packetReaderThread = null;
-
-    private final Timer playerPositionTimer = new Timer("positionTimer", true);
-    private final Timer internalTickTimer = new Timer("tickTimer", true);
-
-    private final ItemWindowsFactory windowsFactory = new ItemWindowsFactory();
-
-    /**
-     * Add a outbound packet listener to listen for sent packets
-     * 
-     * @param listener a packet listener implementation
-     */
-    public void addOutputPacketListener(final InternalPacketListener listener) {
-        outPacketListeners.add(listener);
-    }
-
-    /**
-     * Add a inbound packet listener to listen for sent packets
-     * 
-     * @param listener a packet listener implementation
-     */
-    public void addInputPacketListener(final InternalPacketListener listener) {
-        packetListeners.add(listener);
-    }
-
-    /**
-     * Add a client listener to receive client events
-     * 
-     * @param listener a client listener for receiving client updates
-     */
-    public void addClientListener(final ClientListener listener) {
-        clientListeners.add(listener);
-    }
-
-    /**
-     * Remove a client listener
-     * 
-     * @param listener client listener to remove
-     */
-    public void removeClientListener(final ClientListener listener) {
-        clientListeners.remove(listener);
-    }
-
-    /**
-     * Get a copy of client listener list
-     * 
-     * @param includeGlobal include listeners defined in {@link GlobalListeners}
-     * 
-     * @return list of client listeners added to this client
-     */
-    public List<ClientListener> getClientListeners(final boolean includeGlobal) {
-        final List<ClientListener> ls = new ArrayList<ClientListener>();
-        if (includeGlobal) Collections.addAll(ls, GlobalListeners.getClientListeners());
-        ls.addAll(clientListeners);
-        return ls;
-
-    }
+    private Proxy proxy = null;
+    private boolean connected = false;
+    private State state;
+    private Cipher eCipher = null;
+    private Cipher dCipher = null;
+    private boolean isEncrypted = false;
+    private String authID = "";
+    private String authToken = null;
+    private AuthType authType = AuthType.Offline;
+    private Thread movingThread = null;
 
     /**
      * Creates a new Minecraft Client ready to connect to specified server
-     * 
+     *
      * @param host     address of server to connect to
      * @param port     port of target server
      * @param protocol protocol that will be used to connect to server
@@ -181,8 +103,7 @@ public class MinecraftClient {
      *                     example when could not find a matching packet registry
      *                     implementation for specified protocol)
      */
-    public MinecraftClient(final String host, final int port, final int protocol, final boolean forge)
-            throws IOException {
+    public MinecraftClient(final String host, final int port, final int protocol, final boolean forge) throws IOException {
         this.host = host;
         this.port = port;
         this.protocol = protocol;
@@ -191,7 +112,55 @@ public class MinecraftClient {
         state = State.LOGIN;
     }
 
-    private Proxy proxy = null;
+    /**
+     * Add a outbound packet listener to listen for sent packets
+     *
+     * @param listener a packet listener implementation
+     */
+    public void addOutputPacketListener(final InternalPacketListener listener) {
+        outPacketListeners.add(listener);
+    }
+
+    /**
+     * Add a inbound packet listener to listen for sent packets
+     *
+     * @param listener a packet listener implementation
+     */
+    public void addInputPacketListener(final InternalPacketListener listener) {
+        packetListeners.add(listener);
+    }
+
+    /**
+     * Add a client listener to receive client events
+     *
+     * @param listener a client listener for receiving client updates
+     */
+    public void addClientListener(final ClientListener listener) {
+        clientListeners.add(listener);
+    }
+
+    /**
+     * Remove a client listener
+     *
+     * @param listener client listener to remove
+     */
+    public void removeClientListener(final ClientListener listener) {
+        clientListeners.remove(listener);
+    }
+
+    /**
+     * Get a copy of client listener list
+     *
+     * @param includeGlobal include listeners defined in {@link GlobalListeners}
+     * @return list of client listeners added to this client
+     */
+    public List<ClientListener> getClientListeners(final boolean includeGlobal) {
+        final List<ClientListener> ls = new ArrayList<ClientListener>();
+        if (includeGlobal) Collections.addAll(ls, GlobalListeners.getClientListeners());
+        ls.addAll(clientListeners);
+        return ls;
+
+    }
 
     /**
      * Closes this MinecraftClient
@@ -218,35 +187,26 @@ public class MinecraftClient {
         }
     }
 
-    private boolean connected = false;
-
-    private State state;
-
     /**
      * Set current client state. This method is used internally by
      * {@link MainPacketListener} bound to this client
-     * 
+     *
      * @param state next client state
      */
     protected void setCurrentState(final State state) {
         this.state = state;
     }
 
-    private Cipher eCipher = null;
-    private Cipher dCipher = null;
-    private boolean isEncrypted = false;
-
     /**
      * Used to enable encryption between client and server
-     * 
+     *
      * @param secret secret key to encrypt with
      * @throws InvalidKeyException
      * @throws NoSuchAlgorithmException
      * @throws NoSuchPaddingException
      * @throws InvalidAlgorithmParameterException
      */
-    protected void enableEncryption(final byte[] secret) throws InvalidKeyException, NoSuchAlgorithmException,
-            NoSuchPaddingException, InvalidAlgorithmParameterException {
+    protected void enableEncryption(final byte[] secret) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException {
         final SecretKey key = new SecretKeySpec(secret, "AES");
         eCipher = Cipher.getInstance("AES/CFB8/NoPadding");
         eCipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(secret));
@@ -259,13 +219,9 @@ public class MinecraftClient {
         isEncrypted = true;
     }
 
-    private String authID = "";
-    private String authToken = null;
-    private AuthType authType = AuthType.Offline;
-
     /**
      * Connect to server specified in constructor
-     * 
+     *
      * @param username username of connecting client
      * @throws IOException thrown when client was unable to connect to target server
      */
@@ -275,12 +231,11 @@ public class MinecraftClient {
 
     /**
      * Connect this client to the server
-     * 
+     *
      * @param auth     authentication type to use
      * @param token    an username or email
      * @param password useless
      * @throws IOException
-     * 
      * @deprecated Microsoft auth is NOT supported in this method.
      */
     public void connect(final AuthType auth, final String token, final String password) throws IOException {
@@ -292,7 +247,7 @@ public class MinecraftClient {
 
     /**
      * Connect this client to the server
-     * 
+     *
      * @param auth authentication type to use
      * @param ui   user information
      * @throws IOException
@@ -334,12 +289,18 @@ public class MinecraftClient {
 
             this.os = soc.getOutputStream();
             this.is = new VarInputStream(soc.getInputStream());
-            inventory = windowsFactory.createWindow(Messages.getString("MinecraftClient.clientInventoryName"), 46, 0,
-                    this, reg);
+            inventory = windowsFactory.createWindow(Messages.getString("MinecraftClient.clientInventoryName"),
+                                                    46,
+                                                    0,
+                                                    this,
+                                                    reg);
             packetListeners.add(new MainPacketListener(this));
 
-            final Packet handshake = new HandshakePacket(reg, protocol,
-                    host + (forge ? (protocol <= 340 ? "\0FML\0" : "") : ""), port, 2);
+            final Packet handshake = new HandshakePacket(reg,
+                                                         protocol,
+                                                         host + (forge ? (protocol <= 340 ? "\0FML\0" : "") : ""),
+                                                         port,
+                                                         2);
             sendPacket(handshake);
 
             final Packet login = PacketFactory.constructPacket(reg, "ClientLoginRequestPacket", username);
@@ -421,7 +382,7 @@ public class MinecraftClient {
                             }
                         }
                     } catch (final Exception e) {
-//                        e.printStackTrace();
+                        //                        e.printStackTrace();
                         for (final ClientListener cl : getClientListeners(true)) {
                             cl.disconnected(e.toString(), MinecraftClient.this);
                         }
@@ -452,7 +413,11 @@ public class MinecraftClient {
                             return;
                         }
                         final Packet playerPositionPacket = PacketFactory.constructPacket(reg,
-                                "ClientPlayerPositionPacket", x, y, z, true);
+                                                                                          "ClientPlayerPositionPacket",
+                                                                                          x,
+                                                                                          y,
+                                                                                          z,
+                                                                                          true);
                         sendPacket(playerPositionPacket);
                     } catch (final Exception e) {
                         e.printStackTrace();
@@ -491,7 +456,7 @@ public class MinecraftClient {
 
     /**
      * Get protocol of this client
-     * 
+     *
      * @return protocol used by this client
      */
     public int getProtocol() {
@@ -500,7 +465,7 @@ public class MinecraftClient {
 
     /**
      * Check if compression is enabled by server
-     * 
+     *
      * @return compression state
      */
     protected boolean isCompressionEnabled() {
@@ -509,7 +474,7 @@ public class MinecraftClient {
 
     /**
      * Get compression threshold
-     * 
+     *
      * @return compression threshold sent by server. -1 if none
      */
     protected int getCThreshold() {
@@ -523,7 +488,7 @@ public class MinecraftClient {
 
     /**
      * Get X position of this client in-game
-     * 
+     *
      * @return X coordinates of client
      */
     public double getX() {
@@ -531,27 +496,9 @@ public class MinecraftClient {
     }
 
     /**
-     * Get Y position of this client in-game
-     * 
-     * @return Y coordinates of client
-     */
-    public double getY() {
-        return y;
-    }
-
-    /**
-     * Get Z position of this client in-game
-     * 
-     * @return Z coordinates of client
-     */
-    public double getZ() {
-        return z;
-    }
-
-    /**
      * Set X position of this client. This method only sets internal variable, it
      * does NOT change client's position on server.
-     * 
+     *
      * @param x new X position
      */
     protected void setX(final double x) {
@@ -562,9 +509,18 @@ public class MinecraftClient {
     }
 
     /**
+     * Get Y position of this client in-game
+     *
+     * @return Y coordinates of client
+     */
+    public double getY() {
+        return y;
+    }
+
+    /**
      * Set Y position of this client. This method only sets internal variable, it
      * does NOT change client's position on server.
-     * 
+     *
      * @param y new Y position
      */
     protected void setY(final double y) {
@@ -575,9 +531,18 @@ public class MinecraftClient {
     }
 
     /**
+     * Get Z position of this client in-game
+     *
+     * @return Z coordinates of client
+     */
+    public double getZ() {
+        return z;
+    }
+
+    /**
      * Set Z position of this client. This method only sets internal variable, it
      * does NOT change client's position on server.
-     * 
+     *
      * @param z new Z position
      */
     protected void setZ(final double z) {
@@ -589,7 +554,7 @@ public class MinecraftClient {
 
     /**
      * Toggle client sneaking state. It also sets client sneaking in-game/
-     * 
+     *
      * @throws IOException thrown when server was not connected, or there was an
      *                     error sending packet to server
      */
@@ -606,7 +571,7 @@ public class MinecraftClient {
 
     /**
      * Toggle client sprinting state. It also sets client sprinting in-game/
-     * 
+     *
      * @throws IOException thrown when server was not connected, or there was an
      *                     error sending packet to server
      */
@@ -623,7 +588,7 @@ public class MinecraftClient {
 
     /**
      * Sends a packet to server
-     * 
+     *
      * @param packet packet to send
      * @throws IOException thrown when there was an error sending packet
      */
@@ -643,13 +608,12 @@ public class MinecraftClient {
             for (final MinecraftPacketListener listener : GlobalListeners.getListeners()) {
                 listener.packetSent(packet, this);
             }
-        } else
-            throw new IOException(notConnectedError);
+        } else throw new IOException(notConnectedError);
     }
 
     /**
      * Send chat message to server
-     * 
+     *
      * @param message a chat message to send
      * @throws IOException thrown when server was not connected, or there was an
      *                     error sending packet to server
@@ -658,8 +622,7 @@ public class MinecraftClient {
         final int protocol = PacketFactory.getProtocolFor(reg);
         if ((protocol >= 759) && message.startsWith("/")) {
             sendPacket(PacketFactory.constructPacket(reg, "ClientChatCommandPacket", message));
-        } else
-            sendPacket(PacketFactory.constructPacket(reg, "ClientChatMessagePacket", message));
+        } else sendPacket(PacketFactory.constructPacket(reg, "ClientChatMessagePacket", message));
     }
 
     /**
@@ -668,7 +631,7 @@ public class MinecraftClient {
      * Messages support coloring with '§' character. <br>
      * Messages can be easily colored with
      * {@link ChatMessages#translateColorCodes(char, String)}
-     * 
+     *
      * @param message  message to display
      * @param position position in which the message should be displayed
      */
@@ -678,18 +641,9 @@ public class MinecraftClient {
     }
 
     /**
-     * Used internally by {@link ClientPacketListener} to set client's entity ID
-     * 
-     * @param entityID new entity ID
-     */
-    protected void setEntityID(final int entityID) {
-        this.entityID = entityID;
-    }
-
-    /**
      * Get client sneaking state of this client. It only returns variable stored
      * locally
-     * 
+     *
      * @return sneaking state
      */
     public boolean isSneaking() {
@@ -699,7 +653,7 @@ public class MinecraftClient {
     /**
      * Get client sprinting state of this client. It only returns variable stored
      * locally
-     * 
+     *
      * @return sprinting state
      */
     public boolean isSprinting() {
@@ -708,7 +662,7 @@ public class MinecraftClient {
 
     /**
      * Get player list
-     * 
+     *
      * @return player list received from server
      */
     public ListenerHashMap<UUID, PlayerInfo> getPlayersTabList() {
@@ -717,7 +671,7 @@ public class MinecraftClient {
 
     /**
      * Get server's address
-     * 
+     *
      * @return server's hostname
      */
     public String getHost() {
@@ -726,7 +680,7 @@ public class MinecraftClient {
 
     /**
      * Get server's port
-     * 
+     *
      * @return server's port
      */
     public int getPort() {
@@ -735,7 +689,7 @@ public class MinecraftClient {
 
     /**
      * Get client's username (only if client is connected)
-     * 
+     *
      * @return client's username
      */
     public String getUsername() {
@@ -744,7 +698,7 @@ public class MinecraftClient {
 
     /**
      * Get output stream used by this client
-     * 
+     *
      * @return client's output stream
      * @deprecated
      */
@@ -755,7 +709,7 @@ public class MinecraftClient {
 
     /**
      * Get client's yaw
-     * 
+     *
      * @return client's yaw
      */
     public float getYaw() {
@@ -763,8 +717,18 @@ public class MinecraftClient {
     }
 
     /**
+     * Set client's yaw. This method only sets internal variable, it does NOT change
+     * client's position on server.
+     *
+     * @param yaw new yaw value
+     */
+    protected void setYaw(final float yaw) {
+        this.yaw = yaw;
+    }
+
+    /**
      * Get client's yaw
-     * 
+     *
      * @return client's yaw
      */
     public float getPitch() {
@@ -772,8 +736,18 @@ public class MinecraftClient {
     }
 
     /**
+     * Set client's pitch. This method only sets internal variable, it does NOT
+     * change client's position on server.
+     *
+     * @param pitch new pitch value
+     */
+    protected void setPitch(final float pitch) {
+        this.pitch = pitch;
+    }
+
+    /**
      * Check if this entity is tracked
-     * 
+     *
      * @param entity entity to be checked
      * @return if entity is tracked
      */
@@ -788,7 +762,7 @@ public class MinecraftClient {
 
     /**
      * Gets the tracked entity attacking status
-     * 
+     *
      * @return current status
      */
     public boolean isEntityAttacking() {
@@ -797,7 +771,7 @@ public class MinecraftClient {
 
     /**
      * Commands the client to track an entity
-     * 
+     *
      * @param entity new tracked entity
      * @param attack whether to attack this entity when in range or not
      */
@@ -815,7 +789,7 @@ public class MinecraftClient {
 
     /**
      * Interact with an entity
-     * 
+     *
      * @param entity entity to interact with
      * @param type   interaction type
      * @throws IOException when there was an error sending packet
@@ -826,7 +800,7 @@ public class MinecraftClient {
 
     /**
      * Interact with an entity
-     * 
+     *
      * @param entityID ID of entity to interact with
      * @param type     interaction type
      * @throws IOException when there was an error sending packet
@@ -844,7 +818,7 @@ public class MinecraftClient {
 
     /**
      * Get ID associated with this entity
-     * 
+     *
      * @param entity target entity
      * @return entity's ID, or -1 if no ID was found
      */
@@ -858,7 +832,7 @@ public class MinecraftClient {
 
     /**
      * Get entity ID of this client on server
-     * 
+     *
      * @return client's entity ID
      */
     public int getEntityID() {
@@ -866,8 +840,17 @@ public class MinecraftClient {
     }
 
     /**
+     * Used internally by {@link ClientPacketListener} to set client's entity ID
+     *
+     * @param entityID new entity ID
+     */
+    protected void setEntityID(final int entityID) {
+        this.entityID = entityID;
+    }
+
+    /**
      * Set client's pitch and yaw to face provided entity
-     * 
+     *
      * @param entity entity to face
      * @throws IOException when there was an error sending packet
      */
@@ -877,7 +860,7 @@ public class MinecraftClient {
 
     /**
      * Set client's pitch and yaw to face a location
-     * 
+     *
      * @param x x coordinate
      * @param y y coordinate
      * @param z z coordinate
@@ -900,42 +883,32 @@ public class MinecraftClient {
 
         this.yaw -= 90;
         this.pitch -= 90;
-        sendPacket(PacketFactory.constructPacket(reg, "ClientPlayerPositionAndLookPacket", this.x, this.y, this.z, yaw,
-                pitch, true));
+        sendPacket(PacketFactory.constructPacket(reg,
+                                                 "ClientPlayerPositionAndLookPacket",
+                                                 this.x,
+                                                 this.y,
+                                                 this.z,
+                                                 yaw,
+                                                 pitch,
+                                                 true));
     }
-
-    /**
-     * Set client's yaw. This method only sets internal variable, it does NOT change
-     * client's position on server.
-     * 
-     * @param yaw new yaw value
-     */
-    protected void setYaw(final float yaw) {
-        this.yaw = yaw;
-    }
-
-    /**
-     * Set client's pitch. This method only sets internal variable, it does NOT
-     * change client's position on server.
-     * 
-     * @param pitch new pitch value
-     */
-    protected void setPitch(final float pitch) {
-        this.pitch = pitch;
-    }
-
-    private Thread movingThread = null;
 
     /**
      * Set client's look on server.
-     * 
+     *
      * @param direction player's look
      */
     public void setLook(final float direction) {
         try {
             this.yaw = direction;
-            sendPacket(PacketFactory.constructPacket(reg, "ClientPlayerPositionAndLookPacket", x, y, z, direction, 0f,
-                    true));
+            sendPacket(PacketFactory.constructPacket(reg,
+                                                     "ClientPlayerPositionAndLookPacket",
+                                                     x,
+                                                     y,
+                                                     z,
+                                                     direction,
+                                                     0f,
+                                                     true));
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -943,7 +916,7 @@ public class MinecraftClient {
 
     /**
      * Move client on server.
-     * 
+     *
      * @param direction    direction to move to from 0 to 7
      * @param speed        walking speed, from 0 to 1. Too high values may cause
      *                     client to be kicked or even banned from server.
@@ -1023,8 +996,14 @@ public class MinecraftClient {
                         try {
                             setX(tx);
                             setZ(tz);
-                            sendPacket(PacketFactory.constructPacket(reg, "ClientPlayerPositionAndLookPacket", tx,
-                                    MinecraftClient.this.y, tz, MinecraftClient.this.yaw, 0f, true));
+                            sendPacket(PacketFactory.constructPacket(reg,
+                                                                     "ClientPlayerPositionAndLookPacket",
+                                                                     tx,
+                                                                     MinecraftClient.this.y,
+                                                                     tz,
+                                                                     MinecraftClient.this.yaw,
+                                                                     0f,
+                                                                     true));
                         } catch (final Exception e) {
                             e.printStackTrace();
                         }
@@ -1040,7 +1019,7 @@ public class MinecraftClient {
      * Request statistics update from server.<br>
      * Server will respond with Statistics (see {@link ServerStatisticsPacket}), but
      * it may not respond at all if another request was made recently.
-     * 
+     *
      * @throws IOException thrown when there was an error sending packet.
      */
     public void refreshStatistics() throws IOException {
@@ -1049,7 +1028,7 @@ public class MinecraftClient {
 
     /**
      * Sets window currently shown to client
-     * 
+     *
      * @param id  window's id
      * @param win opened window
      */
@@ -1064,7 +1043,7 @@ public class MinecraftClient {
 
     /**
      * Get all opened window, except player's inventory window
-     * 
+     *
      * @return map containing currently open windows with their IDs as keys
      */
     public Map<Integer, ItemsWindow> getOpenWindows() {
@@ -1073,7 +1052,7 @@ public class MinecraftClient {
 
     /**
      * Get player's inventory
-     * 
+     *
      * @return player's inventory window
      */
     public ItemsWindow getInventory() {
@@ -1082,7 +1061,7 @@ public class MinecraftClient {
 
     /**
      * Check if packet compression is enabled
-     * 
+     *
      * @return whether compression is enabled
      */
     public boolean isCompression() {
@@ -1091,7 +1070,7 @@ public class MinecraftClient {
 
     /**
      * Set packet compression
-     * 
+     *
      * @param compression whether compression should be enabled
      */
     public void setCompression(final boolean compression) {
@@ -1100,7 +1079,7 @@ public class MinecraftClient {
 
     /**
      * Check if client is connected
-     * 
+     *
      * @return connected state
      */
     public boolean isConnected() {
@@ -1108,7 +1087,6 @@ public class MinecraftClient {
     }
 
     /**
-     * 
      * @return if this client should connect with Forge support
      */
     public boolean isForge() {
@@ -1139,7 +1117,7 @@ public class MinecraftClient {
     /**
      * Get map of all stored and alive entities<br>
      * It's completely client-side and may get de-synced occasionally
-     * 
+     *
      * @return map of stored entities
      */
     public Map<Integer, Entity> getStoredEntities() {
@@ -1148,7 +1126,7 @@ public class MinecraftClient {
 
     /**
      * Get entity for provided ID
-     * 
+     *
      * @param id id of the entity
      * @return Entity associated with this ID or null if none found
      */
@@ -1158,7 +1136,7 @@ public class MinecraftClient {
 
     /**
      * Get this client's Unique ID (UUID)
-     * 
+     *
      * @return Client's UID
      */
     public UUID getUid() {
@@ -1168,7 +1146,7 @@ public class MinecraftClient {
     /**
      * Set client's internal UUID<br>
      * Please note id does not change client's UID on server side
-     * 
+     *
      * @param uid new UID
      */
     protected void setUid(final UUID uid) {
@@ -1177,7 +1155,7 @@ public class MinecraftClient {
 
     /**
      * Get currently tracked entity
-     * 
+     *
      * @return tracked entity ID or -1 if none
      */
     public int getTrackedEntity() {
@@ -1186,7 +1164,7 @@ public class MinecraftClient {
 
     /**
      * Set new tracked entity
-     * 
+     *
      * @param trackedEntity new entity to be tracked
      * @param attack        whether to attack this entity or not
      */
@@ -1200,18 +1178,18 @@ public class MinecraftClient {
 
     /**
      * Calculate distance between client and provided entity
-     * 
+     *
      * @param entity entity to calculate distance to
      * @return distance between client and entity in blocks
      */
     public double distanceTo(final Entity entity) {
-        return Math
-                .sqrt(Math.pow(x - entity.getX(), 2) + Math.pow(y - entity.getY(), 2) + Math.pow(z - entity.getZ(), 2));
+        return Math.sqrt(Math.pow(x - entity.getX(), 2) + Math.pow(y - entity.getY(), 2) + Math.pow(z - entity.getZ(),
+                                                                                                    2));
     }
 
     /**
      * Get clinet's registry responsible for providing packet IDs
-     * 
+     *
      * @return client's registry
      */
     public PacketRegistry getReg() {
@@ -1220,7 +1198,7 @@ public class MinecraftClient {
 
     /**
      * Get client's SOCKS proxy
-     * 
+     *
      * @return client's proxy or null if none
      */
     public Proxy getProxy() {
@@ -1231,7 +1209,7 @@ public class MinecraftClient {
      * Set client's SOCKS proxy. <br>
      * Only has effect when used before {@link #connect(String)} or
      * {@link #connect(AuthType, String, String)} methods
-     * 
+     *
      * @param proxy new SOCKS proxy
      */
     public void setProxy(final Proxy proxy) {
@@ -1240,7 +1218,7 @@ public class MinecraftClient {
 
     /**
      * Get first connection date
-     * 
+     *
      * @return connection time
      */
     public long getStartDate() {
@@ -1249,7 +1227,7 @@ public class MinecraftClient {
 
     /**
      * Get current game state
-     * 
+     *
      * @return game state
      */
     public State getState() {
@@ -1258,7 +1236,7 @@ public class MinecraftClient {
 
     /**
      * Get default item windows factory
-     * 
+     *
      * @return item windows factory bound to this client
      */
     public ItemWindowsFactory getWindowsFactory() {

@@ -1,17 +1,16 @@
 package net.defekt.mc.chatclient.protocol;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.defekt.mc.chatclient.protocol.event.ClientListener;
 import net.defekt.mc.chatclient.protocol.event.MinecraftPacketListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class containing listeners that are by default applied to all new
  * {@link MinecraftClient} instances.
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class GlobalListeners {
     private static final List<MinecraftPacketListener> packetListeners = new ArrayList<>();
@@ -20,7 +19,7 @@ public class GlobalListeners {
     /**
      * Register new client listener.<br>
      * Do not call this method directly
-     * 
+     *
      * @param clistener
      */
     public static void registerListener(final ClientListener clistener) {
@@ -32,7 +31,7 @@ public class GlobalListeners {
     /**
      * Register new packet listener.<br>
      * Do not call this method directly
-     * 
+     *
      * @param listener
      */
     public static void registerListener(final MinecraftPacketListener listener) {
@@ -43,7 +42,7 @@ public class GlobalListeners {
 
     /**
      * Get all registered packet listeners
-     * 
+     *
      * @return array of packet listeners
      */
     public static MinecraftPacketListener[] getListeners() {
@@ -52,7 +51,7 @@ public class GlobalListeners {
 
     /**
      * Get all registered client listeners
-     * 
+     *
      * @return array of client listeners
      */
     public static ClientListener[] getClientListeners() {

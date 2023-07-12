@@ -1,16 +1,15 @@
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.login;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+
+import java.io.IOException;
 
 /**
  * A packet sent by server during login process to indicate that encryption has
  * been set.
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerLoginSetCompressionPacket extends Packet {
 
@@ -18,7 +17,7 @@ public class ServerLoginSetCompressionPacket extends Packet {
 
     /**
      * Contructs {@link ServerLoginSetCompressionPacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown
@@ -30,7 +29,7 @@ public class ServerLoginSetCompressionPacket extends Packet {
 
     /**
      * Get compression threshold
-     * 
+     *
      * @return compression threshol
      */
     public int getThreshold() {

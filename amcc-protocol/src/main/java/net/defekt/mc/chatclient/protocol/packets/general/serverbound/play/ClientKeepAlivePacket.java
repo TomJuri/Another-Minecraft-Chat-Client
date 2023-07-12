@@ -6,15 +6,14 @@ import net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play.ServerKeep
 
 /**
  * Sent by client as response to server's {@link ServerKeepAlivePacket}
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ClientKeepAlivePacket extends Packet {
 
     /**
      * Constructs new {@link ClientKeepAlivePacket}
-     * 
+     *
      * @param reg packet registry used to construct this packet
      * @param id  keep-alive ID
      */

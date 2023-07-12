@@ -1,15 +1,14 @@
 package net.defekt.mc.chatclient.protocol.packets.abstr;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+import java.io.IOException;
+
 /**
  * Base class for clientbound player position and rotation packets
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 @SuppressWarnings("javadoc")
 public class BaseServerPlayerPositionAndLookPacket extends Packet {
@@ -24,7 +23,7 @@ public class BaseServerPlayerPositionAndLookPacket extends Packet {
 
     /**
      * Default constructor
-     * 
+     *
      * @param reg
      * @param data
      * @throws IOException

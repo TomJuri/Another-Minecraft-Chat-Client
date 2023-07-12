@@ -4,9 +4,8 @@ import java.io.Serializable;
 
 /**
  * An object used to store SOCKS proxy host, port and name
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ProxySetting implements Serializable {
     private final String name;
@@ -15,7 +14,7 @@ public class ProxySetting implements Serializable {
 
     /**
      * Default constructor
-     * 
+     *
      * @param name setting's display name
      * @param host proxy hostname
      * @param port proxy port
@@ -29,7 +28,7 @@ public class ProxySetting implements Serializable {
 
     /**
      * Get proxy's display name
-     * 
+     *
      * @return proxy display name
      */
     public String getName() {
@@ -38,7 +37,7 @@ public class ProxySetting implements Serializable {
 
     /**
      * Get proxy's hostname
-     * 
+     *
      * @return proxy hostname
      */
     public String getHost() {
@@ -47,7 +46,7 @@ public class ProxySetting implements Serializable {
 
     /**
      * Get proxy's port
-     * 
+     *
      * @return proxy port
      */
     public int getPort() {

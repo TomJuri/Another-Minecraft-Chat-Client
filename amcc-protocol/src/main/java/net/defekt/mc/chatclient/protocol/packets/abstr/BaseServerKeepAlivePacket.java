@@ -1,15 +1,14 @@
 package net.defekt.mc.chatclient.protocol.packets.abstr;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+import java.io.IOException;
+
 /**
  * Base class for all server keep alive packets
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 @SuppressWarnings("javadoc")
 public class BaseServerKeepAlivePacket extends Packet {
@@ -26,7 +25,7 @@ public class BaseServerKeepAlivePacket extends Packet {
 
     /**
      * Default cosntructor
-     * 
+     *
      * @param reg
      * @param data
      * @throws IOException

@@ -1,23 +1,18 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import net.defekt.mc.chatclient.ui.Main;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.JTextPane;
-import javax.swing.JWindow;
-
-import net.defekt.mc.chatclient.ui.Main;
-
 /**
  * A Minecraft-like tool tip shown when hovering over an item
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class MinecraftToolTip {
 
@@ -25,7 +20,7 @@ public class MinecraftToolTip {
 
     /**
      * Construct a Minecraft tool tip
-     * 
+     *
      * @param text tool tip colored text
      */
     public MinecraftToolTip(final String text) {
@@ -56,7 +51,7 @@ public class MinecraftToolTip {
 
     /**
      * Show tool tip
-     * 
+     *
      * @param x X position
      * @param y Y position
      */

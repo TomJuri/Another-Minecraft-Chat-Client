@@ -1,42 +1,27 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Color;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Window;
+import net.defekt.mc.chatclient.protocol.MinecraftStat;
+import net.defekt.mc.chatclient.protocol.data.*;
+import net.defekt.mc.chatclient.ui.Main;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextPane;
-
-import net.defekt.mc.chatclient.protocol.MinecraftStat;
-import net.defekt.mc.chatclient.protocol.data.Messages;
-import net.defekt.mc.chatclient.protocol.data.ModInfo;
-import net.defekt.mc.chatclient.protocol.data.QueryInfo;
-import net.defekt.mc.chatclient.protocol.data.ServerEntry;
-import net.defekt.mc.chatclient.protocol.data.StatusInfo;
-import net.defekt.mc.chatclient.ui.Main;
-
 /**
  * A new dialog displaying details about selected server
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerDetailsDialog extends JDialog {
 
     /**
      * Create new details dialog
-     * 
+     *
      * @param parent parent window
      * @param server server
      */
@@ -65,9 +50,9 @@ public class ServerDetailsDialog extends JDialog {
                 final JButton cfLink = new JButton("CurseForge");
                 cfLink.addMouseListener(new MouseAdapter() {
 
+                    private final JTextPane label = modLabel;
                     private String oldString;
                     private String newString;
-                    private final JTextPane label = modLabel;
 
                     @Override
                     public void mouseExited(final MouseEvent e) {
@@ -113,9 +98,9 @@ public class ServerDetailsDialog extends JDialog {
 
         final JTextPane infoPane = initTextPane();
         SwingUtils.appendColoredText(Messages.getString("ServerDetailsDialog.address") + ":\u00a77 " + server.getHost(),
-                infoPane);
-        SwingUtils.appendColoredText(
-                "\n" + Messages.getString("ServerDetailsDialog.port") + ":\u00a77 " + server.getPort(), infoPane);
+                                     infoPane);
+        SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.port") + ":\u00a77 " + server.getPort(),
+                                     infoPane);
         SwingUtils.appendColoredText("\nForge: \u00a77" + server.getForgeMode(), infoPane);
 
         final JTextPane playersPane = initTextPane();
@@ -173,6 +158,20 @@ public class ServerDetailsDialog extends JDialog {
         SwingUtils.centerWindow(this);
     }
 
+    /**
+     * Initialize an empty Minecraft styled text pane
+     *
+     * @return a new Text Pane
+     */
+    public static JTextPane initTextPane() {
+        final JTextPane pane = new JTextPane();
+        pane.setBackground(new Color(35, 35, 35));
+        pane.setForeground(Color.white);
+        pane.setEditable(false);
+        pane.setFont(Main.mcFont);
+        return pane;
+    }
+
     private void populateQueryPane(final QueryInfo info, final JTextPane pane) {
         String motd = "-";
         String gamemode = "-";
@@ -190,25 +189,11 @@ public class ServerDetailsDialog extends JDialog {
         pane.setText("");
         SwingUtils.appendColoredText(Messages.getString("ServerDetailsDialog.motd") + ":\u00a77 " + motd, pane);
         SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.gamemode") + ":\u00a77 " + gamemode,
-                pane);
+                                     pane);
         SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.map") + ":\u00a77 " + map, pane);
         SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.online") + ":\u00a77 " + online,
-                pane);
+                                     pane);
         SwingUtils.appendColoredText("\n" + Messages.getString("ServerDetailsDialog.maxPlayers") + ":\u00a77 " + max,
-                pane);
-    }
-
-    /**
-     * Initialize an empty Minecraft styled text pane
-     * 
-     * @return a new Text Pane
-     */
-    public static JTextPane initTextPane() {
-        final JTextPane pane = new JTextPane();
-        pane.setBackground(new Color(35, 35, 35));
-        pane.setForeground(Color.white);
-        pane.setEditable(false);
-        pane.setFont(Main.mcFont);
-        return pane;
+                                     pane);
     }
 }

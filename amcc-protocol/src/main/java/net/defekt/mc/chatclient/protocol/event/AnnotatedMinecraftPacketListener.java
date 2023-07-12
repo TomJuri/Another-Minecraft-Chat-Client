@@ -1,10 +1,10 @@
 package net.defekt.mc.chatclient.protocol.event;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 /**
  * An implementation of the {@link MinecraftPacketListener}.<br>
@@ -12,9 +12,8 @@ import net.defekt.mc.chatclient.protocol.packets.Packet;
  * instead of implementing only 4 predefined methods o
  * {@link MinecraftPacketListener}.<br>
  * New methods should be marked with {@link PacketHandler}
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public abstract class AnnotatedMinecraftPacketListener implements MinecraftPacketListener {
 

@@ -1,15 +1,14 @@
 package net.defekt.mc.chatclient.protocol.data;
 
+import net.defekt.mc.chatclient.protocol.MinecraftStat;
+
 import java.io.Serializable;
 import java.net.UnknownHostException;
 
-import net.defekt.mc.chatclient.protocol.MinecraftStat;
-
 /**
  * A container for a server list entry
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerEntry implements Serializable {
     private static final long serialVersionUID = 4963617404444444550L;
@@ -17,47 +16,42 @@ public class ServerEntry implements Serializable {
     private final String host;
     private final int port;
     private final String name;
-    private ForgeMode forgeMode;
-
-    private String version = "Auto";
-
     /**
-     * @return true if client is still trying to ping server for its status
+     * Indicates if server is pinged for status data
      */
-    public boolean isRefreshing() {
-        return refreshing;
-    }
-
+    public transient boolean refreshing = false;
+    /**
+     * True if there was an error while retrieving server's status
+     */
+    public transient boolean error = false;
+    private ForgeMode forgeMode;
+    private String version = "Auto";
     private transient StatusInfo info = null;
     private transient int protocol = -1;
     private String icon = null;
 
     /**
-     * Indicates if server is pinged for status data
-     */
-    public transient boolean refreshing = false;
-
-    /**
-     * True if there was an error while retrieving server's status
-     */
-    public transient boolean error = false;
-
-    /**
      * Creates new server entry
-     * 
+     *
      * @param host      server's hostname
      * @param port      server's port
      * @param name      server name
      * @param version   human-readable server version
      * @param forgeMode server's forge handling mode
      */
-    public ServerEntry(final String host, final int port, final String name, final String version,
-            final ForgeMode forgeMode) {
+    public ServerEntry(final String host, final int port, final String name, final String version, final ForgeMode forgeMode) {
         this.host = host;
         this.port = port;
         this.name = name;
         this.version = version;
         this.forgeMode = forgeMode;
+    }
+
+    /**
+     * @return true if client is still trying to ping server for its status
+     */
+    public boolean isRefreshing() {
+        return refreshing;
     }
 
     /**
@@ -91,14 +85,25 @@ public class ServerEntry implements Serializable {
                             }
                         }
                     } catch (final UnknownHostException e) {
-                        info = new StatusInfo("\u00a74" + Messages.getString("ServerEntry.serverEntryUnknownHost"), -1,
-                                -1, "", -1, null, null, null);
+                        info = new StatusInfo("\u00a74" + Messages.getString("ServerEntry.serverEntryUnknownHost"),
+                                              -1,
+                                              -1,
+                                              "",
+                                              -1,
+                                              null,
+                                              null,
+                                              null);
                         error = true;
                     } catch (final Exception e) {
-                        info = new StatusInfo("\u00a74" + Messages.getString("ServerEntry.serverEntryCantConnect"), -1,
-                                -1, "", -1,
+                        info = new StatusInfo("\u00a74" + Messages.getString("ServerEntry.serverEntryCantConnect"),
+                                              -1,
+                                              -1,
+                                              "",
+                                              -1,
 
-                                null, null, null);
+                                              null,
+                                              null,
+                                              null);
                         error = true;
                     }
                     if (info != null && info.getProtocol() != -1) {
@@ -115,7 +120,7 @@ public class ServerEntry implements Serializable {
 
     /**
      * Get server host name
-     * 
+     *
      * @return server's host name
      */
     public String getHost() {
@@ -124,7 +129,7 @@ public class ServerEntry implements Serializable {
 
     /**
      * Get server's port
-     * 
+     *
      * @return server's port
      */
     public int getPort() {
@@ -133,7 +138,7 @@ public class ServerEntry implements Serializable {
 
     /**
      * Get server's name
-     * 
+     *
      * @return server's name
      */
     public String getName() {
@@ -142,7 +147,7 @@ public class ServerEntry implements Serializable {
 
     /**
      * Get latest server's status info
-     * 
+     *
      * @return server's status
      */
     public StatusInfo getInfo() {
@@ -151,7 +156,7 @@ public class ServerEntry implements Serializable {
 
     /**
      * Get server's version
-     * 
+     *
      * @return server's version
      */
     public String getVersion() {
@@ -160,11 +165,20 @@ public class ServerEntry implements Serializable {
 
     /**
      * Get base64 server icon
-     * 
+     *
      * @return server's icon
      */
     public String getIcon() {
         return icon;
+    }
+
+    /**
+     * Set current server icon (Base64)
+     *
+     * @param icon
+     */
+    public void setIcon(final String icon) {
+        this.icon = icon;
     }
 
     @Override
@@ -189,7 +203,7 @@ public class ServerEntry implements Serializable {
 
     /**
      * Returns how Forge servers should be handled
-     * 
+     *
      * @return Forge mode
      */
     public ForgeMode getForgeMode() {
@@ -201,19 +215,10 @@ public class ServerEntry implements Serializable {
 
     /**
      * Get server protocol received in status ping
-     * 
+     *
      * @return protocol version
      */
     public int getProtocol() {
         return protocol;
-    }
-
-    /**
-     * Set current server icon (Base64)
-     * 
-     * @param icon
-     */
-    public void setIcon(final String icon) {
-        this.icon = icon;
     }
 }

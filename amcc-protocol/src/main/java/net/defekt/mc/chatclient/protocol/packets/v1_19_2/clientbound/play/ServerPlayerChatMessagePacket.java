@@ -1,27 +1,25 @@
 package net.defekt.mc.chatclient.protocol.packets.v1_19_2.clientbound.play;
 
-import java.io.IOException;
-import java.util.UUID;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerChatMessagePacket;
 
+import java.io.IOException;
+import java.util.UUID;
+
 /**
  * 1.19.2 version of the {@link BaseServerChatMessagePacket}
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerPlayerChatMessagePacket extends BaseServerChatMessagePacket {
 
     /**
      * Constructs {@link ServerPlayerChatMessagePacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown

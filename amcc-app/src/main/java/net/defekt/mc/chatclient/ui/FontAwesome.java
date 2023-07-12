@@ -1,18 +1,11 @@
 package net.defekt.mc.chatclient.ui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 
 public class FontAwesome {
 
@@ -50,34 +43,6 @@ public class FontAwesome {
 
     public static final String DISCORD = "\uf392";
 
-    public static Icon createIcon(final String character, final Component parent, final Font overrideFont) {
-        return createIcon(character, parent, FONT.getSize2D(), overrideFont);
-    }
-
-    public static Icon createIcon(final String character, final Component parent, final float size) {
-        return createIcon(character, parent, size, FONT);
-    }
-
-    public static Icon createIcon(final String character, final Component parent) {
-        return createIcon(character, parent, FONT);
-    }
-
-    public static Icon createIcon(final String character, final Component parent, final float fontSize,
-            final Font font) {
-        final Font overrideFont = font.deriveFont(fontSize);
-        final Rectangle2D bounds = overrideFont.getStringBounds(character,
-                new FontRenderContext(overrideFont.getTransform(), true, true));
-        final BufferedImage img = new BufferedImage((int) bounds.getWidth() + 4, (int) bounds.getHeight() + 4,
-                BufferedImage.TYPE_INT_ARGB);
-        final Graphics2D g = img.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setFont(overrideFont);
-        g.setColor(parent == null ? Color.black : parent.getForeground());
-        g.drawString(character, 2, (int) bounds.getHeight());
-        return new ImageIcon(img);
-    }
-
     static {
         Font f;
         try (InputStream is = FontAwesome.class.getResourceAsStream("/resources/fa-solid-900.ttf")) {
@@ -94,5 +59,35 @@ public class FontAwesome {
             e.printStackTrace();
         }
         BRANDS_FONT = f;
+    }
+
+    public static Icon createIcon(final String character, final Component parent, final Font overrideFont) {
+        return createIcon(character, parent, FONT.getSize2D(), overrideFont);
+    }
+
+    public static Icon createIcon(final String character, final Component parent, final float size) {
+        return createIcon(character, parent, size, FONT);
+    }
+
+    public static Icon createIcon(final String character, final Component parent) {
+        return createIcon(character, parent, FONT);
+    }
+
+    public static Icon createIcon(final String character, final Component parent, final float fontSize, final Font font) {
+        final Font overrideFont = font.deriveFont(fontSize);
+        final Rectangle2D bounds = overrideFont.getStringBounds(character,
+                                                                new FontRenderContext(overrideFont.getTransform(),
+                                                                                      true,
+                                                                                      true));
+        final BufferedImage img = new BufferedImage((int) bounds.getWidth() + 4,
+                                                    (int) bounds.getHeight() + 4,
+                                                    BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g = img.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setFont(overrideFont);
+        g.setColor(parent == null ? Color.black : parent.getForeground());
+        g.drawString(character, 2, (int) bounds.getHeight());
+        return new ImageIcon(img);
     }
 }

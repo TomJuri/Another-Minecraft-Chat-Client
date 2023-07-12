@@ -2,7 +2,9 @@ package net.defekt.minecraft.auth.microsoft;
 
 @SuppressWarnings("javadoc")
 public enum TokenErrorResponse {
-    PENDING("authorization_pending"), DECLINED("authorization_declined"), BAD_CODE("bad_verification_code"),
+    PENDING("authorization_pending"),
+    DECLINED("authorization_declined"),
+    BAD_CODE("bad_verification_code"),
     EXPIRED("expired_token");
 
     private final String response;

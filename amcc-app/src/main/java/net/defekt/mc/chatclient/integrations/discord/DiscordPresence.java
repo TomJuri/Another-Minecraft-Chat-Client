@@ -1,17 +1,5 @@
 package net.defekt.mc.chatclient.integrations.discord;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import net.arikia.dev.drpc.DiscordEventHandlers;
 import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
@@ -19,12 +7,19 @@ import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.data.Messages;
 import net.defekt.mc.chatclient.ui.Main;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.util.List;
+import java.util.Timer;
+import java.util.*;
+
 /**
  * Class containing methods to display current client state as Discord Rich
  * Presence status
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class DiscordPresence {
 
@@ -36,14 +31,13 @@ public class DiscordPresence {
 
     /**
      * Default constructor
-     * 
+     *
      * @param id      application's ID
      * @param main
      * @param tabPane
      * @param clients
      */
-    public DiscordPresence(final String id, final Main main, final JTabbedPane tabPane,
-            final Map<JSplitPane, MinecraftClient> clients) {
+    public DiscordPresence(final String id, final Main main, final JTabbedPane tabPane, final Map<JSplitPane, MinecraftClient> clients) {
         this.main = main;
         this.id = id;
         this.tabs = tabPane;
@@ -88,19 +82,24 @@ public class DiscordPresence {
         final MinecraftClient[] clients = main.getClients();
         DiscordRichPresence presence;
         if (clients.length <= 0) {
-            presence = new DiscordRichPresence.Builder(Messages.getString("Discord.menu"))
-                    .setBigImage("logo", "AMCC v" + Main.VERSION).build();
+            presence = new DiscordRichPresence.Builder(Messages.getString("Discord.menu")).setBigImage("logo",
+                                                                                                       "AMCC v" + Main.VERSION)
+                                                                                          .build();
         } else if (clients.length == 1 && clients[0].isConnected()) {
             final MinecraftClient client = clients[0];
-            presence = new DiscordRichPresence.Builder(Messages.getString("Discord.chatting") + ": "
-                    + (Main.up.isHideDiscordServer() ? Messages.getString("Discord.hidden")
-                            : client.getHost() + (client.getPort() == 25565 ? "" : ":" + client.getPort())))
-                    .setBigImage("logo",
-                            "AMCC v" + Main.VERSION)
-                    .setDetails(Messages.getString("Discord.nick") + ": "
-                            + (Main.up.isHideDiscordNickname() ? Messages.getString("Discord.hidden")
-                                    : client.getUsername()))
-                    .setStartTimestamps(client.getStartDate()).build();
+            presence = new DiscordRichPresence.Builder(Messages.getString("Discord.chatting") + ": " + (Main.up.isHideDiscordServer() ?
+                    Messages.getString("Discord.hidden") :
+                    client.getHost() + (client.getPort() == 25565 ? "" : ":" + client.getPort()))).setBigImage("logo",
+                                                                                                               "AMCC v" + Main.VERSION)
+                                                                                                  .setDetails(Messages.getString(
+                                                                                                          "Discord.nick") + ": " + (
+                                                                                                          Main.up.isHideDiscordNickname() ?
+                                                                                                                  Messages.getString(
+                                                                                                                          "Discord.hidden") :
+                                                                                                                  client.getUsername()))
+                                                                                                  .setStartTimestamps(
+                                                                                                          client.getStartDate())
+                                                                                                  .build();
         } else {
             MinecraftClient current = null;
             final Component selected = tabs.getSelectedComponent();
@@ -120,31 +119,41 @@ public class DiscordPresence {
                         hosts.add(host);
                     }
                 }
-                presence = new DiscordRichPresence.Builder(
-                        hosts.size() == 1
-                                ? Messages.getString("Discord.chatting") + ": "
-                                        + (Main.up.isHideDiscordServer() ? Messages.getString("Discord.hidden")
-                                                : hosts.get(0))
-                                : Messages.getString("Discord.chatting") + " " + clients.length + " "
-                                        + Messages.getString("Discord.servSuffix"))
-                        .setBigImage("logo", "AMCC v" + Main.VERSION)
-                        .setDetails(nicknames.size() == 1
-                                ? Messages.getString("Discord.nick") + ": "
-                                        + (Main.up.isHideDiscordNickname() ? Messages.getString("Discord.hidden")
-                                                : nicknames.get(0))
-                                : Messages.getString("Discord.sesPrefix") + " " + nicknames.size() + " "
-                                        + Messages.getString("Discord.sesSuffix"))
-                        .build();
+                presence = new DiscordRichPresence.Builder(hosts.size() == 1 ?
+                                                                   Messages.getString("Discord.chatting") + ": " + (Main.up.isHideDiscordServer() ?
+                                                                           Messages.getString("Discord.hidden") :
+                                                                           hosts.get(0)) :
+                                                                   Messages.getString("Discord.chatting") + " " + clients.length + " " + Messages.getString(
+                                                                           "Discord.servSuffix")).setBigImage("logo",
+                                                                                                              "AMCC v" + Main.VERSION)
+                                                                                                 .setDetails(nicknames.size() == 1 ?
+                                                                                                                     Messages.getString(
+                                                                                                                             "Discord.nick") + ": " + (
+                                                                                                                             Main.up.isHideDiscordNickname() ?
+                                                                                                                                     Messages.getString(
+                                                                                                                                             "Discord.hidden") :
+                                                                                                                                     nicknames.get(
+                                                                                                                                             0)) :
+                                                                                                                     Messages.getString(
+                                                                                                                             "Discord.sesPrefix") + " " + nicknames.size() + " " + Messages.getString(
+                                                                                                                             "Discord.sesSuffix"))
+                                                                                                 .build();
             } else {
-                presence = new DiscordRichPresence.Builder(Messages.getString("Discord.chatting") + ": "
-                        + (Main.up.isHideDiscordServer() ? Messages.getString("Discord.hidden")
-                                : current.getHost() + (current.getPort() == 25565 ? "" : ":" + current.getPort())))
-                        .setBigImage("logo", "AMCC v" + Main.VERSION)
-                        .setDetails(
-                                Messages.getString("Discord.nick") + ": "
-                                        + (Main.up.isHideDiscordNickname() ? Messages.getString("Discord.hidden")
-                                                : current.getUsername()))
-                        .setStartTimestamps(current.getStartDate()).build();
+                presence = new DiscordRichPresence.Builder(Messages.getString("Discord.chatting") + ": " + (Main.up.isHideDiscordServer() ?
+                        Messages.getString("Discord.hidden") :
+                        current.getHost() + (current.getPort() == 25565 ? "" : ":" + current.getPort()))).setBigImage(
+                                                                                                                 "logo",
+                                                                                                                 "AMCC v" + Main.VERSION)
+                                                                                                         .setDetails(
+                                                                                                                 Messages.getString(
+                                                                                                                         "Discord.nick") + ": " + (
+                                                                                                                         Main.up.isHideDiscordNickname() ?
+                                                                                                                                 Messages.getString(
+                                                                                                                                         "Discord.hidden") :
+                                                                                                                                 current.getUsername()))
+                                                                                                         .setStartTimestamps(
+                                                                                                                 current.getStartDate())
+                                                                                                         .build();
             }
         }
         DiscordRPC.discordUpdatePresence(presence);

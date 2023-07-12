@@ -1,16 +1,15 @@
 package net.defekt.mc.chatclient.protocol.packets.abstr;
 
-import java.io.IOException;
-import java.util.UUID;
-
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+import java.io.IOException;
+import java.util.UUID;
+
 /**
  * Base class for all clientbound player spawn packets
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 @SuppressWarnings("javadoc")
 public class BaseServerSpawnPlayerPacket extends Packet {
@@ -30,7 +29,7 @@ public class BaseServerSpawnPlayerPacket extends Packet {
 
     /**
      * Default constructor
-     * 
+     *
      * @param reg
      * @param data
      * @throws IOException

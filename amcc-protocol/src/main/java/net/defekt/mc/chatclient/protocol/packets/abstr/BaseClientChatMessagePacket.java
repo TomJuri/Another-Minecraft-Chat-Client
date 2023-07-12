@@ -5,9 +5,8 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
 /**
  * Base class for all serverbound chat messages
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class BaseClientChatMessagePacket extends Packet {
 
@@ -16,7 +15,7 @@ public class BaseClientChatMessagePacket extends Packet {
 
     /**
      * Default constructor
-     * 
+     *
      * @param reg
      * @param message
      * @param command
@@ -29,7 +28,7 @@ public class BaseClientChatMessagePacket extends Packet {
 
     /**
      * Get chat message contained in this packet
-     * 
+     *
      * @return contained chat message
      */
     public String getMessage() {
@@ -39,7 +38,7 @@ public class BaseClientChatMessagePacket extends Packet {
     /**
      * Only applies to versions 1.19+<br>
      * On older versions always returns false.
-     * 
+     *
      * @return true if the message should be interpreted as a command
      */
     public boolean isCommand() {

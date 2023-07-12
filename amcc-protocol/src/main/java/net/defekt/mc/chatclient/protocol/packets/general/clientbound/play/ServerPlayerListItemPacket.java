@@ -1,23 +1,22 @@
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 
-import java.io.IOException;
-import java.util.UUID;
-
 import net.defekt.mc.chatclient.protocol.data.ChatMessages;
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerListItemPacket;
 
+import java.io.IOException;
+import java.util.UUID;
+
 /**
  * Sent by server when player's TAB list is updated
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerPlayerListItemPacket extends BaseServerPlayerListItemPacket {
     /**
      * constructs {@link ServerPlayerListItemPacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown

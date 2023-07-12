@@ -1,16 +1,15 @@
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+import java.io.IOException;
+
 /**
  * Sent by server when time is updated.
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerTimeUpdatePacket extends Packet {
 
@@ -19,7 +18,7 @@ public class ServerTimeUpdatePacket extends Packet {
 
     /**
      * Constructs {@link ServerTimeUpdatePacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown

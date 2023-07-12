@@ -5,11 +5,10 @@ import java.util.HashMap;
 /**
  * An extension of Hash Map that returns previously set default value instead of
  * null when a key does not exist
- * 
- * @author Defective4
  *
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
+ * @author Defective4
  */
 public class FallbackHashMap<K, V> extends HashMap<K, V> {
     private static final long serialVersionUID = 1L;
@@ -19,14 +18,13 @@ public class FallbackHashMap<K, V> extends HashMap<K, V> {
     /**
      * Returns the value to which the specified key is mapped, or preset default
      * value if this map contains no mapping for the key.
-     */
-    public V get(final Object key) {
+     */ public V get(final Object key) {
         return containsKey(key) ? super.get(key) : defaultValue;
     }
 
     /**
      * Get default value used by this map
-     * 
+     *
      * @return default value
      */
     public V getDefaultValue() {
@@ -35,7 +33,7 @@ public class FallbackHashMap<K, V> extends HashMap<K, V> {
 
     /**
      * Set default value for this map
-     * 
+     *
      * @param defaultValue default value
      */
     public void setDefaultValue(final V defaultValue) {

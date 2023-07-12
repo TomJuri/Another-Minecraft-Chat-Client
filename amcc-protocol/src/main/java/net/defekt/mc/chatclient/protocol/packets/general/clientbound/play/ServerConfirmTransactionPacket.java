@@ -1,16 +1,15 @@
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+import java.io.IOException;
+
 /**
  * Sent by server to confirm inventory transaction
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerConfirmTransactionPacket extends Packet {
 
@@ -20,7 +19,7 @@ public class ServerConfirmTransactionPacket extends Packet {
 
     /**
      * Constructs {@link ServerConfirmTransactionPacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown
@@ -35,7 +34,7 @@ public class ServerConfirmTransactionPacket extends Packet {
 
     /**
      * Get window ID for this transaction
-     * 
+     *
      * @return window's ID
      */
     public int getWindowID() {
@@ -44,7 +43,7 @@ public class ServerConfirmTransactionPacket extends Packet {
 
     /**
      * Get transaction ID
-     * 
+     *
      * @return action Id
      */
     public short getActionID() {
@@ -53,7 +52,7 @@ public class ServerConfirmTransactionPacket extends Packet {
 
     /**
      * Get accepted state of this transaction
-     * 
+     *
      * @return accepted state
      */
     public boolean isAccepted() {

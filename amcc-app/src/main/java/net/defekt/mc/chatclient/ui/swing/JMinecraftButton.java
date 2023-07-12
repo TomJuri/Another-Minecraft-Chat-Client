@@ -1,46 +1,38 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-import java.awt.Shape;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.font.GlyphVector;
-
-import javax.swing.JButton;
-
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences.ColorPreferences;
 import net.defekt.mc.chatclient.ui.Main;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.font.GlyphVector;
 
 /**
  * A Minecraft styled button.<br>
  * Other than appearance, there is no difference between this button and a
  * regular {@link JButton}
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class JMinecraftButton extends JButton {
     private static final long serialVersionUID = 1L;
+    private final UserPreferences up = Main.up;
     private boolean hover = false;
     private boolean unicodeFont = false;
-    private final UserPreferences up = Main.up;
     private ColorPreferences cp = up.getColorPreferences();
 
     /**
      * Default constructor
-     * 
+     *
      * @param text text that should appear on button
      */
     public JMinecraftButton(final String text) {
         super(text);
-        unicodeFont = !SwingConstants.checkMCSupported(text)
-                || Main.up.getUnicodeCharactersMode().equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE);
+        unicodeFont = !SwingConstants.checkMCSupported(text) || Main.up.getUnicodeCharactersMode()
+                                                                       .equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE);
         Font font;
         if (unicodeFont) {
             font = Font.decode(null).deriveFont(Font.BOLD).deriveFont((float) 16);
@@ -87,30 +79,35 @@ public class JMinecraftButton extends JButton {
             final Color baseEnabledColor = new Color(Integer.parseInt(cp.getColorEnabledButton(), 16));
             final Color baseEnabledHoverColor = new Color(Integer.parseInt(cp.getColorEnabledHoverButton(), 16));
 
-            g2.setColor(
-                    new Color(
-                            Integer.parseInt(
-                                    !isEnabled() ? cp.getColorDisabledButton()
-                                            : hover ? SwingUtils
-                                                    .getHexRGB(SwingUtils.brighten(baseEnabledHoverColor, 66))
-                                                    : SwingUtils.getHexRGB(SwingUtils.brighten(baseEnabledColor, 60)),
-                                    16)));
+            g2.setColor(new Color(Integer.parseInt(!isEnabled() ?
+                                                           cp.getColorDisabledButton() :
+                                                           hover ?
+                                                                   SwingUtils.getHexRGB(SwingUtils.brighten(
+                                                                           baseEnabledHoverColor,
+                                                                           66)) :
+                                                                   SwingUtils.getHexRGB(SwingUtils.brighten(
+                                                                           baseEnabledColor,
+                                                                           60)), 16)));
             g2.fillRect(2, 2, getWidth() - 4, 2);
             g2.fillRect(2, 2, 2, getHeight() - 4);
 
-            g2.setColor(
-                    new Color(
-                            Integer.parseInt(
-                                    !isEnabled() ? cp.getColorDisabledButton()
-                                            : hover ? SwingUtils
-                                                    .getHexRGB(SwingUtils.brighten(baseEnabledHoverColor, -29))
-                                                    : SwingUtils.getHexRGB(SwingUtils.brighten(baseEnabledColor, -25)),
-                                    16)));
+            g2.setColor(new Color(Integer.parseInt(!isEnabled() ?
+                                                           cp.getColorDisabledButton() :
+                                                           hover ?
+                                                                   SwingUtils.getHexRGB(SwingUtils.brighten(
+                                                                           baseEnabledHoverColor,
+                                                                           -29)) :
+                                                                   SwingUtils.getHexRGB(SwingUtils.brighten(
+                                                                           baseEnabledColor,
+                                                                           -25)), 16)));
             g2.fillRect(2, getHeight() - 4, getWidth() - 4, 2);
             g2.fillRect(getWidth() - 4, 2, 2, getHeight() - 4);
 
-            g2.setColor(new Color(Integer.parseInt(!isEnabled() ? cp.getColorDisabledButton()
-                    : hover ? cp.getColorEnabledHoverButton() : cp.getColorEnabledButton(), 16)));
+            g2.setColor(new Color(Integer.parseInt(!isEnabled() ?
+                                                           cp.getColorDisabledButton() :
+                                                           hover ?
+                                                                   cp.getColorEnabledHoverButton() :
+                                                                   cp.getColorEnabledButton(), 16)));
             g2.fillRect(4, 4, getWidth() - 8, getHeight() - 8);
 
             final GlyphVector glyph = getFont().createGlyphVector(g2.getFontRenderContext(), getText());
@@ -133,7 +130,7 @@ public class JMinecraftButton extends JButton {
 
     /**
      * Get current color preferences used to draw this button.
-     * 
+     *
      * @return color preferences
      */
     public ColorPreferences getCp() {
@@ -142,7 +139,7 @@ public class JMinecraftButton extends JButton {
 
     /**
      * Set color preferences used to draw this button.
-     * 
+     *
      * @param cp color preferences
      */
     public void setCp(final ColorPreferences cp) {

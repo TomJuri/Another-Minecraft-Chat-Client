@@ -1,26 +1,25 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Component;
+import net.defekt.mc.chatclient.protocol.packets.Packet;
+
+import javax.swing.*;
+import javax.swing.event.CellEditorListener;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.EventObject;
 
-import javax.swing.JButton;
-import javax.swing.JTable;
-import javax.swing.event.CellEditorListener;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-
-import net.defekt.mc.chatclient.protocol.packets.Packet;
-
 /**
  * A button to be used in packet analyzer
- * 
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class TablePacketButton extends JButton implements TableCellEditor, TableCellRenderer, MouseListener {
+
+    JButton editor = new JButton("Info");
+    private Packet packet = null;
 
     /**
      * Default constructor
@@ -30,7 +29,7 @@ public class TablePacketButton extends JButton implements TableCellEditor, Table
 
     /**
      * Initialize this button with provided table
-     * 
+     *
      * @param table table to initialize with
      */
     public void init(final JTable table) {
@@ -39,10 +38,6 @@ public class TablePacketButton extends JButton implements TableCellEditor, Table
         table.getColumn(" ").setCellRenderer(this);
         table.addMouseListener(this);
     }
-
-    JButton editor = new JButton("Info");
-
-    private Packet packet = null;
 
     @Override
     public Object getCellEditorValue() {
@@ -97,14 +92,12 @@ public class TablePacketButton extends JButton implements TableCellEditor, Table
     }
 
     @Override
-    public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
-            final boolean hasFocus, final int row, final int column) {
+    public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected, final boolean hasFocus, final int row, final int column) {
         return editor;
     }
 
     @Override
-    public Component getTableCellEditorComponent(final JTable table, final Object value, final boolean isSelected,
-            final int row, final int column) {
+    public Component getTableCellEditorComponent(final JTable table, final Object value, final boolean isSelected, final int row, final int column) {
         if (value instanceof Packet) {
             this.packet = (Packet) value;
         }
@@ -113,7 +106,7 @@ public class TablePacketButton extends JButton implements TableCellEditor, Table
 
     /**
      * Get last selected packet
-     * 
+     *
      * @return the packet
      */
     public Packet getPacket() {

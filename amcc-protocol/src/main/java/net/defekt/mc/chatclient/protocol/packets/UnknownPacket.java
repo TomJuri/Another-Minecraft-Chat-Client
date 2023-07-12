@@ -8,18 +8,17 @@ import java.io.IOException;
  * The difference between Unknown Packets, and regular {@link Packet}s is
  * that<br>
  * the unknown ones can't be extended, and can't be handled by Packet Handler.
- * 
+ *
+ * @author Defective4
  * @see PacketFactory
  * @see PacketRegistry
  * @see Packet
- * @author Defective4
- *
  */
 public final class UnknownPacket extends Packet {
 
     /**
      * Constructs a raw unknown packet
-     * 
+     *
      * @param reg  packet registry
      * @param id   packet ID
      * @param data packet data

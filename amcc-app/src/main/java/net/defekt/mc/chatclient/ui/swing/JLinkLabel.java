@@ -1,12 +1,10 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Cursor;
-import java.awt.Desktop;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-
-import javax.swing.JLabel;
 
 public class JLinkLabel extends JLabel {
 

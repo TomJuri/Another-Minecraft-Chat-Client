@@ -1,50 +1,9 @@
 package net.defekt.mc.chatclient.ui;
 
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.WindowConstants;
-
 import dev.dewy.nbt.api.Tag;
 import dev.dewy.nbt.tags.primitive.StringTag;
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
-import net.defekt.mc.chatclient.protocol.data.ChatMessages;
-import net.defekt.mc.chatclient.protocol.data.ItemInfo;
-import net.defekt.mc.chatclient.protocol.data.ItemStack;
-import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
-import net.defekt.mc.chatclient.protocol.data.Messages;
-import net.defekt.mc.chatclient.protocol.data.TranslationUtils;
+import net.defekt.mc.chatclient.protocol.data.*;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
@@ -53,16 +12,27 @@ import net.defekt.mc.chatclient.ui.swing.JVBoxPanel;
 import net.defekt.mc.chatclient.ui.swing.MinecraftToolTip;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
 /**
  * Class used to wrap a Minecraft inventory in a GUI window
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class SwingItemsWindow extends ItemsWindow {
 
     private static final Map<String, BufferedImage> itemTextures = new HashMap<String, BufferedImage>();
-    private static final String[] armorNames = new String[] { "helmet", "chestplate", "leggings", "boots", "pumpkin" };
+    private static final String[] armorNames = new String[]{"helmet", "chestplate", "leggings", "boots", "pumpkin"};
 
     private final Map<Short, Runnable> pendingTransactions = new HashMap<Short, Runnable>();
 
@@ -72,28 +42,24 @@ public class SwingItemsWindow extends ItemsWindow {
     private final MinecraftClient client;
     private final PacketRegistry registry;
     private final boolean isInventory;
-    private boolean isShowing = false;
-
-    private boolean closeSilently = false;
-
     private final JButton[] bts;
     private final ItemStack[] items;
-    private JDialog dialog = null;
-
     private final Random rand = new Random();
     private final ItemStack emptyItem = new ItemStack((short) -1, -1, (short) -1, null);
+    private boolean isShowing = false;
+    private boolean closeSilently = false;
+    private JDialog dialog = null;
 
     /**
      * Creates new item window
-     * 
+     *
      * @param title    inventory title
      * @param size     inventory size
      * @param windowID window ID
      * @param client   Minecraft client instance
      * @param registry Packet registry instance
      */
-    public SwingItemsWindow(final String title, final int size, final int windowID, final MinecraftClient client,
-            final PacketRegistry registry) {
+    public SwingItemsWindow(final String title, final int size, final int windowID, final MinecraftClient client, final PacketRegistry registry) {
         super(title, size, windowID, client, registry);
 
         isInventory = size == 46;
@@ -130,14 +96,19 @@ public class SwingItemsWindow extends ItemsWindow {
                                         try {
                                             final short actionID = (short) rand.nextInt(Short.MAX_VALUE);
                                             client.sendPacket(PacketFactory.constructPacket(registry,
-                                                    "ClientWindowClickPacket", windowID, (short) xIndex, (byte) 0,
-                                                    actionID, 1, emptyItem));
+                                                                                            "ClientWindowClickPacket",
+                                                                                            windowID,
+                                                                                            (short) xIndex,
+                                                                                            (byte) 0,
+                                                                                            actionID,
+                                                                                            1,
+                                                                                            emptyItem));
                                             int newPosition = 0;
-                                            final String itemName = items[xIndex] == null ? ""
-                                                    : TranslationUtils
-                                                            .getItemForID(items[xIndex].getId(),
-                                                                    PacketFactory.getProtocolFor(registry))
-                                                            .getFileName();
+                                            final String itemName = items[xIndex] == null ?
+                                                    "" :
+                                                    TranslationUtils.getItemForID(items[xIndex].getId(),
+                                                                                  PacketFactory.getProtocolFor(registry))
+                                                                    .getFileName();
 
                                             if (isInventory) {
                                                 int armorPlace = -1;
@@ -150,8 +121,7 @@ public class SwingItemsWindow extends ItemsWindow {
                                                         armorPlace = 3;
                                                     }
 
-                                                    if (!(items[armorPlace + 5] == null
-                                                            || items[armorPlace + 5].getId() == 0)) {
+                                                    if (!(items[armorPlace + 5] == null || items[armorPlace + 5].getId() == 0)) {
                                                         armorPlace = -1;
                                                     }
                                                 }
@@ -212,8 +182,13 @@ public class SwingItemsWindow extends ItemsWindow {
                                         try {
                                             final short actionID = (short) rand.nextInt(Short.MAX_VALUE);
                                             client.sendPacket(PacketFactory.constructPacket(registry,
-                                                    "ClientWindowClickPacket", windowID, (short) xIndex, (byte) 1,
-                                                    actionID, 4, emptyItem));
+                                                                                            "ClientWindowClickPacket",
+                                                                                            windowID,
+                                                                                            (short) xIndex,
+                                                                                            (byte) 1,
+                                                                                            actionID,
+                                                                                            4,
+                                                                                            emptyItem));
                                             pendingTransactions.put(actionID, new Runnable() {
 
                                                 @Override
@@ -238,7 +213,8 @@ public class SwingItemsWindow extends ItemsWindow {
                                         public void actionPerformed(final ActionEvent e) {
                                             try {
                                                 client.sendPacket(PacketFactory.constructPacket(registry,
-                                                        "ClientHeldItemChangePacket", (short) (xIndex - 36)));
+                                                                                                "ClientHeldItemChangePacket",
+                                                                                                (short) (xIndex - 36)));
                                             } catch (final Exception e2) {
                                                 e2.printStackTrace();
                                             }
@@ -256,9 +232,10 @@ public class SwingItemsWindow extends ItemsWindow {
                                             public void actionPerformed(final ActionEvent e) {
                                                 try {
                                                     client.sendPacket(PacketFactory.constructPacket(registry,
-                                                            "ClientHeldItemChangePacket", (short) (xIndex - 36)));
+                                                                                                    "ClientHeldItemChangePacket",
+                                                                                                    (short) (xIndex - 36)));
                                                     client.sendPacket(PacketFactory.constructPacket(registry,
-                                                            "ClientUseItemPacket"));
+                                                                                                    "ClientUseItemPacket"));
                                                 } catch (final Exception e2) {
                                                     e2.printStackTrace();
                                                 }
@@ -275,8 +252,12 @@ public class SwingItemsWindow extends ItemsWindow {
                                             public void actionPerformed(final ActionEvent e) {
                                                 try {
                                                     client.sendPacket(PacketFactory.constructPacket(registry,
-                                                            "ClientPlayerDiggingPacket", Status.FINISH_ACTION, 0, 0, 0,
-                                                            (byte) 0));
+                                                                                                    "ClientPlayerDiggingPacket",
+                                                                                                    Status.FINISH_ACTION,
+                                                                                                    0,
+                                                                                                    0,
+                                                                                                    0,
+                                                                                                    (byte) 0));
                                                 } catch (final Exception e2) {
                                                     e2.printStackTrace();
                                                 }
@@ -293,10 +274,15 @@ public class SwingItemsWindow extends ItemsWindow {
                                             public void actionPerformed(final ActionEvent e) {
                                                 try {
                                                     client.sendPacket(PacketFactory.constructPacket(registry,
-                                                            "ClientHeldItemChangePacket", (short) (xIndex - 36)));
+                                                                                                    "ClientHeldItemChangePacket",
+                                                                                                    (short) (xIndex - 36)));
                                                     client.sendPacket(PacketFactory.constructPacket(registry,
-                                                            "ClientPlayerDiggingPacket", Status.SWAP_ITEMS, 0, 0, 0,
-                                                            (byte) 0));
+                                                                                                    "ClientPlayerDiggingPacket",
+                                                                                                    Status.SWAP_ITEMS,
+                                                                                                    0,
+                                                                                                    0,
+                                                                                                    0,
+                                                                                                    (byte) 0));
                                                 } catch (final Exception e3) {
                                                     e3.printStackTrace();
                                                 }
@@ -327,16 +313,22 @@ public class SwingItemsWindow extends ItemsWindow {
 
                         if (isHotbar && PacketFactory.getProtocolFor(registry) > 47) {
                             try {
-                                client.sendPacket(PacketFactory.constructPacket(registry, "ClientHeldItemChangePacket",
-                                        (short) (xIndex - 36)));
+                                client.sendPacket(PacketFactory.constructPacket(registry,
+                                                                                "ClientHeldItemChangePacket",
+                                                                                (short) (xIndex - 36)));
                                 client.sendPacket(PacketFactory.constructPacket(registry, "ClientUseItemPacket"));
                             } catch (final Exception e2) {
                                 e2.printStackTrace();
                             }
                         } else if (!isInventory) {
-                            client.sendPacket(PacketFactory.constructPacket(registry, "ClientWindowClickPacket",
-                                    windowID, (short) xIndex, (byte) 0, (short) rand.nextInt(Short.MAX_VALUE), 0,
-                                    emptyItem));
+                            client.sendPacket(PacketFactory.constructPacket(registry,
+                                                                            "ClientWindowClickPacket",
+                                                                            windowID,
+                                                                            (short) xIndex,
+                                                                            (byte) 0,
+                                                                            (short) rand.nextInt(Short.MAX_VALUE),
+                                                                            0,
+                                                                            emptyItem));
                         }
                     } catch (final IOException e1) {
                         e1.printStackTrace();
@@ -348,7 +340,7 @@ public class SwingItemsWindow extends ItemsWindow {
 
     /**
      * Init textures from textures archive file
-     * 
+     *
      * @param main     Main class instance
      * @param preStart is this method invoked before application was launched
      */
@@ -364,8 +356,11 @@ public class SwingItemsWindow extends ItemsWindow {
         message.add(pLabel);
         message.alignAll();
 
-        final JOptionPane ppane = new JOptionPane(message, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
-                new Component[] { jpb });
+        final JOptionPane ppane = new JOptionPane(message,
+                                                  JOptionPane.PLAIN_MESSAGE,
+                                                  JOptionPane.DEFAULT_OPTION,
+                                                  null,
+                                                  new Component[]{jpb});
 
         win.setContentPane(ppane);
         win.pack();
@@ -414,7 +409,7 @@ public class SwingItemsWindow extends ItemsWindow {
 
     /**
      * Clear loaded textures
-     * 
+     *
      * @param main Main class instance
      */
     public static void clearTextures(final Main main) {
@@ -423,7 +418,7 @@ public class SwingItemsWindow extends ItemsWindow {
 
     /**
      * Count loaded textures
-     * 
+     *
      * @return how many textures are loaded
      */
     public static int getTexturesSize() {
@@ -432,7 +427,7 @@ public class SwingItemsWindow extends ItemsWindow {
 
     /**
      * Get an icon for armor placeholder
-     * 
+     *
      * @param index slot index
      * @return placeholder image
      */
@@ -461,7 +456,7 @@ public class SwingItemsWindow extends ItemsWindow {
 
     /**
      * Put an item in specified slot
-     * 
+     *
      * @param index slot to put item to
      * @param item  item stack for this slot
      */
@@ -531,31 +526,9 @@ public class SwingItemsWindow extends ItemsWindow {
         }
     }
 
-    private class TooltipMouseListener extends MouseAdapter {
-        private final MinecraftToolTip tp;
-        private final JButton btn;
-
-        private TooltipMouseListener(final String label, final JButton btn) {
-            tp = new MinecraftToolTip(label);
-            this.btn = btn;
-        }
-
-        @Override
-        public void mouseExited(final MouseEvent e) {
-            tp.hide();
-        }
-
-        @Override
-        public void mouseEntered(final MouseEvent e) {
-            tp.show(btn.getX() + (int) (btn.getWidth() * 1.1) + dialog.getX(),
-                    btn.getY() + btn.getHeight() + dialog.getY());
-            dialog.requestFocus();
-        }
-    }
-
     /**
      * Get inventory's title
-     * 
+     *
      * @return inventory's title
      */
     public String getTitle() {
@@ -564,7 +537,7 @@ public class SwingItemsWindow extends ItemsWindow {
 
     /**
      * Get inventory's size
-     * 
+     *
      * @return inventory size
      */
     @Override
@@ -582,7 +555,7 @@ public class SwingItemsWindow extends ItemsWindow {
 
     /**
      * Closes this inventory
-     * 
+     *
      * @param silently if set to true, no window close packet will be sent when
      *                 closing window
      */
@@ -597,7 +570,7 @@ public class SwingItemsWindow extends ItemsWindow {
 
     /**
      * Completes a pending transaction in this inventory
-     * 
+     *
      * @param actionID transaction ID
      */
     @Override
@@ -610,7 +583,7 @@ public class SwingItemsWindow extends ItemsWindow {
 
     /**
      * Cancels pending transaction
-     * 
+     *
      * @param actionID transaction ID
      */
     @Override
@@ -622,7 +595,7 @@ public class SwingItemsWindow extends ItemsWindow {
 
     /**
      * Opens this window to user
-     * 
+     *
      * @param parent           parent component
      * @param sendClosePackets send a packet when this window is closed
      */
@@ -678,5 +651,27 @@ public class SwingItemsWindow extends ItemsWindow {
         SwingUtils.centerWindow(dialog);
         dialog.setVisible(true);
         isShowing = true;
+    }
+
+    private class TooltipMouseListener extends MouseAdapter {
+        private final MinecraftToolTip tp;
+        private final JButton btn;
+
+        private TooltipMouseListener(final String label, final JButton btn) {
+            tp = new MinecraftToolTip(label);
+            this.btn = btn;
+        }
+
+        @Override
+        public void mouseExited(final MouseEvent e) {
+            tp.hide();
+        }
+
+        @Override
+        public void mouseEntered(final MouseEvent e) {
+            tp.show(btn.getX() + (int) (btn.getWidth() * 1.1) + dialog.getX(),
+                    btn.getY() + btn.getHeight() + dialog.getY());
+            dialog.requestFocus();
+        }
     }
 }

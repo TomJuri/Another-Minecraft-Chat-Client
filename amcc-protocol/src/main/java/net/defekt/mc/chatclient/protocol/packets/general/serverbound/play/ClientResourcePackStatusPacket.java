@@ -6,17 +6,26 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
 /**
  * Sent by client as response to server's resource pack
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ClientResourcePackStatusPacket extends Packet {
 
     /**
-     * Resource pack status
-     * 
-     * @author Defective4
+     * Constructs new {@link ClientResourcePackStatusPacket}
      *
+     * @param reg    packet registry used to construct this packet
+     * @param status resource pack status
+     */
+    public ClientResourcePackStatusPacket(final PacketRegistry reg, final Status status) {
+        super(reg);
+        putVarInt(status.num);
+    }
+
+    /**
+     * Resource pack status
+     *
+     * @author Defective4
      */
     public enum Status {
         /**
@@ -55,17 +64,6 @@ public class ClientResourcePackStatusPacket extends Packet {
         public String toString() {
             return Messages.getString(key);
         }
-    }
-
-    /**
-     * Constructs new {@link ClientResourcePackStatusPacket}
-     * 
-     * @param reg    packet registry used to construct this packet
-     * @param status resource pack status
-     */
-    public ClientResourcePackStatusPacket(final PacketRegistry reg, final Status status) {
-        super(reg);
-        putVarInt(status.num);
     }
 
 }

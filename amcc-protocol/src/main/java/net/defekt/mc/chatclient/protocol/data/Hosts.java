@@ -2,9 +2,8 @@ package net.defekt.mc.chatclient.protocol.data;
 
 /**
  * Class containing constants for authentication server addresses
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class Hosts {
     /**

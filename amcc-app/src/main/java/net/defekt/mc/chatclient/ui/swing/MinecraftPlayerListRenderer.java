@@ -1,40 +1,24 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-
-import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
-
 import net.defekt.mc.chatclient.protocol.data.ChatMessages;
 import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
 import net.defekt.mc.chatclient.protocol.data.PlayerSkinCache;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
 import net.defekt.mc.chatclient.ui.Main;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
 /**
  * Custom cell rendered used in {@link JMinecraftPlayerList}.<br>
  * It is used to render players list along with their custom names, ping, and
  * their skins.
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
-    private static final long serialVersionUID = 1L;
-
     /**
      * <img src="doc-files/0.png" height="16" alt="0"> No connection indicator image
      */
@@ -42,15 +26,14 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
         {
             try {
                 final Graphics2D g2 = createGraphics();
-                final BufferedImage img = ImageIO
-                        .read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/0.png"));
+                final BufferedImage img = ImageIO.read(MinecraftPlayerListRenderer.class.getResourceAsStream(
+                        "/resources/ping/0.png"));
                 g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
     };
-
     /**
      * <img src="doc-files/5.png" height="16" alt="5"> Full connection indicator
      * image
@@ -59,15 +42,14 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
         {
             try {
                 final Graphics2D g2 = createGraphics();
-                final BufferedImage img = ImageIO
-                        .read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/5.png"));
+                final BufferedImage img = ImageIO.read(MinecraftPlayerListRenderer.class.getResourceAsStream(
+                        "/resources/ping/5.png"));
                 g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
     };
-
     /**
      * <img src="doc-files/1.png" height="16" alt="1"> One bar connection indicator
      * image
@@ -76,15 +58,14 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
         {
             try {
                 final Graphics2D g2 = createGraphics();
-                final BufferedImage img = ImageIO
-                        .read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/1.png"));
+                final BufferedImage img = ImageIO.read(MinecraftPlayerListRenderer.class.getResourceAsStream(
+                        "/resources/ping/1.png"));
                 g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
     };
-
     /**
      * <img src="doc-files/2.png" height="16" alt="2"> Two bar connection indicator
      * image
@@ -93,15 +74,14 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
         {
             try {
                 final Graphics2D g2 = createGraphics();
-                final BufferedImage img = ImageIO
-                        .read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/2.png"));
+                final BufferedImage img = ImageIO.read(MinecraftPlayerListRenderer.class.getResourceAsStream(
+                        "/resources/ping/2.png"));
                 g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
     };
-
     /**
      * <img src="doc-files/3.png" height="16" alt="3"> Three bar connection
      * indicator image
@@ -110,15 +90,14 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
         {
             try {
                 final Graphics2D g2 = createGraphics();
-                final BufferedImage img = ImageIO
-                        .read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/3.png"));
+                final BufferedImage img = ImageIO.read(MinecraftPlayerListRenderer.class.getResourceAsStream(
+                        "/resources/ping/3.png"));
                 g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
     };
-
     /**
      * <img src="doc-files/4.png" height="16" alt="4"> Four bar connection indicator
      * image
@@ -127,20 +106,20 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
         {
             try {
                 final Graphics2D g2 = createGraphics();
-                final BufferedImage img = ImageIO
-                        .read(MinecraftPlayerListRenderer.class.getResourceAsStream("/resources/ping/4.png"));
+                final BufferedImage img = ImageIO.read(MinecraftPlayerListRenderer.class.getResourceAsStream(
+                        "/resources/ping/4.png"));
                 g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
     };
-
+    private static final long serialVersionUID = 1L;
     private final JTextField filter;
 
     /**
      * Default constructor
-     * 
+     *
      * @param filter     text field used to filter player names
      * @param playerList a player list component associated with this renderer
      */
@@ -174,14 +153,13 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
     }
 
     @Override
-    public Component getListCellRendererComponent(final JList<? extends Object> list, final Object value,
-            final int index, final boolean isSelected, final boolean cellHasFocus) {
+    public Component getListCellRendererComponent(final JList<? extends Object> list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
         final PlayerInfo info = (PlayerInfo) value;
         final String dname = info.getDisplayName() != null ? ChatMessages.parse(info.getDisplayName()) : info.getName();
 
-        if (!filter.getText().isEmpty()
-                && !ChatMessages.removeColors(dname).toLowerCase().contains(filter.getText().toLowerCase()))
-            return new JLabel();
+        if (!filter.getText().isEmpty() && !ChatMessages.removeColors(dname)
+                                                        .toLowerCase()
+                                                        .contains(filter.getText().toLowerCase())) return new JLabel();
 
         final Box playerLine = Box.createHorizontalBox();
 
@@ -189,8 +167,9 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
             try {
                 PlayerSkinCache.putSkin(info.getUUID(), info.getTexture(), info.getName());
                 playerLine.add(new JPanel() {
-                    BufferedImage img = PlayerSkinCache.getHead(info.getUUID());
                     private static final long serialVersionUID = 1L;
+                    BufferedImage img = PlayerSkinCache.getHead(info.getUUID());
+
                     {
                         setPreferredSize(new Dimension(32, 40));
                         setOpaque(false);
@@ -209,8 +188,8 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 
         final JTextPane nameField = new JTextPane();
         nameField.setEditable(false);
-        final boolean unicodeFont = !SwingConstants.checkMCSupported(dname)
-                || Main.up.getUnicodeCharactersMode().equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE);
+        final boolean unicodeFont = !SwingConstants.checkMCSupported(dname) || Main.up.getUnicodeCharactersMode()
+                                                                                      .equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE);
         Font font;
         if (unicodeFont) {
             font = Font.decode(null).deriveFont(Font.BOLD).deriveFont((float) 15.5);
@@ -227,6 +206,7 @@ public class MinecraftPlayerListRenderer extends DefaultListCellRenderer {
 
         playerLine.add(new JPanel() {
             private static final long serialVersionUID = 1L;
+
             {
                 setPreferredSize(new Dimension(bar0.getWidth(), bar0.getHeight()));
                 setOpaque(false);

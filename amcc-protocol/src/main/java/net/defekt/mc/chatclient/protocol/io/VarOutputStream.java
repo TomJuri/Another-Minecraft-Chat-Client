@@ -1,31 +1,32 @@
 package net.defekt.mc.chatclient.protocol.io;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-
 import dev.dewy.nbt.Nbt;
 import dev.dewy.nbt.api.Tag;
 import dev.dewy.nbt.tags.collection.CompoundTag;
 import net.defekt.mc.chatclient.protocol.data.ItemStack;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+
 /**
  * An extension of {@link DataOutputStream} with methods to write out Minecraft'
  * data types
- * 
+ *
+ * @author Defective4
  * @see VarInputStream
  * @see Packet
- * @author Defective4
- *
  */
 public class VarOutputStream extends DataOutputStream {
 
+    private final Nbt nbt = new Nbt();
+
     /**
      * Wrap output stream in {@link VarOutputStream}
-     * 
+     *
      * @param out output stream to wrap
      */
     public VarOutputStream(final OutputStream out) {
@@ -33,22 +34,8 @@ public class VarOutputStream extends DataOutputStream {
     }
 
     /**
-     * Write a string to stream<br>
-     * This method first writes VarInt equal string's length, then it writes string
-     * as byte array
-     * 
-     * @param v string to write
-     * @throws IOException thrown when there was an error writting to stream
-     */
-    public void writeString(final String v) throws IOException {
-        final byte[] sBytes = v.getBytes(StandardCharsets.UTF_8);
-        writeVarInt(sBytes.length);
-        write(sBytes);
-    }
-
-    /**
      * Checks how many bytes will this int take after creating VarInt from it
-     * 
+     *
      * @param v VarInt value
      * @return size of VarInt
      */
@@ -63,11 +50,23 @@ public class VarOutputStream extends DataOutputStream {
         return bos.size();
     }
 
-    private final Nbt nbt = new Nbt();
+    /**
+     * Write a string to stream<br>
+     * This method first writes VarInt equal string's length, then it writes string
+     * as byte array
+     *
+     * @param v string to write
+     * @throws IOException thrown when there was an error writting to stream
+     */
+    public void writeString(final String v) throws IOException {
+        final byte[] sBytes = v.getBytes(StandardCharsets.UTF_8);
+        writeVarInt(sBytes.length);
+        write(sBytes);
+    }
 
     /**
      * Writes item data to stream
-     * 
+     *
      * @param is       item stack to write
      * @param protocol protocol determining slot data used
      * @throws IOException thrown when there was an error writing to stream
@@ -96,7 +95,7 @@ public class VarOutputStream extends DataOutputStream {
      * Writes VarInt to stream.<br>
      * Snippet from
      * <a href="https://wiki.vg/Protocol#VarInt_and_VarLong">wiki.vg</a>
-     * 
+     *
      * @param value VarInt value
      * @throws IOException thrown when there was an error writing to stream
      */

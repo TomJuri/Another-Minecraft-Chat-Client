@@ -6,15 +6,14 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
 /**
  * Sent by client when it clicks on an item in a window
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ClientWindowClickPacket extends Packet {
 
     /**
      * Constructs new {@link ClientWindowClickPacket}
-     * 
+     *
      * @param reg      packet registry used to construct this packet
      * @param windowID window ID
      * @param slot     clicked slot
@@ -23,8 +22,7 @@ public class ClientWindowClickPacket extends Packet {
      * @param mode     click mode
      * @param item     clicked item (currently must be empty)
      */
-    public ClientWindowClickPacket(final PacketRegistry reg, final Integer windowID, final Short slot,
-            final Byte button, final Short action, final Integer mode, final ItemStack item) {
+    public ClientWindowClickPacket(final PacketRegistry reg, final Integer windowID, final Short slot, final Byte button, final Short action, final Integer mode, final ItemStack item) {
         super(reg);
         putByte(windowID);
         putShort(slot);
