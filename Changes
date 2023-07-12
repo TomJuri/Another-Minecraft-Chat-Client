@@ -1,2 +1,4 @@
 AMCC Change Log
-v1.12.0
+v1.11.1
+Fixed preferences saving
+Fixed translation laoding
