@@ -1,23 +1,22 @@
 package net.defekt.mc.chatclient.protocol;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import net.defekt.mc.chatclient.protocol.data.UserPreferences;
 import net.defekt.mc.chatclient.protocol.event.ClientListener;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * An implementation of {@link InternalPacketListener} responsible for handling
  * all packets received from server. It is added to every instance of
  * {@link MinecraftClient} after successfully connecting to server.
- * 
+ *
+ * @author Defective4
  * @see MinecraftClient
  * @see ClientListener
- * @author Defective4
  * @deprecated Use {@link MainPacketListener} instead
- *
  */
 @Deprecated
 class ClientPacketListener implements InternalPacketListener {
@@ -31,7 +30,7 @@ class ClientPacketListener implements InternalPacketListener {
 
     /**
      * Constructs packet listener bound to specified client
-     * 
+     *
      * @param client A Minecraft client this listener is bound o
      * @deprecated
      */

@@ -1,11 +1,11 @@
 package net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play;
 
-import java.io.IOException;
-import java.util.UUID;
-
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerSpawnEntityPacket;
+
+import java.io.IOException;
+import java.util.UUID;
 
 @SuppressWarnings("javadoc")
 public class ServerSpawnEntityPacket extends BaseServerSpawnEntityPacket {

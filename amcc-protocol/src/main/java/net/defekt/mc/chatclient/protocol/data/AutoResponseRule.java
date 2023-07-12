@@ -9,22 +9,7 @@ import java.util.Random;
 @SuppressWarnings("javadoc")
 public class AutoResponseRule implements Serializable {
     private static final long serialVersionUID = 2057896755819059984L;
-
-    public static enum EffectType {
-        RANDOM, ORDERED, ALL
-    }
-
-    public static enum TriggerType {
-        AND, OR
-    }
-
-    @Override
-    public String toString() {
-        return getName();
-    }
-
     private transient Random rand = new Random();
-
     private String name;
     private int interval;
     private List<String> triggers = new ArrayList<String>();
@@ -32,8 +17,27 @@ public class AutoResponseRule implements Serializable {
     private List<String> effects = new ArrayList<String>();
     private EffectType effectType;
     private TriggerType triggerType;
-
     private transient int index = 0;
+    public AutoResponseRule(final String name, final EffectType effectType, final TriggerType triggerType, final int interval, final String[] triggers, final String[] exceptions, final String[] effects) {
+        this.name = name;
+        this.effectType = effectType;
+        this.triggerType = triggerType;
+        this.interval = interval;
+        if (triggers != null) {
+            Collections.addAll(this.triggers, triggers);
+        }
+        if (exceptions != null) {
+            Collections.addAll(this.exceptions, exceptions);
+        }
+        if (effects != null) {
+            Collections.addAll(this.effects, effects);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 
     public String[] match(String message) {
         if (rand == null) {
@@ -67,63 +71,33 @@ public class AutoResponseRule implements Serializable {
                     final String rt = effects.get(index);
                     index++;
                     index %= effects.size();
-                    return new String[] { rt };
+                    return new String[]{rt};
                 }
                 default: {
-                    return new String[] { effects.get(rand.nextInt(effects.size())) };
+                    return new String[]{effects.get(rand.nextInt(effects.size()))};
                 }
             }
-        } else
-            return null;
-    }
-
-    public AutoResponseRule(final String name, final EffectType effectType, final TriggerType triggerType,
-            final int interval, final String[] triggers, final String[] exceptions, final String[] effects) {
-        this.name = name;
-        this.effectType = effectType;
-        this.triggerType = triggerType;
-        this.interval = interval;
-        if (triggers != null) {
-            Collections.addAll(this.triggers, triggers);
-        }
-        if (exceptions != null) {
-            Collections.addAll(this.exceptions, exceptions);
-        }
-        if (effects != null) {
-            Collections.addAll(this.effects, effects);
-        }
+        } else return null;
     }
 
     public String getName() {
         return name;
     }
 
-    public int getInterval() {
-        return interval;
-    }
-
-    public List<String> getTriggers() {
-        return new ArrayList<>(triggers);
-    }
-
-    public List<String> getExceptions() {
-        return new ArrayList<String>(exceptions);
-    }
-
-    public List<String> getEffects() {
-        return new ArrayList<String>(effects);
-    }
-
-    public EffectType getType() {
-        return effectType;
-    }
-
     public void setName(final String name) {
         this.name = name;
     }
 
+    public int getInterval() {
+        return interval;
+    }
+
     public void setInterval(final int interval) {
         this.interval = interval;
+    }
+
+    public List<String> getTriggers() {
+        return new ArrayList<>(triggers);
     }
 
     public void setTriggers(final String[] triggers) {
@@ -131,14 +105,26 @@ public class AutoResponseRule implements Serializable {
         Collections.addAll(this.triggers, triggers);
     }
 
+    public List<String> getExceptions() {
+        return new ArrayList<String>(exceptions);
+    }
+
     public void setExceptions(final String[] exceptions) {
         this.exceptions = new ArrayList<String>();
         Collections.addAll(this.exceptions, exceptions);
     }
 
+    public List<String> getEffects() {
+        return new ArrayList<String>(effects);
+    }
+
     public void setEffects(final String[] effects) {
         this.effects = new ArrayList<String>();
         Collections.addAll(this.effects, effects);
+    }
+
+    public EffectType getType() {
+        return effectType;
     }
 
     public void setType(final EffectType type) {
@@ -151,5 +137,16 @@ public class AutoResponseRule implements Serializable {
 
     public void setTriggerType(final TriggerType triggerType) {
         this.triggerType = triggerType;
+    }
+
+    public static enum EffectType {
+        RANDOM,
+        ORDERED,
+        ALL
+    }
+
+    public static enum TriggerType {
+        AND,
+        OR
     }
 }

@@ -1,19 +1,13 @@
 package net.defekt.mc.chatclient.protocol.io;
 
-import java.awt.Graphics2D;
+import net.defekt.mc.chatclient.protocol.data.AutoResponseRule;
+import net.defekt.mc.chatclient.protocol.data.PlayerSkinCache;
+
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -22,21 +16,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.defekt.mc.chatclient.protocol.data.AutoResponseRule;
-import net.defekt.mc.chatclient.protocol.data.PlayerSkinCache;
-
 /**
  * Class containing some IO and image manipulation utilities
- * 
- * @see PlayerSkinCache
- * @author Defective4
  *
+ * @author Defective4
+ * @see PlayerSkinCache
  */
 public class IOUtils {
 
     /**
      * Create a Minecraft-compatible sha1 string
-     * 
+     *
      * @param args byte arrays to add to hash
      * @return sha1 string
      * @throws NoSuchAlgorithmException never thrown
@@ -51,7 +41,7 @@ public class IOUtils {
 
     /**
      * Read all bytes from stream
-     * 
+     *
      * @param is        input stream to read from
      * @param autoClose close stream after reading all bytes
      * @return byte array read from stream
@@ -72,7 +62,7 @@ public class IOUtils {
 
     /**
      * Read all bytes from stream and close it
-     * 
+     *
      * @param is input stream to read from
      * @return byte array read from stream
      * @throws IOException thrown when there was an error reading from stream
@@ -83,7 +73,7 @@ public class IOUtils {
 
     /**
      * Trim skin image to head
-     * 
+     *
      * @param img   skin image (must be original skin size)
      * @param hatOn if true a skin hat will also be included if present
      * @return image of skin head
@@ -94,7 +84,7 @@ public class IOUtils {
 
     /**
      * Trim skin image to head
-     * 
+     *
      * @param img   skin image (must be original skin size)
      * @param hatOn if true a skin hat will also be included if present
      * @param side  sets head direction. Current values are:<br>
@@ -129,7 +119,7 @@ public class IOUtils {
 
     /**
      * Resize image to match given height
-     * 
+     *
      * @param img    image to rescale
      * @param height target height
      * @return resized image
@@ -140,14 +130,15 @@ public class IOUtils {
 
     /**
      * Scale image with a given scale
-     * 
+     *
      * @param img   image to rescale
      * @param scale resize scale
      * @return scaled image
      */
     public static BufferedImage scaleImage(final BufferedImage img, final double scale) {
-        final BufferedImage nw = new BufferedImage((int) (img.getWidth() * scale), (int) (img.getHeight() * scale),
-                img.getType());
+        final BufferedImage nw = new BufferedImage((int) (img.getWidth() * scale),
+                                                   (int) (img.getHeight() * scale),
+                                                   img.getType());
         final Graphics2D g2 = nw.createGraphics();
         g2.drawImage(img, 0, 0, nw.getWidth(), nw.getHeight(), null);
         return nw;
@@ -155,7 +146,7 @@ public class IOUtils {
 
     /**
      * Creates image of player skin displayed as in-game
-     * 
+     *
      * @param skin      original skin image
      * @param direction direction of output image, same as in
      *                  {@link #trimSkinHead(BufferedImage, boolean, int)
@@ -207,7 +198,7 @@ public class IOUtils {
 
     /**
      * Flip an image along X axis
-     * 
+     *
      * @param img image to flip
      * @return flipped image
      */
@@ -220,7 +211,7 @@ public class IOUtils {
 
     /**
      * Trim an image
-     * 
+     *
      * @param img image to trim
      * @param x   X coordinate of left upper corner
      * @param y   Y coordinate of left upper corner
@@ -237,7 +228,7 @@ public class IOUtils {
 
     /**
      * Pads a string with provided character
-     * 
+     *
      * @param string       string to pad
      * @param len          string's target length
      * @param padCharacter characters used in padding
@@ -246,18 +237,17 @@ public class IOUtils {
      */
     public static String padString(final String string, final int len, final String padCharacter, final int mode) {
         String s = string;
-        while (s.length() < len)
-            if (mode == 0) {
-                s += padCharacter;
-            } else {
-                s = padCharacter + s;
-            }
+        while (s.length() < len) if (mode == 0) {
+            s += padCharacter;
+        } else {
+            s = padCharacter + s;
+        }
         return s;
     }
 
     /**
      * Save automatic messages to file
-     * 
+     *
      * @param out  output file
      * @param data
      * @throws IOException thrown when there was an error while saving automatic
@@ -283,7 +273,7 @@ public class IOUtils {
 
     /**
      * Load automatic messages from file
-     * 
+     *
      * @param in input file
      * @return messages array
      * @throws IOException thrown when there was an error while reading messages
@@ -309,7 +299,7 @@ public class IOUtils {
 
     /**
      * Load automatic responses from file
-     * 
+     *
      * @param in input file
      * @return list of automatic response rules
      * @throws IOException thrown when there was an error while reading file
@@ -326,7 +316,7 @@ public class IOUtils {
 
     /**
      * Write automatic responses to file
-     * 
+     *
      * @param out  output file
      * @param list automatic responses list
      * @throws IOException thrown when there was an error while writing to file
@@ -345,7 +335,7 @@ public class IOUtils {
 
     /**
      * Force an extension to the filename
-     * 
+     *
      * @param file      file to force extension on
      * @param extension extension to be forced
      * @return file with changed extension
@@ -353,16 +343,16 @@ public class IOUtils {
     public static File forceExtension(File file, final String extension) {
         final String ext = getFileExtension(file);
         if (ext == null || !ext.equals(extension)) {
-            file = new File(
-                    (ext == null ? file.getPath() : file.getPath().substring(0, file.getPath().lastIndexOf(".")))
-                            + extension);
+            file = new File((ext == null ?
+                    file.getPath() :
+                    file.getPath().substring(0, file.getPath().lastIndexOf("."))) + extension);
         }
         return file;
     }
 
     /**
      * Get extension of specified file
-     * 
+     *
      * @param file file to check extension of
      * @return file's extension, or null if none
      */

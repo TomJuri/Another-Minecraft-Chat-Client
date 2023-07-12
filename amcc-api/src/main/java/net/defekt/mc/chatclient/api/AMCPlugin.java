@@ -8,9 +8,8 @@ import net.defekt.mc.chatclient.protocol.event.MinecraftPacketListener;
 
 /**
  * Represents a AMCC plugin
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public abstract class AMCPlugin {
 
@@ -31,7 +30,7 @@ public abstract class AMCPlugin {
 
     /**
      * Called when GUI fully initializes
-     * 
+     *
      * @param components
      */
     public void onGUIInitialized(final GUIComponents components) {
@@ -40,7 +39,7 @@ public abstract class AMCPlugin {
 
     /**
      * Get plugin description
-     * 
+     *
      * @return {@link PluginDescription} associated with this plugin
      */
     public PluginDescription getDescription() {
@@ -49,7 +48,7 @@ public abstract class AMCPlugin {
 
     /**
      * Register new packet listener
-     * 
+     *
      * @param listener
      */
     protected void registerPacketListener(final MinecraftPacketListener listener) {
@@ -58,7 +57,7 @@ public abstract class AMCPlugin {
 
     /**
      * Register new client listener
-     * 
+     *
      * @param listener
      */
     protected void registerClientListener(final ClientListener listener) {
@@ -67,7 +66,7 @@ public abstract class AMCPlugin {
 
     /**
      * Register new command
-     * 
+     *
      * @param cmd
      * @param handler
      */
@@ -77,7 +76,7 @@ public abstract class AMCPlugin {
 
     /**
      * Unregister a command
-     * 
+     *
      * @param cmd
      */
     protected void unregisterCommand(final String cmd) {

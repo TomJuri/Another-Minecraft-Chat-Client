@@ -1,40 +1,39 @@
 package net.defekt.mc.chatclient.protocol.packets;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-
 import net.defekt.mc.chatclient.protocol.data.ItemStack;
 import net.defekt.mc.chatclient.protocol.event.Cancellable;
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Base class for all packets
- * 
+ *
+ * @author Defective4
  * @see PacketFactory
  * @see PacketRegistry
- * @author Defective4
- *
  */
 public class Packet implements Cancellable {
-
-    /**
-     * Packet's current ID determined by its entry in provide {@link PacketRegistry}
-     */
-    protected int id = -1;
 
     private final ByteArrayOutputStream rawBuffer = new ByteArrayOutputStream();
     private final VarOutputStream varBuffer = new VarOutputStream(rawBuffer);
     private final PacketRegistry reg;
+    /**
+     * Packet's current ID determined by its entry in provide {@link PacketRegistry}
+     */
+    protected int id = -1;
     private int compressed = 0;
     private boolean encrypted = false;
+    private boolean canceled = false;
 
     /**
      * Constructs a RAW packet (universal)<br>
      * It's used to create Unknown packets
-     * 
+     *
      * @param reg  packet registry to be used
      * @param id   packet's id
      * @param data packet data
@@ -49,7 +48,7 @@ public class Packet implements Cancellable {
     /**
      * Constructs a packet (serverbound)<br>
      * This constructor is usually used to create serverbound packets
-     * 
+     *
      * @param reg packet registry used to determine this packet's id
      */
     protected Packet(final PacketRegistry reg) {
@@ -60,7 +59,7 @@ public class Packet implements Cancellable {
     /**
      * Constructs a packet (clientbound)<br>
      * This constructor is usually used to create clientbound packets
-     * 
+     *
      * @param reg  packet registry used to determine this packet's id
      * @param data data contained in this packet
      * @throws IOException never thrown
@@ -73,7 +72,7 @@ public class Packet implements Cancellable {
 
     /**
      * Get {@link VarInputStream} with this packet's contents
-     * 
+     *
      * @return input stream with packet's contents
      */
     protected VarInputStream getInputStream() {
@@ -82,7 +81,7 @@ public class Packet implements Cancellable {
 
     /**
      * Get this packet's determined ID
-     * 
+     *
      * @return packet's ID
      */
     public int getID() {
@@ -91,7 +90,7 @@ public class Packet implements Cancellable {
 
     /**
      * Check if this packet's name equals String
-     * 
+     *
      * @param name string to compare
      * @return true if this packet's name is the same as provided String
      */
@@ -101,7 +100,7 @@ public class Packet implements Cancellable {
 
     /**
      * Put a VarInt to this packet
-     * 
+     *
      * @param v VarInt value
      */
     protected void putVarInt(final int v) {
@@ -114,7 +113,7 @@ public class Packet implements Cancellable {
 
     /**
      * Put an Integer to this packet
-     * 
+     *
      * @param v Integer value
      */
     protected void putInt(final int v) {
@@ -127,7 +126,7 @@ public class Packet implements Cancellable {
 
     /**
      * Put slot data to this packet
-     * 
+     *
      * @param v VarInt value
      */
     protected void putSlotData(final ItemStack v) {
@@ -140,7 +139,7 @@ public class Packet implements Cancellable {
 
     /**
      * Put a byte to this packet
-     * 
+     *
      * @param v VarInt value
      */
     protected void putByte(final int v) {
@@ -153,7 +152,7 @@ public class Packet implements Cancellable {
 
     /**
      * Put a Long to this packet
-     * 
+     *
      * @param v value
      */
     protected void putLong(final long v) {
@@ -166,7 +165,7 @@ public class Packet implements Cancellable {
 
     /**
      * Put a Float to this packet
-     * 
+     *
      * @param v value
      */
     protected void putFloat(final float v) {
@@ -179,7 +178,7 @@ public class Packet implements Cancellable {
 
     /**
      * Put a Boolean to this packet
-     * 
+     *
      * @param v value
      */
     protected void putBoolean(final boolean v) {
@@ -192,7 +191,7 @@ public class Packet implements Cancellable {
 
     /**
      * Put a Double to this packet
-     * 
+     *
      * @param v value
      */
     protected void putDouble(final double v) {
@@ -205,7 +204,7 @@ public class Packet implements Cancellable {
 
     /**
      * Put a byte array to this packet
-     * 
+     *
      * @param v byte array
      */
     protected void putBytes(final byte[] v) {
@@ -218,7 +217,7 @@ public class Packet implements Cancellable {
 
     /**
      * Put short to this packet
-     * 
+     *
      * @param v value
      */
     protected void putShort(final int v) {
@@ -231,7 +230,7 @@ public class Packet implements Cancellable {
 
     /**
      * Put String to this packet
-     * 
+     *
      * @param v value
      */
     protected void putString(final String v) {
@@ -244,7 +243,7 @@ public class Packet implements Cancellable {
 
     /**
      * Get this packet's bytes as ready to send data in Minecraft's packet format
-     * 
+     *
      * @param compression whether to use post-compression format
      * @return byte array with packet's data
      */
@@ -271,7 +270,7 @@ public class Packet implements Cancellable {
 
     /**
      * Get packet data size
-     * 
+     *
      * @return data size
      */
     public long getSize() {
@@ -280,7 +279,7 @@ public class Packet implements Cancellable {
 
     /**
      * Access packet's method via reflection
-     * 
+     *
      * @param name method name
      * @return method's return value
      */
@@ -288,8 +287,8 @@ public class Packet implements Cancellable {
         final Class<? extends Packet> cl = getClass();
         try {
             return cl.getDeclaredMethod(name).invoke(this);
-        } catch (SecurityException | IllegalArgumentException | NoSuchMethodException | IllegalAccessException
-                | InvocationTargetException e) {
+        } catch (SecurityException | IllegalArgumentException | NoSuchMethodException | IllegalAccessException |
+                 InvocationTargetException e) {
             e.printStackTrace();
             return null;
         }
@@ -297,7 +296,7 @@ public class Packet implements Cancellable {
 
     /**
      * Return packet's compression state
-     * 
+     *
      * @return compression state
      */
     public int getCompressed() {
@@ -306,7 +305,7 @@ public class Packet implements Cancellable {
 
     /**
      * Set packet's compression state
-     * 
+     *
      * @param compressed new compression state
      */
     public void setCompressed(final int compressed) {
@@ -315,7 +314,7 @@ public class Packet implements Cancellable {
 
     /**
      * Get packet's registry
-     * 
+     *
      * @return packet registry
      */
     public PacketRegistry getReg() {
@@ -324,7 +323,7 @@ public class Packet implements Cancellable {
 
     /**
      * Get packet encrypted state
-     * 
+     *
      * @return packet encrypted state
      */
     public boolean isEncrypted() {
@@ -333,14 +332,12 @@ public class Packet implements Cancellable {
 
     /**
      * Set packet encrypted state
-     * 
+     *
      * @param encrypted new encrypted state
      */
     public void setEncrypted(final boolean encrypted) {
         this.encrypted = encrypted;
     }
-
-    private boolean canceled = false;
 
     @Override
     public boolean isCancelled() {

@@ -1,10 +1,12 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Toolkit;
+import net.defekt.mc.chatclient.protocol.data.Messages;
+import net.defekt.mc.chatclient.protocol.data.ServerEntry;
+import net.defekt.mc.chatclient.ui.Main;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -15,35 +17,25 @@ import java.io.OutputStream;
 import java.util.Base64;
 import java.util.Random;
 
-import javax.swing.JFileChooser;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.ListSelectionModel;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import net.defekt.mc.chatclient.protocol.data.Messages;
-import net.defekt.mc.chatclient.protocol.data.ServerEntry;
-import net.defekt.mc.chatclient.ui.Main;
-
 /**
  * Minecraft-like server list<br>
  * It shows informations about all servers it contains (their names, motd,
  * version, players and even an icon).<br>
  * by default it uses custom cell renderer -
  * {@link MinecraftServerListRenderer}.
- * 
+ *
+ * @author Defective4
  * @see ServerEntry
  * @see MinecraftServerListRenderer
- * @author Defective4
- *
  */
 public class JMinecraftServerList extends JMemList<ServerEntry> {
     private static final long serialVersionUID = 1L;
+    private static final Dimension sSize = Toolkit.getDefaultToolkit().getScreenSize();
+    private final byte[][] bytemap = new byte[(int) (sSize.getWidth() / 16)][(int) (sSize.getHeight() / 16)];
 
     /**
      * Default constructor
-     * 
+     *
      * @param main      instance of main application class
      * @param popupMenu if pop-up menu with options should be accessible for this
      *                  list
@@ -81,8 +73,8 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
                                 }
                             };
 
-                            final JMenuItem mupItem = new JMenuItem(
-                                    Messages.getString("JMinecraftServerList.serverUpLabel")) {
+                            final JMenuItem mupItem = new JMenuItem(Messages.getString(
+                                    "JMinecraftServerList.serverUpLabel")) {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
@@ -93,8 +85,8 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
                                 }
                             };
 
-                            final JMenuItem mdownItem = new JMenuItem(
-                                    Messages.getString("JMinecraftServerList.serverDownLabel")) {
+                            final JMenuItem mdownItem = new JMenuItem(Messages.getString(
+                                    "JMinecraftServerList.serverDownLabel")) {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
@@ -105,22 +97,22 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
                                 }
                             };
 
-                            final JMenuItem queryItem = new JMenuItem(
-                                    Messages.getString("JMinecraftServerList.detailsLabel")) {
+                            final JMenuItem queryItem = new JMenuItem(Messages.getString(
+                                    "JMinecraftServerList.detailsLabel")) {
                                 {
                                     addActionListener(new ActionListener() {
                                         @Override
                                         public void actionPerformed(final ActionEvent e) {
-                                            final ServerDetailsDialog dialog = new ServerDetailsDialog(
-                                                    main.getMainWindow(), et);
+                                            final ServerDetailsDialog dialog = new ServerDetailsDialog(main.getMainWindow(),
+                                                                                                       et);
                                             dialog.setVisible(true);
                                         }
                                     });
                                 }
                             };
 
-                            final JMenuItem saveIconItem = new JMenuItem(
-                                    Messages.getString("JMinecraftServerList.saveIconLabel")) {
+                            final JMenuItem saveIconItem = new JMenuItem(Messages.getString(
+                                    "JMinecraftServerList.saveIconLabel")) {
                                 {
                                     addActionListener(new ActionListener() {
 
@@ -129,7 +121,7 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
                                             if (et.getIcon() != null) {
                                                 try {
                                                     final byte[] image = Base64.getDecoder()
-                                                            .decode(et.getIcon().getBytes());
+                                                                               .decode(et.getIcon().getBytes());
 
                                                     final JFileChooser fc = new JFileChooser();
                                                     fc.setDialogTitle(Messages.getString("Main.save"));
@@ -146,18 +138,25 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
                                                             os.close();
                                                             SwingUtils.playAsterisk();
                                                             JOptionPane.showOptionDialog(main.getMainWindow(),
-                                                                    Messages.getString(
-                                                                            "JMinecraftServerList.exportIconSuccess"),
-                                                                    "...", JOptionPane.CANCEL_OPTION,
-                                                                    JOptionPane.INFORMATION_MESSAGE, null,
-                                                                    new String[] { Messages.getString("Main.ok") }, 0);
+                                                                                         Messages.getString(
+                                                                                                 "JMinecraftServerList.exportIconSuccess"),
+                                                                                         "...",
+                                                                                         JOptionPane.CANCEL_OPTION,
+                                                                                         JOptionPane.INFORMATION_MESSAGE,
+                                                                                         null,
+                                                                                         new String[]{
+                                                                                                 Messages.getString(
+                                                                                                         "Main.ok")
+                                                                                         },
+                                                                                         0);
                                                         } catch (final Exception ex) {
                                                             ex.printStackTrace();
                                                             SwingUtils.showErrorDialog(main.getMainWindow(),
-                                                                    Messages.getString(
-                                                                            "JMinecraftPlayerList.exportErrorDialogTitle"),
-                                                                    ex, Messages.getString(
-                                                                            "JMinecraftServerList.saveIconErrorMessage"));
+                                                                                       Messages.getString(
+                                                                                               "JMinecraftPlayerList.exportErrorDialogTitle"),
+                                                                                       ex,
+                                                                                       Messages.getString(
+                                                                                               "JMinecraftServerList.saveIconErrorMessage"));
                                                         }
                                                     }
 
@@ -190,15 +189,11 @@ public class JMinecraftServerList extends JMemList<ServerEntry> {
         }
     }
 
-    private static final Dimension sSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-    private final byte[][] bytemap = new byte[(int) (sSize.getWidth() / 16)][(int) (sSize.getHeight() / 16)];
-
     @Override
     public void paintComponent(final Graphics g) {
-//		for (int x = 0; x <= getWidth() / 64; x++)
-//			for (int y = 0; y <= getHeight() / 64; y++)
-//				g.drawImage(Main.bgImage, x * 64, y * 64, 64, 64, null);
+        //		for (int x = 0; x <= getWidth() / 64; x++)
+        //			for (int y = 0; y <= getHeight() / 64; y++)
+        //				g.drawImage(Main.bgImage, x * 64, y * 64, 64, 64, null);
         g.setColor(new Color(60, 47, 74));
         g.fillRect(0, 0, getWidth(), getHeight());
         for (int x = 0; x < getWidth() / 16; x++) {

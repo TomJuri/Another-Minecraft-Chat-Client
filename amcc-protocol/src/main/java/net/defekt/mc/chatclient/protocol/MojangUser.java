@@ -2,9 +2,8 @@ package net.defekt.mc.chatclient.protocol;
 
 /**
  * Class containing user authentication unfo
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class MojangUser {
     private String accessToken;
@@ -26,6 +25,11 @@ public class MojangUser {
         return accessToken;
     }
 
+    @SuppressWarnings("javadoc")
+    public void setAccessToken(final String accessToken) {
+        this.accessToken = accessToken;
+    }
+
     /**
      * @return user's online UUID
      */
@@ -33,21 +37,16 @@ public class MojangUser {
         return userID;
     }
 
+    @SuppressWarnings("javadoc")
+    public void setUserID(final String userID) {
+        this.userID = userID;
+    }
+
     /**
      * @return user's in-game name
      */
     public String getUserName() {
         return userName;
-    }
-
-    @SuppressWarnings("javadoc")
-    public void setAccessToken(final String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    @SuppressWarnings("javadoc")
-    public void setUserID(final String userID) {
-        this.userID = userID;
     }
 
     @SuppressWarnings("javadoc")

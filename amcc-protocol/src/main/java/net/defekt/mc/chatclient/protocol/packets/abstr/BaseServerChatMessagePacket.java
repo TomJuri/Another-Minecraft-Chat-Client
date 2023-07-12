@@ -1,16 +1,15 @@
 package net.defekt.mc.chatclient.protocol.packets.abstr;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 
+import java.io.IOException;
+
 /**
  * Base class for all clientbound chat message packets
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class BaseServerChatMessagePacket extends Packet {
 
@@ -27,7 +26,7 @@ public class BaseServerChatMessagePacket extends Packet {
 
     /**
      * Default constructor
-     * 
+     *
      * @param reg
      * @param data
      * @throws IOException
@@ -38,7 +37,7 @@ public class BaseServerChatMessagePacket extends Packet {
 
     /**
      * Get received message
-     * 
+     *
      * @return json message
      */
     public String getMessage() {
@@ -47,7 +46,7 @@ public class BaseServerChatMessagePacket extends Packet {
 
     /**
      * Get message position
-     * 
+     *
      * @return {@link Position}
      */
     public Position getPosition() {

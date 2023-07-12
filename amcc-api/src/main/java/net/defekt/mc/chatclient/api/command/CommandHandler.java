@@ -4,14 +4,13 @@ import net.defekt.mc.chatclient.protocol.MinecraftClient;
 
 /**
  * This interface contains a method for handling incoming commands
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public interface CommandHandler {
     /**
      * Called when user enters a command
-     * 
+     *
      * @param cmd
      * @param args
      * @param client

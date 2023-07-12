@@ -1,128 +1,6 @@
 package net.defekt.mc.chatclient.ui;
 
-import static net.defekt.mc.chatclient.ui.FontAwesome.createIcon;
-
-import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Menu;
-import java.awt.MenuComponent;
-import java.awt.MenuItem;
-import java.awt.Point;
-import java.awt.PopupMenu;
-import java.awt.Rectangle;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
-import java.awt.TrayIcon.MessageType;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.Proxy.Type;
-import java.net.URI;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-import java.util.Vector;
-import java.util.function.Consumer;
-
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JRadioButton;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JSpinner;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.JToggleButton;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.basic.BasicArrowButton;
-import javax.swing.table.DefaultTableModel;
-
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import dev.dewy.nbt.Nbt;
 import dev.dewy.nbt.tags.collection.CompoundTag;
 import dev.dewy.nbt.tags.collection.ListTag;
@@ -133,27 +11,11 @@ import net.defekt.mc.chatclient.api.ui.UserActionListener;
 import net.defekt.mc.chatclient.integrations.discord.DiscordPresence;
 import net.defekt.mc.chatclient.plugins.Plugins;
 import net.defekt.mc.chatclient.plugins.Plugins.StarStats;
-import net.defekt.mc.chatclient.protocol.AuthType;
-import net.defekt.mc.chatclient.protocol.InternalPacketListener;
-import net.defekt.mc.chatclient.protocol.LANListener;
-import net.defekt.mc.chatclient.protocol.MinecraftClient;
-import net.defekt.mc.chatclient.protocol.MinecraftStat;
-import net.defekt.mc.chatclient.protocol.ProtocolEntry;
-import net.defekt.mc.chatclient.protocol.ProtocolNumber;
+import net.defekt.mc.chatclient.protocol.*;
 import net.defekt.mc.chatclient.protocol.auth.UserInfo;
-import net.defekt.mc.chatclient.protocol.data.AutoResponseRule;
+import net.defekt.mc.chatclient.protocol.data.*;
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule.EffectType;
 import net.defekt.mc.chatclient.protocol.data.AutoResponseRule.TriggerType;
-import net.defekt.mc.chatclient.protocol.data.ChatMessages;
-import net.defekt.mc.chatclient.protocol.data.ForgeMode;
-import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
-import net.defekt.mc.chatclient.protocol.data.Messages;
-import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
-import net.defekt.mc.chatclient.protocol.data.PlayerSkinCache;
-import net.defekt.mc.chatclient.protocol.data.ProxySetting;
-import net.defekt.mc.chatclient.protocol.data.ServerEntry;
-import net.defekt.mc.chatclient.protocol.data.TranslationUtils;
-import net.defekt.mc.chatclient.protocol.data.UserPreferences;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences.ColorPreferences;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences.Constants;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences.Language;
@@ -173,38 +35,80 @@ import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.Server
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket.Status;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientUseEntityPacket.UseType;
 import net.defekt.mc.chatclient.ui.SearchQuery.SearchType;
-import net.defekt.mc.chatclient.ui.swing.JAutoResponseList;
-import net.defekt.mc.chatclient.ui.swing.JColorChooserButton;
+import net.defekt.mc.chatclient.ui.swing.*;
 import net.defekt.mc.chatclient.ui.swing.JColorChooserButton.ColorChangeListener;
-import net.defekt.mc.chatclient.ui.swing.JMemList;
-import net.defekt.mc.chatclient.ui.swing.JMinecraftButton;
-import net.defekt.mc.chatclient.ui.swing.JMinecraftField;
-import net.defekt.mc.chatclient.ui.swing.JMinecraftPlayerList;
-import net.defekt.mc.chatclient.ui.swing.JMinecraftServerList;
-import net.defekt.mc.chatclient.ui.swing.JPlaceholderField;
-import net.defekt.mc.chatclient.ui.swing.JStringMemList;
-import net.defekt.mc.chatclient.ui.swing.JVBoxPanel;
-import net.defekt.mc.chatclient.ui.swing.SwingUtils;
-import net.defekt.mc.chatclient.ui.swing.TablePacketButton;
-import net.defekt.mc.chatclient.ui.swing.VersionFieldRenderer;
 import net.defekt.mc.chatclient.ui.swing.windows.AccountManagerWindow;
-import net.defekt.minecraft.auth.microsoft.MicrosoftAuth;
-import net.defekt.minecraft.auth.microsoft.MinecraftAuthResponse;
-import net.defekt.minecraft.auth.microsoft.OnlineProfile;
-import net.defekt.minecraft.auth.microsoft.TokenResponse;
-import net.defekt.minecraft.auth.microsoft.XSTSResponse;
+import net.defekt.minecraft.auth.microsoft.*;
+
+import javax.imageio.ImageIO;
+import javax.swing.SwingConstants;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.TrayIcon.MessageType;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.net.*;
+import java.net.Proxy.Type;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Timer;
+import java.util.*;
+import java.util.function.Consumer;
+
+import static net.defekt.mc.chatclient.ui.FontAwesome.createIcon;
 
 public class Main {
 
+    public static final String VERSION = "1.11.1";
+    public static final UserPreferences up = UserPreferences.load();
+    private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
+    private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
+    public static BufferedImage logoImage = null;
+    public static Font mcFont = Font.decode(null);
+    private static boolean qmdShowing = false;
+    private final JMinecraftServerList serverListComponent = new JMinecraftServerList(this, true);
+    private final JMinecraftServerList lanListComponent = new JMinecraftServerList(this, false);
+    private final JMinecraftServerList importListComponent = new JMinecraftServerList(this, false);
+    private final JTabbedPane tabPane = new JTabbedPane();
+    private final Map<JSplitPane, MinecraftClient> clients = new HashMap<JSplitPane, MinecraftClient>();
+    private final JFrame win = new JFrame();
+    private final JMenuBar menuBar = new JMenuBar();
+    private final DiscordPresence discordIntegr = new DiscordPresence("1015565248364826694", this, tabPane, clients);
+    private final Runnable upSaveRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            try (OutputStream os = Base64.getEncoder()
+                                         .wrap(Files.newOutputStream(UserPreferences.serverFile.toPath()))) {
+                os.write(new Gson().toJson(up).getBytes(StandardCharsets.UTF_8));
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    JFrame pWin = null;
+    private List<ServerEntry> servers = Collections.synchronizedList(new ArrayList<ServerEntry>());
+    private TrayIcon trayIcon = null;
+    private MinecraftClient trayLastMessageSender = null;
+    private int trayLastMessageType = 0;
+
+    private ServerEntry selectedServer = null;
+
+    private ActionListener alis;
+    private GUIComponents guiComponents;
+
     private Main() {
     }
-
-    public static BufferedImage logoImage = null;
-
-    public static final String VERSION = "1.11.1";
-    private static final String CHANGELOG_URL = "https://raw.githubusercontent.com/Defective4/Another-Minecraft-Chat-Client/master/Changes";
-
-    public static Font mcFont = Font.decode(null);
 
     private static void checkForUpdates() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new URL(CHANGELOG_URL).openStream()))) {
@@ -215,8 +119,10 @@ public class Main {
             }
 
             if (cgLines.size() > 1 && cgLines.get(0).equals("AMCC Change Log")) {
-                final String newVersionString = IOUtils.padString(cgLines.get(1).substring(1).replace(".", ""), 3, "0",
-                        0);
+                final String newVersionString = IOUtils.padString(cgLines.get(1).substring(1).replace(".", ""),
+                                                                  3,
+                                                                  "0",
+                                                                  0);
                 final String thisVersionString = IOUtils.padString(VERSION.replace(".", ""), 3, "0", 0);
 
                 final int newVersion = Integer.parseInt(newVersionString);
@@ -234,13 +140,13 @@ public class Main {
                     }
 
                     final int nMajor = Integer.parseInt(newVersionSm.substring(0, newVersionSm.indexOf(".")));
-                    final int nMinor = Integer.parseInt(
-                            newVersionSm.substring(newVersionSm.indexOf(".") + 1, newVersionSm.lastIndexOf(".")));
+                    final int nMinor = Integer.parseInt(newVersionSm.substring(newVersionSm.indexOf(".") + 1,
+                                                                               newVersionSm.lastIndexOf(".")));
                     final int nFix = Integer.parseInt(newVersionSm.substring(newVersionSm.lastIndexOf(".") + 1));
 
                     final int oMajor = Integer.parseInt(oldVersionSm.substring(0, oldVersionSm.indexOf(".")));
-                    final int oMinor = Integer.parseInt(
-                            oldVersionSm.substring(oldVersionSm.indexOf(".") + 1, oldVersionSm.lastIndexOf(".")));
+                    final int oMinor = Integer.parseInt(oldVersionSm.substring(oldVersionSm.indexOf(".") + 1,
+                                                                               oldVersionSm.lastIndexOf(".")));
                     final int oFix = Integer.parseInt(oldVersionSm.substring(oldVersionSm.lastIndexOf(".") + 1));
 
                     int diff = 0;
@@ -307,12 +213,12 @@ public class Main {
                 preErrors.add(e);
             }
         }
-        Main.main(loaded.toArray(new AMCPlugin[0]), malicious.toArray(new String[0]),
-                preErrors.toArray(new Exception[0]));
+        Main.main(loaded.toArray(new AMCPlugin[0]),
+                  malicious.toArray(new String[0]),
+                  preErrors.toArray(new Exception[0]));
     }
 
-    public static void main(final AMCPlugin[] loadedPlugins, final String[] maliciousPlugins,
-            final Exception... preErrors) {
+    public static void main(final AMCPlugin[] loadedPlugins, final String[] maliciousPlugins, final Exception... preErrors) {
         SwingUtils.setNativeLook(up);
 
         if (!up.isWasLangSet()) {
@@ -334,8 +240,11 @@ public class Main {
                 }
             });
 
-            final JOptionPane cp = new JOptionPane(new Object[] { "Choose your language", languages },
-                    JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_OPTION, null, new Object[] { ct });
+            final JOptionPane cp = new JOptionPane(new Object[]{"Choose your language", languages},
+                                                   JOptionPane.QUESTION_MESSAGE,
+                                                   JOptionPane.OK_OPTION,
+                                                   null,
+                                                   new Object[]{ct});
 
             win.setContentPane(cp);
             win.pack();
@@ -359,9 +268,9 @@ public class Main {
         checkForUpdates();
         try {
             if (!up.getUnicodeCharactersMode()
-                    .equalsIgnoreCase(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE)) {
+                   .equalsIgnoreCase(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE)) {
                 mcFont = Font.createFont(Font.TRUETYPE_FONT,
-                        Main.class.getResourceAsStream("/resources/Minecraftia-Regular.ttf"));
+                                         Main.class.getResourceAsStream("/resources/Minecraftia-Regular.ttf"));
             }
             mcFont = mcFont.deriveFont((float) 14);
         } catch (final Exception e) {
@@ -379,24 +288,85 @@ public class Main {
         new Main().init(loadedPlugins, maliciousPlugins, preErrors);
     }
 
-    public static final UserPreferences up = UserPreferences.load();
-    private List<ServerEntry> servers = Collections.synchronizedList(new ArrayList<ServerEntry>());
-    private final JMinecraftServerList serverListComponent = new JMinecraftServerList(this, true);
-    private final JMinecraftServerList lanListComponent = new JMinecraftServerList(this, false);
-    private final JMinecraftServerList importListComponent = new JMinecraftServerList(this, false);
-    private final JTabbedPane tabPane = new JTabbedPane();
-    private final Map<JSplitPane, MinecraftClient> clients = new HashMap<JSplitPane, MinecraftClient>();
-    private final JFrame win = new JFrame();
-    private final JMenuBar menuBar = new JMenuBar();
-    private TrayIcon trayIcon = null;
-    private final DiscordPresence discordIntegr = new DiscordPresence("1015565248364826694", this, tabPane, clients);
+    private static void showQuickMessageDialog(final MinecraftClient cl) {
+        if (qmdShowing) return;
+        final JTextField mField = new JPlaceholderField(Messages.getString("Main.quickMessageDialog"));
 
-    private MinecraftClient trayLastMessageSender = null;
-    private int trayLastMessageType = 0;
+        final String label = cl.getHost() + ":" + cl.getPort();
+        qmdShowing = true;
+        final int resp = JOptionPane.showOptionDialog(null,
+                                                      new Object[]{
+                                                              Messages.getString("Main.quickMessageRecipient") + label,
+                                                              mField
+                                                      },
+                                                      Messages.getString("Main.quickMesage"),
+                                                      JOptionPane.OK_CANCEL_OPTION,
+                                                      JOptionPane.QUESTION_MESSAGE,
+                                                      null,
+                                                      new Object[]{
+                                                              Messages.getString("Main.ok"),
+                                                              Messages.getString("Main.cancel")
+                                                      },
+                                                      0);
+        qmdShowing = false;
+        if (resp == 0) {
+            final String msg = mField.getText();
+            if (msg.replace(" ", "").isEmpty()) return;
+            try {
+                cl.sendChatMessage(msg);
+            } catch (final IOException e) {
+                for (final ClientListener ls : cl.getClientListeners(true)) {
+                    ls.disconnected(e.toString(), cl);
+                }
+            }
+        }
+    }
 
-    private ServerEntry selectedServer = null;
+    private static void setAllTabs(final JTabbedPane pane, final boolean state) {
+        setAllTabs(pane, state, 0);
+    }
 
-    private ActionListener alis;
+    private static synchronized void setAllTabs(final JTabbedPane pane, final boolean state, final int initial) {
+        if (!state || pane.getSelectedIndex() == initial) for (int x = 0; x < pane.getTabCount(); x++) {
+            pane.setEnabledAt(x, state);
+        }
+
+    }
+
+    private static Component createLoadingCpt(final String text) {
+        final JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        panel.add(new JLabel(text));
+        panel.add(new JLabel(" "));
+        panel.add(new JProgressBar() {
+            {
+                setAlignmentX(Component.LEFT_ALIGNMENT);
+                setIndeterminate(true);
+            }
+        });
+
+        return panel;
+    }
+
+    public static String bytesToHex(final byte[] bytes) {
+        final byte[] hexChars = new byte[bytes.length * 3];
+        for (int j = 0; j < bytes.length; j++) {
+            final int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        final StringBuilder bd = new StringBuilder();
+        for (int x = 0; x < hexChars.length; x += 2) {
+            if (x < hexChars.length - 1) {
+                bd.append(new String(new byte[]{hexChars[x], hexChars[x + 1]}) + " ");
+            } else {
+                bd.append(new String(new byte[]{hexChars[x]}) + " ");
+            }
+
+        }
+        return bd.toString();
+    }
 
     public void moveServer(final int index, final int direction) {
         int targetIndex = -1;
@@ -430,8 +400,7 @@ public class Main {
         });
     }
 
-    private void addToList(final String host, final int port, final String name, final String version,
-            final ForgeMode forgeMode) {
+    private void addToList(final String host, final int port, final String name, final String version, final ForgeMode forgeMode) {
         final ServerEntry entry = new ServerEntry(host, port, name, version, forgeMode);
         for (final ServerEntry se : servers)
             if (se.equals(entry)) return;
@@ -454,44 +423,6 @@ public class Main {
         serverListComponent.setListData(entries);
     }
 
-    private final Runnable upSaveRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            try (OutputStream os = Base64.getEncoder().wrap(Files.newOutputStream(UserPreferences.serverFile.toPath()))) {
-                os.write(new Gson().toJson(up).getBytes(StandardCharsets.UTF_8));
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    private static boolean qmdShowing = false;
-
-    private static void showQuickMessageDialog(final MinecraftClient cl) {
-        if (qmdShowing) return;
-        final JTextField mField = new JPlaceholderField(Messages.getString("Main.quickMessageDialog"));
-
-        final String label = cl.getHost() + ":" + cl.getPort();
-        qmdShowing = true;
-        final int resp = JOptionPane.showOptionDialog(null,
-                new Object[] { Messages.getString("Main.quickMessageRecipient") + label, mField },
-                Messages.getString("Main.quickMesage"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, new Object[] { Messages.getString("Main.ok"), Messages.getString("Main.cancel") }, 0);
-        qmdShowing = false;
-        if (resp == 0) {
-            final String msg = mField.getText();
-            if (msg.replace(" ", "").isEmpty()) return;
-            try {
-                cl.sendChatMessage(msg);
-            } catch (final IOException e) {
-                for (final ClientListener ls : cl.getClientListeners(true)) {
-                    ls.disconnected(e.toString(), cl);
-                }
-            }
-        }
-    }
-
     private void init(final AMCPlugin[] loadedPlugins, final String[] malicious, final Exception... preErrors) {
         discordIntegr.start();
 
@@ -508,11 +439,14 @@ public class Main {
 
             @Override
             public void serverDiscovered(final InetAddress sender, final String motd, final int port) {
-                final ServerEntry[] ets = lanListComponent.getListData() == null ? new ServerEntry[0]
-                        : lanListComponent.getListData();
-                final ServerEntry ent = new ServerEntry(sender.getHostAddress(), port,
-                        sender.getHostAddress() + ":" + Integer.toString(port), Messages.getString("Always Ask"),
-                        ForgeMode.AUTO);
+                final ServerEntry[] ets = lanListComponent.getListData() == null ?
+                        new ServerEntry[0] :
+                        lanListComponent.getListData();
+                final ServerEntry ent = new ServerEntry(sender.getHostAddress(),
+                                                        port,
+                                                        sender.getHostAddress() + ":" + Integer.toString(port),
+                                                        Messages.getString("Always Ask"),
+                                                        ForgeMode.AUTO);
                 for (final ServerEntry et : ets)
                     if (et.equals(ent)) return;
                 final ServerEntry[] ets2 = new ServerEntry[ets.length + 1];
@@ -572,7 +506,7 @@ public class Main {
                             diag.dispose();
                             final SystemTray tray = SystemTray.getSystemTray();
                             trayIcon = new TrayIcon(IOUtils.scaleImage(logoImage, 0.5),
-                                    "Another Minecraft Chat Client");
+                                                    "Another Minecraft Chat Client");
                             try {
                                 final MouseListener ml = new MouseAdapter() {
                                     @Override
@@ -597,8 +531,17 @@ public class Main {
                                                 break;
                                             }
                                             case 1: {
-                                                ml.mouseClicked(new MouseEvent(win, 0, System.currentTimeMillis(), 0, 0,
-                                                        0, 0, 0, 1, false, MouseEvent.BUTTON1));
+                                                ml.mouseClicked(new MouseEvent(win,
+                                                                               0,
+                                                                               System.currentTimeMillis(),
+                                                                               0,
+                                                                               0,
+                                                                               0,
+                                                                               0,
+                                                                               0,
+                                                                               1,
+                                                                               false,
+                                                                               MouseEvent.BUTTON1));
                                                 break;
                                             }
                                             default: {
@@ -622,8 +565,17 @@ public class Main {
                                 open.addActionListener(new ActionListener() {
                                     @Override
                                     public void actionPerformed(final ActionEvent ev2) {
-                                        ml.mouseClicked(new MouseEvent(win, 0, System.currentTimeMillis(), 0, 0, 0, 0,
-                                                0, 1, false, MouseEvent.BUTTON1));
+                                        ml.mouseClicked(new MouseEvent(win,
+                                                                       0,
+                                                                       System.currentTimeMillis(),
+                                                                       0,
+                                                                       0,
+                                                                       0,
+                                                                       0,
+                                                                       0,
+                                                                       1,
+                                                                       false,
+                                                                       MouseEvent.BUTTON1));
                                     }
                                 });
                                 open.setFont(win.getFont().deriveFont(Font.BOLD));
@@ -654,12 +606,12 @@ public class Main {
                                         final Menu pMenu = new Menu(cl.getUsername()) {
                                             {
                                                 final MinecraftClient client = cl;
-                                                final MenuItem dcItem = new MenuItem(
-                                                        Messages.getString("Main.trayDisconnectItem"));
-                                                final MenuItem qmItem = new MenuItem(
-                                                        Messages.getString("Main.trayQuickMessageItem"));
-                                                final MenuItem invItem = new MenuItem(
-                                                        Messages.getString("Main.showInventoryButton"));
+                                                final MenuItem dcItem = new MenuItem(Messages.getString(
+                                                        "Main.trayDisconnectItem"));
+                                                final MenuItem qmItem = new MenuItem(Messages.getString(
+                                                        "Main.trayQuickMessageItem"));
+                                                final MenuItem invItem = new MenuItem(Messages.getString(
+                                                        "Main.showInventoryButton"));
                                                 final Menu ins = this;
 
                                                 dcItem.addActionListener(new ActionListener() {
@@ -671,10 +623,9 @@ public class Main {
                                                         if (srvMenu.getItemCount() == 0) {
                                                             menu.remove(srvMenu);
                                                         }
-                                                        for (final ClientListener ls : client
-                                                                .getClientListeners(true)) {
+                                                        for (final ClientListener ls : client.getClientListeners(true)) {
                                                             ls.disconnected(Messages.getString("Main.trayClosedReason"),
-                                                                    client);
+                                                                            client);
                                                         }
                                                     }
                                                 });
@@ -742,13 +693,14 @@ public class Main {
                         }
                     }
 
-                    final JOptionPane op = new JOptionPane(
-                            new Object[] {
-                                    Messages.getString("Main.trayExitQuestion") + Integer.toString(clients.size())
-                                            + Messages.getString("Main.trayExitQuestionLine2Append"),
-                                    rememberOp },
-                            JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null,
-                            new JButton[] { ok, toTray, cancel });
+                    final JOptionPane op = new JOptionPane(new Object[]{
+                            Messages.getString("Main.trayExitQuestion") + Integer.toString(clients.size()) + Messages.getString(
+                                    "Main.trayExitQuestionLine2Append"), rememberOp
+                    },
+                                                           JOptionPane.QUESTION_MESSAGE,
+                                                           JOptionPane.OK_CANCEL_OPTION,
+                                                           null,
+                                                           new JButton[]{ok, toTray, cancel});
 
                     diag.setContentPane(op);
                     diag.pack();
@@ -769,8 +721,8 @@ public class Main {
 
         final JPanel serverListBox = new JPanel();
         serverListBox.setLayout(new BoxLayout(serverListBox, BoxLayout.Y_AXIS));
-        serverListBox.setPreferredSize(
-                new Dimension((int) (SwingUtils.sSize.width / 1.5), (int) (SwingUtils.sSize.height / 1.5)));
+        serverListBox.setPreferredSize(new Dimension((int) (SwingUtils.sSize.width / 1.5),
+                                                     (int) (SwingUtils.sSize.height / 1.5)));
 
         final JScrollPane serverListPane = new JScrollPane(serverListComponent);
         serverListPane.setOpaque(false);
@@ -829,9 +781,14 @@ public class Main {
 
                 do {
                     try {
-                        final int response = JOptionPane.showOptionDialog(win, contents,
-                                Messages.getString("Main.addServerDialogTitle"), JOptionPane.OK_CANCEL_OPTION,
-                                JOptionPane.QUESTION_MESSAGE, null, null, null);
+                        final int response = JOptionPane.showOptionDialog(win,
+                                                                          contents,
+                                                                          Messages.getString("Main.addServerDialogTitle"),
+                                                                          JOptionPane.OK_CANCEL_OPTION,
+                                                                          JOptionPane.QUESTION_MESSAGE,
+                                                                          null,
+                                                                          null,
+                                                                          null);
 
                         if (response == JOptionPane.OK_OPTION) {
                             final String server = hostField.getText();
@@ -850,8 +807,11 @@ public class Main {
                                 port = Integer.parseInt(ag[1]);
                             }
 
-                            addToList(host, port, name, (String) versionField.getSelectedItem(),
-                                    (ForgeMode) forgeField.getSelectedItem());
+                            addToList(host,
+                                      port,
+                                      name,
+                                      (String) versionField.getSelectedItem(),
+                                      (ForgeMode) forgeField.getSelectedItem());
 
                             break;
                         } else {
@@ -924,17 +884,27 @@ public class Main {
                 if (et == null) return;
 
                 if (et.isRefreshing() || et.isError()) {
-                    final String haltReason = et.isRefreshing() ? Messages.getString("Main.haltReasonRefreshing")
-                            : Messages.getString("Main.haltReasonError");
+                    final String haltReason = et.isRefreshing() ?
+                            Messages.getString("Main.haltReasonRefreshing") :
+                            Messages.getString("Main.haltReasonError");
 
                     SwingUtils.playAsterisk();
                     final int haltResponse = JOptionPane.showOptionDialog(win,
-                            new String[] { haltReason, Messages.getString("Main.haltQuestion") },
-                            Messages.getString("Main.haltTitle"), JOptionPane.DEFAULT_OPTION,
-                            JOptionPane.WARNING_MESSAGE, null,
-                            new String[] { Messages.getString("Main.haltResponseCancel"),
-                                    Messages.getString("Main.haltResponseJoin") },
-                            -1);
+                                                                          new String[]{
+                                                                                  haltReason,
+                                                                                  Messages.getString("Main.haltQuestion")
+                                                                          },
+                                                                          Messages.getString("Main.haltTitle"),
+                                                                          JOptionPane.DEFAULT_OPTION,
+                                                                          JOptionPane.WARNING_MESSAGE,
+                                                                          null,
+                                                                          new String[]{
+                                                                                  Messages.getString(
+                                                                                          "Main.haltResponseCancel"),
+                                                                                  Messages.getString(
+                                                                                          "Main.haltResponseJoin")
+                                                                          },
+                                                                          -1);
 
                     switch (haltResponse) {
                         case 1: {
@@ -1027,8 +997,11 @@ public class Main {
 
                 final JVBoxPanel proxyBox = new JVBoxPanel();
 
-                final JComboBox<ProxySetting> savedProxies = new JComboBox<>(
-                        new ProxySetting[] { new ProxySetting("None", "", -1) });
+                final JComboBox<ProxySetting> savedProxies = new JComboBox<>(new ProxySetting[]{
+                        new ProxySetting("None",
+                                         "",
+                                         -1)
+                });
                 for (final ProxySetting sett : up.proxies) {
                     savedProxies.addItem(sett);
                 }
@@ -1077,7 +1050,8 @@ public class Main {
                         try {
                             if (savedProxies != null && savedProxies.getSelectedItem() != null) {
                                 final boolean sel = !((ProxySetting) savedProxies.getSelectedItem()).getName()
-                                        .equalsIgnoreCase("None");
+                                                                                                    .equalsIgnoreCase(
+                                                                                                            "None");
                                 pxDelete.setEnabled(sel);
                                 pxLoad.setEnabled(sel);
                             }
@@ -1156,10 +1130,16 @@ public class Main {
                 Proxy proxyObj = null;
 
                 do {
-                    final int response = JOptionPane.showOptionDialog(win, userTabs,
-                            Messages.getString("Main.enterUsernameTitle"), JOptionPane.OK_CANCEL_OPTION,
-                            JOptionPane.QUESTION_MESSAGE, FontAwesome.createIcon(FontAwesome.USER_C, pxSave, 32f), null,
-                            null);
+                    final int response = JOptionPane.showOptionDialog(win,
+                                                                      userTabs,
+                                                                      Messages.getString("Main.enterUsernameTitle"),
+                                                                      JOptionPane.OK_CANCEL_OPTION,
+                                                                      JOptionPane.QUESTION_MESSAGE,
+                                                                      FontAwesome.createIcon(FontAwesome.USER_C,
+                                                                                             pxSave,
+                                                                                             32f),
+                                                                      null,
+                                                                      null);
                     if (response != JOptionPane.OK_OPTION) return;
 
                     final Object unameObj = (Object) unameField.getSelectedItem();
@@ -1169,10 +1149,8 @@ public class Main {
 
                     String uname;
 
-                    if (unameObj instanceof UserInfo)
-                        uname = ((UserInfo) unameObj).getUsername();
-                    else
-                        uname = unameObj.toString();
+                    if (unameObj instanceof UserInfo) uname = ((UserInfo) unameObj).getUsername();
+                    else uname = unameObj.toString();
 
                     final String proxy = pxField.getText().replace(" ", "");
                     if (!proxy.isEmpty() && proxy.contains(":") && proxy.split(":").length == 2) {
@@ -1185,18 +1163,25 @@ public class Main {
                             ex.printStackTrace();
                         }
                     }
-                    if (!up.isUsernameAlertSeen()
-                            && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)) {
+                    if (!up.isUsernameAlertSeen() && !uname.replaceAll("[^a-zA-Z0-9]", "").equals(uname)) {
                         SwingUtils.playAsterisk();
                         final int alResp = JOptionPane.showOptionDialog(win,
-                                Messages.getString("Main.nickIllegalCharsWarning1") + uname
-                                        + Messages.getString("Main.nickIllegalCharsWarning2")
-                                        + Messages.getString("Main.nickIllegalCharsWarningQuestion"),
-                                Messages.getString("Main.nickIllegalCharsWarningTitle"), JOptionPane.YES_NO_OPTION,
-                                JOptionPane.WARNING_MESSAGE, null,
-                                new Object[] { Messages.getString("Main.nickIllegalCharsWarningOptionYes"),
-                                        Messages.getString("Main.nickIllegalCharsWarningOptionNo") },
-                                0);
+                                                                        Messages.getString(
+                                                                                "Main.nickIllegalCharsWarning1") + uname + Messages.getString(
+                                                                                "Main.nickIllegalCharsWarning2") + Messages.getString(
+                                                                                "Main.nickIllegalCharsWarningQuestion"),
+                                                                        Messages.getString(
+                                                                                "Main.nickIllegalCharsWarningTitle"),
+                                                                        JOptionPane.YES_NO_OPTION,
+                                                                        JOptionPane.WARNING_MESSAGE,
+                                                                        null,
+                                                                        new Object[]{
+                                                                                Messages.getString(
+                                                                                        "Main.nickIllegalCharsWarningOptionYes"),
+                                                                                Messages.getString(
+                                                                                        "Main.nickIllegalCharsWarningOptionNo")
+                                                                        },
+                                                                        0);
                         if (alResp == 0) {
                             up.setUsernameAlertSeen(true);
                             break;
@@ -1211,8 +1196,11 @@ public class Main {
 
                 final Object uname = unameField.getSelectedItem();
 
-                final JSplitPane b = createServerPane(et, uname, new String(upassField.getPassword()),
-                        ((AuthType) authType.getSelectedItem()), proxyObj);
+                final JSplitPane b = createServerPane(et,
+                                                      uname,
+                                                      new String(upassField.getPassword()),
+                                                      ((AuthType) authType.getSelectedItem()),
+                                                      proxyObj);
                 final MinecraftClient client = clients.get(b);
 
                 tabPane.addTab("", b);
@@ -1227,8 +1215,8 @@ public class Main {
                 BufferedImage bicon = null;
                 if (et.getIcon() != null) {
                     try {
-                        bicon = ImageIO
-                                .read(new ByteArrayInputStream(Base64.getDecoder().decode(et.getIcon().getBytes())));
+                        bicon = ImageIO.read(new ByteArrayInputStream(Base64.getDecoder()
+                                                                            .decode(et.getIcon().getBytes())));
                     } catch (final IOException e1) {
                         e1.printStackTrace();
                     }
@@ -1237,11 +1225,11 @@ public class Main {
                 final BufferedImage bicon2 = bicon;
 
                 b2.add(new JPanel() {
+                    final BufferedImage bico = bicon2;
+
                     {
                         setPreferredSize(new Dimension(pxh, 16));
                     }
-
-                    final BufferedImage bico = bicon2;
 
                     @Override
                     public void paintComponent(final Graphics g) {
@@ -1317,8 +1305,8 @@ public class Main {
         final JPanel lanListBox = new JPanel();
         lanListBox.setBackground(serverListBox.getBackground());
         lanListBox.setLayout(new BoxLayout(lanListBox, BoxLayout.Y_AXIS));
-        lanListBox.setPreferredSize(
-                new Dimension((int) (SwingUtils.sSize.width / 1.5), (int) (SwingUtils.sSize.height / 1.5)));
+        lanListBox.setPreferredSize(new Dimension((int) (SwingUtils.sSize.width / 1.5),
+                                                  (int) (SwingUtils.sSize.height / 1.5)));
 
         final JScrollPane lanListPane = new JScrollPane(lanListComponent);
         lanListPane.setOpaque(false);
@@ -1372,8 +1360,8 @@ public class Main {
         final JPanel importListBox = new JPanel();
         importListBox.setBackground(serverListBox.getBackground());
         importListBox.setLayout(new BoxLayout(importListBox, BoxLayout.Y_AXIS));
-        importListBox.setPreferredSize(
-                new Dimension((int) (SwingUtils.sSize.width / 1.5), (int) (SwingUtils.sSize.height / 1.5)));
+        importListBox.setPreferredSize(new Dimension((int) (SwingUtils.sSize.width / 1.5),
+                                                     (int) (SwingUtils.sSize.height / 1.5)));
 
         final JScrollPane importListPane = new JScrollPane(importListComponent);
         importListPane.setOpaque(false);
@@ -1420,15 +1408,14 @@ public class Main {
 
         final ActionListener importRefreshListener = new ActionListener() {
 
-            private final String[] lookLocations = { "AppData/Roaming/.minecraft", ".minecraft" };
+            private final String[] lookLocations = {"AppData/Roaming/.minecraft", ".minecraft"};
 
             @Override
             public void actionPerformed(final ActionEvent e) {
                 importListComponent.setListData(new ServerEntry[0]);
                 final List<ServerEntry> svs = new ArrayList<>();
                 for (final String loc : lookLocations) {
-                    final File file = new File(
-                            System.getProperty("user.home") + File.separator + loc + File.separator + "servers.dat");
+                    final File file = new File(System.getProperty("user.home") + File.separator + loc + File.separator + "servers.dat");
                     if (file.isFile()) {
                         try {
                             final CompoundTag root = new Nbt().fromFile(file);
@@ -1444,8 +1431,9 @@ public class Main {
                                     host = host.substring(0, host.indexOf(":"));
                                 }
 
-                                final String icon = serverTag.contains("icon") ? serverTag.getString("icon").getValue()
-                                        : null;
+                                final String icon = serverTag.contains("icon") ?
+                                        serverTag.getString("icon").getValue() :
+                                        null;
 
                                 final ServerEntry sv = new ServerEntry(host, port, name, "Always Ask", ForgeMode.AUTO);
                                 sv.setIcon(icon);
@@ -1509,7 +1497,7 @@ public class Main {
                         addActionListener(e -> {
                             try {
                                 Desktop.getDesktop()
-                                        .browse(new URI("https://github.com/Defective4/Another-Minecraft-Chat-Client"));
+                                       .browse(new URI("https://github.com/Defective4/Another-Minecraft-Chat-Client"));
                             } catch (final Exception e1) {
                                 e1.printStackTrace();
                             }
@@ -1517,12 +1505,13 @@ public class Main {
                     }
                 });
                 add(new JMenuItem(Messages.getString("Main.reportIssue"),
-                        FontAwesome.createIcon(FontAwesome.BUG, this)) {
+                                  FontAwesome.createIcon(FontAwesome.BUG, this)) {
                     {
                         addActionListener(e -> {
                             try {
-                                Desktop.getDesktop().browse(
-                                        new URI("https://github.com/Defective4/Another-Minecraft-Chat-Client/issues"));
+                                Desktop.getDesktop()
+                                       .browse(new URI(
+                                               "https://github.com/Defective4/Another-Minecraft-Chat-Client/issues"));
                             } catch (final Exception e1) {
                                 e1.printStackTrace();
                             }
@@ -1530,7 +1519,7 @@ public class Main {
                     }
                 });
                 add(new JMenuItem(Messages.getString("Main.aboutProgram"),
-                        FontAwesome.createIcon(FontAwesome.INFO, this)) {
+                                  FontAwesome.createIcon(FontAwesome.INFO, this)) {
                     {
                         addActionListener(e -> {
                             SwingUtils.showAboutDialog(win);
@@ -1576,22 +1565,27 @@ public class Main {
         SwingUtils.centerWindow(win);
         win.setVisible(true);
 
-        if (preErrors.length > 0) SwingUtils.showErrorDialog(win, Messages.getString("ServerDetailsDialog.error"),
-                preErrors[0], Messages.getString("pluginsEnableError"));
+        if (preErrors.length > 0) SwingUtils.showErrorDialog(win,
+                                                             Messages.getString("ServerDetailsDialog.error"),
+                                                             preErrors[0],
+                                                             Messages.getString("pluginsEnableError"));
 
         if (malicious.length > 0) {
-            SwingUtils.showErrorDialog(win, Messages.getString("ServerDetailsDialog.error"), null,
-                    Messages.getString("pluginsEnableErrorContent"));
+            SwingUtils.showErrorDialog(win,
+                                       Messages.getString("ServerDetailsDialog.error"),
+                                       null,
+                                       Messages.getString("pluginsEnableErrorContent"));
         }
 
         guiComponents = new GUIComponents(win, menuBar, tabPane, trayIcon) {
 
             @Override
-            public JSplitPane createClient(final String host, final int port, final ProtocolEntry protocol,
-                    final ForgeMode forge, final String username, final String password, final AuthType authType,
-                    final Proxy proxy, final String name) {
-                final ServerEntry et = new ServerEntry(host, port, name, protocol == null ? "Auto" : protocol.getName(),
-                        forge);
+            public JSplitPane createClient(final String host, final int port, final ProtocolEntry protocol, final ForgeMode forge, final String username, final String password, final AuthType authType, final Proxy proxy, final String name) {
+                final ServerEntry et = new ServerEntry(host,
+                                                       port,
+                                                       name,
+                                                       protocol == null ? "Auto" : protocol.getName(),
+                                                       forge);
                 final JSplitPane b = createServerPane(et, username, password, authType, proxy);
                 final MinecraftClient client = getClient(b);
 
@@ -1607,8 +1601,8 @@ public class Main {
                 BufferedImage bicon = null;
                 if (et.getIcon() != null) {
                     try {
-                        bicon = ImageIO
-                                .read(new ByteArrayInputStream(Base64.getDecoder().decode(et.getIcon().getBytes())));
+                        bicon = ImageIO.read(new ByteArrayInputStream(Base64.getDecoder()
+                                                                            .decode(et.getIcon().getBytes())));
                     } catch (final IOException e1) {
                         e1.printStackTrace();
                     }
@@ -1617,11 +1611,11 @@ public class Main {
                 final BufferedImage bicon2 = bicon;
 
                 b2.add(new JPanel() {
+                    final BufferedImage bico = bicon2;
+
                     {
                         setPreferredSize(new Dimension(pxh, 16));
                     }
-
-                    final BufferedImage bico = bicon2;
 
                     @Override
                     public void paintComponent(final Graphics g) {
@@ -1674,8 +1668,6 @@ public class Main {
         guiComponents.revalidateAll();
     }
 
-    private GUIComponents guiComponents;
-
     private void showAccountManager() {
         AccountManagerWindow dw = new AccountManagerWindow(win);
         SwingUtils.centerWindow(dw);
@@ -1701,8 +1693,10 @@ public class Main {
 
             final PluginDescription[] descs = Plugins.listPlugins();
             Plugins.verify(ex -> {
-                SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), ex,
-                        Messages.getString("Main.verifyingError"));
+                SwingUtils.showErrorDialog(od,
+                                           Messages.getString("ServerDetailsDialog.error"),
+                                           ex,
+                                           Messages.getString("Main.verifyingError"));
             }, descs);
             for (final PluginDescription desc : descs)
                 installedDisplay.add(new PluginDisplayPanel(guiComponents, desc, false, null, od));
@@ -1718,8 +1712,8 @@ public class Main {
         final Consumer<SearchQuery> searchConsumer = query -> {
             if (tabs.getSelectedIndex() == 1) {
                 new Thread(() -> {
-                    final Component installedLoadingCpt = createLoadingCpt(
-                            Messages.getString("Main.availablePluginsFetching"));
+                    final Component installedLoadingCpt = createLoadingCpt(Messages.getString(
+                            "Main.availablePluginsFetching"));
                     setAllTabs(tabs, false);
                     for (final Component cpt : searchCtls.getComponents())
                         cpt.setEnabled(false);
@@ -1731,8 +1725,10 @@ public class Main {
                     final StarStats stats = Plugins.fetchStars(Main.up.getUserID());
 
                     for (final PluginDescription plugin : Plugins.listRemotePlugins(ex -> {
-                        SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), ex,
-                                Messages.getString("Main.availablePluginsFetchingError"));
+                        SwingUtils.showErrorDialog(od,
+                                                   Messages.getString("ServerDetailsDialog.error"),
+                                                   ex,
+                                                   Messages.getString("Main.availablePluginsFetchingError"));
                     })) {
                         if (query != null) {
                             String subject;
@@ -1748,8 +1744,9 @@ public class Main {
                                 }
                                 case DESCRIPTION: {
                                     final StringBuilder bd = new StringBuilder();
-                                    for (final String line : plugin.getDescription() == null ? new String[0]
-                                            : plugin.getDescription())
+                                    for (final String line : plugin.getDescription() == null ?
+                                            new String[0] :
+                                            plugin.getDescription())
                                         bd.append(line);
                                     subject = bd.toString();
                                     break;
@@ -1764,8 +1761,7 @@ public class Main {
                                 continue;
                         }
                         availableDisplay.add(new PluginDisplayPanel(guiComponents, plugin, true, desc -> {
-                            final Component downloadingCpt = createLoadingCpt(
-                                    Messages.getString("Main.downloading") + " " + desc.getName() + "...");
+                            final Component downloadingCpt = createLoadingCpt(Messages.getString("Main.downloading") + " " + desc.getName() + "...");
                             availableDisplay.removeAll();
                             availableDisplay.add(downloadingCpt);
                             setAllTabs(tabs, false);
@@ -1774,21 +1770,23 @@ public class Main {
                             if (desc.getRemote() != null)
                                 try (InputStream is = new URL(desc.getRemote()).openStream()) {
                                     File out = new File(Plugins.PLUGIN_DIR,
-                                            desc.getName().replace(" ", "-") + "-" + desc.getVersion() + ".jar");
+                                                        desc.getName()
+                                                            .replace(" ", "-") + "-" + desc.getVersion() + ".jar");
                                     while (out.exists()) {
                                         out = new File(Plugins.PLUGIN_DIR, "_" + out.getName());
                                     }
                                     try (OutputStream os = new FileOutputStream(out)) {
                                         final byte[] buffer = new byte[1024];
                                         int read;
-                                        while ((read = is.read(buffer)) > 0)
-                                            os.write(buffer, 0, read);
+                                        while ((read = is.read(buffer)) > 0) os.write(buffer, 0, read);
                                         os.close();
                                     }
                                     is.close();
                                 } catch (final Exception e2) {
-                                    SwingUtils.showErrorDialog(od, "Error!", e2,
-                                            Messages.getString("Main.downloadingError"));
+                                    SwingUtils.showErrorDialog(od,
+                                                               "Error!",
+                                                               e2,
+                                                               Messages.getString("Main.downloadingError"));
                                 }
 
                             tabs.setSelectedIndex(0);
@@ -1820,9 +1818,12 @@ public class Main {
         final JTextField searchField = new JTextField();
         final JButton search = new JButton("Search...");
         resetSearch.setEnabled(false);
-        final JComboBox<String> searchBy = new JComboBox<>(
-                new String[] { Messages.getString("Main.searchByName"), Messages.getString("Main.searchByAuthor"),
-                        Messages.getString("Main.searchByDescription"), Messages.getString("Main.searchByWebsite") });
+        final JComboBox<String> searchBy = new JComboBox<>(new String[]{
+                Messages.getString("Main.searchByName"),
+                Messages.getString("Main.searchByAuthor"),
+                Messages.getString("Main.searchByDescription"),
+                Messages.getString("Main.searchByWebsite")
+        });
 
         searchCtls.add(searchField);
         searchCtls.add(searchBy);
@@ -1844,8 +1845,10 @@ public class Main {
             SearchType type;
             final String query = searchField.getText();
             if (query.isEmpty()) {
-                SwingUtils.showErrorDialog(od, Messages.getString("ServerDetailsDialog.error"), null,
-                        Messages.getString("Main.searchNoPhrase"));
+                SwingUtils.showErrorDialog(od,
+                                           Messages.getString("ServerDetailsDialog.error"),
+                                           null,
+                                           Messages.getString("Main.searchNoPhrase"));
                 return;
             }
             switch (searchBy.getSelectedIndex()) {
@@ -1919,33 +1922,6 @@ public class Main {
         od.setVisible(true);
     }
 
-    private static void setAllTabs(final JTabbedPane pane, final boolean state) {
-        setAllTabs(pane, state, 0);
-    }
-
-    private static synchronized void setAllTabs(final JTabbedPane pane, final boolean state, final int initial) {
-        if (!state || pane.getSelectedIndex() == initial) for (int x = 0; x < pane.getTabCount(); x++) {
-            pane.setEnabledAt(x, state);
-        }
-
-    }
-
-    private static Component createLoadingCpt(final String text) {
-        final JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        panel.add(new JLabel(text));
-        panel.add(new JLabel(" "));
-        panel.add(new JProgressBar() {
-            {
-                setAlignmentX(Component.LEFT_ALIGNMENT);
-                setIndeterminate(true);
-            }
-        });
-
-        return panel;
-    }
-
     private void showOptionsDialog() {
         final JDialog od = new JDialog(win);
         od.setModal(true);
@@ -1963,7 +1939,7 @@ public class Main {
         rPackBehaviorBox.setSelectedItem(up.getResourcePackBehavior());
 
         final JCheckBox rsPackShowCheck = new JCheckBox(Messages.getString("Main.rsPackShowCheck"),
-                up.isShowResourcePackMessages());
+                                                        up.isShowResourcePackMessages());
         rsPackShowCheck.setToolTipText(Messages.getString("Main.rsPackShowToolTip"));
 
         final JPlaceholderField rsPackMsgText = new JPlaceholderField(Messages.getString("Main.rsPackMessageField"));
@@ -2072,9 +2048,12 @@ public class Main {
 
         final JVBoxPanel trBox = new JVBoxPanel();
 
-        final JComboBox<String> trMessagesMode = new JComboBox<>(
-                new String[] { Constants.TRAY_MESSAGES_KEY_ALWAYS, Constants.TRAY_MESSAGES_KEY_MENTION,
-                        Constants.TRAY_MESSAGES_KEY_KEYWORD, Constants.TRAY_MESSAGES_KEY_NEVER });
+        final JComboBox<String> trMessagesMode = new JComboBox<>(new String[]{
+                Constants.TRAY_MESSAGES_KEY_ALWAYS,
+                Constants.TRAY_MESSAGES_KEY_MENTION,
+                Constants.TRAY_MESSAGES_KEY_KEYWORD,
+                Constants.TRAY_MESSAGES_KEY_NEVER
+        });
         trMessagesMode.setToolTipText(Messages.getString("Main.trMessagesModeToolTip"));
         trMessagesMode.setSelectedItem(up.getTrayMessageMode());
         final JCheckBox showDMessages = new JCheckBox(Messages.getString("Main.showDMessages"));
@@ -2132,10 +2111,19 @@ public class Main {
                 final JTextField kwField = new JPlaceholderField(Messages.getString("Main.kewyordField"));
 
                 final int response = JOptionPane.showOptionDialog(od,
-                        new Object[] { Messages.getString("Main.keywordDialogLabel"), kwField },
-                        Messages.getString("Main.keywordDialogTitle"), JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE, null,
-                        new String[] { Messages.getString("Main.ok"), Messages.getString("Main.qmCancelOption") }, 0);
+                                                                  new Object[]{
+                                                                          Messages.getString("Main.keywordDialogLabel"),
+                                                                          kwField
+                                                                  },
+                                                                  Messages.getString("Main.keywordDialogTitle"),
+                                                                  JOptionPane.OK_CANCEL_OPTION,
+                                                                  JOptionPane.QUESTION_MESSAGE,
+                                                                  null,
+                                                                  new String[]{
+                                                                          Messages.getString("Main.ok"),
+                                                                          Messages.getString("Main.qmCancelOption")
+                                                                  },
+                                                                  0);
 
                 if (response == 0 && !kwField.getText().isEmpty()) {
                     final List<String> ld = new ArrayList<>();
@@ -2243,7 +2231,7 @@ public class Main {
                 if (apButtonLockColors.isSelected()) {
                     final Color hover = SwingUtils.brighten(c, 51);
                     final Color disabled = SwingUtils.brighten(c,
-                            (int) -(((c.getRed() + c.getGreen() + c.getBlue()) / 3) / 1.3));
+                                                               (int) -(((c.getRed() + c.getGreen() + c.getBlue()) / 3) / 1.3));
                     cprefCopy.setColorEnabledHoverButton(SwingUtils.getHexRGB(hover));
                     cprefCopy.setColorDisabledButton(SwingUtils.getHexRGB(disabled));
                     apButtonEnabledHover.setColor(hover);
@@ -2412,10 +2400,14 @@ public class Main {
 
                             @Override
                             public void actionPerformed(final ActionEvent e) {
-                                JOptionPane.showOptionDialog(od, Messages.getString("Main.inventoryHandlingHelp"),
-                                        Messages.getString("Main.inventoryHandlingHelpTitle"),
-                                        JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
-                                        new Object[] { Messages.getString("Main.ok") }, 0);
+                                JOptionPane.showOptionDialog(od,
+                                                             Messages.getString("Main.inventoryHandlingHelp"),
+                                                             Messages.getString("Main.inventoryHandlingHelpTitle"),
+                                                             JOptionPane.YES_NO_OPTION,
+                                                             JOptionPane.INFORMATION_MESSAGE,
+                                                             null,
+                                                             new Object[]{Messages.getString("Main.ok")},
+                                                             0);
                             }
                         });
                     }
@@ -2454,10 +2446,11 @@ public class Main {
         final JComboBox<Language> languages = new JComboBox<>(Language.values());
         languages.setSelectedItem(up.getAppLanguage());
 
-        final JComboBox<String> unicodeDisplay = new JComboBox<>(
-                new String[] { UserPreferences.Constants.UNICODECHARS_KEY_AUTO,
-                        UserPreferences.Constants.UNICODECHARS_KEY_FORCE_CUSTOM,
-                        UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE });
+        final JComboBox<String> unicodeDisplay = new JComboBox<>(new String[]{
+                UserPreferences.Constants.UNICODECHARS_KEY_AUTO,
+                UserPreferences.Constants.UNICODECHARS_KEY_FORCE_CUSTOM,
+                UserPreferences.Constants.UNICODECHARS_KEY_FORCE_UNICODE
+        });
         unicodeDisplay.setSelectedItem(up.getUnicodeCharactersMode());
 
         gnBox.add(new JLabel(Messages.getString("Main.settingsLangChangeLabel")));
@@ -2527,8 +2520,10 @@ public class Main {
         jtp.setTabComponentAt(6, new TabGroup(FontAwesome.CLOSED_BOX, Messages.getString("Main.settingsTabInventory")));
 
         jtp.add("", dscBox);
-        jtp.setTabComponentAt(7, new TabGroup(FontAwesome.DISCORD, Messages.getString("Main.settingsTabDiscord"),
-                FontAwesome.BRANDS_FONT));
+        jtp.setTabComponentAt(7,
+                              new TabGroup(FontAwesome.DISCORD,
+                                           Messages.getString("Main.settingsTabDiscord"),
+                                           FontAwesome.BRANDS_FONT));
 
         jtp.add("", accBox);
         jtp.setTabComponentAt(8, new TabGroup(FontAwesome.USER_C, Messages.getString("Main.settingsTabAccessibility")));
@@ -2539,9 +2534,14 @@ public class Main {
                 final JTabbedPane tp = (JTabbedPane) e.getSource();
                 if (tp.getSelectedIndex() == 5) {
                     SwingUtils.playAsterisk();
-                    JOptionPane.showOptionDialog(win, Messages.getString("Main.protocolSettingsWarning"),
-                            Messages.getString("Main.protocolSettingsWarningTitle"), JOptionPane.OK_OPTION,
-                            JOptionPane.WARNING_MESSAGE, null, new Object[] { Messages.getString("Main.ok") }, e);
+                    JOptionPane.showOptionDialog(win,
+                                                 Messages.getString("Main.protocolSettingsWarning"),
+                                                 Messages.getString("Main.protocolSettingsWarningTitle"),
+                                                 JOptionPane.OK_OPTION,
+                                                 JOptionPane.WARNING_MESSAGE,
+                                                 null,
+                                                 new Object[]{Messages.getString("Main.ok")},
+                                                 e);
                 }
 
                 final Component tabCpt = tp.getTabComponentAt(tp.getSelectedIndex());
@@ -2575,8 +2575,8 @@ public class Main {
                 final String brand = brandField.getText();
                 final boolean sendMCBrand = !brand.isEmpty();
 
-                final boolean themeChanged = !lafBox.getSelectedItem().equals(up.getUiTheme())
-                        || (customBtnsBox.isSelected() != up.isDisableCustomButtons());
+                final boolean themeChanged = !lafBox.getSelectedItem()
+                                                    .equals(up.getUiTheme()) || (customBtnsBox.isSelected() != up.isDisableCustomButtons());
 
                 up.setDisableDiscordPresence(disablePresence.isSelected());
                 up.setHideDiscordNickname(hideNick.isSelected());
@@ -2614,50 +2614,69 @@ public class Main {
                     }
                 }
 
-                if ((!enableIVHandling.isSelected() || !loadTextures.isSelected())
-                        && ((up.isEnableInventoryHandling() != enableIVHandling.isSelected())
-                                || (up.isLoadInventoryTextures() != loadTextures.isSelected()))
-                        && SwingItemsWindow.getTexturesSize() > 0) {
+                if ((!enableIVHandling.isSelected() || !loadTextures.isSelected()) && ((up.isEnableInventoryHandling() != enableIVHandling.isSelected()) || (up.isLoadInventoryTextures() != loadTextures.isSelected())) && SwingItemsWindow.getTexturesSize() > 0) {
                     SwingUtils.playAsterisk();
                     final int response = JOptionPane.showOptionDialog(od,
-                            Messages.getString("Main.inventoryHandlingDisabled"),
-                            Messages.getString("Main.inventoryHandlingDisabledTitle"), JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE, null,
-                            new Object[] { Messages.getString("Main.inventoryHandlingDisabledYes"),
-                                    Messages.getString("Main.inventoryHandlingDisabledNo") },
-                            0);
+                                                                      Messages.getString(
+                                                                              "Main.inventoryHandlingDisabled"),
+                                                                      Messages.getString(
+                                                                              "Main.inventoryHandlingDisabledTitle"),
+                                                                      JOptionPane.YES_NO_OPTION,
+                                                                      JOptionPane.QUESTION_MESSAGE,
+                                                                      null,
+                                                                      new Object[]{
+                                                                              Messages.getString(
+                                                                                      "Main.inventoryHandlingDisabledYes"),
+                                                                              Messages.getString(
+                                                                                      "Main.inventoryHandlingDisabledNo")
+                                                                      },
+                                                                      0);
                     if (response == 0) {
                         SwingItemsWindow.clearTextures(Main.this);
                     }
                 }
 
-                if ((enableIVHandling.isSelected() && loadTextures.isSelected())
-                        && (up.isEnableInventoryHandling() != enableIVHandling.isSelected())
-                        || (up.isLoadInventoryTextures() != loadTextures.isSelected() && loadTextures.isSelected())) {
+                if ((enableIVHandling.isSelected() && loadTextures.isSelected()) && (up.isEnableInventoryHandling() != enableIVHandling.isSelected()) || (up.isLoadInventoryTextures() != loadTextures.isSelected() && loadTextures.isSelected())) {
                     SwingUtils.playAsterisk();
-                    final int response = JOptionPane.showOptionDialog(od, Messages.getString("Main.itemLoadingEnabled"),
-                            Messages.getString("Main.itemLoadingEnabledTitle"), JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE, null,
-                            new Object[] { Messages.getString("Main.itemLoadingEnabledYes"),
-                                    Messages.getString("Main.itemLoadingEnabledNo") },
-                            0);
+                    final int response = JOptionPane.showOptionDialog(od,
+                                                                      Messages.getString("Main.itemLoadingEnabled"),
+                                                                      Messages.getString("Main.itemLoadingEnabledTitle"),
+                                                                      JOptionPane.YES_NO_OPTION,
+                                                                      JOptionPane.QUESTION_MESSAGE,
+                                                                      null,
+                                                                      new Object[]{
+                                                                              Messages.getString(
+                                                                                      "Main.itemLoadingEnabledYes"),
+                                                                              Messages.getString(
+                                                                                      "Main.itemLoadingEnabledNo")
+                                                                      },
+                                                                      0);
                     if (response == 0) {
                         od.dispose();
                         SwingItemsWindow.initTextures(Main.this, false);
                         if (clients.size() > 0) {
-                            JOptionPane.showOptionDialog(od, Messages.getString("Main.itemTexturesLoaded"),
-                                    Messages.getString("Main.itemTexturesLoadedTitle"), JOptionPane.OK_CANCEL_OPTION,
-                                    JOptionPane.INFORMATION_MESSAGE, null,
-                                    new Object[] { Messages.getString("Main.ok") }, 0);
+                            JOptionPane.showOptionDialog(od,
+                                                         Messages.getString("Main.itemTexturesLoaded"),
+                                                         Messages.getString("Main.itemTexturesLoadedTitle"),
+                                                         JOptionPane.OK_CANCEL_OPTION,
+                                                         JOptionPane.INFORMATION_MESSAGE,
+                                                         null,
+                                                         new Object[]{Messages.getString("Main.ok")},
+                                                         0);
                         }
                     }
                 }
 
                 if (enableIVHandling.isSelected() && !up.isEnableInventoryHandling() && (clients.size() > 0)) {
                     SwingUtils.playAsterisk();
-                    JOptionPane.showOptionDialog(od, Messages.getString("Main.inventoryHandlingEnabled"),
-                            Messages.getString("Main.inventoryHandlingEnabledTitle"), JOptionPane.OK_CANCEL_OPTION,
-                            JOptionPane.INFORMATION_MESSAGE, null, new Object[] { Messages.getString("Main.ok") }, 0);
+                    JOptionPane.showOptionDialog(od,
+                                                 Messages.getString("Main.inventoryHandlingEnabled"),
+                                                 Messages.getString("Main.inventoryHandlingEnabledTitle"),
+                                                 JOptionPane.OK_CANCEL_OPTION,
+                                                 JOptionPane.INFORMATION_MESSAGE,
+                                                 null,
+                                                 new Object[]{Messages.getString("Main.ok")},
+                                                 0);
                 }
 
                 up.setEnableInventoryHandling(enableIVHandling.isSelected());
@@ -2667,8 +2686,8 @@ public class Main {
                 up.setShowWindowsInTray(showWhenInTray.isSelected());
                 up.setSendWindowClosePackets(sendClosePackets.isSelected());
 
-                final boolean langChanged = up.getAppLanguage() != languages.getSelectedItem()
-                        || !(up.getUnicodeCharactersMode().equals(unicodeDisplay.getSelectedItem()));
+                final boolean langChanged = up.getAppLanguage() != languages.getSelectedItem() || !(up.getUnicodeCharactersMode()
+                                                                                                      .equals(unicodeDisplay.getSelectedItem()));
                 up.setAppLanguage((Language) languages.getSelectedItem());
                 up.setUnicodeCharactersMode((String) unicodeDisplay.getSelectedItem());
 
@@ -2684,21 +2703,34 @@ public class Main {
 
                 if (themeChanged) {
                     SwingUtils.playAsterisk();
-                    JOptionPane.showOptionDialog(od, Messages.getString("Main.themeChangedLabel"),
-                            Messages.getString("Main.themeChangedDialogTitle"), JOptionPane.OK_OPTION,
-                            JOptionPane.INFORMATION_MESSAGE, null,
-                            new Object[] { Messages.getString("Main.langChangedLabelDialogOptionRestart") }, 0);
+                    JOptionPane.showOptionDialog(od,
+                                                 Messages.getString("Main.themeChangedLabel"),
+                                                 Messages.getString("Main.themeChangedDialogTitle"),
+                                                 JOptionPane.OK_OPTION,
+                                                 JOptionPane.INFORMATION_MESSAGE,
+                                                 null,
+                                                 new Object[]{
+                                                         Messages.getString("Main.langChangedLabelDialogOptionRestart")
+                                                 },
+                                                 0);
                     System.exit(0);
                 }
 
                 if (langChanged) {
                     SwingUtils.playAsterisk();
-                    final int response = JOptionPane.showOptionDialog(od, Messages.getString("Main.langChangedLabel"),
-                            Messages.getString("Main.langChangedDialogTitle"), JOptionPane.OK_OPTION,
-                            JOptionPane.INFORMATION_MESSAGE, null,
-                            new Object[] { Messages.getString("Main.langChangedLabelDialogOptionRestart"),
-                                    Messages.getString("Main.langChangedLabelDialogOptionContinue") },
-                            0);
+                    final int response = JOptionPane.showOptionDialog(od,
+                                                                      Messages.getString("Main.langChangedLabel"),
+                                                                      Messages.getString("Main.langChangedDialogTitle"),
+                                                                      JOptionPane.OK_OPTION,
+                                                                      JOptionPane.INFORMATION_MESSAGE,
+                                                                      null,
+                                                                      new Object[]{
+                                                                              Messages.getString(
+                                                                                      "Main.langChangedLabelDialogOptionRestart"),
+                                                                              Messages.getString(
+                                                                                      "Main.langChangedLabelDialogOptionContinue")
+                                                                      },
+                                                                      0);
                     if (response == 0) {
                         System.exit(0);
                     }
@@ -2729,8 +2761,7 @@ public class Main {
     }
 
     @SuppressWarnings("unchecked")
-    private JSplitPane createServerPane(final ServerEntry entry, final Object uname, final String password,
-            final AuthType authType, final Proxy proxy) {
+    private JSplitPane createServerPane(final ServerEntry entry, final Object uname, final String password, final AuthType authType, final Proxy proxy) {
         final JSplitPane fPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
         final Box box = Box.createVerticalBox();
@@ -2771,7 +2802,7 @@ public class Main {
         hjsc.setMaximumSize(chatControls.getMaximumSize());
 
         final JTabbedPane controlsTabPane = new JTabbedPane();
-//		JScrollPane controlsScrollPane = new JScrollPane(controlsTabPane);
+        //		JScrollPane controlsScrollPane = new JScrollPane(controlsTabPane);
 
         win.addComponentListener(new ComponentAdapter() {
             @Override
@@ -2828,11 +2859,16 @@ public class Main {
         healthBar.setString(Messages.getString("Main.healthBar"));
         foodBar.setString(Messages.getString("Main.foodBar"));
 
-        final JButton[] movementButtons = new JButton[] { new BasicArrowButton(SwingConstants.NORTH),
-                new BasicArrowButton(SwingConstants.SOUTH_WEST), new BasicArrowButton(SwingConstants.WEST),
-                new BasicArrowButton(SwingConstants.NORTH_WEST), new BasicArrowButton(SwingConstants.SOUTH),
-                new BasicArrowButton(SwingConstants.NORTH_EAST), new BasicArrowButton(SwingConstants.EAST),
-                new BasicArrowButton(SwingConstants.SOUTH_EAST) };
+        final JButton[] movementButtons = new JButton[]{
+                new BasicArrowButton(SwingConstants.NORTH),
+                new BasicArrowButton(SwingConstants.SOUTH_WEST),
+                new BasicArrowButton(SwingConstants.WEST),
+                new BasicArrowButton(SwingConstants.NORTH_WEST),
+                new BasicArrowButton(SwingConstants.SOUTH),
+                new BasicArrowButton(SwingConstants.NORTH_EAST),
+                new BasicArrowButton(SwingConstants.EAST),
+                new BasicArrowButton(SwingConstants.SOUTH_EAST)
+        };
 
         final JButton jumpButton = new BasicArrowButton(SwingConstants.NORTH_EAST);
         jumpButton.setEnabled(false);
@@ -2861,7 +2897,9 @@ public class Main {
                 public void actionPerformed(final ActionEvent arg0) {
                     try {
                         final MinecraftClient cl = clients.get(fPane);
-                        cl.move(directionL, (double) speed.getValue(), (double) blocks.getValue(),
+                        cl.move(directionL,
+                                (double) speed.getValue(),
+                                (double) blocks.getValue(),
                                 lockPos.isSelected());
                     } catch (final Exception e1) {
                         e1.printStackTrace();
@@ -2905,11 +2943,11 @@ public class Main {
         playerBox.add(blocksBox);
         playerBox.add(new JLabel(" "));
         playerBox.add(movementPanel);
-//        playerBox.add(new JLabel("") {
-//            {
-//                setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
-//            }
-//        });
+        //        playerBox.add(new JLabel("") {
+        //            {
+        //                setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
+        //            }
+        //        });
         playerBox.alignAll();
 
         final Box playerListBox = Box.createVerticalBox();
@@ -3084,17 +3122,18 @@ public class Main {
 
                 final JPanel drawingPanel = new JPanel() {
 
+                    private final Color darkRed = new Color(55, 0, 0);
+                    private final Color red = new Color(255, 0, 0);
                     Toolkit tk = Toolkit.getDefaultToolkit();
-
-                    private int scale = 10;
-                    private int scaleTimer = 0;
-
                     Color background = new Color(0, 50, 0);
                     Color backgroundLines = new Color(0, 100, 0);
                     Color mainPlayerColor = new Color(0, 255, 0);
                     Color playerColor = new Color(255, 255, 0);
 
                     MinecraftClient client = clients.get(fPane);
+                    private int scale = 10;
+                    private int scaleTimer = 0;
+                    private byte frameTimer = 0;
 
                     {
                         addMouseMotionListener(new MouseMotionAdapter() {
@@ -3209,20 +3248,33 @@ public class Main {
                                 final Point mouse = getMousePosition();
                                 if (!(entity instanceof Player)) {
                                     if (displayEntities.isSelected()) {
-                                        if (mouse != null && new Rectangle(x - 4, z - 4, 8, 8).contains(mouse)
-                                                && selectedEntity == null) {
+                                        if (mouse != null && new Rectangle(x - 4,
+                                                                           z - 4,
+                                                                           8,
+                                                                           8).contains(mouse) && selectedEntity == null) {
                                             selectedEntity = entity;
                                         }
-                                        drawMob(x, z, g, Color.red, entity.equals(selectedEntity),
+                                        drawMob(x,
+                                                z,
+                                                g,
+                                                Color.red,
+                                                entity.equals(selectedEntity),
                                                 client.isTracked(entity));
                                     }
                                 } else if (displayPlayers.isSelected()) {
-                                    if (mouse != null && new Rectangle(x - 12, z - 12, 24, 24).contains(mouse)
-                                            && selectedEntity == null) {
+                                    if (mouse != null && new Rectangle(x - 12,
+                                                                       z - 12,
+                                                                       24,
+                                                                       24).contains(mouse) && selectedEntity == null) {
                                         selectedEntity = entity;
                                     }
-                                    drawPlayer(x, z, entity.getUid(), g, playerColor, entity.equals(selectedEntity),
-                                            client.isTracked(entity));
+                                    drawPlayer(x,
+                                               z,
+                                               entity.getUid(),
+                                               g,
+                                               playerColor,
+                                               entity.equals(selectedEntity),
+                                               client.isTracked(entity));
                                 }
                             }
                         }
@@ -3240,13 +3292,7 @@ public class Main {
                         repaint();
                     }
 
-                    private byte frameTimer = 0;
-
-                    private final Color darkRed = new Color(55, 0, 0);
-                    private final Color red = new Color(255, 0, 0);
-
-                    private void drawPlayer(final int x, final int y, final UUID uid, final Graphics g,
-                            final Color color, final boolean selected, final boolean tracked) {
+                    private void drawPlayer(final int x, final int y, final UUID uid, final Graphics g, final Color color, final boolean selected, final boolean tracked) {
                         final BufferedImage image = PlayerSkinCache.getHead(uid);
                         if (image != null) {
                             if (selected || tracked) {
@@ -3271,17 +3317,16 @@ public class Main {
                         final PlayerInfo info = client.getPlayersTabList().get(uid);
                         if (info != null) {
                             if (!noNames.isSelected()) {
-                                final String name = realNames.isSelected() || info.getDisplayName() == null
-                                        ? info.getName()
-                                        : ChatMessages.removeColors(info.getDisplayName());
+                                final String name = realNames.isSelected() || info.getDisplayName() == null ?
+                                        info.getName() :
+                                        ChatMessages.removeColors(info.getDisplayName());
                                 g.setColor(color);
                                 g.drawString(name, x - (g.getFontMetrics().stringWidth(name) / 2), y - 16);
                             }
                         }
                     }
 
-                    private void drawMob(final int x, final int y, final Graphics g, final Color color,
-                            final boolean selected, final boolean tracked) {
+                    private void drawMob(final int x, final int y, final Graphics g, final Color color, final boolean selected, final boolean tracked) {
 
                         if (selected || tracked) {
                             if (selected) {
@@ -3316,13 +3361,6 @@ public class Main {
                             client.trackEntity(currentEntity, false);
                         }
                     };
-
-                    JMenuItem currentEntityItem = new JMenuItem("") {
-                        {
-                            setEnabled(false);
-                        }
-                    };
-
                     JPopupMenu entityMenu = new JPopupMenu("") {
                         {
                             add(currentEntityItem);
@@ -3372,6 +3410,11 @@ public class Main {
                             });
                         }
                     };
+                    JMenuItem currentEntityItem = new JMenuItem("") {
+                        {
+                            setEnabled(false);
+                        }
+                    };
 
                     @Override
                     public void mouseClicked(final MouseEvent e) {
@@ -3394,8 +3437,9 @@ public class Main {
 
                                     skin = PlayerSkinCache.getHead(currentEntity.getUid());
                                     if (skin != null) {
-                                        final BufferedImage img = new BufferedImage(16, 16,
-                                                BufferedImage.TYPE_INT_ARGB);
+                                        final BufferedImage img = new BufferedImage(16,
+                                                                                    16,
+                                                                                    BufferedImage.TYPE_INT_ARGB);
                                         final Graphics g = img.createGraphics();
                                         g.drawImage(skin, 0, 0, img.getWidth(), img.getHeight(), null);
                                         skin = img;
@@ -3530,7 +3574,7 @@ public class Main {
         worldBox.add(attackPanel);
         worldBox.add(new JLabel("") {
             {
-//                setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
+                //                setPreferredSize(new Dimension(1, Integer.MAX_VALUE));
             }
         });
         worldBox.alignAll();
@@ -3559,10 +3603,17 @@ public class Main {
                     src.setValue(1);
                     SwingUtils.playAsterisk();
                     final String msg = Messages.getString("Main.autoValWarning");
-                    final int resp = JOptionPane.showOptionDialog(win, msg,
-                            Messages.getString("Main.autoValWarningTitle"), JOptionPane.YES_NO_OPTION,
-                            JOptionPane.WARNING_MESSAGE, null,
-                            new Object[] { Messages.getString("Main.yes"), Messages.getString("Main.no") }, 0);
+                    final int resp = JOptionPane.showOptionDialog(win,
+                                                                  msg,
+                                                                  Messages.getString("Main.autoValWarningTitle"),
+                                                                  JOptionPane.YES_NO_OPTION,
+                                                                  JOptionPane.WARNING_MESSAGE,
+                                                                  null,
+                                                                  new Object[]{
+                                                                          Messages.getString("Main.yes"),
+                                                                          Messages.getString("Main.no")
+                                                                  },
+                                                                  0);
                     if (resp == 0) {
                         permitted = true;
                     }
@@ -3653,8 +3704,9 @@ public class Main {
                             ls.add(ld[x]);
                         }
                     autoMessages.setListData(ls.toArray(new String[ls.size()]));
-                    autoMessages.setSelectedIndex(
-                            z >= autoMessages.getListData().length ? autoMessages.getListData().length - 1 : z);
+                    autoMessages.setSelectedIndex(z >= autoMessages.getListData().length ?
+                                                          autoMessages.getListData().length - 1 :
+                                                          z);
                 }
             }
         });
@@ -3671,9 +3723,14 @@ public class Main {
 
                 autoMsgAddPanel.alignAll();
 
-                final int resp = JOptionPane.showOptionDialog(win, autoMsgAddPanel,
-                        Messages.getString("Main.autoMsgAddTitle"), JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE, null, null, 0);
+                final int resp = JOptionPane.showOptionDialog(win,
+                                                              autoMsgAddPanel,
+                                                              Messages.getString("Main.autoMsgAddTitle"),
+                                                              JOptionPane.OK_CANCEL_OPTION,
+                                                              JOptionPane.QUESTION_MESSAGE,
+                                                              null,
+                                                              null,
+                                                              0);
 
                 if (resp == 0 && !jpf.getText().replace(" ", "").isEmpty()) {
                     String[] ld = autoMessages.getListData();
@@ -3728,18 +3785,27 @@ public class Main {
                     final File out = IOUtils.forceExtension(fc.getSelectedFile(), ".amf");
                     if (out.exists()) {
                         SwingUtils.playExclamation();
-                        final int ov = JOptionPane.showOptionDialog(win, Messages.getString("Main.overwriteFile"),
-                                Messages.getString("Main.overwriteFileTitle"), JOptionPane.YES_NO_OPTION,
-                                JOptionPane.WARNING_MESSAGE, null,
-                                new Object[] { Messages.getString("Main.yes"), Messages.getString("Main.no") }, 0);
+                        final int ov = JOptionPane.showOptionDialog(win,
+                                                                    Messages.getString("Main.overwriteFile"),
+                                                                    Messages.getString("Main.overwriteFileTitle"),
+                                                                    JOptionPane.YES_NO_OPTION,
+                                                                    JOptionPane.WARNING_MESSAGE,
+                                                                    null,
+                                                                    new Object[]{
+                                                                            Messages.getString("Main.yes"),
+                                                                            Messages.getString("Main.no")
+                                                                    },
+                                                                    0);
                         if (ov != 0) return;
                     }
                     try {
                         IOUtils.saveAmfFile(out, autoMessages.getListData());
                     } catch (final IOException e1) {
                         e1.printStackTrace();
-                        SwingUtils.showErrorDialog(win, Messages.getString("Main.errorTitle"), e1,
-                                Messages.getString("Main.autoMsgSaveError"));
+                        SwingUtils.showErrorDialog(win,
+                                                   Messages.getString("Main.errorTitle"),
+                                                   e1,
+                                                   Messages.getString("Main.autoMsgSaveError"));
                     }
                 }
             }
@@ -3762,8 +3828,10 @@ public class Main {
                             autoMessages.setListData(IOUtils.loadAmfFile(f));
                         } catch (final IOException e1) {
                             e1.printStackTrace();
-                            SwingUtils.showErrorDialog(win, Messages.getString("Main.errorTitle"), e1,
-                                    Messages.getString("Main.autoMsgLoadError"));
+                            SwingUtils.showErrorDialog(win,
+                                                       Messages.getString("Main.errorTitle"),
+                                                       e1,
+                                                       Messages.getString("Main.autoMsgLoadError"));
                         }
                     }
                 }
@@ -3835,9 +3903,8 @@ public class Main {
 
                 final JVBoxPanel addResponseBox = new JVBoxPanel();
 
-                final JTextField ruleNameField = new JTextField(
-                        Messages.getString("Main.autoResponseDefaultRuleName") + " " + Integer.toString(
-                                autoResponses.getListData() == null ? 1 : autoResponses.getListData().length + 1));
+                final JTextField ruleNameField = new JTextField(Messages.getString("Main.autoResponseDefaultRuleName") + " " + Integer.toString(
+                        autoResponses.getListData() == null ? 1 : autoResponses.getListData().length + 1));
                 final JStringMemList triggers = new JStringMemList();
                 final JStringMemList noTriggers = new JStringMemList();
                 final JStringMemList effects = new JStringMemList();
@@ -3923,8 +3990,14 @@ public class Main {
                         jvb.add(jtf);
                         jvb.alignAll();
                         jtf.requestFocus();
-                        final int resp = JOptionPane.showOptionDialog(win, jvb, label, JOptionPane.OK_CANCEL_OPTION,
-                                JOptionPane.QUESTION_MESSAGE, null, null, 0);
+                        final int resp = JOptionPane.showOptionDialog(win,
+                                                                      jvb,
+                                                                      label,
+                                                                      JOptionPane.OK_CANCEL_OPTION,
+                                                                      JOptionPane.QUESTION_MESSAGE,
+                                                                      null,
+                                                                      null,
+                                                                      0);
                         if (resp == 0 && !jtf.getText().replace(" ", "").isEmpty()) {
                             final String txt = jtf.getText();
                             if (src.equals(addTrigger)) {
@@ -3995,10 +4068,9 @@ public class Main {
                 radioBox.add(effectsOrdered);
                 radioBox.add(effectsAll);
 
-                addResponseBox.add(new JLabel("<html><h3>"
-                        + Messages.getString(e.getActionCommand().equals("edit") ? "Main.autoResponseEditTitle"
-                                : "Main.autoResponseAddTitle")
-                        + "</ht></html>"));
+                addResponseBox.add(new JLabel("<html><h3>" + Messages.getString(e.getActionCommand().equals("edit") ?
+                                                                                        "Main.autoResponseEditTitle" :
+                                                                                        "Main.autoResponseAddTitle") + "</ht></html>"));
                 addResponseBox.add(new JLabel(Messages.getString("Main.autoResponseRuleName") + ":"));
                 addResponseBox.add(ruleNameField);
                 addResponseBox.add(new JLabel(" "));
@@ -4065,29 +4137,40 @@ public class Main {
                 jj.add(new JLabel(" "));
                 final JScrollPane sp = new JScrollPane(jj);
                 sp.setPreferredSize(new Dimension(SwingUtils.sSize.width / 3, SwingUtils.sSize.height / 2));
-                final int resp = JOptionPane.showOptionDialog(win, sp, Messages.getString("Main.autoResponseAddTitle"),
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, 0);
+                final int resp = JOptionPane.showOptionDialog(win,
+                                                              sp,
+                                                              Messages.getString("Main.autoResponseAddTitle"),
+                                                              JOptionPane.OK_CANCEL_OPTION,
+                                                              JOptionPane.QUESTION_MESSAGE,
+                                                              null,
+                                                              null,
+                                                              0);
                 if (resp == 0) {
                     String ruleName = ruleNameField.getText();
                     final String[] triggersList = triggers.getListData();
                     final String[] exceptionsList = noTriggers.getListData();
                     final String[] effectsList = effects.getListData();
-                    final EffectType eType = effectsRandom.isSelected() ? EffectType.RANDOM
-                            : effectsOrdered.isSelected() ? EffectType.ORDERED : EffectType.ALL;
+                    final EffectType eType = effectsRandom.isSelected() ?
+                            EffectType.RANDOM :
+                            effectsOrdered.isSelected() ? EffectType.ORDERED : EffectType.ALL;
                     final int interval = (int) (allInterval.getValue());
 
                     if (ruleName.replace(" ", "").isEmpty()) {
-                        ruleName = Messages.getString("Main.autoResponseDefaultRuleName") + " "
-                                + ((autoResponses.getListData() == null) ? "1"
-                                        : (Integer.toString(autoResponses.getListData().length + 1)));
+                        ruleName = Messages.getString("Main.autoResponseDefaultRuleName") + " " + ((autoResponses.getListData() == null) ?
+                                "1" :
+                                (Integer.toString(autoResponses.getListData().length + 1)));
                     }
 
-                    if ((triggersList == null || triggersList.length <= 0)
-                            || (effectsList == null || effectsList.length <= 0)) {
+                    if ((triggersList == null || triggersList.length <= 0) || (effectsList == null || effectsList.length <= 0)) {
                         SwingUtils.playExclamation();
-                        JOptionPane.showOptionDialog(win, Messages.getString("Main.autoResponseAddEmptyError"),
-                                Messages.getString("Main.errorTitle"), JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE,
-                                null, new Object[] { Messages.getString("Main.ok") }, 0);
+                        JOptionPane.showOptionDialog(win,
+                                                     Messages.getString("Main.autoResponseAddEmptyError"),
+                                                     Messages.getString("Main.errorTitle"),
+                                                     JOptionPane.OK_OPTION,
+                                                     JOptionPane.ERROR_MESSAGE,
+                                                     null,
+                                                     new Object[]{Messages.getString("Main.ok")},
+                                                     0);
                         return;
                     }
 
@@ -4103,8 +4186,13 @@ public class Main {
                         rule.setTriggerType(triggerType);
                         autoResponses.repaint();
                     } else {
-                        autoResponses.addRule(new AutoResponseRule(ruleName, eType, triggerType, interval, triggersList,
-                                exceptionsList, effectsList));
+                        autoResponses.addRule(new AutoResponseRule(ruleName,
+                                                                   eType,
+                                                                   triggerType,
+                                                                   interval,
+                                                                   triggersList,
+                                                                   exceptionsList,
+                                                                   effectsList));
                     }
 
                 }
@@ -4156,8 +4244,10 @@ public class Main {
                             final List<AutoResponseRule> rules = IOUtils.loadArfFile(in);
                             autoResponses.setListData(rules.toArray(new AutoResponseRule[rules.size()]));
                         } catch (final Exception e2) {
-                            SwingUtils.showErrorDialog(win, Messages.getString("Main.errorTitle"), e2,
-                                    Messages.getString("Main.autoMsgLoadError"));
+                            SwingUtils.showErrorDialog(win,
+                                                       Messages.getString("Main.errorTitle"),
+                                                       e2,
+                                                       Messages.getString("Main.autoMsgLoadError"));
                             e2.printStackTrace();
                         }
                         autoResponses.repaint();
@@ -4180,18 +4270,27 @@ public class Main {
                 if (resp == JFileChooser.APPROVE_OPTION) {
                     final File out = IOUtils.forceExtension(fc.getSelectedFile(), ".arf");
                     if (out.exists()) {
-                        final int rsp = JOptionPane.showOptionDialog(win, Messages.getString("Main.overwriteFile"),
-                                Messages.getString("Main.overwriteFileTitle"), JOptionPane.YES_NO_OPTION,
-                                JOptionPane.WARNING_MESSAGE, null,
-                                new Object[] { Messages.getString("Main.yes"), Messages.getString("Main.no") }, 0);
+                        final int rsp = JOptionPane.showOptionDialog(win,
+                                                                     Messages.getString("Main.overwriteFile"),
+                                                                     Messages.getString("Main.overwriteFileTitle"),
+                                                                     JOptionPane.YES_NO_OPTION,
+                                                                     JOptionPane.WARNING_MESSAGE,
+                                                                     null,
+                                                                     new Object[]{
+                                                                             Messages.getString("Main.yes"),
+                                                                             Messages.getString("Main.no")
+                                                                     },
+                                                                     0);
                         if (rsp != 0) return;
                     }
                     try {
                         IOUtils.writeArfFile(out, autoResponses.getListData());
                     } catch (final Exception e2) {
                         e2.printStackTrace();
-                        SwingUtils.showErrorDialog(win, Messages.getString("Main.errorTitle"), e2,
-                                Messages.getString("Main.autoMsgSaveError"));
+                        SwingUtils.showErrorDialog(win,
+                                                   Messages.getString("Main.errorTitle"),
+                                                   e2,
+                                                   Messages.getString("Main.autoMsgSaveError"));
                     }
                 }
             }
@@ -4331,9 +4430,14 @@ public class Main {
                 optionsPanel.add(hBox);
                 optionsPanel.alignAll();
 
-                final int response = JOptionPane.showOptionDialog(pWin, optionsPanel, "Search...",
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                        new Object[] { "Ok", "Cancel" }, 0);
+                final int response = JOptionPane.showOptionDialog(pWin,
+                                                                  optionsPanel,
+                                                                  "Search...",
+                                                                  JOptionPane.OK_CANCEL_OPTION,
+                                                                  JOptionPane.QUESTION_MESSAGE,
+                                                                  null,
+                                                                  new Object[]{"Ok", "Cancel"},
+                                                                  0);
 
                 String phrase;
                 if (response == 0 && (phrase = input.getText()) != null && !phrase.replace(" ", "").isEmpty()) {
@@ -4342,8 +4446,9 @@ public class Main {
                     for (final Object obj : dataVector) {
                         if (obj instanceof Vector<?>) {
                             final Vector<Object> nVector = (Vector<Object>) obj;
-                            final String toCompare = byID.isSelected() ? nVector.get(1).toString()
-                                    : nVector.get(3).toString();
+                            final String toCompare = byID.isSelected() ?
+                                    nVector.get(1).toString() :
+                                    nVector.get(3).toString();
                             if (toCompare.toLowerCase().contains(phrase.toLowerCase())) {
                                 searchModel.addRow(nVector);
                             }
@@ -4386,31 +4491,37 @@ public class Main {
 
         controlsTabPane.addTab("", playerListBox);
         controlsTabPane.setTabComponentAt(0,
-                new TabGroup(FontAwesome.USERS, Messages.getString("Main.playerListTab"), true));
+                                          new TabGroup(FontAwesome.USERS,
+                                                       Messages.getString("Main.playerListTab"),
+                                                       true));
 
         controlsTabPane.addTab("", playerBox);
         controlsTabPane.setTabComponentAt(1,
-                new TabGroup(FontAwesome.USER, Messages.getString("Main.playerTab"), true));
+                                          new TabGroup(FontAwesome.USER, Messages.getString("Main.playerTab"), true));
 
         controlsTabPane.addTab("", statisticsPane);
         controlsTabPane.setTabComponentAt(2,
-                new TabGroup(FontAwesome.CLOCK, Messages.getString("Main.statisticsTab"), true));
+                                          new TabGroup(FontAwesome.CLOCK,
+                                                       Messages.getString("Main.statisticsTab"),
+                                                       true));
 
         controlsTabPane.addTab("", inventoryBox);
         controlsTabPane.setTabComponentAt(3,
-                new TabGroup(FontAwesome.BOX, Messages.getString("Main.inventoryTab"), true));
+                                          new TabGroup(FontAwesome.BOX, Messages.getString("Main.inventoryTab"), true));
 
         controlsTabPane.addTab("", new JScrollPane(worldBox));
         controlsTabPane.setTabComponentAt(4,
-                new TabGroup(FontAwesome.GLOBE, Messages.getString("Main.worldTab"), true));
+                                          new TabGroup(FontAwesome.GLOBE, Messages.getString("Main.worldTab"), true));
 
         controlsTabPane.addTab("", messagesTabPane);
         controlsTabPane.setTabComponentAt(5,
-                new TabGroup(FontAwesome.STOPWATCH, Messages.getString("Main.autoMessagesTab"), true));
+                                          new TabGroup(FontAwesome.STOPWATCH,
+                                                       Messages.getString("Main.autoMessagesTab"),
+                                                       true));
 
         controlsTabPane.addTab("", packetsBtnPane);
         controlsTabPane.setTabComponentAt(6,
-                new TabGroup(FontAwesome.VIAL, Messages.getString("Main.packetsTab"), true));
+                                          new TabGroup(FontAwesome.VIAL, Messages.getString("Main.packetsTab"), true));
 
         fPane.add(box);
         fPane.add(controlsTabPane);
@@ -4418,18 +4529,18 @@ public class Main {
         final Runnable rn = new Runnable() {
             @Override
             public void run() {
-//                autoMsgInterval.setMaximumSize(new Dimension(win.getWidth(), 20));
-//                autoMsgDelay.setMaximumSize(new Dimension(win.getWidth(), 20));
-//                autoAttackRate.setMaximumSize(new Dimension(autoAttackRate.getWidth(), 20));
-//                for (final Component ct : speedBox.getComponents()) {
-//                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
-//                }
-//                for (final Component ct : blocksBox.getComponents()) {
-//                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
-//                }
-//                for (final Component ct : trackingBox.getComponents()) {
-//                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
-//                }
+                //                autoMsgInterval.setMaximumSize(new Dimension(win.getWidth(), 20));
+                //                autoMsgDelay.setMaximumSize(new Dimension(win.getWidth(), 20));
+                //                autoAttackRate.setMaximumSize(new Dimension(autoAttackRate.getWidth(), 20));
+                //                for (final Component ct : speedBox.getComponents()) {
+                //                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
+                //                }
+                //                for (final Component ct : blocksBox.getComponents()) {
+                //                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
+                //                }
+                //                for (final Component ct : trackingBox.getComponents()) {
+                //                    ct.setMaximumSize(new Dimension(ct.getWidth(), 20));
+                //                }
                 ac.actionPerformed(null);
             }
         };
@@ -4473,9 +4584,8 @@ public class Main {
                                 protocol = -2;
                             }
                         } catch (final Exception e) {
-                            SwingUtils.appendColoredText(
-                                    "\u00a7c" + Messages.getString("Main.connectionFailedChatMessage") + e.toString(),
-                                    pane);
+                            SwingUtils.appendColoredText("\u00a7c" + Messages.getString(
+                                    "Main.connectionFailedChatMessage") + e.toString(), pane);
                             e.printStackTrace();
                         }
                         break;
@@ -4504,9 +4614,14 @@ public class Main {
                     bb.add(new JLabel(Messages.getString("Main.chooseMinecraftVersionLabel")));
                     bb.add(pcBox);
 
-                    JOptionPane.showOptionDialog(win, bb, Messages.getString("Main.chooseMinecraftVersionTitle"),
-                            JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                            new String[] { Messages.getString("Main.ok") }, null);
+                    JOptionPane.showOptionDialog(win,
+                                                 bb,
+                                                 Messages.getString("Main.chooseMinecraftVersionTitle"),
+                                                 JOptionPane.DEFAULT_OPTION,
+                                                 JOptionPane.QUESTION_MESSAGE,
+                                                 null,
+                                                 new String[]{Messages.getString("Main.ok")},
+                                                 null);
 
                     protocol = ProtocolNumber.getForName((String) pcBox.getSelectedItem()).protocol;
                 }
@@ -4520,8 +4635,12 @@ public class Main {
                         if (iprotocol >= 393) {
                             controlsTabPane.setEnabledAt(2, false);
                         }
-                        final MinecraftClient cl = new MinecraftClient(host, port, iprotocol,
-                                forgeMode == ForgeMode.AUTO ? forge : (forgeMode != ForgeMode.NEVER));
+                        final MinecraftClient cl = new MinecraftClient(host,
+                                                                       port,
+                                                                       iprotocol,
+                                                                       forgeMode == ForgeMode.AUTO ?
+                                                                               forge :
+                                                                               (forgeMode != ForgeMode.NEVER));
                         cl.getWindowsFactory().setItemWindowsClass(SwingItemsWindow.class);
                         clients.put(fPane, cl);
 
@@ -4536,8 +4655,7 @@ public class Main {
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
                                 if (packetAnalyzerPauseBtn.isSelected() || !up.isEnablePacketAnalyzer()) return;
-                                if (packet instanceof BaseServerPlayerPositionAndLookPacket && !triedToLogin
-                                        && password != null && !password.isEmpty()) {
+                                if (packet instanceof BaseServerPlayerPositionAndLookPacket && !triedToLogin && password != null && !password.isEmpty()) {
                                     try {
                                         cl.sendChatMessage(String.format("/" + up.getAutoLoginCommand(), password));
                                         triedToLogin = true;
@@ -4547,22 +4665,35 @@ public class Main {
                                 }
 
                                 if (packet instanceof UnknownPacket) {
-                                    unknownModel.insertRow(0,
-                                            new Object[] { packet, "0x" + Integer.toHexString(packet.getID()), "C",
-                                                    packet.getClass().getSimpleName(), packet.getSize() });
+                                    unknownModel.insertRow(0, new Object[]{
+                                            packet,
+                                            "0x" + Integer.toHexString(packet.getID()),
+                                            "C",
+                                            packet.getClass().getSimpleName(),
+                                            packet.getSize()
+                                    });
                                     if (unknownModel.getRowCount() > up.getMaxPacketsOnList()) {
                                         unknownModel.setRowCount(up.getMaxPacketsOnList());
                                     }
                                 } else {
-                                    inModel.insertRow(0,
-                                            new Object[] { packet, "0x" + Integer.toHexString(packet.getID()), "C",
-                                                    packet.getClass().getSimpleName(), packet.getSize() });
+                                    inModel.insertRow(0, new Object[]{
+                                            packet,
+                                            "0x" + Integer.toHexString(packet.getID()),
+                                            "C",
+                                            packet.getClass().getSimpleName(),
+                                            packet.getSize()
+                                    });
                                     if (inModel.getRowCount() > up.getMaxPacketsOnList()) {
                                         inModel.setRowCount(up.getMaxPacketsOnList());
                                     }
                                 }
-                                allModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
-                                        "C", packet.getClass().getSimpleName(), packet.getSize() });
+                                allModel.insertRow(0, new Object[]{
+                                        packet,
+                                        "0x" + Integer.toHexString(packet.getID()),
+                                        "C",
+                                        packet.getClass().getSimpleName(),
+                                        packet.getSize()
+                                });
                                 if (allModel.getRowCount() > up.getMaxPacketsOnList()) {
                                     allModel.setRowCount(up.getMaxPacketsOnList());
                                 }
@@ -4574,10 +4705,20 @@ public class Main {
                             @Override
                             public void packetReceived(final Packet packet, final PacketRegistry registry) {
                                 if (packetAnalyzerPauseBtn.isSelected() || !up.isEnablePacketAnalyzer()) return;
-                                outModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
-                                        "S", packet.getClass().getSimpleName(), packet.getSize() });
-                                allModel.insertRow(0, new Object[] { packet, "0x" + Integer.toHexString(packet.getID()),
-                                        "S", packet.getClass().getSimpleName(), packet.getSize() });
+                                outModel.insertRow(0, new Object[]{
+                                        packet,
+                                        "0x" + Integer.toHexString(packet.getID()),
+                                        "S",
+                                        packet.getClass().getSimpleName(),
+                                        packet.getSize()
+                                });
+                                allModel.insertRow(0, new Object[]{
+                                        packet,
+                                        "0x" + Integer.toHexString(packet.getID()),
+                                        "S",
+                                        packet.getClass().getSimpleName(),
+                                        packet.getSize()
+                                });
                                 if (outModel.getRowCount() > up.getMaxPacketsOnList()) {
                                     outModel.setRowCount(up.getMaxPacketsOnList());
                                 }
@@ -4623,8 +4764,7 @@ public class Main {
 
                         cl.getPlayersTabList().addChangeListener(new MapChangeListener<UUID, PlayerInfo>() {
                             @Override
-                            public void itemRemoved(final Object key, final PlayerInfo value,
-                                    final HashMap<UUID, PlayerInfo> map) {
+                            public void itemRemoved(final Object key, final PlayerInfo value, final HashMap<UUID, PlayerInfo> map) {
                                 final List<PlayerInfo> pl = new ArrayList<PlayerInfo>();
                                 for (final UUID ukey : map.keySet()) {
                                     pl.add(map.get(ukey));
@@ -4636,8 +4776,7 @@ public class Main {
                             }
 
                             @Override
-                            public void itemAdded(final UUID key, final PlayerInfo value,
-                                    final HashMap<UUID, PlayerInfo> map) {
+                            public void itemAdded(final UUID key, final PlayerInfo value, final HashMap<UUID, PlayerInfo> map) {
                                 final List<PlayerInfo> pl = new ArrayList<PlayerInfo>();
                                 for (final UUID ukey : map.keySet()) {
                                     pl.add(map.get(ukey));
@@ -4658,22 +4797,25 @@ public class Main {
 
                             final JTextPane jtp = pane;
                             final JTextPane hjtp = hotbar;
+                            Map<String, Integer> trueValues = new HashMap<String, Integer>();
+                            private int attackTicks = 0;
+                            private boolean isUsing = false;
 
                             @Override
-                            public boolean messageReceived(final String message, final Position pos,
-                                    final MinecraftClient cl) {
+                            public boolean messageReceived(final String message, final Position pos, final MinecraftClient cl) {
                                 if (pos == Position.HOTBAR) {
                                     hjtp.setText("");
                                     SwingUtils.appendColoredText(message, hjtp);
                                 } else {
                                     if (trayIcon != null) {
                                         boolean shouldDisplay = (up.getTrayMessageMode()
-                                                .equals(Constants.TRAY_MESSAGES_KEY_ALWAYS))
-                                                || (up.getTrayMessageMode().equals(Constants.TRAY_MESSAGES_KEY_MENTION)
-                                                        && message.toLowerCase()
-                                                                .contains(cl.getUsername().toLowerCase()));
+                                                                   .equals(Constants.TRAY_MESSAGES_KEY_ALWAYS)) || (up.getTrayMessageMode()
+                                                                                                                      .equals(Constants.TRAY_MESSAGES_KEY_MENTION) && message.toLowerCase()
+                                                                                                                                                                             .contains(
+                                                                                                                                                                                     cl.getUsername()
+                                                                                                                                                                                       .toLowerCase()));
                                         if (!shouldDisplay && up.getTrayMessageMode()
-                                                .equals(Constants.TRAY_MESSAGES_KEY_KEYWORD)) {
+                                                                .equals(Constants.TRAY_MESSAGES_KEY_KEYWORD)) {
                                             final String[] keyWords = up.getTrayKeyWords();
                                             if (keyWords != null) {
                                                 for (final String keyWord : keyWords)
@@ -4687,9 +4829,9 @@ public class Main {
                                             trayLastMessageType = 0;
                                             trayLastMessageSender = cl;
                                             final String ttext = ChatMessages.removeColors(message);
-                                            trayIcon.displayMessage(
-                                                    cl.getHost() + ":" + cl.getPort() + " (" + cl.getUsername() + ")",
-                                                    ttext, MessageType.NONE);
+                                            trayIcon.displayMessage(cl.getHost() + ":" + cl.getPort() + " (" + cl.getUsername() + ")",
+                                                                    ttext,
+                                                                    MessageType.NONE);
                                         }
                                     }
 
@@ -4719,8 +4861,7 @@ public class Main {
                                                             }
                                                         } catch (final Exception e) {
                                                             e.printStackTrace();
-                                                            for (final ClientListener cll : cl
-                                                                    .getClientListeners(true)) {
+                                                            for (final ClientListener cll : cl.getClientListeners(true)) {
                                                                 cll.disconnected(e.toString(), cl);
                                                             }
                                                             cl.close();
@@ -4744,7 +4885,7 @@ public class Main {
 
                                     if (!jsc.getVerticalScrollBar().getValueIsAdjusting()) {
                                         jsc.getVerticalScrollBar()
-                                                .setValue(jsc.getVerticalScrollBar().getMaximum() * 2);
+                                           .setValue(jsc.getVerticalScrollBar().getMaximum() * 2);
                                     }
                                 }
                                 return false;
@@ -4753,19 +4894,17 @@ public class Main {
                             @Override
                             public void disconnected(final String reason, final MinecraftClient cl) {
                                 autoMessagesThread.interrupt();
-                                SwingUtils.appendColoredText(
-                                        "\u00a7c" + Messages.getString("Main.connectionLostChatMessage") + ": \r\n"
-                                                + reason + "\r\n",
-                                        jtp);
+                                SwingUtils.appendColoredText("\u00a7c" + Messages.getString(
+                                        "Main.connectionLostChatMessage") + ": \r\n" + reason + "\r\n", jtp);
 
-                                if (trayIcon != null && up.isTrayShowDisconnectMessages()
-                                        && !reason.equals(Messages.getString("Main.trayClosedReason"))) {
+                                if (trayIcon != null && up.isTrayShowDisconnectMessages() && !reason.equals(Messages.getString(
+                                        "Main.trayClosedReason"))) {
                                     trayLastMessageType = 1;
-                                    final String ttext = Messages.getString("Main.connectionLostTrayMessage")
-                                            + ChatMessages.removeColors(reason);
-                                    trayIcon.displayMessage(
-                                            cl.getHost() + ":" + cl.getPort() + " (" + cl.getUsername() + ")", ttext,
-                                            MessageType.ERROR);
+                                    final String ttext = Messages.getString("Main.connectionLostTrayMessage") + ChatMessages.removeColors(
+                                            reason);
+                                    trayIcon.displayMessage(cl.getHost() + ":" + cl.getPort() + " (" + cl.getUsername() + ")",
+                                                            ttext,
+                                                            MessageType.ERROR);
                                     final PopupMenu pm = trayIcon.getPopupMenu();
                                     for (int x1 = 0; x1 < pm.getItemCount(); x1++) {
                                         final MenuComponent ct = pm.getItem(x1);
@@ -4796,8 +4935,8 @@ public class Main {
                                     if (ct == null) {
                                         continue;
                                     }
-                                    if (ct.getName().equals(entry.getHost() + "_" + entry.getName() + "_" + uname)
-                                            && (ct instanceof Box)) {
+                                    if (ct.getName()
+                                          .equals(entry.getHost() + "_" + entry.getName() + "_" + uname) && (ct instanceof Box)) {
                                         final Box ctb = (Box) ct;
                                         for (final Component ctt : ctb.getComponents())
                                             if (ctt instanceof JLabel) {
@@ -4822,16 +4961,14 @@ public class Main {
                                 healthBar.setValue((int) health);
                                 foodBar.setValue(food);
 
-                                healthBar.setString(
-                                        Messages.getString("Main.healthBarText") + Integer.toString((int) health) + "/"
-                                                + Integer.toString(healthBar.getMaximum()) + ")");
-                                foodBar.setString(Messages.getString("Main.foodBarText") + Integer.toString(food) + "/"
-                                        + Integer.toString(foodBar.getMaximum()) + ")");
+                                healthBar.setString(Messages.getString("Main.healthBarText") + Integer.toString((int) health) + "/" + Integer.toString(
+                                        healthBar.getMaximum()) + ")");
+                                foodBar.setString(Messages.getString("Main.foodBarText") + Integer.toString(food) + "/" + Integer.toString(
+                                        foodBar.getMaximum()) + ")");
                             }
 
                             @Override
-                            public void positionChanged(final double x, final double y, final double z,
-                                    final MinecraftClient cl) {
+                            public void positionChanged(final double x, final double y, final double z, final MinecraftClient cl) {
                                 String sx = Double.toString(x);
                                 String sy = Double.toString(y);
                                 String sz = Double.toString(z);
@@ -4850,11 +4987,8 @@ public class Main {
                                 zLabel.setText("Z: " + sz);
                             }
 
-                            Map<String, Integer> trueValues = new HashMap<String, Integer>();
-
                             @Override
-                            public void statisticsReceived(final Map<String, Integer> values,
-                                    final MinecraftClient cl) {
+                            public void statisticsReceived(final Map<String, Integer> values, final MinecraftClient cl) {
                                 if (values.size() == 0) return;
                                 statisticsContainer.removeAll();
                                 for (final String key : values.keySet()) {
@@ -4875,13 +5009,13 @@ public class Main {
                             }
 
                             @Override
-                            public void windowOpened(final int id, final ItemsWindow win, final PacketRegistry reg,
-                                    final MinecraftClient cl) {
+                            public void windowOpened(final int id, final ItemsWindow win, final PacketRegistry reg, final MinecraftClient cl) {
                                 if (up.isHideIncomingWindows()) {
                                     if (up.isHiddenWindowsResponse()) {
                                         try {
-                                            cl.sendPacket(
-                                                    PacketFactory.constructPacket(reg, "ClientCloseWindowPacket", id));
+                                            cl.sendPacket(PacketFactory.constructPacket(reg,
+                                                                                        "ClientCloseWindowPacket",
+                                                                                        id));
                                         } catch (final Exception e) {
                                             e.printStackTrace();
                                         }
@@ -4913,8 +5047,11 @@ public class Main {
                                     hours++;
                                 }
 
-                                final String timeString = IOUtils.padString(Integer.toString(hours), 2, "0", 1) + ":"
-                                        + IOUtils.padString(Integer.toString(minutes), 2, "0", 1);
+                                final String timeString = IOUtils.padString(Integer.toString(hours),
+                                                                            2,
+                                                                            "0",
+                                                                            1) + ":" + IOUtils.padString(Integer.toString(
+                                        minutes), 2, "0", 1);
 
                                 timeValueLabel.setText(timeString);
 
@@ -4937,9 +5074,9 @@ public class Main {
                                         customName = info.getName();
                                     }
                                 }
-                                trackingField
-                                        .setText(et != null ? customName != null ? customName : et.getUid().toString()
-                                                : Integer.toString(id));
+                                trackingField.setText(et != null ?
+                                                              customName != null ? customName : et.getUid().toString() :
+                                                              Integer.toString(id));
                             }
 
                             @Override
@@ -4951,8 +5088,7 @@ public class Main {
                                     for (final Entity ent : cl.getStoredEntities().values().toArray(new Entity[0])) {
                                         final double dist = cl.distanceTo(ent);
                                         if (dist < closestDistance) {
-                                            if ((ent instanceof Player && autoTrackPlayers.isSelected())
-                                                    || (!(ent instanceof Player) && autoTrackEntities.isSelected())) {
+                                            if ((ent instanceof Player && autoTrackPlayers.isSelected()) || (!(ent instanceof Player) && autoTrackEntities.isSelected())) {
                                                 closestEntity = ent;
                                                 closestDistance = dist;
                                             }
@@ -4972,9 +5108,6 @@ public class Main {
                                 }
                             }
 
-                            private int attackTicks = 0;
-                            private boolean isUsing = false;
-
                             @Override
                             public void tick(final MinecraftClient cl) throws IOException {
                                 if (cl.isEntityAttacking()) {
@@ -4985,11 +5118,10 @@ public class Main {
                                         if (entity != null) {
                                             if (attackHit.isSelected() && cl.distanceTo(entity) <= 4) {
                                                 cl.interact(entity, UseType.ATTACK);
-                                            } else if (attackUse.isSelected() && !isUsing
-                                                    && cl.distanceTo(entity) <= (int) attackUseRange.getValue()) {
+                                            } else if (attackUse.isSelected() && !isUsing && cl.distanceTo(entity) <= (int) attackUseRange.getValue()) {
                                                 if (cl.getProtocol() > 47) {
                                                     cl.sendPacket(PacketFactory.constructPacket(cl.getReg(),
-                                                            "ClientUseItemPacket"));
+                                                                                                "ClientUseItemPacket"));
                                                     isUsing = true;
                                                     new Timer(true).schedule(new TimerTask() {
 
@@ -4998,9 +5130,12 @@ public class Main {
                                                             try {
                                                                 isUsing = false;
                                                                 cl.sendPacket(PacketFactory.constructPacket(cl.getReg(),
-                                                                        "ClientPlayerDiggingPacket",
-                                                                        net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPlayerDiggingPacket.Status.FINISH_ACTION,
-                                                                        0, 0, 0, (byte) 0));
+                                                                                                            "ClientPlayerDiggingPacket",
+                                                                                                            net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPlayerDiggingPacket.Status.FINISH_ACTION,
+                                                                                                            0,
+                                                                                                            0,
+                                                                                                            0,
+                                                                                                            (byte) 0));
                                                             } catch (final IOException ex) {
                                                                 ex.printStackTrace();
                                                             }
@@ -5025,14 +5160,14 @@ public class Main {
                             });
                             try {
                                 if (cl.getProtocol() >= ProtocolNumber.V1_19.protocol && authType != AuthType.Offline) {
-                                    SwingUtils.appendColoredText(
-                                            "\u00a7c" + Messages.getString("authUnavailable") + "\n", pane);
+                                    SwingUtils.appendColoredText("\u00a7c" + Messages.getString("authUnavailable") + "\n",
+                                                                 pane);
                                     return;
                                 }
                                 if (uname instanceof UserInfo && authType == AuthType.Microsoft) {
                                     try {
-                                        SwingUtils.appendColoredText(
-                                                "\u00a7e" + Messages.getString("authRefreshing") + "\n", pane);
+                                        SwingUtils.appendColoredText("\u00a7e" + Messages.getString("authRefreshing") + "\n",
+                                                                     pane);
                                         String refresh = ((UserInfo) uname).getRefresh();
                                         OnlineProfile profile = MicrosoftAuth.getProfile(((UserInfo) uname).getToken());
                                         if (profile == null) {
@@ -5051,15 +5186,19 @@ public class Main {
                                             i.setUuid(prof.getId());
                                         }
                                     } catch (Exception e2) {
-                                        SwingUtils.showErrorDialog(pWin, "Error", e2,
-                                                Messages.getString("authRefreshingError"));
-                                        SwingUtils.appendColoredText(
-                                                "\u00a7c" + Messages.getString("authRefreshingErrorChat"), pane);
+                                        SwingUtils.showErrorDialog(pWin,
+                                                                   "Error",
+                                                                   e2,
+                                                                   Messages.getString("authRefreshingError"));
+                                        SwingUtils.appendColoredText("\u00a7c" + Messages.getString(
+                                                "authRefreshingErrorChat"), pane);
                                         return;
                                     }
                                 }
-                                cl.connect(authType, ((uname instanceof UserInfo) ? (UserInfo) uname
-                                        : new UserInfo(uname.toString(), uname.toString(), "", "", "")));
+                                cl.connect(authType,
+                                           ((uname instanceof UserInfo) ?
+                                                   (UserInfo) uname :
+                                                   new UserInfo(uname.toString(), uname.toString(), "", "", "")));
                                 discordIntegr.update();
 
                                 try {
@@ -5102,9 +5241,9 @@ public class Main {
                                             try {
                                                 cl.sendChatMessage(message);
                                             } catch (final IOException e1) {
-                                                SwingUtils.appendColoredText("\u00a7c"
-                                                        + Messages.getString("Main.connectionLostChatMessage2")
-                                                        + ": \r\n" + e1.toString(), pane);
+                                                SwingUtils.appendColoredText("\u00a7c" + Messages.getString(
+                                                                                     "Main.connectionLostChatMessage2") + ": \r\n" + e1.toString(),
+                                                                             pane);
                                                 e1.printStackTrace();
                                                 for (final Component ct : chatControls.getComponents()) {
                                                     ct.setEnabled(false);
@@ -5119,19 +5258,17 @@ public class Main {
                                     ct.setEnabled(true);
                                 }
                             } catch (final Exception e) {
-                                SwingUtils.appendColoredText(
-                                        "\u00a7c" + Messages.getString("Main.connectionFailedChatMessage2") + "\r\n\r\n"
-                                                + e.toString(),
-                                        pane);
+                                SwingUtils.appendColoredText("\u00a7c" + Messages.getString(
+                                        "Main.connectionFailedChatMessage2") + "\r\n\r\n" + e.toString(), pane);
                                 e.printStackTrace();
                             }
                         };
                         new Thread(rr).start();
                     } catch (
 
-                    final IOException e) {
-                        SwingUtils.appendColoredText("\u00a7c" + Messages.getString("Main.connectionFailedChatMessage2")
-                                + "\r\n\r\n" + e.toString(), pane);
+                            final IOException e) {
+                        SwingUtils.appendColoredText("\u00a7c" + Messages.getString("Main.connectionFailedChatMessage2") + "\r\n\r\n" + e.toString(),
+                                                     pane);
                         e.printStackTrace();
                     }
 
@@ -5143,8 +5280,6 @@ public class Main {
 
         return fPane;
     }
-
-    JFrame pWin = null;
 
     private TablePacketButton initTableColumns(final JTable table, final DefaultTableModel model) {
         model.addColumn(" ");
@@ -5175,13 +5310,16 @@ public class Main {
         pane.setEditable(false);
 
         final int compressed = packet.getCompressed();
-        final String compressedString = compressed == 1 ? "\u00a74No (Disabled)"
-                : compressed == 2 ? "\u00a74No" : compressed == 3 ? "\u00a72Yes" : "Unknown";
+        final String compressedString = compressed == 1 ?
+                "\u00a74No (Disabled)" :
+                compressed == 2 ? "\u00a74No" : compressed == 3 ? "\u00a72Yes" : "Unknown";
         final String encryptedString = packet.isEncrypted() ? "\u00a72Yes" : "\u00a74No";
 
-        pane.setText("Packet Name: " + packet.getClass().getSimpleName() + "\n" + "Packet Class: "
-                + packet.getClass().getName() + "\nPacket ID: 0x" + Integer.toHexString(packet.getID()) + "\nRegistry: "
-                + packet.getReg().getClass().getSimpleName() + "\nPacket Size: " + packet.getSize() + "\nCompressed: ");
+        pane.setText("Packet Name: " + packet.getClass().getSimpleName() + "\n" + "Packet Class: " + packet.getClass()
+                                                                                                           .getName() + "\nPacket ID: 0x" + Integer.toHexString(
+                packet.getID()) + "\nRegistry: " + packet.getReg()
+                                                         .getClass()
+                                                         .getSimpleName() + "\nPacket Size: " + packet.getSize() + "\nCompressed: ");
         SwingUtils.appendColoredText(compressedString + "\u00a70\nEncrypted: " + encryptedString, pane);
 
         infoPanel.add(pane);
@@ -5195,8 +5333,7 @@ public class Main {
         try {
             for (final Field field : packet.getClass().getDeclaredFields()) {
                 field.setAccessible(true);
-                fieldsModel
-                        .addRow(new Object[] { field.getName(), field.getType().getSimpleName(), field.get(packet) });
+                fieldsModel.addRow(new Object[]{field.getName(), field.getType().getSimpleName(), field.get(packet)});
                 field.setAccessible(false);
             }
         } catch (final Exception ex) {
@@ -5247,26 +5384,5 @@ public class Main {
 
     public MinecraftClient[] getClients() {
         return clients.values().toArray(new MinecraftClient[0]);
-    }
-
-    private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
-
-    public static String bytesToHex(final byte[] bytes) {
-        final byte[] hexChars = new byte[bytes.length * 3];
-        for (int j = 0; j < bytes.length; j++) {
-            final int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-        }
-        final StringBuilder bd = new StringBuilder();
-        for (int x = 0; x < hexChars.length; x += 2) {
-            if (x < hexChars.length - 1) {
-                bd.append(new String(new byte[] { hexChars[x], hexChars[x + 1] }) + " ");
-            } else {
-                bd.append(new String(new byte[] { hexChars[x] }) + " ");
-            }
-
-        }
-        return bd.toString();
     }
 }

@@ -1,24 +1,24 @@
 /**
- * 
+ *
  */
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
-
-import java.io.IOException;
 
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerOpenWindowPacket;
 
+import java.io.IOException;
+
 /**
  * Sent by server when a window is opened
- * 
+ *
  * @author Defective4
  */
 public class ServerOpenWindowPacket extends BaseServerOpenWindowPacket {
 
     /**
      * Constructs {@link ServerOpenWindowPacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown

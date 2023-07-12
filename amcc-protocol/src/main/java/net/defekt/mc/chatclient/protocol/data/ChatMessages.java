@@ -1,34 +1,30 @@
 package net.defekt.mc.chatclient.protocol.data;
 
+import com.google.gson.*;
+import net.defekt.mc.chatclient.protocol.MinecraftClient;
+import net.defekt.mc.chatclient.protocol.event.ClientListener;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-
-import net.defekt.mc.chatclient.protocol.MinecraftClient;
-import net.defekt.mc.chatclient.protocol.event.ClientListener;
-
 /**
  * Class containing methods to make parsing chat messages easier
- * 
+ *
+ * @author Defective4
  * @see ClientListener
  * @see ChatColor
- * @author Defective4
- *
  */
 public class ChatMessages {
 
     private static final String pChar = "\u00a7";
 
+    private ChatMessages() {
+    }
+
     /**
      * Replace specified code character in the message with '§'
-     * 
-     * 
+     *
      * @param code
      * @param message message to translate
      * @return translated message
@@ -37,12 +33,9 @@ public class ChatMessages {
         return message.replace(code, '§');
     }
 
-    private ChatMessages() {
-    }
-
     /**
      * Parse JSON chat message
-     * 
+     *
      * @param json chat message
      * @return parsed text
      */
@@ -54,7 +47,7 @@ public class ChatMessages {
      * Parse JSON chat message. <br>
      * Specifying a {@link MinecraftClient} instance allows the parser<br>
      * to translate player-specific elements.
-     * 
+     *
      * @param json
      * @param client
      * @return parsed, human-readable chat message
@@ -118,7 +111,7 @@ public class ChatMessages {
     /**
      * Remove colors from message.<br>
      * This method removes all color and formatting codes from message.
-     * 
+     *
      * @param message message to remove colors from
      * @return colorless message
      */

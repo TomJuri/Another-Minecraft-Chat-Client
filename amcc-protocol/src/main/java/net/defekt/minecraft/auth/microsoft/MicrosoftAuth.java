@@ -1,5 +1,7 @@
 package net.defekt.minecraft.auth.microsoft;
 
+import com.google.gson.*;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -9,23 +11,17 @@ import java.net.URLEncoder;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-
 /**
  * Class containing all methods required for full Microsoft authentication with
  * device code flow
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 @SuppressWarnings("javadoc")
 public class MicrosoftAuth {
 
     private static final String CLIENT_ID = "829558a9-67cf-4682-bd15-e600d67ee289";
+    private static Timer timer;
 
     private static HttpURLConnection openJson(String url) throws IOException {
         return open(url, "application/json", "application/json");
@@ -65,8 +61,6 @@ public class MicrosoftAuth {
         }
     }
 
-    private static Timer timer;
-
     public static void cancelCodeAuth() {
         if (timer != null) {
             try {
@@ -91,8 +85,7 @@ public class MicrosoftAuth {
                 try {
                     HttpURLConnection con = openWWW("https://login.microsoftonline.com/consumers/oauth2/v2.0/token");
                     OutputStream os = con.getOutputStream();
-                    os.write(("grant_type=urn:ietf:params:oauth:grant-type:device_code&client_id=" + CLIENT_ID
-                            + "&device_code=" + response.getDevice_code()).getBytes());
+                    os.write(("grant_type=urn:ietf:params:oauth:grant-type:device_code&client_id=" + CLIENT_ID + "&device_code=" + response.getDevice_code()).getBytes());
                     os.close();
                     int code = con.getResponseCode();
                     if (code >= 400) {
@@ -130,8 +123,8 @@ public class MicrosoftAuth {
     public static CodeResponse retrieveCode() throws IOException {
         HttpURLConnection con = openWWW("https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode");
         OutputStream os = con.getOutputStream();
-        os.write(("client_id=" + CLIENT_ID + "&scope=" + URLEncoder.encode("XboxLive.signin offline_access", "utf-8"))
-                .getBytes());
+        os.write(("client_id=" + CLIENT_ID + "&scope=" + URLEncoder.encode("XboxLive.signin offline_access",
+                                                                           "utf-8")).getBytes());
         os.close();
 
         CodeResponse resp = new Gson().fromJson(new InputStreamReader(con.getInputStream()), CodeResponse.class);
@@ -163,7 +156,9 @@ public class MicrosoftAuth {
         if (code >= 400) {
             if (code == 401) {
                 String err = Long.toString(JsonParser.parseReader(new InputStreamReader(con.getInputStream()))
-                        .getAsJsonObject().get("XErr").getAsLong());
+                                                     .getAsJsonObject()
+                                                     .get("XErr")
+                                                     .getAsLong());
                 String msg = null;
                 switch (err) {
                     case "2148916233": {
@@ -195,8 +190,14 @@ public class MicrosoftAuth {
         JsonObject obj = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject();
 
         String token = obj.get("Token").getAsString();
-        String userHash = obj.get("DisplayClaims").getAsJsonObject().get("xui").getAsJsonArray().get(0)
-                .getAsJsonObject().get("uhs").getAsString();
+        String userHash = obj.get("DisplayClaims")
+                             .getAsJsonObject()
+                             .get("xui")
+                             .getAsJsonArray()
+                             .get(0)
+                             .getAsJsonObject()
+                             .get("uhs")
+                             .getAsString();
 
         con.disconnect();
         if (token == null) throw new IOException("Server returned null XSTS token!");
@@ -228,8 +229,10 @@ public class MicrosoftAuth {
             con.disconnect();
             throw new IOException("The server returned error " + code + " while authenticating with XBox Live");
         }
-        String token = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject()
-                .get("Token").getAsString();
+        String token = JsonParser.parseReader(new InputStreamReader(con.getInputStream()))
+                                 .getAsJsonObject()
+                                 .get("Token")
+                                 .getAsString();
         con.disconnect();
 
         if (token == null) {
@@ -259,8 +262,7 @@ public class MicrosoftAuth {
     }
 
     public static OnlineProfile getProfile(String authToken) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) new URL("https://api.minecraftservices.com/minecraft/profile")
-                .openConnection();
+        HttpURLConnection con = (HttpURLConnection) new URL("https://api.minecraftservices.com/minecraft/profile").openConnection();
         con.setRequestProperty("User-Agent", "Java");
         con.setRequestProperty("Authorization", "Bearer " + authToken);
 
@@ -275,10 +277,8 @@ public class MicrosoftAuth {
         if (obj.has("id") && obj.has("name")) {
             String skin;
             JsonArray skins = obj.getAsJsonArray("skins");
-            if (skins != null && skins.size() > 0)
-                skin = skins.get(0).getAsJsonObject().get("url").getAsString();
-            else
-                skin = null;
+            if (skins != null && skins.size() > 0) skin = skins.get(0).getAsJsonObject().get("url").getAsString();
+            else skin = null;
             return new OnlineProfile(obj.get("id").getAsString(), obj.get("name").getAsString(), skin);
         } else {
             return null;
@@ -286,16 +286,18 @@ public class MicrosoftAuth {
     }
 
     public static boolean ownsGame(String authToken) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) new URL("https://api.minecraftservices.com/entitlements/mcstore")
-                .openConnection();
+        HttpURLConnection con = (HttpURLConnection) new URL("https://api.minecraftservices.com/entitlements/mcstore").openConnection();
         con.setRequestProperty("User-Agent", "Java");
         con.setRequestProperty("Authorization", "Bearer " + authToken);
 
         if (con.getResponseCode() >= 400)
             throw new IOException("Server returned " + con.getResponseCode() + " when checking game ownership!");
 
-        boolean own = JsonParser.parseReader(new InputStreamReader(con.getInputStream())).getAsJsonObject().get("items")
-                .getAsJsonArray().size() > 0;
+        boolean own = JsonParser.parseReader(new InputStreamReader(con.getInputStream()))
+                                .getAsJsonObject()
+                                .get("items")
+                                .getAsJsonArray()
+                                .size() > 0;
 
         return own;
     }

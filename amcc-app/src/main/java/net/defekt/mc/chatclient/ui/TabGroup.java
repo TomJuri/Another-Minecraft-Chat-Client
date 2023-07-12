@@ -1,19 +1,14 @@
 package net.defekt.mc.chatclient.ui;
 
-import java.awt.Color;
-import java.awt.Font;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 public class TabGroup extends JPanel {
+    private final String text;
+
     public TabGroup(final String icon, final String text) {
         this(icon, text, FontAwesome.FONT);
     }
-
-    private final String text;
 
     public TabGroup(final String icon, final String text, final Font font) {
         this(icon, text, font, false);

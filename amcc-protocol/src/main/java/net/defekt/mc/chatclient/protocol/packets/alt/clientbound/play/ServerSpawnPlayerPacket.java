@@ -1,10 +1,10 @@
 package net.defekt.mc.chatclient.protocol.packets.alt.clientbound.play;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerSpawnPlayerPacket;
+
+import java.io.IOException;
 
 @SuppressWarnings("javadoc")
 public class ServerSpawnPlayerPacket extends BaseServerSpawnPlayerPacket {

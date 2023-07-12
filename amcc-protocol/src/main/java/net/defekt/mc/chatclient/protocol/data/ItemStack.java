@@ -4,9 +4,8 @@ import dev.dewy.nbt.api.Tag;
 
 /**
  * Class encapsulating information about item stack
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ItemStack {
 
@@ -17,7 +16,7 @@ public class ItemStack {
 
     /**
      * Constructs a new item stack
-     * 
+     *
      * @param id     item ID
      * @param count  items in this item stack
      * @param damage item damage
@@ -32,7 +31,7 @@ public class ItemStack {
 
     /**
      * Get item's ID
-     * 
+     *
      * @return item's ID
      */
     public int getId() {
@@ -41,7 +40,7 @@ public class ItemStack {
 
     /**
      * Get item count in this item stack
-     * 
+     *
      * @return item count
      */
     public int getCount() {
@@ -50,7 +49,7 @@ public class ItemStack {
 
     /**
      * Get item's damage
-     * 
+     *
      * @return item damage
      */
     public short getDamage() {
@@ -59,7 +58,7 @@ public class ItemStack {
 
     /**
      * Get item's NBT data
-     * 
+     *
      * @return item's NBT data
      */
     public Tag getNbt() {

@@ -1,14 +1,24 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Desktop;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import net.defekt.mc.chatclient.protocol.data.ChatColor;
+import net.defekt.mc.chatclient.protocol.data.Messages;
+import net.defekt.mc.chatclient.protocol.data.UserPreferences;
+import net.defekt.mc.chatclient.protocol.data.UserPreferences.Constants;
+import net.defekt.mc.chatclient.protocol.io.IOUtils;
+import net.defekt.mc.chatclient.ui.FontAwesome;
+import net.defekt.mc.chatclient.ui.Main;
+
+import javax.swing.*;
+import javax.swing.SwingConstants;
+import javax.swing.JSpinner.DefaultEditor;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.text.*;
+import java.awt.*;
 import java.awt.Desktop.Action;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,52 +28,19 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JSpinner.DefaultEditor;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
-
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import net.defekt.mc.chatclient.protocol.data.ChatColor;
-import net.defekt.mc.chatclient.protocol.data.Messages;
-import net.defekt.mc.chatclient.protocol.data.UserPreferences;
-import net.defekt.mc.chatclient.protocol.data.UserPreferences.Constants;
-import net.defekt.mc.chatclient.protocol.io.IOUtils;
-import net.defekt.mc.chatclient.ui.FontAwesome;
-import net.defekt.mc.chatclient.ui.Main;
-
 /**
  * Various UI utilities used internally
- * 
- * @see ChatColor
- * @author Defective4
  *
+ * @author Defective4
+ * @see ChatColor
  */
 
 public class SwingUtils {
+
+    /**
+     * User's screen size
+     */
+    public static final Dimension sSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     public static void playAsterisk() {
         final Object obj = Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.asterisk");
@@ -94,8 +71,10 @@ public class SwingUtils {
             {
                 setFont(getFont().deriveFont(13f));
                 setText("<html><a href=#>GitHub</a></html>");
-                setIcon(FontAwesome.createIcon(FontAwesome.GITHUB, this, getFont().getSize2D(),
-                        FontAwesome.BRANDS_FONT));
+                setIcon(FontAwesome.createIcon(FontAwesome.GITHUB,
+                                               this,
+                                               getFont().getSize2D(),
+                                               FontAwesome.BRANDS_FONT));
             }
         });
 
@@ -104,8 +83,10 @@ public class SwingUtils {
         discordBox.add(new JLabel("Defective#3858") {
             {
                 setFont(getFont().deriveFont(13f));
-                setIcon(FontAwesome.createIcon(FontAwesome.DISCORD, this, getFont().getSize2D(),
-                        FontAwesome.BRANDS_FONT));
+                setIcon(FontAwesome.createIcon(FontAwesome.DISCORD,
+                                               this,
+                                               getFont().getSize2D(),
+                                               FontAwesome.BRANDS_FONT));
             }
         });
 
@@ -116,8 +97,14 @@ public class SwingUtils {
         copy.addActionListener(e -> {
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection("Defective#3858"), null);
             playAsterisk();
-            JOptionPane.showOptionDialog(dialog, Messages.getString("Main.copied"), "...", JOptionPane.CANCEL_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE, null, new String[] { Messages.getString("Main.ok") }, 0);
+            JOptionPane.showOptionDialog(dialog,
+                                         Messages.getString("Main.copied"),
+                                         "...",
+                                         JOptionPane.CANCEL_OPTION,
+                                         JOptionPane.INFORMATION_MESSAGE,
+                                         null,
+                                         new String[]{Messages.getString("Main.ok")},
+                                         0);
         });
 
         discordBox.add(copy);
@@ -135,7 +122,7 @@ public class SwingUtils {
 
     /**
      * Get installed looks and feels
-     * 
+     *
      * @return list of installed LaFs
      */
     public static String[] getInstalledLookAndFeels() {
@@ -151,7 +138,7 @@ public class SwingUtils {
 
     /**
      * Set system look and feel.<br>
-     * 
+     *
      * @param up User Preferences
      */
     public static void setNativeLook(final UserPreferences up) {
@@ -187,7 +174,7 @@ public class SwingUtils {
 
     /**
      * Aligns spinner's text field to the left side
-     * 
+     *
      * @param spinner spinner to align
      */
     public static void alignSpinner(final JSpinner spinner) {
@@ -196,13 +183,8 @@ public class SwingUtils {
     }
 
     /**
-     * User's screen size
-     */
-    public static final Dimension sSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-    /**
      * Sets window's position to center
-     * 
+     *
      * @param win window to center
      */
     public static void centerWindow(final Window win) {
@@ -215,7 +197,7 @@ public class SwingUtils {
     /**
      * Appends colored text to text pane.<br>
      * It follows Minecraft colors defined in {@link ChatColor}
-     * 
+     *
      * @param text text to append.<br>
      *             It follows the same rules defined in Minecraft, for example,
      *             \u00a74Hello \u00a79World would be
@@ -249,9 +231,9 @@ public class SwingUtils {
             }
         }
 
-        if ((!lineSupported
-                && !Main.up.getUnicodeCharactersMode().equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_CUSTOM))
-                || Main.up.getUnicodeCharactersMode().equals(Constants.UNICODECHARS_KEY_FORCE_UNICODE)) {
+        if ((!lineSupported && !Main.up.getUnicodeCharactersMode()
+                                       .equals(UserPreferences.Constants.UNICODECHARS_KEY_FORCE_CUSTOM)) || Main.up.getUnicodeCharactersMode()
+                                                                                                                   .equals(Constants.UNICODECHARS_KEY_FORCE_UNICODE)) {
             final SimpleAttributeSet set = new SimpleAttributeSet();
             StyleConstants.setFontFamily(set, "arial");
             StyleConstants.setFontSize(set, 16);
@@ -262,14 +244,13 @@ public class SwingUtils {
 
     /**
      * Shows error dialog, allowing to display exception details
-     * 
+     *
      * @param parent  parent of this dialog
      * @param title   dialog title
      * @param ex      exception to display details of
      * @param message custom dialog message
      */
-    public static void showErrorDialog(final Window parent, final String title, final Exception ex,
-            final String message) {
+    public static void showErrorDialog(final Window parent, final String title, final Exception ex, final String message) {
         final JDialog errDial = new JDialog(parent);
         errDial.setModal(true);
         errDial.setTitle(title);
@@ -300,8 +281,11 @@ public class SwingUtils {
 
         }
 
-        final JOptionPane jop = new JOptionPane(message, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
-                btns.toArray(new Component[0]));
+        final JOptionPane jop = new JOptionPane(message,
+                                                JOptionPane.ERROR_MESSAGE,
+                                                JOptionPane.DEFAULT_OPTION,
+                                                null,
+                                                btns.toArray(new Component[0]));
 
         errDial.setContentPane(jop);
         errDial.pack();
@@ -314,7 +298,7 @@ public class SwingUtils {
 
     /**
      * Get color as RGB in HEX
-     * 
+     *
      * @param c color to convert
      * @return HEX string
      */
@@ -324,7 +308,7 @@ public class SwingUtils {
 
     /**
      * Change each of RGB values by index
-     * 
+     *
      * @param c     color to modify
      * @param index color modifier
      * @return modified color
@@ -361,7 +345,7 @@ public class SwingUtils {
     /**
      * Creates an version information dialog.<br>
      * Used when there is an update available
-     * 
+     *
      * @param oldVersion  current version of application
      * @param newVersion  new version
      * @param difference  version difference
@@ -372,18 +356,14 @@ public class SwingUtils {
      *                    "fix"
      * @param changesList list of changes
      */
-    public static void showVersionDialog(final String oldVersion, final String newVersion, final int difference,
-            final String versionType, final List<String> changesList) {
+    public static void showVersionDialog(final String oldVersion, final String newVersion, final int difference, final String versionType, final List<String> changesList) {
         final JFrame win = new JFrame();
         win.setTitle("New version available!");
         win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         final Box message = Box.createVerticalBox();
-        message.add(new JLabel("<html><font style=\"font-weight:bold;\">A new update is available!</font><br><br>"
-                + "An update is available to download!<br><br>" + "Current version: <font style=\"font-weight:bold;\">"
-                + oldVersion + "</font><br>" + "New version: <font style=\"font-weight:bold;\">" + newVersion
-                + "</font><br><br>" + "You are <font style=\"font-weight:bold;\">" + Integer.toString(difference)
-                + "</font> " + versionType + " versions behind!</html>"));
+        message.add(new JLabel("<html><font style=\"font-weight:bold;\">A new update is available!</font><br><br>" + "An update is available to download!<br><br>" + "Current version: <font style=\"font-weight:bold;\">" + oldVersion + "</font><br>" + "New version: <font style=\"font-weight:bold;\">" + newVersion + "</font><br><br>" + "You are <font style=\"font-weight:bold;\">" + Integer.toString(
+                difference) + "</font> " + versionType + " versions behind!</html>"));
 
         for (final Component ct : message.getComponents())
             if (ct instanceof JComponent) {
@@ -421,10 +401,14 @@ public class SwingUtils {
                 final JScrollPane jsp = new JScrollPane(message);
                 jsp.setPreferredSize(win.getSize());
                 SwingUtils.playAsterisk();
-                JOptionPane.showOptionDialog(win, jsp,
-                        Messages.getString("SwingUtils.updateDialogChangesTitle") + newVersion,
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
-                        new String[] { Messages.getString("Main.ok") }, 0);
+                JOptionPane.showOptionDialog(win,
+                                             jsp,
+                                             Messages.getString("SwingUtils.updateDialogChangesTitle") + newVersion,
+                                             JOptionPane.DEFAULT_OPTION,
+                                             JOptionPane.PLAIN_MESSAGE,
+                                             null,
+                                             new String[]{Messages.getString("Main.ok")},
+                                             0);
             }
         });
         final JButton update = new JButton(Messages.getString("SwingUtils.updateDialogOptionUpdate"));
@@ -435,7 +419,7 @@ public class SwingUtils {
             public void actionPerformed(final ActionEvent e) {
                 try {
                     Desktop.getDesktop()
-                            .browse(new URI("https://github.com/Defective4/Another-Minecraft-Chat-Client/releases"));
+                           .browse(new URI("https://github.com/Defective4/Another-Minecraft-Chat-Client/releases"));
                 } catch (IOException | URISyntaxException e1) {
                     e1.printStackTrace();
                 }
@@ -450,8 +434,11 @@ public class SwingUtils {
             }
         });
 
-        final JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION,
-                null, new Object[] { ok, changes, update, exit });
+        final JOptionPane pane = new JOptionPane(message,
+                                                 JOptionPane.INFORMATION_MESSAGE,
+                                                 JOptionPane.DEFAULT_OPTION,
+                                                 null,
+                                                 new Object[]{ok, changes, update, exit});
 
         win.setContentPane(pane);
         win.pack();
@@ -506,8 +493,13 @@ public class SwingUtils {
             }
         }
 
-        JOptionPane.showOptionDialog(parent, box, Messages.getString("SwingUtils.exceptionDetailsDialogTitle"),
-                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
-                new Object[] { Messages.getString("Main.ok") }, 0);
+        JOptionPane.showOptionDialog(parent,
+                                     box,
+                                     Messages.getString("SwingUtils.exceptionDetailsDialogTitle"),
+                                     JOptionPane.DEFAULT_OPTION,
+                                     JOptionPane.PLAIN_MESSAGE,
+                                     null,
+                                     new Object[]{Messages.getString("Main.ok")},
+                                     0);
     }
 }

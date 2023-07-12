@@ -6,9 +6,8 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 /**
  * An implementation of {@link ItemsWindow} acting as a void for items.<br>
  * It does not perform any item handling.
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class DummyItemsWindow extends ItemsWindow {
 
@@ -16,15 +15,14 @@ public class DummyItemsWindow extends ItemsWindow {
 
     /**
      * Default constructor
-     * 
+     *
      * @param title
      * @param size
      * @param windowID
      * @param client
      * @param registry
      */
-    public DummyItemsWindow(final String title, final int size, final int windowID, final MinecraftClient client,
-            final PacketRegistry registry) {
+    public DummyItemsWindow(final String title, final int size, final int windowID, final MinecraftClient client, final PacketRegistry registry) {
         super(title, size, windowID, client, registry);
         this.slots = size;
     }

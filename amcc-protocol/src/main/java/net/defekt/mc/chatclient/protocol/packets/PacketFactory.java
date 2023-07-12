@@ -1,38 +1,21 @@
 package net.defekt.mc.chatclient.protocol.packets;
 
+import net.defekt.mc.chatclient.protocol.ProtocolNumber;
+import net.defekt.mc.chatclient.protocol.data.Messages;
+import net.defekt.mc.chatclient.protocol.packets.registry.*;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.defekt.mc.chatclient.protocol.ProtocolNumber;
-import net.defekt.mc.chatclient.protocol.data.Messages;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV107;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV110;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV315;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV335;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV338;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV340;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV393;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV47;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV477;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV573;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV735;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV753;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV755;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV756;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV757;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV759;
-import net.defekt.mc.chatclient.protocol.packets.registry.PacketRegistryV760;
-
 /**
  * A class used to construct packets according to their name
- * 
+ *
+ * @author Defective4
  * @see Packet
  * @see PacketRegistry
- * @author Defective4
- *
  */
 
 public class PacketFactory {
@@ -86,16 +69,15 @@ public class PacketFactory {
 
     /**
      * Get all user-defined versions
-     * 
+     *
      * @return Map of user defined versions. Keys are protocol numbers and Strings
-     *         are version names.
+     * are version names.
      */
     public static Map<Integer, String> getUserVersions() {
         return new ConcurrentHashMap<>(userVersions);
     }
 
     /**
-     * 
      * @param protocol
      * @param registry
      * @param name
@@ -112,7 +94,7 @@ public class PacketFactory {
 
     /**
      * Returns packet registry or specified protocol number
-     * 
+     *
      * @param protocol protocol number
      * @return created packet registry
      * @throws IOException thrown when specified protocol is not implemented
@@ -122,16 +104,14 @@ public class PacketFactory {
             protocol = protocolBinds.get(protocol);
         }
 
-        if (packetRegistries.containsKey(protocol))
-            return packetRegistries.get(protocol);
-        else
-            throw new IOException(
-                    Messages.getString("PacketFactory.regInitProtocolNotImplemented") + Integer.toString(protocol));
+        if (packetRegistries.containsKey(protocol)) return packetRegistries.get(protocol);
+        else throw new IOException(Messages.getString("PacketFactory.regInitProtocolNotImplemented") + Integer.toString(
+                protocol));
     }
 
     /**
      * Creates a packet using its class name and provided packet registry
-     * 
+     *
      * @param reg       packet registry that will be used to construct this packet
      * @param name      packet name
      * @param arguments arguments required to contruct this packet
@@ -139,8 +119,7 @@ public class PacketFactory {
      * @throws IOException thrown when there was an error constructing packet, or
      *                     packet with this name was not found
      */
-    public static Packet constructPacket(final PacketRegistry reg, final String name, final Object... arguments)
-            throws IOException {
+    public static Packet constructPacket(final PacketRegistry reg, final String name, final Object... arguments) throws IOException {
         final Object[] relArguments = new Object[arguments.length + 1];
         for (int x = 1; x < relArguments.length; x++) {
             relArguments[x] = arguments[x - 1];
@@ -156,8 +135,8 @@ public class PacketFactory {
         try {
             final Packet pk = reg.getByName(name).getDeclaredConstructor(argumentClasses).newInstance(relArguments);
             return pk;
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException | NullPointerException e) {
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException |
+                 InvocationTargetException | NoSuchMethodException | SecurityException | NullPointerException e) {
 
             e.printStackTrace();
 
@@ -168,7 +147,7 @@ public class PacketFactory {
 
     /**
      * Get protocol for given packet registry
-     * 
+     *
      * @param reg packet registry to use
      * @return registry's protocol
      */
@@ -180,7 +159,7 @@ public class PacketFactory {
 
     /**
      * Get protocol binds
-     * 
+     *
      * @return map containing protocol binds
      */
     public static Map<Integer, Integer> getProtocolBinds() {

@@ -1,10 +1,10 @@
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerEntityTeleportPacket;
+
+import java.io.IOException;
 
 @SuppressWarnings("javadoc")
 public class ServerEntityTeleportPacket extends BaseServerEntityTeleportPacket {

@@ -10,9 +10,8 @@ import java.util.UUID;
 
 /**
  * This class is a container for information associated with a plugin
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 @SuppressWarnings("javadoc")
 public class PluginDescription {
@@ -23,12 +22,12 @@ public class PluginDescription {
     private final String author;
     private final String api;
     private final String website;
-    private transient File origin;
     private final String remote;
+    private transient File origin;
 
     /**
      * Default constructor
-     * 
+     *
      * @param name
      * @param version
      * @param main
@@ -38,8 +37,7 @@ public class PluginDescription {
      * @param website
      * @param remote
      */
-    public PluginDescription(final String name, final String version, final String main, final String[] description,
-            final String author, final String api, final String website, final String remote) {
+    public PluginDescription(final String name, final String version, final String main, final String[] description, final String author, final String api, final String website, final String remote) {
         super();
         this.name = name;
         this.version = version;

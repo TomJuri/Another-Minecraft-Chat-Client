@@ -1,25 +1,9 @@
 package net.defekt.mc.chatclient.protocol;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.MulticastSocket;
-import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import net.defekt.mc.chatclient.protocol.data.ChatMessages;
 import net.defekt.mc.chatclient.protocol.data.ModInfo;
 import net.defekt.mc.chatclient.protocol.data.QueryInfo;
@@ -29,20 +13,29 @@ import net.defekt.mc.chatclient.protocol.packets.HandshakePacket;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.*;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 /**
  * This class contains methods for getting status of a Minecraft server and
  * discovering servers on LAN netowrk
- * 
+ *
+ * @author Defective4
  * @see LANListener
  * @see StatusInfo
- * @author Defective4
- *
  */
 public class MinecraftStat {
 
     /**
      * Perform a Server List Ping on specified server to get its status
-     * 
+     *
      * @param host hostname of target server
      * @param port port of target server
      * @return An object containing data returned by server
@@ -54,7 +47,7 @@ public class MinecraftStat {
 
     /**
      * Perform a Server List Ping on specified server to get its status
-     * 
+     *
      * @param host    hostname of target server
      * @param port    port of target server
      * @param timeout timeout
@@ -70,7 +63,10 @@ public class MinecraftStat {
             final VarInputStream is = new VarInputStream(soc.getInputStream());
 
             final Packet handshake = new HandshakePacket(PacketFactory.constructPacketRegistry(47),
-                    ProtocolNumber.values()[0].protocol, host, port, 1);
+                                                         ProtocolNumber.values()[0].protocol,
+                                                         host,
+                                                         port,
+                                                         1);
             os.write(handshake.getData(false));
             os.write(0x01);
             os.write(0x00);
@@ -124,8 +120,8 @@ public class MinecraftStat {
                 final JsonArray mods = modinfo.get("modList").getAsJsonArray();
                 for (final JsonElement modElement : mods) {
                     final JsonObject modObject = modElement.getAsJsonObject();
-                    modList.add(
-                            new ModInfo(modObject.get("modid").getAsString(), modObject.get("version").getAsString()));
+                    modList.add(new ModInfo(modObject.get("modid").getAsString(),
+                                            modObject.get("version").getAsString()));
                 }
             }
 
@@ -172,7 +168,7 @@ public class MinecraftStat {
 
     /**
      * Starts listening for LAN servers
-     * 
+     *
      * @param listener listener used to handle discovered servers
      */
     public static void listenOnLAN(final LANListener listener) {
@@ -192,8 +188,8 @@ public class MinecraftStat {
                             final String motd = msg.substring(6, msg.lastIndexOf("[/MOTD]"));
                             int port = 25565;
                             try {
-                                port = Integer
-                                        .parseInt(msg.substring(msg.lastIndexOf("[AD]") + 4, msg.lastIndexOf("[/AD]")));
+                                port = Integer.parseInt(msg.substring(msg.lastIndexOf("[AD]") + 4,
+                                                                      msg.lastIndexOf("[/AD]")));
                             } catch (final Exception e) {
                                 e.printStackTrace();
                             }
@@ -213,7 +209,7 @@ public class MinecraftStat {
     /**
      * Query server information Note that Query is completely separate from Server
      * List Ping
-     * 
+     *
      * @param host server hostname
      * @param port server port
      * @return query result

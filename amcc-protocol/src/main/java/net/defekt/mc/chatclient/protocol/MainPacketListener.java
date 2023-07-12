@@ -1,30 +1,10 @@
 package net.defekt.mc.chatclient.protocol;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.security.PublicKey;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.crypto.Cipher;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-
 import net.defekt.mc.chatclient.protocol.MojangAPI.RequestResponse;
-import net.defekt.mc.chatclient.protocol.data.ChatMessages;
-import net.defekt.mc.chatclient.protocol.data.Hosts;
-import net.defekt.mc.chatclient.protocol.data.ItemStack;
-import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
-import net.defekt.mc.chatclient.protocol.data.Messages;
-import net.defekt.mc.chatclient.protocol.data.ModInfo;
-import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
-import net.defekt.mc.chatclient.protocol.data.StatusInfo;
+import net.defekt.mc.chatclient.protocol.data.*;
 import net.defekt.mc.chatclient.protocol.entity.Entity;
 import net.defekt.mc.chatclient.protocol.entity.Player;
 import net.defekt.mc.chatclient.protocol.event.ClientListener;
@@ -32,55 +12,39 @@ import net.defekt.mc.chatclient.protocol.io.IOUtils;
 import net.defekt.mc.chatclient.protocol.io.VarOutputStream;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerChatMessagePacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerEntityRelativeMovePacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerEntityTeleportPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerKeepAlivePacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerLoginSuccessPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerOpenWindowPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerListItemPacket;
+import net.defekt.mc.chatclient.protocol.packets.abstr.*;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerListItemPacket.Action;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerListItemPacket.PlayerListItem;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerPlayerPositionAndLookPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerResourcePackSendPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerSpawnEntityPacket;
-import net.defekt.mc.chatclient.protocol.packets.abstr.BaseServerSpawnPlayerPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginEncryptionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginResponsePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.login.ServerLoginSetCompressionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerCloseWindowPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerConfirmTransactionPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerDestroyEntitiesPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerDisconnectPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerJoinGamePacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerOpenWindowPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPlayerPositionAndLookPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerPluginMessagePacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerSetSlotPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerStatisticsPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerTimeUpdatePacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerUpdateHealthPacket;
-import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerWindowItemsPacket;
+import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.*;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.login.ClientLoginEncryptionPacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientKeepAlivePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientPluginMessagePacket;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientTeleportConfirmPacket;
 
+import javax.crypto.Cipher;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.util.*;
+
 /**
  * A new replacement for the old {@link ClientPacketListener}.<Br>
  * Its function is the same, except it uses annotated methods<br>
  * to listen for incoming packets.
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 @SuppressWarnings("javadoc")
 public class MainPacketListener extends AnnotatedServerPacketListener {
 
     /**
      * Default constrictor
-     * 
+     *
      * @param client
      */
     protected MainPacketListener(final MinecraftClient client) {
@@ -95,8 +59,9 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         final short actionID = packet.getActionID();
         final boolean accepted = packet.isAccepted();
 
-        final ItemsWindow win = windowID == 0 ? cl.getInventory()
-                : cl.getOpenWindows().containsKey(windowID) ? cl.getOpenWindows().get(windowID) : null;
+        final ItemsWindow win = windowID == 0 ?
+                cl.getInventory() :
+                cl.getOpenWindows().containsKey(windowID) ? cl.getOpenWindows().get(windowID) : null;
 
         if (win != null) if (accepted) {
             win.finishTransaction(actionID);
@@ -105,8 +70,11 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         }
 
         if (!accepted) {
-            cl.sendPacket(PacketFactory.constructPacket(registry, "ClientConfirmTransactionPacket", (byte) windowID,
-                    actionID, accepted));
+            cl.sendPacket(PacketFactory.constructPacket(registry,
+                                                        "ClientConfirmTransactionPacket",
+                                                        (byte) windowID,
+                                                        actionID,
+                                                        accepted));
         }
     }
 
@@ -137,21 +105,21 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
 
                 final String sha = IOUtils.sha1(serverID.getBytes(), clientSecret, publicKey.getEncoded());
 
-                final RequestResponse resp = MojangAPI.makeJSONRequest(
-                        (cl.getAuthType() == AuthType.TheAltening ? Hosts.ALTENING_SESSIONSERVER
-                                : Hosts.MOJANG_SESSIONSERVER) + "/session/minecraft/join",
-                        new HashMap<String, JsonElement>() {
-                            {
-                                put("accessToken", new JsonPrimitive(cl.getAuthToken()));
-                                put("selectedProfile", new JsonPrimitive(cl.getAuthID()));
-                                put("serverId", new JsonPrimitive(sha));
-                            }
-                        });
+                final RequestResponse resp = MojangAPI.makeJSONRequest((cl.getAuthType() == AuthType.TheAltening ?
+                        Hosts.ALTENING_SESSIONSERVER :
+                        Hosts.MOJANG_SESSIONSERVER) + "/session/minecraft/join", new HashMap<String, JsonElement>() {
+                    {
+                        put("accessToken", new JsonPrimitive(cl.getAuthToken()));
+                        put("selectedProfile", new JsonPrimitive(cl.getAuthID()));
+                        put("serverId", new JsonPrimitive(sha));
+                    }
+                });
                 try {
                     final JsonObject json = resp.getJson();
                     if (json.has("error")) {
-                        final String errMsg = json.has("errorMessage") ? json.get("errorMessage").getAsString()
-                                : json.get("error").getAsString();
+                        final String errMsg = json.has("errorMessage") ?
+                                json.get("errorMessage").getAsString() :
+                                json.get("error").getAsString();
                         for (final ClientListener ls : cl.getClientListeners(true)) {
                             ls.disconnected(Messages.getString("MinecraftClient.clientErrorDisconnected") + errMsg, cl);
                         }
@@ -256,8 +224,10 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
             cl.getInventory().putItem(x, new ItemStack((short) 0, 1, (short) 0, null));
         }
 
-        cl.sendPacket(
-                PacketFactory.constructPacket(registry, "ClientPluginMessagePacket", cname, up.getBrand().getBytes()));
+        cl.sendPacket(PacketFactory.constructPacket(registry,
+                                                    "ClientPluginMessagePacket",
+                                                    cname,
+                                                    up.getBrand().getBytes()));
 
         for (int x = 0; x <= 1; x++) {
             cl.sendPacket(PacketFactory.constructPacket(registry, "ClientStatusPacket", x));
@@ -276,11 +246,10 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                     Thread.sleep(up.getAdditionalPing());
                     final long id = ka.getPid();
                     if (ka.isLegacy())
-                        cl.sendPacket(
-                                new net.defekt.mc.chatclient.protocol.packets.alt.serverbound.play.ClientKeepAlivePacket(
-                                        registry, (int) id));
-                    else
-                        cl.sendPacket(new ClientKeepAlivePacket(registry, id));
+                        cl.sendPacket(new net.defekt.mc.chatclient.protocol.packets.alt.serverbound.play.ClientKeepAlivePacket(
+                                registry,
+                                (int) id));
+                    else cl.sendPacket(new ClientKeepAlivePacket(registry, id));
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
@@ -295,9 +264,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
 
         for (final ClientListener ls : cl.getClientListeners(true))
             if (dsIgnore) {
-                ls.messageReceived(
-                        "\u00a7cPacket " + Integer.toHexString(packet.getID()) + ": " + ChatMessages.parse(json),
-                        Position.CHAT, cl);
+                ls.messageReceived("\u00a7cPacket " + Integer.toHexString(packet.getID()) + ": " + ChatMessages.parse(
+                        json), Position.CHAT, cl);
             } else {
                 ls.disconnected(ChatMessages.parse(json), cl);
             }
@@ -315,8 +283,12 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
             final UUID pid = player.getUuid();
             switch (action) {
                 case ADD_PLAYER: {
-                    playersTabList.put(pid, new PlayerInfo(player.getPlayerName(), player.getTextures(),
-                            player.getDisplayName(), player.getPing(), pid));
+                    playersTabList.put(pid,
+                                       new PlayerInfo(player.getPlayerName(),
+                                                      player.getTextures(),
+                                                      player.getDisplayName(),
+                                                      player.getPing(),
+                                                      pid));
                     break;
                 }
                 case UPDATE_DISPLAY_NAME: {
@@ -324,8 +296,12 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                         break;
                     }
                     final PlayerInfo old = playersTabList.get(pid);
-                    playersTabList.put(pid, new PlayerInfo(old.getName(), old.getTexture(), player.getDisplayName(),
-                            old.getPing(), pid));
+                    playersTabList.put(pid,
+                                       new PlayerInfo(old.getName(),
+                                                      old.getTexture(),
+                                                      player.getDisplayName(),
+                                                      old.getPing(),
+                                                      pid));
                     break;
                 }
                 case REMOVE_PLAYER: {
@@ -337,8 +313,12 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                         break;
                     }
                     final PlayerInfo old = playersTabList.get(pid);
-                    playersTabList.put(pid, new PlayerInfo(old.getName(), old.getTexture(), old.getDisplayName(),
-                            player.getPing(), pid));
+                    playersTabList.put(pid,
+                                       new PlayerInfo(old.getName(),
+                                                      old.getTexture(),
+                                                      old.getDisplayName(),
+                                                      player.getPing(),
+                                                      pid));
                     break;
                 }
                 case UPDATE_GAMEMODE: {
@@ -384,7 +364,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
             switch (discriminator) {
                 case 0: {
                     final byte protocol = data[1];
-                    cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[] { 1, protocol }));
+                    cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[]{1, protocol}));
 
                     ModInfo[] mods;
                     try {
@@ -406,8 +386,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                     break;
                 }
                 case 2: {
-                    cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[] { -1, 2 }));
-                    cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[] { -1, 3 }));
+                    cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[]{-1, 2}));
+                    cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[]{-1, 3}));
                     break;
                 }
                 case -1: {
@@ -423,7 +403,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
                             break;
                         }
                     }
-                    cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[] { -1, response }));
+                    cl.sendPacket(new ClientPluginMessagePacket(registry, channel, new byte[]{-1, response}));
                 }
             }
         }
@@ -446,7 +426,8 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
         if (up.isShowResourcePackMessages()) {
             for (final ClientListener ls : cl.getClientListeners(true)) {
                 ls.messageReceived(up.getResourcePackMessage().replace("%res", packet.getUrl()),
-                        up.getResourcePackMessagePosition(), cl);
+                                   up.getResourcePackMessagePosition(),
+                                   cl);
             }
         }
 
@@ -547,8 +528,7 @@ public class MainPacketListener extends AnnotatedServerPacketListener {
             final int windowType = packet.getWindowInt();
             if (windowID <= 5) {
                 slots = (windowType + 1) * 9;
-            } else
-                return;
+            } else return;
         }
 
         final ItemsWindow win = cl.getWindowsFactory().createWindow(windowTitle, slots, windowID, cl, registry);

@@ -1,10 +1,10 @@
 package net.defekt.mc.chatclient.ui.swing;
 
+import net.defekt.mc.chatclient.protocol.data.AutoResponseRule;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import net.defekt.mc.chatclient.protocol.data.AutoResponseRule;
 
 public class JAutoResponseList extends JMemList<AutoResponseRule> {
     private static final long serialVersionUID = 1L;

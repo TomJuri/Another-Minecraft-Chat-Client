@@ -1,5 +1,9 @@
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.login;
 
+import net.defekt.mc.chatclient.protocol.io.VarInputStream;
+import net.defekt.mc.chatclient.protocol.packets.Packet;
+import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+
 import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -7,16 +11,11 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
-import net.defekt.mc.chatclient.protocol.io.VarInputStream;
-import net.defekt.mc.chatclient.protocol.packets.Packet;
-import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-
 /**
  * Sent by server during login process to request player authentication. AMCC
  * does not support this at the moment
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerLoginEncryptionPacket extends Packet {
 
@@ -26,7 +25,7 @@ public class ServerLoginEncryptionPacket extends Packet {
 
     /**
      * Contructs {@link ServerLoginEncryptionPacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown

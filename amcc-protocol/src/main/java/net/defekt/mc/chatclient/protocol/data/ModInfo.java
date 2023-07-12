@@ -2,9 +2,8 @@ package net.defekt.mc.chatclient.protocol.data;
 
 /**
  * An object containing information about a modification,
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ModInfo {
 
@@ -13,7 +12,7 @@ public class ModInfo {
 
     /**
      * Constructs new mod info object
-     * 
+     *
      * @param modID   mod ID
      * @param version mod's version
      */

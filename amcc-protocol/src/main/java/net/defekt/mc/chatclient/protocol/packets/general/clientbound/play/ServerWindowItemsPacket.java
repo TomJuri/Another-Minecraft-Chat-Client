@@ -1,20 +1,19 @@
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.defekt.mc.chatclient.protocol.data.ItemStack;
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketFactory;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Send by server when window items are set
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerWindowItemsPacket extends Packet {
 
@@ -23,7 +22,7 @@ public class ServerWindowItemsPacket extends Packet {
 
     /**
      * Constructs {@link ServerWindowItemsPacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown
@@ -40,7 +39,7 @@ public class ServerWindowItemsPacket extends Packet {
 
     /**
      * Get window's ID
-     * 
+     *
      * @return window ID
      */
     public int getWindowID() {
@@ -49,7 +48,7 @@ public class ServerWindowItemsPacket extends Packet {
 
     /**
      * Get items from this packet
-     * 
+     *
      * @return items list
      */
     public List<ItemStack> getItems() {

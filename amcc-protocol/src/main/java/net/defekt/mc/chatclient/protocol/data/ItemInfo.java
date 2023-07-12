@@ -2,9 +2,8 @@ package net.defekt.mc.chatclient.protocol.data;
 
 /**
  * Class encapsulating a item name info
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ItemInfo {
 
@@ -12,7 +11,7 @@ public class ItemInfo {
 
     /**
      * Constructs new item info object
-     * 
+     *
      * @param name     item name
      * @param fileName item's internal name
      */
@@ -23,7 +22,7 @@ public class ItemInfo {
 
     /**
      * Get item's name
-     * 
+     *
      * @return item name
      */
     public String getName() {
@@ -32,7 +31,7 @@ public class ItemInfo {
 
     /**
      * Get item's internal name
-     * 
+     *
      * @return item's internal name
      */
     public String getFileName() {

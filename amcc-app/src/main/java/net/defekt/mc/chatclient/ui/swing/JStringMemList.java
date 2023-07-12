@@ -6,16 +6,15 @@ import java.util.List;
 
 /**
  * An extension of {@link JMemList} made for String storage
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class JStringMemList extends JMemList<String> {
     private static final long serialVersionUID = 1L;
 
     /**
      * Add a string
-     * 
+     *
      * @param value string
      */
     public void addString(final String value) {
@@ -27,7 +26,7 @@ public class JStringMemList extends JMemList<String> {
 
     /**
      * Remove a string at given index
-     * 
+     *
      * @param index index of string
      */
     public void removeString(final int index) {

@@ -2,9 +2,8 @@ package net.defekt.mc.chatclient.protocol;
 
 /**
  * Class containing user defined protocol number and name
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 @SuppressWarnings("javadoc")
 public class ProtocolEntry {
@@ -13,7 +12,7 @@ public class ProtocolEntry {
 
     /**
      * Creates new protocol entry
-     * 
+     *
      * @param protocol
      * @param name
      */

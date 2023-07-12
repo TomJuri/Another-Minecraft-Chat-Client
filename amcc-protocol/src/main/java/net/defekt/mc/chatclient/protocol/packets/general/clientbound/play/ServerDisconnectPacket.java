@@ -1,16 +1,15 @@
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 
-import java.io.IOException;
-
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+
+import java.io.IOException;
 
 /**
  * Sent by server when client is disconnected from server (Timed Out, kicked,
  * etc.)
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class ServerDisconnectPacket extends Packet {
 
@@ -18,7 +17,7 @@ public class ServerDisconnectPacket extends Packet {
 
     /**
      * Constructs {@link ServerDisconnectPacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown
@@ -30,7 +29,7 @@ public class ServerDisconnectPacket extends Packet {
 
     /**
      * Get raw JSON reason message
-     * 
+     *
      * @return raw JSON reason
      */
     public String getReason() {

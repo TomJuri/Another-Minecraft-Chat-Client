@@ -1,52 +1,45 @@
 package net.defekt.mc.chatclient.protocol.data;
 
-import java.awt.image.BufferedImage;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.imageio.ImageIO;
-
 import com.google.gson.JsonParser;
-
 import net.defekt.mc.chatclient.protocol.MojangAPI;
 import net.defekt.mc.chatclient.protocol.data.UserPreferences.SkinRule;
 import net.defekt.mc.chatclient.protocol.io.FallbackHashMap;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.util.*;
+
 /**
  * Static class used to store information about player skins.<br>
  * This class may not be static in future as it is planned for it to be saved on
  * disk.
- * 
- * @see PlayerSkinInfo
- * @author Defective4
  *
+ * @author Defective4
+ * @see PlayerSkinInfo
  */
 public class PlayerSkinCache {
-    private PlayerSkinCache() {
-    }
-
     private static final FallbackHashMap<UUID, PlayerSkinInfo> skinCache = new FallbackHashMap<UUID, PlayerSkinInfo>() {
         private static final long serialVersionUID = 1L;
+
         {
             try {
-                setDefaultValue(new PlayerSkinInfo(
-                        ImageIO.read(PlayerSkinCache.class.getResourceAsStream("/resources/steve.png")), ""));
+                setDefaultValue(new PlayerSkinInfo(ImageIO.read(PlayerSkinCache.class.getResourceAsStream(
+                        "/resources/steve.png")), ""));
             } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
     };
     private static final List<UUID> pending = new ArrayList<UUID>();
+    private PlayerSkinCache() {
+    }
 
     /**
      * Fetch and put player's skin in cache. It will obey {@link UserPreferences}'s
      * skin rule
-     * 
+     *
      * @param uid       UUID of player
      * @param texturesO texture URL of player
      * @param username  username of player
@@ -71,12 +64,18 @@ public class PlayerSkinCache {
 
                         if (textures.equals("default")) return;
                         final String skData = new String(Base64.getDecoder().decode(textures.getBytes()));
-                        final String skUrl = JsonParser.parseString(skData).getAsJsonObject().get("textures")
-                                .getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString();
+                        final String skUrl = JsonParser.parseString(skData)
+                                                       .getAsJsonObject()
+                                                       .get("textures")
+                                                       .getAsJsonObject()
+                                                       .get("SKIN")
+                                                       .getAsJsonObject()
+                                                       .get("url")
+                                                       .getAsString();
                         final BufferedImage skin = ImageIO.read(new URL(skUrl));
                         skinCache.put(uid, new PlayerSkinInfo(skin, skUrl));
                     } catch (final Exception e) {
-//						e.printStackTrace();
+                        //						e.printStackTrace();
                     } finally {
                         pending.remove(uid);
                     }
@@ -87,7 +86,7 @@ public class PlayerSkinCache {
 
     /**
      * Get head texture of player
-     * 
+     *
      * @param id player's UUID
      * @return image of player's head
      */
@@ -97,7 +96,7 @@ public class PlayerSkinCache {
 
     /**
      * Get skin cache
-     * 
+     *
      * @return skin cache
      */
     public static Map<UUID, PlayerSkinInfo> getSkincache() {

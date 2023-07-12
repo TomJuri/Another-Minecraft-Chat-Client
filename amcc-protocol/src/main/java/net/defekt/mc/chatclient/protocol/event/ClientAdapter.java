@@ -1,8 +1,5 @@
 package net.defekt.mc.chatclient.protocol.event;
 
-import java.io.IOException;
-import java.util.Map;
-
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.data.ItemsWindow;
 import net.defekt.mc.chatclient.protocol.entity.Entity;
@@ -10,11 +7,13 @@ import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry.State;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 
+import java.io.IOException;
+import java.util.Map;
+
 /**
  * An adapter class for {@link ClientListener}
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public abstract class ClientAdapter implements ClientListener {
 
@@ -40,8 +39,7 @@ public abstract class ClientAdapter implements ClientListener {
     }
 
     @Override
-    public void windowOpened(final int id, final ItemsWindow win, final PacketRegistry reg,
-            final MinecraftClient client) {
+    public void windowOpened(final int id, final ItemsWindow win, final PacketRegistry reg, final MinecraftClient client) {
     }
 
     @Override

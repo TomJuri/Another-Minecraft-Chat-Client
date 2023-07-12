@@ -1,9 +1,15 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import net.defekt.mc.chatclient.protocol.MinecraftClient;
+import net.defekt.mc.chatclient.protocol.data.ChatMessages;
+import net.defekt.mc.chatclient.protocol.data.Messages;
+import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
+import net.defekt.mc.chatclient.protocol.data.PlayerSkinCache;
+import net.defekt.mc.chatclient.protocol.io.IOUtils;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -14,40 +20,14 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.UUID;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import net.defekt.mc.chatclient.protocol.MinecraftClient;
-import net.defekt.mc.chatclient.protocol.data.ChatMessages;
-import net.defekt.mc.chatclient.protocol.data.Messages;
-import net.defekt.mc.chatclient.protocol.data.PlayerInfo;
-import net.defekt.mc.chatclient.protocol.data.PlayerSkinCache;
-import net.defekt.mc.chatclient.protocol.io.IOUtils;
-
 /**
  * Custom list component used to display players list.<br>
  * By default it uses custom cell renderer - {@link MinecraftPlayerListRenderer}
- * 
+ *
+ * @author Defective4
  * @see MinecraftPlayerListRenderer
  * @see PlayerInfo
  * @see MinecraftClient
- * @author Defective4
- *
  */
 public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
     private static final long serialVersionUID = 1L;
@@ -55,7 +35,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 
     /**
      * Default constructor
-     * 
+     *
      * @param filterField text field used as player filter
      * @param win         parent window containing this list
      * @param addr        associated server's address
@@ -75,14 +55,15 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                     JMenuItem placeholder;
                     try {
                         placeholder = new JMenuItem(inf.getName(),
-                                new ImageIcon(IOUtils.scaleImage(PlayerSkinCache.getHead(inf.getUUID()), 2)));
+                                                    new ImageIcon(IOUtils.scaleImage(PlayerSkinCache.getHead(inf.getUUID()),
+                                                                                     2)));
                     } catch (final Exception e2) {
                         placeholder = new JMenuItem(inf.getName());
                     }
                     placeholder.setEnabled(false);
 
-                    final JMenuItem playerInfo = new JMenuItem(
-                            Messages.getString("JMinecraftPlayerList.playerListOptionPlayerInfo"));
+                    final JMenuItem playerInfo = new JMenuItem(Messages.getString(
+                            "JMinecraftPlayerList.playerListOptionPlayerInfo"));
                     playerInfo.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(final ActionEvent ev) {
@@ -90,8 +71,8 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                         }
                     });
 
-                    final JMenuItem resetSkin = new JMenuItem(
-                            Messages.getString("JMinecraftPlayerList.playerListOptionResetSkin"));
+                    final JMenuItem resetSkin = new JMenuItem(Messages.getString(
+                            "JMinecraftPlayerList.playerListOptionResetSkin"));
                     resetSkin.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(final ActionEvent ev) {
@@ -101,8 +82,8 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                         }
                     });
 
-                    final JMenuItem resetAllSkins = new JMenuItem(
-                            Messages.getString("JMinecraftPlayerList.playerListOptionClearSkinCache"));
+                    final JMenuItem resetAllSkins = new JMenuItem(Messages.getString(
+                            "JMinecraftPlayerList.playerListOptionClearSkinCache"));
                     resetAllSkins.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(final ActionEvent ev) {
@@ -117,8 +98,8 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                         }
                     });
 
-                    final JMenuItem exportList = new JMenuItem(
-                            Messages.getString("JMinecraftPlayerList.playerListOptionExportPlayerList"));
+                    final JMenuItem exportList = new JMenuItem(Messages.getString(
+                            "JMinecraftPlayerList.playerListOptionExportPlayerList"));
                     exportList.addActionListener(new ActionListener() {
 
                         @Override
@@ -129,15 +110,16 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                             final JFileChooser jfc = new JFileChooser();
                             jfc.setDialogTitle(Messages.getString("JMinecraftPlayerList.exportDialogTitle"));
                             jfc.setAcceptAllFileFilterUsed(false);
-                            jfc.addChoosableFileFilter(new FileNameExtensionFilter(
-                                    Messages.getString("JMinecraftPlayerList.exportDialogFileTypeCSV"), "csv"));
+                            jfc.addChoosableFileFilter(new FileNameExtensionFilter(Messages.getString(
+                                    "JMinecraftPlayerList.exportDialogFileTypeCSV"), "csv"));
                             jfc.setSelectedFile(new File(fname));
                             final int ret = jfc.showSaveDialog(win);
                             if (ret == JFileChooser.APPROVE_OPTION) {
                                 File sel = jfc.getSelectedFile();
                                 final String ext = "csv";
-                                if (!sel.getName().contains(".")
-                                        || !sel.getName().substring(sel.getName().lastIndexOf(".")).equals("." + ext)) {
+                                if (!sel.getName().contains(".") || !sel.getName()
+                                                                        .substring(sel.getName().lastIndexOf("."))
+                                                                        .equals("." + ext)) {
                                     sel = new File(sel.getPath() + "." + ext);
                                 }
 
@@ -149,21 +131,19 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                                             for (final UUID uid : mcl.getPlayersTabList().keySet()) {
                                                 final PlayerInfo pinf = mcl.getPlayersTabList().get(uid);
                                                 final String name = pinf.getName();
-                                                final String dname = pinf.getDisplayName() == null ? "N/A"
-                                                        : ChatMessages.removeColors(
-                                                                ChatMessages.parse(pinf.getDisplayName()));
+                                                final String dname = pinf.getDisplayName() == null ?
+                                                        "N/A" :
+                                                        ChatMessages.removeColors(ChatMessages.parse(pinf.getDisplayName()));
                                                 final String uuid = pinf.getUUID().toString();
-                                                final String ping = pinf.getPing() > 0
-                                                        ? Integer.toString(pinf.getPing())
-                                                        : "?";
+                                                final String ping = pinf.getPing() > 0 ?
+                                                        Integer.toString(pinf.getPing()) :
+                                                        "?";
                                                 final String skurl = PlayerSkinCache.getSkincache()
-                                                        .containsKey(pinf.getUUID())
-                                                                ? PlayerSkinCache.getSkincache().get(pinf.getUUID())
-                                                                        .getUrl()
-                                                                : "N/A";
+                                                                                    .containsKey(pinf.getUUID()) ?
+                                                        PlayerSkinCache.getSkincache().get(pinf.getUUID()).getUrl() :
+                                                        "N/A";
 
-                                                pw.println(
-                                                        name + "; " + dname + "; " + uuid + "; " + ping + "; " + skurl);
+                                                pw.println(name + "; " + dname + "; " + uuid + "; " + ping + "; " + skurl);
                                             }
                                             pw.close();
                                             break;
@@ -171,9 +151,11 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                                     }
                                 } catch (final Exception e2) {
                                     SwingUtils.showErrorDialog(win,
-                                            Messages.getString("JMinecraftPlayerList.exportErrorDialogTitle"), e2,
-                                            Messages.getString("JMinecraftPlayerList.exportErrorDialogMessage")
-                                                    + e2.toString());
+                                                               Messages.getString(
+                                                                       "JMinecraftPlayerList.exportErrorDialogTitle"),
+                                                               e2,
+                                                               Messages.getString(
+                                                                       "JMinecraftPlayerList.exportErrorDialogMessage") + e2.toString());
                                 }
                             }
                         }
@@ -209,6 +191,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
         box.add(new JLabel(Messages.getString("JMinecraftPlayerList.userInfoDialogName") + name));
         box.add(new JPanel() {
             private static final long serialVersionUID = 1L;
+
             {
                 setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
                 add(new JLabel(Messages.getString("JMinecraftPlayerList.userInfoDialogDisplayName")));
@@ -216,14 +199,15 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                 jtp.setMaximumSize(new Dimension(SwingUtils.sSize.width, 20));
                 jtp.setEditable(false);
                 jtp.setOpaque(false);
-                SwingUtils.appendColoredText(
-                        dname.replace("\u00a77", "\u00a78").replace("\u00a7f", "\u00a70").replace("\u00a7r", "\u00a70"),
-                        jtp);
+                SwingUtils.appendColoredText(dname.replace("\u00a77", "\u00a78")
+                                                  .replace("\u00a7f", "\u00a70")
+                                                  .replace("\u00a7r", "\u00a70"), jtp);
                 add(jtp);
             }
         });
         box.add(new JPanel() {
             private static final long serialVersionUID = 1L;
+
             {
                 setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
                 add(new JLabel(Messages.getString("JMinecraftPlayerList.userInfoDialogPing")));
@@ -251,6 +235,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                 final BufferedImage bbf = bb;
                 add(new JPanel() {
                     private static final long serialVersionUID = 1L;
+
                     {
                         setMaximumSize(new Dimension(16, 16));
                     }
@@ -263,6 +248,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                 });
                 add(new JLabel(" " + pingI + "ms") {
                     private static final long serialVersionUID = 1L;
+
                     {
                         setForeground(fc);
                     }
@@ -272,6 +258,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
         });
         box.add(new JPanel() {
             private static final long serialVersionUID = 1L;
+
             {
                 setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
                 add(new JLabel(Messages.getString("JMinecraftPlayerList.userInfoDialogUUID")));
@@ -286,6 +273,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 
         box.add(new JButton(Messages.getString("JMinecraftPlayerList.userInfoDialogViewSkin")) {
             private static final long serialVersionUID = 1L;
+
             {
                 addActionListener(new ActionListener() {
 
@@ -296,22 +284,21 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
                         final BufferedImage p1 = IOUtils.renderPlayerSkin(skin, 0);
                         final BufferedImage p2 = IOUtils.renderPlayerSkin(skin, 1);
 
-                        final BufferedImage[] igs = new BufferedImage[] { p1, p2, skin };
+                        final BufferedImage[] igs = new BufferedImage[]{p1, p2, skin};
 
-                        final int[] inRef = new int[] { 0 };
+                        final int[] inRef = new int[]{0};
 
-                        final JFrame win = new JFrame(
-                                Messages.getString("JMinecraftPlayerList.userSkinDialogTitle") + info.getName());
+                        final JFrame win = new JFrame(Messages.getString("JMinecraftPlayerList.userSkinDialogTitle") + info.getName());
                         win.setAlwaysOnTop(true);
                         win.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
                         final Box box = Box.createVerticalBox();
                         final JPanel jp = new JPanel() {
                             private static final long serialVersionUID = 1L;
+
                             {
-                                setPreferredSize(new Dimension(
-                                        (SwingUtils.sSize.height / 2) * (skin.getWidth() / skin.getHeight()),
-                                        SwingUtils.sSize.height / 2));
+                                setPreferredSize(new Dimension((SwingUtils.sSize.height / 2) * (skin.getWidth() / skin.getHeight()),
+                                                               SwingUtils.sSize.height / 2));
                             }
 
                             @Override
@@ -324,6 +311,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 
                         box.add(new JPanel() {
                             private static final long serialVersionUID = 1L;
+
                             {
                                 setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
                                 add(new JButton("<") {
@@ -391,7 +379,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 
     /**
      * Get Minecraft client instance
-     * 
+     *
      * @return Minecraft client instance
      */
     public MinecraftClient getMcl() {
@@ -400,7 +388,7 @@ public class JMinecraftPlayerList extends JMemList<PlayerInfo> {
 
     /**
      * Set current Minecraft client instance
-     * 
+     *
      * @param mcl Minecraft client instance
      */
     public void setMcl(final MinecraftClient mcl) {

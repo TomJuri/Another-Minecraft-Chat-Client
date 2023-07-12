@@ -1,105 +1,61 @@
 package net.defekt.mc.chatclient.protocol.packets.abstr;
 
+import net.defekt.mc.chatclient.protocol.packets.Packet;
+import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import net.defekt.mc.chatclient.protocol.packets.Packet;
-import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
-
 /**
  * Base class for all clientbound player info packets
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 @SuppressWarnings("javadoc")
 public class BaseServerPlayerListItemPacket extends Packet {
 
     /**
-     * A container for player information on player list
-     * 
-     * @author Defective4
-     *
+     * Player list action
      */
-    public static class PlayerListItem {
-        private final UUID uuid;
-        private String playerName = null;
-        private String textures = null;
-        private String displayName = null;
-        private int ping = -1;
+    protected Action action;
+    /**
+     * Total entries
+     */
+    protected int players;
+    /**
+     * List of player infos
+     */
+    protected List<PlayerListItem> playersList = new ArrayList<PlayerListItem>();
 
-        /**
-         * Construct player list item
-         * 
-         * @param uuid        player's unique ID
-         * @param playerName  player name
-         * @param textures    encoded player textures
-         * @param displayName player's display name
-         * @param ping        player's ping
-         */
-        public PlayerListItem(final UUID uuid, final String playerName, final String textures, final String displayName,
-                final int ping) {
-            super();
-            this.uuid = uuid;
-            this.playerName = playerName;
-            this.textures = textures;
-            this.displayName = displayName;
-            this.ping = ping;
-        }
+    /**
+     * Default constructor
+     *
+     * @param reg
+     * @param data
+     * @throws IOException
+     */
+    protected BaseServerPlayerListItemPacket(final PacketRegistry reg, final byte[] data) throws IOException {
+        super(reg, data);
+    }
 
-        /**
-         * Get player's unique ID
-         * 
-         * @return player's UUID
-         */
-        public UUID getUuid() {
-            return uuid;
-        }
+    public Action getAction() {
+        return action;
+    }
 
-        /**
-         * Get player's name
-         * 
-         * @return name
-         */
-        public String getPlayerName() {
-            return playerName;
-        }
+    public int getPlayers() {
+        return players;
+    }
 
-        /**
-         * Get player's textures
-         * 
-         * @return base64 textures
-         */
-        public String getTextures() {
-            return textures;
-        }
-
-        /**
-         * Get player's display name
-         * 
-         * @return display name
-         */
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        /**
-         * Get player's ping
-         * 
-         * @return ping
-         */
-        public int getPing() {
-            return ping;
-        }
+    public List<PlayerListItem> getPlayersList() {
+        return playersList;
     }
 
     /**
      * Player List action type
-     * 
-     * @author Defective4
      *
+     * @author Defective4
      */
     public enum Action {
         /**
@@ -134,7 +90,7 @@ public class BaseServerPlayerListItemPacket extends Packet {
 
         /**
          * Get Action for action ID
-         * 
+         *
          * @param num action ID
          * @return corresponding Action, or null if not found
          */
@@ -146,41 +102,79 @@ public class BaseServerPlayerListItemPacket extends Packet {
     }
 
     /**
-     * Player list action
+     * A container for player information on player list
+     *
+     * @author Defective4
      */
-    protected Action action;
+    public static class PlayerListItem {
+        private final UUID uuid;
+        private String playerName = null;
+        private String textures = null;
+        private String displayName = null;
+        private int ping = -1;
 
-    /**
-     * Total entries
-     */
-    protected int players;
+        /**
+         * Construct player list item
+         *
+         * @param uuid        player's unique ID
+         * @param playerName  player name
+         * @param textures    encoded player textures
+         * @param displayName player's display name
+         * @param ping        player's ping
+         */
+        public PlayerListItem(final UUID uuid, final String playerName, final String textures, final String displayName, final int ping) {
+            super();
+            this.uuid = uuid;
+            this.playerName = playerName;
+            this.textures = textures;
+            this.displayName = displayName;
+            this.ping = ping;
+        }
 
-    /**
-     * List of player infos
-     */
-    protected List<PlayerListItem> playersList = new ArrayList<PlayerListItem>();
+        /**
+         * Get player's unique ID
+         *
+         * @return player's UUID
+         */
+        public UUID getUuid() {
+            return uuid;
+        }
 
-    /**
-     * Default constructor
-     * 
-     * @param reg
-     * @param data
-     * @throws IOException
-     */
-    protected BaseServerPlayerListItemPacket(final PacketRegistry reg, final byte[] data) throws IOException {
-        super(reg, data);
-    }
+        /**
+         * Get player's name
+         *
+         * @return name
+         */
+        public String getPlayerName() {
+            return playerName;
+        }
 
-    public Action getAction() {
-        return action;
-    }
+        /**
+         * Get player's textures
+         *
+         * @return base64 textures
+         */
+        public String getTextures() {
+            return textures;
+        }
 
-    public int getPlayers() {
-        return players;
-    }
+        /**
+         * Get player's display name
+         *
+         * @return display name
+         */
+        public String getDisplayName() {
+            return displayName;
+        }
 
-    public List<PlayerListItem> getPlayersList() {
-        return playersList;
+        /**
+         * Get player's ping
+         *
+         * @return ping
+         */
+        public int getPing() {
+            return ping;
+        }
     }
 
 }

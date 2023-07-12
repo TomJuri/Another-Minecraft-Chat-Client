@@ -1,27 +1,24 @@
 package net.defekt.mc.chatclient.protocol.data;
 
-import java.awt.Color;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Class containing Minecraft's color codes, their names and their RGB
  * representation
- * 
- * @see <a href="https://wiki.vg/Chat#Colors">Chat Colors (wiki.vg)</a>
- * @author Defective4
  *
+ * @author Defective4
+ * @see <a href="https://wiki.vg/Chat#Colors">Chat Colors (wiki.vg)</a>
  */
 public class ChatColor {
-    private ChatColor() {
-    }
-
     private static final Map<String, String> colorCodes = new HashMap<String, String>() {
         private static final long serialVersionUID = 1L;
+
         {
             put("black", "0");
             put("dark_blue", "1");
@@ -41,9 +38,9 @@ public class ChatColor {
             put("white", "f");
         }
     };
-
     private static final Map<String, String> colors = new HashMap<String, String>() {
         private static final long serialVersionUID = 1L;
+
         {
             put("0", "0:0:0");
             put("1", "0:0:170");
@@ -71,8 +68,12 @@ public class ChatColor {
         }
     };
 
+    private ChatColor() {
+    }
+
     /**
      * Parse HEX colored message string to json array
+     *
      * @param hexed HEX message string
      * @return json array
      */
@@ -89,8 +90,7 @@ public class ChatColor {
                     Integer.parseInt(color, 16);
                     obj.add("color", new JsonPrimitive(color));
                     obj.add("text", new JsonPrimitive(txt));
-                } else
-                    throw new NumberFormatException();
+                } else throw new NumberFormatException();
             } catch (Exception e) {
                 obj.add("color", new JsonPrimitive("ffffff"));
                 obj.add("text", new JsonPrimitive(sec));
@@ -103,7 +103,7 @@ public class ChatColor {
 
     /**
      * Convert all legacy color codes to HEX
-     * 
+     *
      * @param legacy legacy string
      * @return hexed string
      */
@@ -121,7 +121,7 @@ public class ChatColor {
 
     /**
      * Converts RGB to HEX value (######)
-     * 
+     *
      * @param r Red value
      * @param g Green value
      * @param b Blue value
@@ -138,7 +138,7 @@ public class ChatColor {
     /**
      * Translate Minecraft color code (0-9 a-f) to {@link Color} object.<br>
      * Formatting codes (k-m) are NOT supported yet.
-     * 
+     *
      * @param code color code
      * @return RGB color
      * @deprecated
@@ -150,13 +150,12 @@ public class ChatColor {
             final int g = Integer.parseInt(rgb[1]);
             final int b = Integer.parseInt(rgb[2]);
             return new Color(r, g, b);
-        } else
-            return Color.white;
+        } else return Color.white;
     }
 
     /**
      * Translate Minecraft chat color name to color code
-     * 
+     *
      * @param name color name
      * @return color code
      */

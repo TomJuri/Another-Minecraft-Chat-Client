@@ -21,26 +21,59 @@ import java.util.*;
  */
 public class UserPreferences implements Serializable {
 
+    public static final ColorPreferences defaultColorPreferences = new ColorPreferences();
+    public static final File oldServerFile = new File("mcc.prefs");
+    public static final File serverFile = new File("mcc.prefs.dat");
     private static final long serialVersionUID = 5064975536053236721L;
-
+    private static final int DEFAULT_CONFIG_VERSION = 101;
     private static UserPreferences instance;
-
+    protected final List<ServerEntry> servers = Collections.synchronizedList(new ArrayList<>());
+    public List<ProxySetting> proxies = null;
     private List<String> enabledPlugins;
     private transient List<String> haltedPlugins;
     private List<String> deletedPlugins;
     private List<String> trustedAuthors;
     private List<UserInfo> msUsers;
-
-    public List<String> getTrustedAuthors() {
-        if (trustedAuthors == null) trustedAuthors = new ArrayList<>();
-        return trustedAuthors;
-    }
-
     private String userID = generateHWID();
-
-    public String getUserID() {
-        if (userID == null) userID = generateHWID();
-        return userID;
+    private String autoLoginCommand = null;
+    private int configVersion = DEFAULT_CONFIG_VERSION;
+    private int openCounts = 0;
+    private boolean disableDiscordPresence = false;
+    private boolean hideDiscordNickname = false;
+    private boolean hideDiscordServer = false;
+    private String uiTheme = "System";
+    private boolean disableCustomButtons = false;
+    private Language appLanguage = Language.English;
+    private boolean wasLangSet = false;
+    private ColorPreferences colorPreferences = new ColorPreferences();
+    private List<String> lastUsernames = new ArrayList<>();
+    private transient boolean usernameAlertSeen = false;
+    private Status resourcePackBehavior = Status.LOADED;
+    private boolean showResourcePackMessages = true;
+    private String resourcePackMessage = "[Resource Pack Received: %res]";
+    private Position resourcePackMessagePosition = Position.HOTBAR;
+    private SkinRule skinFetchRule = SkinRule.SERVER;
+    private boolean ignoreKeepAlive = false;
+    private boolean ignoreDisconnect = false;
+    private boolean forceLegacySLP = false;
+    private int additionalPing = 0;
+    private boolean sendMCBrand = true;
+    private String brand = "vanilla";
+    private String trayMessageMode = Constants.TRAY_MESSAGES_KEY_MENTION;
+    private String unicodeCharactersMode = Constants.UNICODECHARS_KEY_AUTO;
+    private boolean trayShowDisconnectMessages = true;
+    private int closeMode = Constants.WINDOW_CLOSE_ALWAYS_ASK;
+    private String[] trayKeyWords = new String[0];
+    private boolean enableInventoryHandling = true;
+    private boolean hideIncomingWindows = false;
+    private boolean hiddenWindowsResponse = true;
+    private boolean loadInventoryTextures = true;
+    private boolean showWindowsInTray = true;
+    private boolean sendWindowClosePackets = true;
+    private int maxPacketsOnList = 500;
+    private boolean enablePacketAnalyzer = false;
+    private UserPreferences() {
+        initDefaults();
     }
 
     public static String generateUserID(final long seed) {
@@ -77,6 +110,49 @@ public class UserPreferences implements Serializable {
         }
     }
 
+    public static UserPreferences prefs() {
+        if (instance == null) instance = UserPreferences.load();
+        return instance;
+    }
+
+    public static UserPreferences load() {
+        try {
+            if (oldServerFile.isFile()) {
+                UserPreferences prefs;
+                try (ObjectInputStream is = new ObjectInputStream(Files.newInputStream(oldServerFile.toPath()))) {
+                    prefs = (UserPreferences) is.readObject();
+                    prefs.initDefaults();
+                }
+                try (OutputStream os = Base64.getEncoder()
+                                             .wrap(Files.newOutputStream(UserPreferences.serverFile.toPath()))) {
+                    os.write(new Gson().toJson(prefs).getBytes(StandardCharsets.UTF_8));
+                }
+                oldServerFile.delete();
+                return prefs;
+            } else if (serverFile.isFile()) {
+                try (InputStream is = Files.newInputStream(serverFile.toPath())) {
+                    final InputStreamReader reader = new InputStreamReader(Base64.getDecoder().wrap(is));
+                    final UserPreferences prefs = new Gson().fromJson(reader, UserPreferences.class);
+                    prefs.initDefaults();
+                    return prefs;
+                }
+            } else return new UserPreferences();
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return new UserPreferences();
+        }
+    }
+
+    public List<String> getTrustedAuthors() {
+        if (trustedAuthors == null) trustedAuthors = new ArrayList<>();
+        return trustedAuthors;
+    }
+
+    public String getUserID() {
+        if (userID == null) userID = generateHWID();
+        return userID;
+    }
+
     public List<String> getEnabledPlugins() {
         if (enabledPlugins == null) enabledPlugins = new ArrayList<>();
         return enabledPlugins;
@@ -94,15 +170,6 @@ public class UserPreferences implements Serializable {
 
     public boolean isEnabled(final String name) {
         return enabledPlugins.contains(name);
-    }
-
-    public static UserPreferences prefs() {
-        if (instance == null) instance = UserPreferences.load();
-        return instance;
-    }
-
-    private UserPreferences() {
-        initDefaults();
     }
 
     private void initDefaults() {
@@ -141,207 +208,13 @@ public class UserPreferences implements Serializable {
         if (configVersion < 101) autoLoginCommand = "login %s";
     }
 
-    /**
-     * Skin rules are used to adjust skin cache behavior
-     *
-     * @author Defective4
-     */
-    public enum SkinRule {
-        /**
-         * Indicates that skins should be fetched from server
-         */
-        SERVER,
-        /**
-         * Indicates that skins should be downloaded using Mojang API
-         */
-        MOJANG_API,
-        /**
-         * Skins won't be fetched
-         */
-        NONE
-    }
-
-    /**
-     * Language enum is used to set application's language
-     *
-     * @author Defective4
-     */
-    public enum Language {
-        English("EN"),
-        Polish("PL"),
-        简体中文("CN");
-
-        private final String code;
-
-        Language(final String code) {
-            this.code = code;
-        }
-
-        public String getCode() {
-            return code;
-        }
-    }
-
-    public static class Constants {
-        public static final String TRAY_MESSAGES_KEY_ALWAYS = "Always";
-        public static final String TRAY_MESSAGES_KEY_MENTION = "On mention";
-        public static final String TRAY_MESSAGES_KEY_KEYWORD = "On keyword";
-        public static final String TRAY_MESSAGES_KEY_NEVER = "Never";
-
-        public static final String UNICODECHARS_KEY_AUTO = "Automatic";
-        public static final String UNICODECHARS_KEY_FORCE_UNICODE = "Force Unicode";
-        public static final String UNICODECHARS_KEY_FORCE_CUSTOM = "Force Custom Font";
-
-        public static final int WINDOW_CLOSE_ALWAYS_ASK = 0;
-        public static final int WINDOW_CLOSE_TO_TRAY = 1;
-        public static final int WINDOW_CLOSE_EXIT = 2;
-    }
-
-    public static final ColorPreferences defaultColorPreferences = new ColorPreferences();
-
-    protected final List<ServerEntry> servers = Collections.synchronizedList(new ArrayList<>());
-
-    public List<ProxySetting> proxies = null;
-
-    public static class ColorPreferences implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-        private String colorEnabledButton = "6f6f6f";
-        private String colorEnabledHoverButton = "7c86be";
-        private String colorDisabledButton = "2d2d2d";
-        private String colorText = Integer.toHexString(Color.white.getRGB()).substring(2);
-        private String disabledColorText = Integer.toHexString(Color.lightGray.getRGB()).substring(2);
-
-        public ColorPreferences() {
-        }
-
-        public String getColorEnabledButton() {
-            return colorEnabledButton;
-        }
-
-        public String getColorEnabledHoverButton() {
-            return colorEnabledHoverButton;
-        }
-
-        public String getColorDisabledButton() {
-            return colorDisabledButton;
-        }
-
-        public void setColorEnabledButton(final String colorEnabledButton) {
-            this.colorEnabledButton = colorEnabledButton;
-        }
-
-        public void setColorEnabledHoverButton(final String colorEnabledHoverButton) {
-            this.colorEnabledHoverButton = colorEnabledHoverButton;
-        }
-
-        public void setColorDisabledButton(final String colorDisabledButton) {
-            this.colorDisabledButton = colorDisabledButton;
-        }
-
-        public String getColorText() {
-            return colorText;
-        }
-
-        public String getDisabledColorText() {
-            return disabledColorText;
-        }
-
-        public void setColorText(final String colorText) {
-            this.colorText = colorText;
-        }
-
-        public void setDisabledColorText(final String disabledColorText) {
-            this.disabledColorText = disabledColorText;
-        }
-
-    }
-
-    private String autoLoginCommand = null;
-
     public String getAutoLoginCommand() {
         if (autoLoginCommand == null) autoLoginCommand = "login %s";
         return autoLoginCommand;
     }
 
-    private static final int DEFAULT_CONFIG_VERSION = 101;
-    private int configVersion = DEFAULT_CONFIG_VERSION;
-
-    private int openCounts = 0;
-
-    private boolean disableDiscordPresence = false;
-    private boolean hideDiscordNickname = false;
-    private boolean hideDiscordServer = false;
-
-    private String uiTheme = "System";
-    private boolean disableCustomButtons = false;
-
-    private Language appLanguage = Language.English;
-    private boolean wasLangSet = false;
-
-    private ColorPreferences colorPreferences = new ColorPreferences();
-    private List<String> lastUsernames = new ArrayList<>();
-    private transient boolean usernameAlertSeen = false;
-
-    private Status resourcePackBehavior = Status.LOADED;
-    private boolean showResourcePackMessages = true;
-    private String resourcePackMessage = "[Resource Pack Received: %res]";
-    private Position resourcePackMessagePosition = Position.HOTBAR;
-
-    private SkinRule skinFetchRule = SkinRule.SERVER;
-
-    private boolean ignoreKeepAlive = false;
-    private boolean ignoreDisconnect = false;
-    private boolean forceLegacySLP = false;
-    private int additionalPing = 0;
-    private boolean sendMCBrand = true;
-    private String brand = "vanilla";
-
-    private String trayMessageMode = Constants.TRAY_MESSAGES_KEY_MENTION;
-    private String unicodeCharactersMode = Constants.UNICODECHARS_KEY_AUTO;
-    private boolean trayShowDisconnectMessages = true;
-    private int closeMode = Constants.WINDOW_CLOSE_ALWAYS_ASK;
-    private String[] trayKeyWords = new String[0];
-
-    private boolean enableInventoryHandling = true;
-    private boolean hideIncomingWindows = false;
-    private boolean hiddenWindowsResponse = true;
-    private boolean loadInventoryTextures = true;
-    private boolean showWindowsInTray = true;
-    private boolean sendWindowClosePackets = true;
-
-    private int maxPacketsOnList = 500;
-    private boolean enablePacketAnalyzer = false;
-
-    public static final File oldServerFile = new File("mcc.prefs");
-    public static final File serverFile = new File("mcc.prefs.dat");
-
-    public static UserPreferences load() {
-        try {
-            if (oldServerFile.isFile()) {
-                UserPreferences prefs;
-                try (ObjectInputStream is = new ObjectInputStream(Files.newInputStream(oldServerFile.toPath()))) {
-                    prefs = (UserPreferences) is.readObject();
-                    prefs.initDefaults();
-                }
-                try (OutputStream os = Base64.getEncoder()
-                                             .wrap(Files.newOutputStream(UserPreferences.serverFile.toPath()))) {
-                    os.write(new Gson().toJson(prefs).getBytes(StandardCharsets.UTF_8));
-                }
-                oldServerFile.delete();
-                return prefs;
-            } else if (serverFile.isFile()) {
-                try (InputStream is = Files.newInputStream(serverFile.toPath())) {
-                    final InputStreamReader reader = new InputStreamReader(Base64.getDecoder().wrap(is));
-                    final UserPreferences prefs = new Gson().fromJson(reader, UserPreferences.class);
-                    prefs.initDefaults();
-                    return prefs;
-                }
-            } else return new UserPreferences();
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return new UserPreferences();
-        }
+    public void setAutoLoginCommand(final String autoLoginCommand) {
+        this.autoLoginCommand = autoLoginCommand;
     }
 
     public boolean isLangUnicodeSupported() {
@@ -372,12 +245,12 @@ public class UserPreferences implements Serializable {
         return showResourcePackMessages;
     }
 
-    public String getResourcePackMessage() {
-        return resourcePackMessage;
-    }
-
     public void setShowResourcePackMessages(final boolean showResourcePackMessages) {
         this.showResourcePackMessages = showResourcePackMessages;
+    }
+
+    public String getResourcePackMessage() {
+        return resourcePackMessage;
     }
 
     public void setResourcePackMessage(final String resourcePackMessage) {
@@ -404,20 +277,20 @@ public class UserPreferences implements Serializable {
         return ignoreKeepAlive;
     }
 
-    public boolean isSendMCBrand() {
-        return sendMCBrand;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
     public void setIgnoreKeepAlive(final boolean ignoreKeepAlive) {
         this.ignoreKeepAlive = ignoreKeepAlive;
     }
 
+    public boolean isSendMCBrand() {
+        return sendMCBrand;
+    }
+
     public void setSendMCBrand(final boolean sendMCBrand) {
         this.sendMCBrand = sendMCBrand;
+    }
+
+    public String getBrand() {
+        return brand;
     }
 
     public void setBrand(final String brand) {
@@ -428,12 +301,12 @@ public class UserPreferences implements Serializable {
         return trayMessageMode;
     }
 
-    public int getCloseMode() {
-        return closeMode;
-    }
-
     public void setTrayMessageMode(final String trayMessageMode) {
         this.trayMessageMode = trayMessageMode;
+    }
+
+    public int getCloseMode() {
+        return closeMode;
     }
 
     public void setCloseMode(final int closeMode) {
@@ -498,20 +371,20 @@ public class UserPreferences implements Serializable {
         return enableInventoryHandling;
     }
 
-    public boolean isLoadInventoryTextures() {
-        return loadInventoryTextures;
-    }
-
-    public boolean isShowWindowsInTray() {
-        return showWindowsInTray;
-    }
-
     public void setEnableInventoryHandling(final boolean enableInventoryHandling) {
         this.enableInventoryHandling = enableInventoryHandling;
     }
 
+    public boolean isLoadInventoryTextures() {
+        return loadInventoryTextures;
+    }
+
     public void setLoadInventoryTextures(final boolean loadInventoryTextures) {
         this.loadInventoryTextures = loadInventoryTextures;
+    }
+
+    public boolean isShowWindowsInTray() {
+        return showWindowsInTray;
     }
 
     public void setShowWindowsInTray(final boolean showWindowsInTray) {
@@ -530,12 +403,12 @@ public class UserPreferences implements Serializable {
         return hideIncomingWindows;
     }
 
-    public boolean isHiddenWindowsResponse() {
-        return hiddenWindowsResponse;
-    }
-
     public void setHideIncomingWindows(final boolean hideIncomingWindows) {
         this.hideIncomingWindows = hideIncomingWindows;
+    }
+
+    public boolean isHiddenWindowsResponse() {
+        return hiddenWindowsResponse;
     }
 
     public void setHiddenWindowsResponse(final boolean hiddenWindowsResponse) {
@@ -615,20 +488,20 @@ public class UserPreferences implements Serializable {
         return disableDiscordPresence;
     }
 
-    public boolean isHideDiscordNickname() {
-        return hideDiscordNickname;
-    }
-
-    public boolean isHideDiscordServer() {
-        return hideDiscordServer;
-    }
-
     public void setDisableDiscordPresence(final boolean disableDiscordPresence) {
         this.disableDiscordPresence = disableDiscordPresence;
     }
 
+    public boolean isHideDiscordNickname() {
+        return hideDiscordNickname;
+    }
+
     public void setHideDiscordNickname(final boolean hideDiscordNickname) {
         this.hideDiscordNickname = hideDiscordNickname;
+    }
+
+    public boolean isHideDiscordServer() {
+        return hideDiscordServer;
     }
 
     public void setHideDiscordServer(final boolean hideDiscordServer) {
@@ -643,12 +516,118 @@ public class UserPreferences implements Serializable {
         this.openCounts = openCounts;
     }
 
-    public void setAutoLoginCommand(final String autoLoginCommand) {
-        this.autoLoginCommand = autoLoginCommand;
-    }
-
     public List<UserInfo> getMsUsers() {
         if (msUsers == null) msUsers = new ArrayList<>();
         return msUsers;
+    }
+
+    /**
+     * Skin rules are used to adjust skin cache behavior
+     *
+     * @author Defective4
+     */
+    public enum SkinRule {
+        /**
+         * Indicates that skins should be fetched from server
+         */
+        SERVER,
+        /**
+         * Indicates that skins should be downloaded using Mojang API
+         */
+        MOJANG_API,
+        /**
+         * Skins won't be fetched
+         */
+        NONE
+    }
+
+    /**
+     * Language enum is used to set application's language
+     *
+     * @author Defective4
+     */
+    public enum Language {
+        English("EN"),
+        Polish("PL"),
+        简体中文("CN");
+
+        private final String code;
+
+        Language(final String code) {
+            this.code = code;
+        }
+
+        public String getCode() {
+            return code;
+        }
+    }
+
+    public static class Constants {
+        public static final String TRAY_MESSAGES_KEY_ALWAYS = "Always";
+        public static final String TRAY_MESSAGES_KEY_MENTION = "On mention";
+        public static final String TRAY_MESSAGES_KEY_KEYWORD = "On keyword";
+        public static final String TRAY_MESSAGES_KEY_NEVER = "Never";
+
+        public static final String UNICODECHARS_KEY_AUTO = "Automatic";
+        public static final String UNICODECHARS_KEY_FORCE_UNICODE = "Force Unicode";
+        public static final String UNICODECHARS_KEY_FORCE_CUSTOM = "Force Custom Font";
+
+        public static final int WINDOW_CLOSE_ALWAYS_ASK = 0;
+        public static final int WINDOW_CLOSE_TO_TRAY = 1;
+        public static final int WINDOW_CLOSE_EXIT = 2;
+    }
+
+    public static class ColorPreferences implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+        private String colorEnabledButton = "6f6f6f";
+        private String colorEnabledHoverButton = "7c86be";
+        private String colorDisabledButton = "2d2d2d";
+        private String colorText = Integer.toHexString(Color.white.getRGB()).substring(2);
+        private String disabledColorText = Integer.toHexString(Color.lightGray.getRGB()).substring(2);
+
+        public ColorPreferences() {
+        }
+
+        public String getColorEnabledButton() {
+            return colorEnabledButton;
+        }
+
+        public void setColorEnabledButton(final String colorEnabledButton) {
+            this.colorEnabledButton = colorEnabledButton;
+        }
+
+        public String getColorEnabledHoverButton() {
+            return colorEnabledHoverButton;
+        }
+
+        public void setColorEnabledHoverButton(final String colorEnabledHoverButton) {
+            this.colorEnabledHoverButton = colorEnabledHoverButton;
+        }
+
+        public String getColorDisabledButton() {
+            return colorDisabledButton;
+        }
+
+        public void setColorDisabledButton(final String colorDisabledButton) {
+            this.colorDisabledButton = colorDisabledButton;
+        }
+
+        public String getColorText() {
+            return colorText;
+        }
+
+        public void setColorText(final String colorText) {
+            this.colorText = colorText;
+        }
+
+        public String getDisabledColorText() {
+            return disabledColorText;
+        }
+
+        public void setDisabledColorText(final String disabledColorText) {
+            this.disabledColorText = disabledColorText;
+        }
+
     }
 }

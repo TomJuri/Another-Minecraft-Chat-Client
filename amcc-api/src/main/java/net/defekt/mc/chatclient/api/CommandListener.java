@@ -1,21 +1,20 @@
 package net.defekt.mc.chatclient.api;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
 import net.defekt.mc.chatclient.api.command.CommandHandler;
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.event.AnnotatedMinecraftPacketListener;
 import net.defekt.mc.chatclient.protocol.event.PacketHandler;
 import net.defekt.mc.chatclient.protocol.packets.abstr.BaseClientChatMessagePacket;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Represents a command listener
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class CommandListener extends AnnotatedMinecraftPacketListener {
 
@@ -24,7 +23,7 @@ public class CommandListener extends AnnotatedMinecraftPacketListener {
     /**
      * Register a command.<br>
      * Should be called from {@link AMCPlugin}
-     * 
+     *
      * @param cmd
      * @param handler
      */
@@ -35,7 +34,7 @@ public class CommandListener extends AnnotatedMinecraftPacketListener {
     /**
      * Unregister a command.<br>
      * Should be called from {@link AMCPlugin}
-     * 
+     *
      * @param cmd
      */
     protected void unregisterCommand(final String cmd) {

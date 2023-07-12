@@ -1,20 +1,19 @@
 package net.defekt.mc.chatclient.protocol.packets.general.clientbound.play;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import net.defekt.mc.chatclient.protocol.io.VarInputStream;
 import net.defekt.mc.chatclient.protocol.packets.Packet;
 import net.defekt.mc.chatclient.protocol.packets.PacketRegistry;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientStatusPacket;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Sent by server as response to client status packet
- * 
- * @see ClientStatusPacket
- * @author Defective4
  *
+ * @author Defective4
+ * @see ClientStatusPacket
  */
 public class ServerStatisticsPacket extends Packet {
 
@@ -22,7 +21,7 @@ public class ServerStatisticsPacket extends Packet {
 
     /**
      * constructs {@link ServerJoinGamePacket}
-     * 
+     *
      * @param reg  packet registry used to construct this packet
      * @param data packet's data
      * @throws IOException never thrown
@@ -41,7 +40,7 @@ public class ServerStatisticsPacket extends Packet {
 
     /**
      * Get received values
-     * 
+     *
      * @return map of received values
      */
     public Map<String, Integer> getValues() {

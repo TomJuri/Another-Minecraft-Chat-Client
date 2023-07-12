@@ -1,33 +1,5 @@
 package net.defekt.mc.chatclient.ui.swing.windows;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.datatransfer.StringSelection;
-import java.awt.image.BufferedImage;
-import java.net.URL;
-import java.util.WeakHashMap;
-
-import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import net.defekt.mc.chatclient.protocol.auth.UserInfo;
 import net.defekt.mc.chatclient.protocol.data.Messages;
 import net.defekt.mc.chatclient.protocol.io.IOUtils;
@@ -35,22 +7,22 @@ import net.defekt.mc.chatclient.ui.FontAwesome;
 import net.defekt.mc.chatclient.ui.Main;
 import net.defekt.mc.chatclient.ui.swing.JLinkLabel;
 import net.defekt.mc.chatclient.ui.swing.SwingUtils;
-import net.defekt.minecraft.auth.microsoft.CodeResponse;
-import net.defekt.minecraft.auth.microsoft.MicrosoftAuth;
-import net.defekt.minecraft.auth.microsoft.MinecraftAuthResponse;
-import net.defekt.minecraft.auth.microsoft.OnlineProfile;
-import net.defekt.minecraft.auth.microsoft.TokenCallback;
-import net.defekt.minecraft.auth.microsoft.TokenErrorResponse;
-import net.defekt.minecraft.auth.microsoft.TokenResponse;
-import net.defekt.minecraft.auth.microsoft.XSTSResponse;
+import net.defekt.minecraft.auth.microsoft.*;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.util.WeakHashMap;
 
 public class AccountManagerWindow extends JDialog {
 
     private JPanel contentPane;
-
-    private void update(JList<UserInfo> list) {
-        list.setListData(Main.up.getMsUsers().toArray(new UserInfo[0]));
-    }
 
     /**
      * Create the frame.
@@ -82,8 +54,7 @@ public class AccountManagerWindow extends JDialog {
             WeakHashMap<String, BufferedImage> skins = new WeakHashMap<>();
 
             @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-                    boolean cellHasFocus) {
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 Component cpt = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (!(cpt instanceof JLabel)) return cpt;
                 JLabel label = (JLabel) cpt;
@@ -106,17 +77,17 @@ public class AccountManagerWindow extends JDialog {
         });
 
         JButton btnNewButton = new JButton(Messages.getString("Main.cancel"),
-                FontAwesome.createIcon(FontAwesome.X, this));
+                                           FontAwesome.createIcon(FontAwesome.X, this));
         btnNewButton.setBounds(335, 225, 89, 23);
         contentPane.add(btnNewButton);
 
         JButton btnNewButton_1 = new JButton(Messages.getString("addAccount"),
-                FontAwesome.createIcon(FontAwesome.PLUS, this));
+                                             FontAwesome.createIcon(FontAwesome.PLUS, this));
         btnNewButton_1.setBounds(195, 225, 130, 23);
         contentPane.add(btnNewButton_1);
 
         JButton btnNewButton_2 = new JButton(Messages.getString("remove"),
-                FontAwesome.createIcon(FontAwesome.MINUS, this));
+                                             FontAwesome.createIcon(FontAwesome.MINUS, this));
         btnNewButton_2.setBounds(96, 225, 89, 23);
         btnNewButton_2.setEnabled(false);
         contentPane.add(btnNewButton_2);
@@ -141,8 +112,10 @@ public class AccountManagerWindow extends JDialog {
             try {
                 code = MicrosoftAuth.retrieveCode();
             } catch (Exception e2) {
-                SwingUtils.showErrorDialog(AccountManagerWindow.this, Messages.getString("ServerDetailsDialog.error"),
-                        e2, Messages.getString("Main.errorTitle") + "...");
+                SwingUtils.showErrorDialog(AccountManagerWindow.this,
+                                           Messages.getString("ServerDetailsDialog.error"),
+                                           e2,
+                                           Messages.getString("Main.errorTitle") + "...");
                 return;
             }
 
@@ -151,9 +124,8 @@ public class AccountManagerWindow extends JDialog {
             dialog.setModal(true);
 
             JButton copyCode = new JButton(Messages.getString("copyCode"),
-                    FontAwesome.createIcon(FontAwesome.COPY, this));
-            JButton close = new JButton(Messages.getString("Main.cancel"),
-                    FontAwesome.createIcon(FontAwesome.X, this));
+                                           FontAwesome.createIcon(FontAwesome.COPY, this));
+            JButton close = new JButton(Messages.getString("Main.cancel"), FontAwesome.createIcon(FontAwesome.X, this));
 
             copyCode.addActionListener(e2 -> {
                 StringSelection sel = new StringSelection(code.getUser_code());
@@ -185,8 +157,12 @@ public class AccountManagerWindow extends JDialog {
             box.add(labels);
             box.add(prog);
 
-            dialog.setContentPane(new JOptionPane(box, JOptionPane.INFORMATION_MESSAGE, JOptionPane.CANCEL_OPTION, null,
-                    new Object[] { copyCode, close }, null));
+            dialog.setContentPane(new JOptionPane(box,
+                                                  JOptionPane.INFORMATION_MESSAGE,
+                                                  JOptionPane.CANCEL_OPTION,
+                                                  null,
+                                                  new Object[]{copyCode, close},
+                                                  null));
 
             MicrosoftAuth.authenticateCode(code, new TokenCallback() {
 
@@ -194,14 +170,21 @@ public class AccountManagerWindow extends JDialog {
                 public void exception(Exception ex) {
                     dialog.dispose();
                     SwingUtils.showErrorDialog(AccountManagerWindow.this,
-                            Messages.getString("ServerDetailsDialog.error"), ex, Messages.getString("accountAddError"));
+                                               Messages.getString("ServerDetailsDialog.error"),
+                                               ex,
+                                               Messages.getString("accountAddError"));
                 }
 
                 @Override
                 public void errored(TokenErrorResponse resp) {
-                    JOptionPane.showOptionDialog(dialog, Messages.getString("serverError") + " " + resp.getResponse(),
-                            "Error", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null,
-                            new String[] { Messages.getString("Main.ok") }, 0);
+                    JOptionPane.showOptionDialog(dialog,
+                                                 Messages.getString("serverError") + " " + resp.getResponse(),
+                                                 "Error",
+                                                 JOptionPane.OK_CANCEL_OPTION,
+                                                 JOptionPane.ERROR_MESSAGE,
+                                                 null,
+                                                 new String[]{Messages.getString("Main.ok")},
+                                                 0);
                     dialog.dispose();
                 }
 
@@ -228,15 +211,20 @@ public class AccountManagerWindow extends JDialog {
                         OnlineProfile prof = MicrosoftAuth.getProfile(mar.getAccess_token());
                         dialog.dispose();
 
-                        UserInfo user = new UserInfo(prof.getName(), mar.getAccess_token(), prof.getId(),
-                                resp.getRefresh_token(), prof.getSkinUrl());
+                        UserInfo user = new UserInfo(prof.getName(),
+                                                     mar.getAccess_token(),
+                                                     prof.getId(),
+                                                     resp.getRefresh_token(),
+                                                     prof.getSkinUrl());
 
                         Main.up.getMsUsers().add(user);
                         update(list);
                     } catch (Exception e2) {
                         dialog.dispose();
-                        SwingUtils.showErrorDialog(parent, Messages.getString("ServerDetailsDialog.error"), e2,
-                                Messages.getString("accountAddError"));
+                        SwingUtils.showErrorDialog(parent,
+                                                   Messages.getString("ServerDetailsDialog.error"),
+                                                   e2,
+                                                   Messages.getString("accountAddError"));
                     }
                 }
             });
@@ -249,5 +237,9 @@ public class AccountManagerWindow extends JDialog {
         btnNewButton.addActionListener(e -> {
             dispose();
         });
+    }
+
+    private void update(JList<UserInfo> list) {
+        list.setListData(Main.up.getMsUsers().toArray(new UserInfo[0]));
     }
 }

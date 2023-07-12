@@ -7,11 +7,10 @@ import java.util.List;
 /**
  * An extension of Hash Map that invokes and method in each of its listeners
  * when an item is changed (incomplete)
- * 
- * @author Defective4
  *
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
+ * @author Defective4
  */
 public class ListenerHashMap<K, V> extends HashMap<K, V> {
     private static final long serialVersionUID = 1L;
@@ -19,7 +18,7 @@ public class ListenerHashMap<K, V> extends HashMap<K, V> {
 
     /**
      * Add a map change listener
-     * 
+     *
      * @param listener change listener
      */
     public void addChangeListener(final MapChangeListener<K, V> listener) {
@@ -28,7 +27,7 @@ public class ListenerHashMap<K, V> extends HashMap<K, V> {
 
     /**
      * Remove a map change listener
-     * 
+     *
      * @param listener change listener
      */
     public void removeChangeListener(final MapChangeListener<K, V> listener) {
@@ -39,7 +38,7 @@ public class ListenerHashMap<K, V> extends HashMap<K, V> {
 
     /**
      * Get change listeners added to this map
-     * 
+     *
      * @return list of change listeners
      */
     public List<MapChangeListener<K, V>> getChangeListeners() {
@@ -74,16 +73,15 @@ public class ListenerHashMap<K, V> extends HashMap<K, V> {
 
     /**
      * A listener used in receiving change events from {@link ListenerHashMap}
-     * 
-     * @author Defective4
      *
      * @param <K> the type of keys maintained by parent map
      * @param <V> the type of mapped values
+     * @author Defective4
      */
     public static interface MapChangeListener<K, V> {
         /**
          * Invoked when an item is added to map
-         * 
+         *
          * @param key   item's key
          * @param value item's value
          * @param map   map where the item is added
@@ -92,7 +90,7 @@ public class ListenerHashMap<K, V> extends HashMap<K, V> {
 
         /**
          * Invoked when an item is removed from map
-         * 
+         *
          * @param key   item's key
          * @param value item's value
          * @param map   map from where the item is removed

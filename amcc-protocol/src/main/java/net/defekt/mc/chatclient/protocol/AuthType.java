@@ -7,9 +7,11 @@ package net.defekt.mc.chatclient.protocol;
  */
 @SuppressWarnings("javadoc")
 public enum AuthType {
-    Offline, Microsoft, @Deprecated TheAltening;
+    Offline,
+    Microsoft,
+    @Deprecated TheAltening;
 
     public static AuthType[] valuesX() {
-        return new AuthType[] { Offline, Microsoft };
+        return new AuthType[]{Offline, Microsoft};
     }
 }

@@ -1,19 +1,17 @@
 package net.defekt.mc.chatclient.api.ui;
 
-import java.awt.TrayIcon;
-
-import javax.swing.JSplitPane;
-
 import net.defekt.mc.chatclient.protocol.MinecraftClient;
 import net.defekt.mc.chatclient.protocol.event.ClientListener;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Not to be confused with {@link ClientListener}.<br>
  * It's used to listen forr user actions in application's interface.
  *
- * @see GUIComponents
  * @author Defective4
- *
+ * @see GUIComponents
  */
 public interface UserActionListener {
 
@@ -24,7 +22,7 @@ public interface UserActionListener {
      * is used.<br>
      * This method is called whether or not the client is connected!.<br>
      * The client may occassionally be <code>null</code>! Prepare to handle that.
-     * 
+     *
      * @param pane
      * @param client
      */
@@ -33,7 +31,7 @@ public interface UserActionListener {
     /**
      * Invoked when user completely minimizes the application to tray icon.<br>
      * The tray icon may be null.
-     * 
+     *
      * @param icon
      */
     public void minimizedToTray(TrayIcon icon);

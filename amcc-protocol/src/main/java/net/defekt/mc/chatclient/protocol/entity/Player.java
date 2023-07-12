@@ -5,14 +5,13 @@ import java.util.UUID;
 /**
  * This class is an extension of {@link Entity}.<br>
  * It's used to store information about a player.
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class Player extends Entity {
     /**
      * Default constructor
-     * 
+     *
      * @param uid player's UID
      * @param x   player's X
      * @param y   player's Y

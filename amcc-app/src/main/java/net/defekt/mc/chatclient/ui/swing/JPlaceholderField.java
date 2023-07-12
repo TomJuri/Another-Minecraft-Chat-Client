@@ -1,25 +1,24 @@
 package net.defekt.mc.chatclient.ui.swing;
 
-import java.awt.Color;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-import javax.swing.JTextField;
-
 /**
  * A text field allowing to set a placeholder, like in HTML
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
 public class JPlaceholderField extends JTextField {
     private static final long serialVersionUID = 1L;
 
     private String placeholder = "";
+    private Color fg = getForeground();
 
     /**
      * Constructs a placeholder field
-     * 
+     *
      * @param placeholder placeholder text
      */
     public JPlaceholderField(final String placeholder) {
@@ -54,14 +53,6 @@ public class JPlaceholderField extends JTextField {
         return getForeground().equals(Color.gray) ? "" : super.getText();
     }
 
-    private Color fg = getForeground();
-
-    @Override
-    public void setForeground(final Color color) {
-        super.setForeground(color);
-        this.fg = color;
-    }
-
     @Override
     public void setText(final String text) {
         super.setText(text);
@@ -69,6 +60,12 @@ public class JPlaceholderField extends JTextField {
         for (final FocusListener listener : getFocusListeners()) {
             listener.focusLost(new FocusEvent(this, 1));
         }
+    }
+
+    @Override
+    public void setForeground(final Color color) {
+        super.setForeground(color);
+        this.fg = color;
     }
 
     @Override
@@ -81,7 +78,7 @@ public class JPlaceholderField extends JTextField {
 
     /**
      * Get placeholder of this field
-     * 
+     *
      * @return placeholder
      */
     public String getPlaceholder() {
@@ -90,7 +87,7 @@ public class JPlaceholderField extends JTextField {
 
     /**
      * Set this field's placeholder
-     * 
+     *
      * @param placeholder placeholder text
      */
     public void setPlaceholder(final String placeholder) {
