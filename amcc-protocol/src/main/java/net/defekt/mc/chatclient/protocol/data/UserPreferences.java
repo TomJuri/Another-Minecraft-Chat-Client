@@ -1,38 +1,24 @@
 package net.defekt.mc.chatclient.protocol.data;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.net.NetworkInterface;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Random;
-
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import net.defekt.mc.chatclient.protocol.auth.UserInfo;
 import net.defekt.mc.chatclient.protocol.packets.general.clientbound.play.ServerChatMessagePacket.Position;
 import net.defekt.mc.chatclient.protocol.packets.general.serverbound.play.ClientResourcePackStatusPacket.Status;
 
+import java.awt.*;
+import java.io.*;
+import java.net.NetworkInterface;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.*;
+
 /**
  * Class containing user's preferences.<br>
  * It is intended to be saved on disk every time the application exits.
- * 
- * @author Defective4
  *
+ * @author Defective4
  */
-@SuppressWarnings("javadoc")
 public class UserPreferences implements Serializable {
 
     private static final long serialVersionUID = 5064975536053236721L;
@@ -59,18 +45,16 @@ public class UserPreferences implements Serializable {
 
     public static String generateUserID(final long seed) {
         final Random rand = new Random(seed);
-        String id = "User";
-        while (id.length() < 16)
-            id += Integer.toString(rand.nextInt(10));
-        return id;
+        StringBuilder id = new StringBuilder("User");
+        while (id.length() < 16) id.append(rand.nextInt(10));
+        return id.toString();
     }
 
     public static String generateUserID() {
         final Random rand = new Random();
-        String id = "User";
-        while (id.length() < 16)
-            id += Integer.toString(rand.nextInt(10));
-        return id;
+        StringBuilder id = new StringBuilder("User");
+        while (id.length() < 16) id.append(rand.nextInt(10));
+        return id.toString();
     }
 
     private static String generateHWID() {
@@ -143,7 +127,7 @@ public class UserPreferences implements Serializable {
         }
 
         if (proxies == null) {
-            proxies = Collections.synchronizedList(new ArrayList<ProxySetting>());
+            proxies = Collections.synchronizedList(new ArrayList<>());
         }
 
         if (uiTheme == null || uiTheme.isEmpty()) {
@@ -159,11 +143,10 @@ public class UserPreferences implements Serializable {
 
     /**
      * Skin rules are used to adjust skin cache behavior
-     * 
-     * @author Defective4
      *
+     * @author Defective4
      */
-    public static enum SkinRule {
+    public enum SkinRule {
         /**
          * Indicates that skins should be fetched from server
          */
@@ -180,16 +163,17 @@ public class UserPreferences implements Serializable {
 
     /**
      * Language enum is used to set application's language
-     * 
-     * @author Defective4
      *
+     * @author Defective4
      */
-    public static enum Language {
-        English("EN"), Polish("PL"), 简体中文("CN");
+    public enum Language {
+        English("EN"),
+        Polish("PL"),
+        简体中文("CN");
 
         private final String code;
 
-        private Language(final String code) {
+        Language(final String code) {
             this.code = code;
         }
 
@@ -215,7 +199,7 @@ public class UserPreferences implements Serializable {
 
     public static final ColorPreferences defaultColorPreferences = new ColorPreferences();
 
-    protected final List<ServerEntry> servers = Collections.synchronizedList(new ArrayList<ServerEntry>());
+    protected final List<ServerEntry> servers = Collections.synchronizedList(new ArrayList<>());
 
     public List<ProxySetting> proxies = null;
 
@@ -280,7 +264,7 @@ public class UserPreferences implements Serializable {
         return autoLoginCommand;
     }
 
-    private static final transient int DEFAULT_CONFIG_VERSION = 101;
+    private static final int DEFAULT_CONFIG_VERSION = 101;
     private int configVersion = DEFAULT_CONFIG_VERSION;
 
     private int openCounts = 0;
@@ -296,7 +280,7 @@ public class UserPreferences implements Serializable {
     private boolean wasLangSet = false;
 
     private ColorPreferences colorPreferences = new ColorPreferences();
-    private List<String> lastUsernames = new ArrayList<String>();
+    private List<String> lastUsernames = new ArrayList<>();
     private transient boolean usernameAlertSeen = false;
 
     private Status resourcePackBehavior = Status.LOADED;
@@ -336,26 +320,24 @@ public class UserPreferences implements Serializable {
         try {
             if (oldServerFile.isFile()) {
                 UserPreferences prefs;
-                try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(oldServerFile))) {
+                try (ObjectInputStream is = new ObjectInputStream(Files.newInputStream(oldServerFile.toPath()))) {
                     prefs = (UserPreferences) is.readObject();
                     prefs.initDefaults();
                 }
-                try (OutputStream os = new FileOutputStream(UserPreferences.serverFile)) {
-                    final PrintWriter pw = new PrintWriter(Base64.getEncoder().wrap(os));
-                    pw.println(new GsonBuilder().setPrettyPrinting().create().toJson(prefs));
-                    pw.flush();
+                try (OutputStream os = Base64.getEncoder()
+                                             .wrap(Files.newOutputStream(UserPreferences.serverFile.toPath()))) {
+                    os.write(new Gson().toJson(prefs).getBytes(StandardCharsets.UTF_8));
                 }
                 oldServerFile.delete();
                 return prefs;
             } else if (serverFile.isFile()) {
-                try (InputStream is = new FileInputStream(serverFile)) {
+                try (InputStream is = Files.newInputStream(serverFile.toPath())) {
                     final InputStreamReader reader = new InputStreamReader(Base64.getDecoder().wrap(is));
                     final UserPreferences prefs = new Gson().fromJson(reader, UserPreferences.class);
                     prefs.initDefaults();
                     return prefs;
                 }
-            } else
-                return new UserPreferences();
+            } else return new UserPreferences();
         } catch (final Exception e) {
             e.printStackTrace();
             return new UserPreferences();
@@ -363,13 +345,7 @@ public class UserPreferences implements Serializable {
     }
 
     public boolean isLangUnicodeSupported() {
-        switch (appLanguage) {
-            case 简体中文: {
-                return false;
-            }
-            default:
-                return true;
-        }
+        return appLanguage != Language.简体中文;
     }
 
     public String[] getTrayKeyWords() {
@@ -488,9 +464,7 @@ public class UserPreferences implements Serializable {
     }
 
     public void putUserName(final String username) {
-        if (lastUsernames.contains(username)) {
-            lastUsernames.remove(username);
-        }
+        lastUsernames.remove(username);
         if (!lastUsernames.contains(username)) {
             lastUsernames.add(" ");
             for (int x = lastUsernames.size() - 1; x > 0; x--) {
@@ -502,9 +476,9 @@ public class UserPreferences implements Serializable {
 
     public List<String> getLastUserNames() {
         if (lastUsernames == null) {
-            lastUsernames = new ArrayList<String>();
+            lastUsernames = new ArrayList<>();
         }
-        return new ArrayList<String>(lastUsernames);
+        return new ArrayList<>(lastUsernames);
     }
 
     public void clearLastUserNames() {

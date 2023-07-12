@@ -56,6 +56,7 @@ import java.net.Proxy.Type;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -119,6 +120,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.table.DefaultTableModel;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import dev.dewy.nbt.Nbt;
@@ -456,10 +458,8 @@ public class Main {
 
         @Override
         public void run() {
-            try (OutputStream os = new FileOutputStream(UserPreferences.serverFile)) {
-                final PrintWriter pw = new PrintWriter(Base64.getEncoder().wrap(os));
-                pw.println(new GsonBuilder().setPrettyPrinting().create().toJson(up));
-                pw.flush();
+            try (OutputStream os = Base64.getEncoder().wrap(Files.newOutputStream(UserPreferences.serverFile.toPath()))) {
+                os.write(new Gson().toJson(up).getBytes(StandardCharsets.UTF_8));
             } catch (final Exception e) {
                 e.printStackTrace();
             }
