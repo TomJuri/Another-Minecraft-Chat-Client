@@ -1,3 +1,6 @@
+> AMCC is now **archived**.
+> A new, better version is coming, including more Minecraft versions, cleaner GUI and codebase, more functions and an **Android app**!
+
 # Another Minecraft Chat Client
 
 ![license](https://img.shields.io/github/license/Defective4/Minecraft-Chat-Client)
