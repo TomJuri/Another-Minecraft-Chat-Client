@@ -376,7 +376,6 @@ public class MinecraftClient {
                         for (final ClientListener cl : getClientListeners(true)) {
                             cl.disconnected(e.toString(), MinecraftClient.this);
                         }
-                        System.out.println("Err");
                         try {
                             Thread.sleep(sleepOnFail);
                         } catch (InterruptedException ex) {
