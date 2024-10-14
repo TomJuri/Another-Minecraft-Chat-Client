@@ -386,7 +386,7 @@ public class MinecraftClient {
                         for (final ClientListener cl : getClientListeners(true)) {
                             cl.disconnected(e.toString(), MinecraftClient.this);
                         }
-                        close();
+                        throw new RuntimeException(e);
                     }
                 }
             });
