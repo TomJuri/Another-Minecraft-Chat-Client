@@ -220,16 +220,6 @@ public class MinecraftClient {
     }
 
     /**
-     * Connect to server specified in constructor
-     *
-     * @param username username of connecting client
-     * @throws IOException thrown when client was unable to connect to target server
-     */
-    public void connect(final String username) throws IOException {
-        connect(AuthType.Offline, username, null);
-    }
-
-    /**
      * Connect this client to the server
      *
      * @param auth     authentication type to use
@@ -238,11 +228,11 @@ public class MinecraftClient {
      * @throws IOException
      * @deprecated Microsoft auth is NOT supported in this method.
      */
-    public void connect(final AuthType auth, final String token, final String password) throws IOException {
+    public void connect(final AuthType auth, final String token, final String password, long sleepOnFail) throws IOException {
         if (auth == AuthType.Microsoft)
             throw new IOException("Use MinecraftClient#connect(AuthType, UserInfo) when using Microsoft auth!");
 
-        connect(auth, new UserInfo("", token, "", "", ""));
+        connect(auth, new UserInfo("", token, "", "", ""), sleepOnFail);
     }
 
     /**
@@ -252,7 +242,7 @@ public class MinecraftClient {
      * @param ui   user information
      * @throws IOException
      */
-    public void connect(final AuthType auth, final UserInfo ui) throws IOException {
+    public void connect(final AuthType auth, final UserInfo ui, long sleepOnFail) throws IOException {
         this.authType = auth;
         switch (auth) {
             case Microsoft: {
@@ -386,7 +376,12 @@ public class MinecraftClient {
                         for (final ClientListener cl : getClientListeners(true)) {
                             cl.disconnected(e.toString(), MinecraftClient.this);
                         }
-                        throw new RuntimeException(e);
+                        System.out.println("Err");
+                        try {
+                            Thread.sleep(sleepOnFail);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
             });
