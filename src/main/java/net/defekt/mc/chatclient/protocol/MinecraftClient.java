@@ -1202,8 +1202,6 @@ public class MinecraftClient {
 
     /**
      * Set client's SOCKS proxy. <br>
-     * Only has effect when used before {@link #connect(String)} or
-     * {@link #connect(AuthType, String, String)} methods
      *
      * @param proxy new SOCKS proxy
      */
