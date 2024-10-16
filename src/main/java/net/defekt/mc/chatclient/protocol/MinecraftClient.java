@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -598,7 +599,12 @@ public class MinecraftClient {
                 if (nPacket != null) packet = nPacket;
                 if (packet.isCancelled()) return;
             }
-            os.write(packet.getData(compression));
+            try {
+                os.write(packet.getData(compression));
+            } catch (SocketException ignored) {
+                close();
+            }
+
             for (final MinecraftPacketListener listener : GlobalListeners.getListeners()) {
                 listener.packetSent(packet, this);
             }
