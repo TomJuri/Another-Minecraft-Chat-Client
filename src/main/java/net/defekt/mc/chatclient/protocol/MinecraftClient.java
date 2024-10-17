@@ -378,9 +378,10 @@ public class MinecraftClient {
                             cl.disconnected(e.toString(), MinecraftClient.this);
                         }
                         try {
+                            close();
                             Thread.sleep(sleepOnFail);
-                        } catch (InterruptedException ex) {
-                            throw new RuntimeException(ex);
+                        } catch (InterruptedException ignored) {
+
                         }
                     }
                 }
